@@ -14,6 +14,9 @@ var Provider = require('react-redux').Provider;
 // Load environment variables from .env file
 dotenv.load();
 
+// Newrelic Node.js agent
+require('newrelic');
+
 // ES6 Transpiler
 require('babel-core/register');
 require('babel-polyfill');

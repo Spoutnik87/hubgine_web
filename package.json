@@ -28,6 +28,7 @@
     "express-validator": "^3.1.2",
     "jade": "^1.11.0",
     "morgan": "^1.8.1",
+    "newrelic": "^1.37.2",
     "node-sass": "^3.6.0",
     "nodemailer": "^3.1.4",
     "nodemon": "^1.11.0",
