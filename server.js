@@ -1,3 +1,6 @@
+// Newrelic Node.js agent
+require('newrelic');
+
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
@@ -13,9 +16,6 @@ var Provider = require('react-redux').Provider;
 
 // Load environment variables from .env file
 dotenv.load();
-
-// Newrelic Node.js agent
-require('newrelic');
 
 // ES6 Transpiler
 require('babel-core/register');
