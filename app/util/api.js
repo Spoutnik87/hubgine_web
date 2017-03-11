@@ -5,7 +5,7 @@ function botAPI() {
 }
 
 botAPI.prototype.useAPI = function(method, search, get, callback) {
-    const url = "http://127.0.0.1:8080/"+search
+    const url = "http://www.flavien.cc:8000/"+search
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() 
