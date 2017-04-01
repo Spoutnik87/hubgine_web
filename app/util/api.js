@@ -5,7 +5,7 @@ function botAPI() {
 }
 
 botAPI.prototype.useAPI = function(method, search, get, callback) {
-    const url = "http://www.flavien.cc:8000/"+search
+    const url = "http://www.flavien.cc:8000/api/"+search
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() 
@@ -102,3 +102,5 @@ botAPI.prototype.deleteBlacklist = function(word, callback) {
         console.log("wrong informations");
     }
 }
+
+module.exports = botAPI;

@@ -5952,6 +5952,47 @@ textarea {
   border-radius: 0;
   box-shadow: inset 0 1px 2px rgba(150, 160, 175, 0.1), inset 0 1px 15px rgba(150, 160, 175, 0.05); }
 
+.form-checkbox label {
+  display: inline-block;
+  user-select: none;
+  position: relative;
+  color: rgba(0, 0, 0, 0.1);
+  width: 35px;
+  height: 35px;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
+  color: rgba(0, 0, 0, 0.1);
+  text-align: center; }
+  .form-checkbox label:after {
+    content: '';
+    display: block;
+    margin-left: 9px;
+    margin-top: 4px;
+    width: 12px;
+    height: 18px;
+    border: solid rgba(0, 0, 0, 0.1);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg); }
+  .form-checkbox label:hover {
+    border: 2px solid rgba(0, 0, 0, 0.5);
+    color: black; }
+
+.form-checkbox input {
+  display: none; }
+  .form-checkbox input:checked + .green-background {
+    border-color: #269b0a;
+    background: #269b0a; }
+    .form-checkbox input:checked + .green-background:after {
+      content: '';
+      display: block;
+      margin-left: 9px;
+      margin-top: 4px;
+      width: 12px;
+      height: 18px;
+      border: solid white;
+      border-width: 0 6px 6px 0; }
+
 .form-group > label {
   text-transform: uppercase;
   font-size: 13px; }

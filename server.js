@@ -2,6 +2,7 @@
 require('newrelic');
 
 var express = require('express');
+var session = require('express-session');
 var path = require('path');
 var logger = require('morgan');
 var compression = require('compression');
@@ -14,6 +15,9 @@ var ReactDOM = require('react-dom/server');
 var Router = require('react-router');
 var Provider = require('react-redux').Provider;
 
+var loadState = require('./app/util/localStorage').loadState;
+var saveState = require('./app/util/localStorage').saveState;
+var cookie = require('react-cookie');
 // Load environment variables from .env file
 dotenv.load();
 
@@ -42,16 +46,33 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+/*app.use(session({
+  name: 'server-session-cookie-id',
+  secret: 'my express secret',
+  saveUninitialized: true,
+  resave: false
+}));*/
 
 app.post('/contact', contactController.contactPost);
 
 // React server rendering
 app.use(function(req, res) {
+  cookie.setRawCookie(req.headers.cookie);
   var initialState = {
-    messages: {}
+    messages: {},
+    user: cookie.load('user') || {}
   };
 
+  //const initialState = loadState();
   var store = configureStore(initialState);
+
+  /*store.subscribe(() => {
+    saveState( {
+      user: store.getState().user
+    });
+  });*/
+
+  console.log("dvc" + JSON.stringify(store.getState()));
 
   Router.match({ routes: routes.default(store), location: req.url }, function(err, redirectLocation, renderProps) {
     if (err) {

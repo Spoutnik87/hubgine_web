@@ -3,7 +3,8 @@ import Header from './Header';
 import Footer from './Footer';
 
 class App extends React.Component {
-  render() {
+  render()
+  {
     return (
       <div>
         <Header/>

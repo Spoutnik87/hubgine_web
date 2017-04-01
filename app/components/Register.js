@@ -1,16 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router';
-import { connect } from 'react-redux';
-import { connect as connectUser } from '../actions/user';
-import cookie from 'react-cookie';
-
 const botAPI = require('../util/api');
 
-class Signin extends React.Component {
+class Register extends React.Component {
     constructor(props)
     {
         super(props);
-        this.state = { email: "", password: "" };
+        this.state = { email: "", password: "", cpassword: "", useterms: false };
         this.api = new botAPI();
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -19,15 +14,11 @@ class Signin extends React.Component {
     handleSubmit(event)
     {
         event.preventDefault();
-        this.props.dispatch(connectUser("token", "ADMIN"));
-        cookie.save('user', { "token":"token","rank":"ADMIN" });
-        this.props.router.push("/");
     }
 
     handleChange(event)
     {
         this.setState({ [event.target.name]: event.target.value });
-        //this.props.session[event.target.name] = event.target.value;
     }
     
     render()
@@ -36,7 +27,7 @@ class Signin extends React.Component {
             <div className="container">
                 <div className="panel">
                     <div className="panel-heading">
-                        <h3 className="panel-title">Sign In</h3>
+                        <h3 className="panel-title">Register</h3>
                     </div>
                     <div className="panel-body">
                         <form onSubmit={this.handleSubmit} className="form-horizontal">
@@ -53,12 +44,24 @@ class Signin extends React.Component {
                                 </div>
                             </div>
                             <div className="form-group">
+                                <label htmlFor="cpassword" className="col-sm-2">Confirm password</label>
+                                <div className="col-sm-8">
+                                    <input type="password" name="cpassword" id="cpassword" className="form-control" value={this.state.cpassword} onChange={this.handleChange} autoFocus/>
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="useterms" className="col-sm-2">Accept use terms</label>
+                                <div className="col-sm-8 form-checkbox">
+                                    <input type="checkbox" name="useterms" id="useterms" value={this.state.useterms} onChange={this.handleChange} autoFocus/>
+                                    <label htmlFor="useterms" className="green-background"></label>
+                                </div>
+                            </div>
+                            <div className="form-group">
                                 <div className="col-sm-offset-2 col-sm-8">
-                                    <button type="submit" className="btn btn-success">Sign In</button>
+                                    <button type="submit" className="btn btn-success">Register</button>
                                 </div>
                             </div>
                         </form>
-                        <Link to="/forgot-password">Forgot password?</Link>
                     </div>
                 </div>
             </div>
@@ -66,10 +69,4 @@ class Signin extends React.Component {
     }
 }
 
-/*const mapStateToProps = (state) => {
-  return {
-    session: state.session
-  };
-};*/
-
-export default connect()(Signin);
+export default Register;

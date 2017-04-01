@@ -2,8 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { submitContactForm } from '../actions/contact';
 import Messages from './Messages';
-import Time from './Time';
-//import CustomTextInput from './CustomTextInput';
 
 class Contact extends React.Component {
   constructor(props) {
@@ -28,7 +26,6 @@ class Contact extends React.Component {
             <h3 className="panel-title">Contact Form</h3>
           </div>
           <div className="panel-body">
-            <Time />
             <Messages messages={this.props.messages}/>
             <form onSubmit={this.handleSubmit.bind(this)} className="form-horizontal">
               <div className="form-group">
