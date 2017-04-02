@@ -3,12 +3,7 @@ import { disconnect } from '../actions/user';
 import { connect } from 'react-redux';
 import cookie from 'react-cookie';
 
-class Disconnect extends React.Component {
-  constructor(props)
-  {
-      super(props);
-  }
-  
+class Disconnect extends React.Component { 
   componentWillMount()
   {
       this.props.dispatch(disconnect());
@@ -22,10 +17,4 @@ class Disconnect extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    user: state.user
-  };
-};
-
-export default connect(mapStateToProps)(Disconnect);
+export default connect()(Disconnect);

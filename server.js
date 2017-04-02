@@ -1,23 +1,21 @@
 // Newrelic Node.js agent
 require('newrelic');
 
-var express = require('express');
-var session = require('express-session');
-var path = require('path');
-var logger = require('morgan');
-var compression = require('compression');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var expressValidator = require('express-validator');
-var dotenv = require('dotenv');
-var React = require('react');
-var ReactDOM = require('react-dom/server');
-var Router = require('react-router');
-var Provider = require('react-redux').Provider;
+const express = require('express');
+const path = require('path');
+const logger = require('morgan');
+const compression = require('compression');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const expressValidator = require('express-validator');
+const dotenv = require('dotenv');
+const React = require('react');
+const ReactDOM = require('react-dom/server');
+const Router = require('react-router');
+const Provider = require('react-redux').Provider;
+const cookie = require('react-cookie');
+const mime = require('mime');
 
-var loadState = require('./app/util/localStorage').loadState;
-var saveState = require('./app/util/localStorage').saveState;
-var cookie = require('react-cookie');
 // Load environment variables from .env file
 dotenv.load();
 
@@ -29,8 +27,8 @@ require('babel-polyfill');
 var contactController = require('./controllers/contact');
 
 // React and Server-Side Rendering
-var routes = require('./app/routes');
-var configureStore = require('./app/store/configureStore').default;
+const routes = require('./app/routes');
+const configureStore = require('./app/store/configureStore').default;
 
 var app = express();
 
@@ -45,34 +43,23 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-/*app.use(session({
-  name: 'server-session-cookie-id',
-  secret: 'my express secret',
-  saveUninitialized: true,
-  resave: false
-}));*/
+app.use(express.static(path.join(__dirname, 'public'),  {
+    setHeaders: function (res) {
+      const type = mime.lookup(res.req.url)
+        res.setHeader('Content-Type', type);
+    }
+}));
 
 app.post('/contact', contactController.contactPost);
 
 // React server rendering
 app.use(function(req, res) {
   cookie.setRawCookie(req.headers.cookie);
-  var initialState = {
+  const initialState = {
     messages: {},
     user: cookie.load('user') || {}
   };
-
-  //const initialState = loadState();
-  var store = configureStore(initialState);
-
-  /*store.subscribe(() => {
-    saveState( {
-      user: store.getState().user
-    });
-  });*/
-
-  console.log("dvc" + JSON.stringify(store.getState()));
+  const store = configureStore(initialState);
 
   Router.match({ routes: routes.default(store), location: req.url }, function(err, redirectLocation, renderProps) {
     if (err) {

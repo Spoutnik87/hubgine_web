@@ -1,20 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-const botAPI = require('../util/api');
 
 class Profile extends React.Component {
     constructor(props)
     {
         super(props);
         this.state = { email: "" };
-        this.api = new botAPI();
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    componentWillMount()
-    {
-        console.log("he : " + JSON.stringify(this.props.user));
     }
 
     handleSubmit(event)
@@ -72,7 +65,6 @@ class Profile extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log("inClassa : " + JSON.stringify(state));
   return {
     user: state.user
   };

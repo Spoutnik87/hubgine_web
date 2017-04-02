@@ -1,12 +1,12 @@
 import React from 'react';
-const botAPI = require('../util/api');
+//const botAPI = require('../util/api');
 
 class UserDashboard extends React.Component {
     constructor(props)
     {
         super(props);
         this.state = { email: "" };
-        this.api = new botAPI();
+        //this.api = new botAPI();
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }

@@ -23,7 +23,7 @@ export default function getRoutes(store) {
   };
   return (
     <Route path="/" component={App}>
-      <IndexRoute component={Home} onLeave={clearMessages} store={store}/>
+      <IndexRoute component={Home} onLeave={clearMessages}/>
       <Route path="/contact" component={Contact} onLeave={clearMessages}/>
       <Route component={EnsureLoggedInContainer}>
         <Route path="/user-dashboard" component={UserDashboard} onLeave={clearMessages}/>

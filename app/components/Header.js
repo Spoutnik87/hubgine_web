@@ -4,11 +4,6 @@ import { connect } from 'react-redux';
 import * as ranks from '../constants/Ranks';
 
 class Header extends React.Component {
-  constructor(props)
-  {
-    super(props);
-  }
-
   render()
   {
     const active = { borderBottomColor: '#3f51b5' };

@@ -1,3 +1,5 @@
+import * as types from '../constants/ActionTypes';
+
 export default function messages(state = {}, action) {
   switch (action.type) {
     case 'CONTACT_FORM_FAILURE':
@@ -7,6 +9,14 @@ export default function messages(state = {}, action) {
     case 'CONTACT_FORM_SUCCESS':
       return {
         success: action.messages
+      };
+    case types.SIGNIN_FORM_FAILURE:
+      return {
+        error: action.messages
+      };
+    case types.REGISTER_FORM_FAILURE:
+      return {
+        error: action.messages
       };
     case 'CLEAR_MESSAGES':
       return {};

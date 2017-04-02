@@ -2,16 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 class EnsureLoggedInContainer extends React.Component {
-  constructor(props)
-  {
-      super(props);
-  }
-
   componentWillMount()
   {
     if (this.props.user.token == null)
     {
-      this.props.router.replace("/");
+      this.props.router.push("/");
     }
   }
 

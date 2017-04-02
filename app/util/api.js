@@ -9,11 +9,11 @@ const useAPI = (method, search, send, callback) =>
         contentType: 'application/json',
         dataType:'json',
         cache: false,
-        success : (result, statut) => {
-            callback(result);
+        success : (result, status) => {
+            callback(null, result);
         },
-        error : (result, statut, erreur) => {
-            callback(result);
+        error : (result, status, error) => {
+            callback(error, result);
         }
     });
 }
@@ -24,9 +24,9 @@ export const connect = (email, password, callback) =>
         "email="+email+
         "&password="+password;
 
-    useAPI("GET", "login", send, (result) =>
+    useAPI("GET", "login", send, (error, result) =>
     {
-        callback(result);
+        callback(error, result);
     });
 }
 
@@ -38,9 +38,9 @@ export const addUser = (email, password, firstname, lastname, callback) =>
         "&firstname="+firstname+
         "&lastname="+lastname;
 
-    useAPI("POST", "create_user", send, (result) =>
+    useAPI("POST", "create_user", send, (error, result) =>
     {
-        callback(result);
+        callback(error, result);
     });
 }
 
@@ -54,8 +54,8 @@ export const addAccount = (user_email, user_token, consumer_key, cunsumer_secret
         "&access_token_key="+access_token_key+
         "&access_token_secret="+access_token_secret;
     
-    useAPI("post", "account", send, (result) =>
+    useAPI("post", "account", send, (error, result) =>
     {
-        callback(result);
+        callback(error, result);
     });
 }

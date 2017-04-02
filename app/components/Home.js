@@ -27,21 +27,19 @@ function rand(min, max, num) {
 const chartOptions = {};
 
 class Home extends React.Component {
-  constructor(props, store)
+  constructor(props)
   {
-    super(props)
-    //console.log(JSON.stringify(store.getState()));
+    super(props);
+    this.state = { a: null };
   }
 
   componentDidMount()
   {
     const Line = require('react-chartjs-2').Line;
-    this.a = <Line data={chartData}/>;
-    this.forceUpdate();
+    this.setState({ a: <Line data={chartData}/> });
   }
 
   render() {
-    //console.log(store.getState());
     return (
       <div className="container-fluid">
         <Messages messages={this.props.messages}/>
@@ -54,7 +52,7 @@ class Home extends React.Component {
                   mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna
                   mollis euismod. Donec sed odio dui.</p>
                 <a href="#" role="button" className="btn btn-default">View details</a>
-                {this.a}
+                {this.state.a}
               </div>
             </div>
           </div>
