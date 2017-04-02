@@ -1,15 +1,8 @@
-function botAPI() {
-    this.domain = "flavien.cc";
-	this.port = 8001;
-
-    this.user_email = null;
-    this.user_password = null;
-    this.user_token = null;
-}
-
-botAPI.prototype.useAPI = function(method, search, send, callback) {
-    const url = "http://"+this.domain+":"+this.port+"/"+search+"?"+send;
-
+const useAPI = (method, search, send, callback) =>
+{
+    const domain = "flavien.cc";
+    const port = 8001;
+    const url = "http://"+domain+":"+port+"/"+search+"?"+send;
     $.ajax({
         type: method,
         url: url,
@@ -25,51 +18,44 @@ botAPI.prototype.useAPI = function(method, search, send, callback) {
     });
 }
 
-botAPI.prototype.addUser = function(email, password, firstname, lastname, callback) {
+export const connect = (email, password, callback) =>
+{
+    const send =
+        "email="+email+
+        "&password="+password;
+
+    useAPI("GET", "login", send, (result) =>
+    {
+        callback(result);
+    });
+}
+
+export const addUser = (email, password, firstname, lastname, callback) =>
+{
     const send =
         "email="+email+
         "&password="+password+
         "&firstname="+firstname+
         "&lastname="+lastname;
 
-
-    this.useAPI("POST", "create_user", send, (result) => {
-        if(result.token) {
-            this.user_email = email;
-            this.user_password = password;
-            this.user_token = result.token;
-        }
-
+    useAPI("POST", "create_user", send, (result) =>
+    {
         callback(result);
     });
 }
 
-botAPI.prototype.connect = function(email, password, callback) {
+export const addAccount = (user_email, user_token, consumer_key, cunsumer_secret, access_token_key, access_token_secret, callback) =>
+{
     const send =
-        "email="+email+
-        "&password="+password;
-
-    this.useAPI("GET", "login", send, (result) => {
-        if(result.token) {
-            this.user_email = email;
-            this.user_password = password;
-            this.user_token = result.token;
-        }
-
-        callback(result);
-    });
-}
-
-botAPI.prototype.addAccount = function(consumer_key, cunsumer_secret, access_token_key, access_token_secret, callback) {
-    const send =
-        "email="+this.user_email+
-        "&token="+this.user_token+
+        "email="+user_email+
+        "&token="+user_token+
         "&consumer_key="+consumer_key+
         "&consumer_secret="+cunsumer_secret+
         "&access_token_key="+access_token_key+
         "&access_token_secret="+access_token_secret;
     
-    this.useAPI("post", "account", send, (result) => {
+    useAPI("post", "account", send, (result) =>
+    {
         callback(result);
     });
 }
