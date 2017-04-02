@@ -4,7 +4,7 @@ function botAPI() {
 
     this.user_email = null;
     this.user_password = null;
-    this.user_tocken = null;
+    this.user_token = null;
 }
 
 botAPI.prototype.useAPI = function(method, search, send, callback) {
@@ -37,7 +37,7 @@ botAPI.prototype.addUser = function(email, password, firstname, lastname, callba
         if(result.token) {
             this.user_email = email;
             this.user_password = password;
-            this.user_tocken = result.token;
+            this.user_token = result.token;
         }
 
         callback(result);
@@ -53,7 +53,7 @@ botAPI.prototype.connect = function(email, password, callback) {
         if(result.token) {
             this.user_email = email;
             this.user_password = password;
-            this.user_tocken = result.token;
+            this.user_token = result.token;
         }
 
         callback(result);
@@ -63,7 +63,7 @@ botAPI.prototype.connect = function(email, password, callback) {
 botAPI.prototype.addAccount = function(consumer_key, cunsumer_secret, access_token_key, access_token_secret, callback) {
     const send =
         "email="+this.user_email+
-        "&token="+this.user_tocken+
+        "&token="+this.user_token+
         "&consumer_key="+consumer_key+
         "&consumer_secret="+cunsumer_secret+
         "&access_token_key="+access_token_key+
