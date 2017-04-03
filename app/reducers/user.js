@@ -8,6 +8,7 @@ const user = (state = {}, action) =>
         case types.USER_CONNECT:
             return {
                 token: action.token,
+                email: action.email,
                 rank: action.rank
             };
         case types.USER_DISCONNECT:

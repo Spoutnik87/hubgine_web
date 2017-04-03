@@ -6,6 +6,7 @@ import { addUser } from '../util/api';
 import { sendFailureMessage } from '../actions/register';
 import Messages from './Messages';
 import validator from 'validator';
+import * as ranks from '../constants/Ranks';
 
 class Register extends React.Component {
     constructor(props)
@@ -51,8 +52,8 @@ class Register extends React.Component {
             {
                 if (!error)
                 {
-                    this.props.dispatch(connectUser(result.token, "ADMIN"));
-                    cookie.save('user', { "token": result.token,"rank":"ADMIN" });
+                    this.props.dispatch(connectUser(result.token, result.email, "ADMIN"));
+                    cookie.save('user', { "token": result.token, "email": result.email, "rank": ranks.MEMBER });
                     this.props.router.push("/");
                 }
                 else
@@ -68,7 +69,6 @@ class Register extends React.Component {
             this.props.dispatch(sendFailureMessage(messages));
             this.setState({ loading: false });
         }
-            
     }
 
     handleChange(event)

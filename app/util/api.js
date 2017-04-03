@@ -40,6 +40,10 @@ export const addUser = (email, password, firstname, lastname, callback) =>
 
     useAPI("POST", "create_user", send, (error, result) =>
     {
+        if (!error)
+        {
+            result.email = email;
+        }
         callback(error, result);
     });
 }
@@ -60,7 +64,7 @@ export const addAccount = (user_email, user_token, consumer_key, cunsumer_secret
     });
 }
 
-export const resetPassword = (email) =>
+export const resetPassword = (email, callback) =>
 {
     const send = "email=" + email;
 
@@ -70,7 +74,7 @@ export const resetPassword = (email) =>
     });
 }
 
-export const getUser = (user_email, user_token) =>
+export const getUser = (user_email, user_token, callback) =>
 {
     const send = 
         "email="+user_email+
@@ -82,7 +86,7 @@ export const getUser = (user_email, user_token) =>
     });
 }
 
-export const updateUser = (user_email, user_token, user_firstname, user_lastname, user_password) =>
+export const updateUser = (user_email, user_token, user_firstname, user_lastname, user_password, callback) =>
 {
     const send =
         "email="+user_email+

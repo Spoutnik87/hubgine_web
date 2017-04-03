@@ -24,7 +24,6 @@ class Forgotpassword extends React.Component {
         }
         if (messages.length == 0)
         {
-            this.setState({ loading: false });
             /*resetPassword(this.state.email, (error, result) =>
             {
                 if (!error)
@@ -36,8 +35,8 @@ class Forgotpassword extends React.Component {
                 {
                     messages.push({ msg: "An error append during the subscription." });
                     this.props.dispatch(sendFailureMessage(messages));
-                    this.setState({ loading: false });
                 }
+                this.setState({ loading: false });
             });*/
         }
         else

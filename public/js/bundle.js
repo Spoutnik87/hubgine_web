@@ -132,11 +132,12 @@ var types = _interopRequireWildcard(_ActionTypes);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function connect(token, rank) {
+function connect(token, email, rank) {
     return function (dispatch) {
         return dispatch({
             type: types.USER_CONNECT,
             token: token,
+            email: email,
             rank: rank
         });
     };
@@ -823,7 +824,6 @@ var Forgotpassword = function (_React$Component) {
                 messages.push({ msg: "Email is not valid." });
             }
             if (messages.length == 0) {
-                this.setState({ loading: false });
                 /*resetPassword(this.state.email, (error, result) =>
                 {
                     if (!error)
@@ -835,8 +835,8 @@ var Forgotpassword = function (_React$Component) {
                     {
                         messages.push({ msg: "An error append during the subscription." });
                         this.props.dispatch(sendFailureMessage(messages));
-                        this.setState({ loading: false });
                     }
+                    this.setState({ loading: false });
                 });*/
             } else {
                 this.props.dispatch((0, _forgotpassword.sendFailureMessage)(messages));
@@ -1386,6 +1386,8 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = require('react-redux');
 
+var _api = require('../util/api');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -1404,9 +1406,21 @@ var Profile = function (_React$Component) {
 
         var _this = _possibleConstructorReturn(this, (Profile.__proto__ || Object.getPrototypeOf(Profile)).call(this, props));
 
-        _this.state = { email: "" };
+        _this.state = { editEmail: false, editFirstname: false, editLastname: false, email: "", firstname: "", lastname: "" };
+        /*getUser(this.props.user.email, this.props.user.token, (error, result) =>
+        {
+            if (!error)
+            {
+                this.state.email = result.email;
+                this.state.firstname = result.firstname;
+                this.state.lastname = result.lastname;
+            }
+            else console.log("error");
+        });*/
+        _this.state.email = "vladkyry@gmail.com";
         _this.handleChange = _this.handleChange.bind(_this);
         _this.handleSubmit = _this.handleSubmit.bind(_this);
+        _this.handleClick = _this.handleClick.bind(_this);
         return _this;
     }
 
@@ -1421,91 +1435,84 @@ var Profile = function (_React$Component) {
             this.setState(_defineProperty({}, event.target.name, event.target.value));
         }
     }, {
+        key: 'handleClick',
+        value: function handleClick(event) {
+            console.log(event.target.id);
+            this.setState({ editEmail: !this.state.editEmail });
+        }
+    }, {
         key: 'render',
         value: function render() {
-            return _react2.default.createElement(
+            var styleEmail = !this.state.editEmail ? _react2.default.createElement(
                 'div',
-                { className: 'container-fluid' },
+                { className: 'input-group' },
                 _react2.default.createElement(
                     'div',
-                    { className: 'row' },
+                    { className: 'form-control' },
+                    this.state.email
+                ),
+                _react2.default.createElement(
+                    'span',
+                    { id: 'buttonEmail', className: 'input-group-addon edit-button', onClick: this.handleClick },
+                    _react2.default.createElement('i', { id: 'buttonEmail', className: 'fa fa-pencil fa-fw' })
+                )
+            ) : _react2.default.createElement(
+                'div',
+                { className: 'input-group' },
+                _react2.default.createElement('input', { type: 'text', name: 'email', id: 'email', className: 'form-control', value: this.state.email, onChange: this.handleChange, autoFocus: true }),
+                _react2.default.createElement(
+                    'span',
+                    { id: 'buttonEmail', className: 'input-group-addon edit-button', onClick: this.handleClick },
+                    _react2.default.createElement('i', { id: 'buttonEmail', className: 'fa fa-pencil fa-fw' })
+                )
+            );
+
+            return _react2.default.createElement(
+                'div',
+                { className: 'container' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'panel' },
                     _react2.default.createElement(
                         'div',
-                        { className: 'col-sm-4' },
+                        { className: 'panel-heading' },
                         _react2.default.createElement(
-                            'div',
-                            { className: 'panel' },
-                            _react2.default.createElement(
-                                'div',
-                                { className: 'panel-body' },
-                                _react2.default.createElement(
-                                    'h3',
-                                    null,
-                                    'Heading'
-                                ),
-                                _react2.default.createElement(
-                                    'p',
-                                    null,
-                                    'Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.'
-                                ),
-                                _react2.default.createElement(
-                                    'a',
-                                    { href: '#', role: 'button', className: 'btn btn-default' },
-                                    'View details'
-                                )
-                            )
+                            'h3',
+                            { className: 'panel-title' },
+                            'Profile'
                         )
                     ),
                     _react2.default.createElement(
                         'div',
-                        { className: 'col-sm-4' },
+                        { className: 'panel-body' },
                         _react2.default.createElement(
-                            'div',
-                            { className: 'panel' },
+                            'form',
+                            { onSubmit: this.handleSubmit, className: 'form-horizontal' },
                             _react2.default.createElement(
                                 'div',
-                                { className: 'panel-body' },
+                                { className: 'form-group' },
                                 _react2.default.createElement(
-                                    'h3',
-                                    null,
-                                    'Heading'
+                                    'label',
+                                    { htmlFor: 'email', className: 'col-sm-2' },
+                                    'Email'
                                 ),
                                 _react2.default.createElement(
-                                    'p',
-                                    null,
-                                    'Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.'
-                                ),
-                                _react2.default.createElement(
-                                    'a',
-                                    { href: '#', role: 'button', className: 'btn btn-default' },
-                                    'View details'
+                                    'div',
+                                    { className: 'col-sm-8' },
+                                    styleEmail
                                 )
-                            )
-                        )
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'col-sm-4' },
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'panel' },
+                            ),
                             _react2.default.createElement(
                                 'div',
-                                { className: 'panel-body' },
+                                { className: 'form-group' },
                                 _react2.default.createElement(
-                                    'h3',
-                                    null,
-                                    'Heading'
-                                ),
-                                _react2.default.createElement(
-                                    'p',
-                                    null,
-                                    'Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.'
-                                ),
-                                _react2.default.createElement(
-                                    'a',
-                                    { href: '#', role: 'button', className: 'btn btn-default' },
-                                    'View details'
+                                    'div',
+                                    { className: 'col-sm-offset-2 col-sm-8' },
+                                    _react2.default.createElement(
+                                        'button',
+                                        { type: 'submit', className: 'btn btn-success' },
+                                        'Reset password'
+                                    )
                                 )
                             )
                         )
@@ -1526,7 +1533,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(Profile);
 
-},{"react":346,"react-redux":283}],20:[function(require,module,exports){
+},{"../util/api":31,"react":346,"react-redux":283}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1558,6 +1565,12 @@ var _Messages2 = _interopRequireDefault(_Messages);
 var _validator = require('validator');
 
 var _validator2 = _interopRequireDefault(_validator);
+
+var _Ranks = require('../constants/Ranks');
+
+var ranks = _interopRequireWildcard(_Ranks);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1612,8 +1625,8 @@ var Register = function (_React$Component) {
             if (messages.length == 0) {
                 (0, _api.addUser)(this.state.email, this.state.password, this.state.firstname, this.state.lastname, function (error, result) {
                     if (!error) {
-                        _this2.props.dispatch((0, _user.connect)(result.token, "ADMIN"));
-                        _reactCookie2.default.save('user', { "token": result.token, "rank": "ADMIN" });
+                        _this2.props.dispatch((0, _user.connect)(result.token, result.email, "ADMIN"));
+                        _reactCookie2.default.save('user', { "token": result.token, "email": result.email, "rank": ranks.MEMBER });
                         _this2.props.router.push("/");
                     } else {
                         messages.push({ msg: "An error append during the subscription." });
@@ -1773,7 +1786,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(Register);
 
-},{"../actions/register":3,"../actions/user":5,"../util/api":31,"./Messages":17,"react":346,"react-cookie":146,"react-redux":283,"validator":365}],21:[function(require,module,exports){
+},{"../actions/register":3,"../actions/user":5,"../constants/Ranks":24,"../util/api":31,"./Messages":17,"react":346,"react-cookie":146,"react-redux":283,"validator":365}],21:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1849,8 +1862,8 @@ var Signin = function (_React$Component) {
             if (messages.length == 0) {
                 (0, _api.connect)(this.state.email, this.state.password, function (error, result) {
                     if (!error) {
-                        _this2.props.dispatch((0, _user.connect)(result.token, "ADMIN"));
-                        _reactCookie2.default.save('user', { "token": result.token, "rank": "ADMIN" });
+                        _this2.props.dispatch((0, _user.connect)(result.token, result.email, "ADMIN"));
+                        _reactCookie2.default.save('user', { "token": result.token, "email": result.email, "rank": "ADMIN" });
                         _this2.props.router.push("/");
                     } else {
                         messages.push({ msg: "Your credentials are incorrect. Please try again or reset your password." });
@@ -2262,6 +2275,7 @@ var user = function user() {
         case types.USER_CONNECT:
             return {
                 token: action.token,
+                email: action.email,
                 rank: action.rank
             };
         case types.USER_DISCONNECT:
@@ -2451,6 +2465,9 @@ var addUser = exports.addUser = function addUser(email, password, firstname, las
     var send = "email=" + email + "&password=" + password + "&firstname=" + firstname + "&lastname=" + lastname;
 
     useAPI("POST", "create_user", send, function (error, result) {
+        if (!error) {
+            result.email = email;
+        }
         callback(error, result);
     });
 };
@@ -2463,7 +2480,7 @@ var addAccount = exports.addAccount = function addAccount(user_email, user_token
     });
 };
 
-var resetPassword = exports.resetPassword = function resetPassword(email) {
+var resetPassword = exports.resetPassword = function resetPassword(email, callback) {
     var send = "email=" + email;
 
     useAPI("POST", "reset_password", send, function (error, result) {
@@ -2471,7 +2488,7 @@ var resetPassword = exports.resetPassword = function resetPassword(email) {
     });
 };
 
-var getUser = exports.getUser = function getUser(user_email, user_token) {
+var getUser = exports.getUser = function getUser(user_email, user_token, callback) {
     var send = "email=" + user_email + "&token=" + user_token;
 
     useAPI("GET", "user", send, function (error, result) {
@@ -2479,7 +2496,7 @@ var getUser = exports.getUser = function getUser(user_email, user_token) {
     });
 };
 
-var updateUser = exports.updateUser = function updateUser(user_email, user_token, user_firstname, user_lastname, user_password) {
+var updateUser = exports.updateUser = function updateUser(user_email, user_token, user_firstname, user_lastname, user_password, callback) {
     var send = "email=" + user_email + "&token=" + user_token + "&firstname=" + user_firstname + "&lastname=" + user_lastname + "&password=" + user_password;
 
     useAPI("UPDATE", "user", send, function (error, result) {
@@ -15906,6 +15923,7 @@ function focusNode(node) {
 
 module.exports = focusNode;
 },{}],91:[function(require,module,exports){
+(function (global){
 'use strict';
 
 /**
@@ -15932,7 +15950,7 @@ module.exports = focusNode;
  * @return {?DOMElement}
  */
 function getActiveElement(doc) /*?DOMElement*/{
-  doc = doc || (typeof document !== 'undefined' ? document : undefined);
+  doc = doc || global.document;
   if (typeof doc === 'undefined') {
     return null;
   }
@@ -15944,6 +15962,7 @@ function getActiveElement(doc) /*?DOMElement*/{
 }
 
 module.exports = getActiveElement;
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],92:[function(require,module,exports){
 (function (process){
 'use strict';
@@ -43997,6 +44016,11 @@ function resolveToLocation(to, router) {
  * You could use the following component to link to that route:
  *
  *   <Link to={`/posts/${post.id}`} />
+ *
+ * Links may pass along location state and/or query string parameters
+ * in the state/query props, respectively.
+ *
+ *   <Link ... query={{ show: true }} state={{ the: 'state' }} />
  */
 var Link = _react2.default.createClass({
   displayName: 'Link',
@@ -44010,6 +44034,9 @@ var Link = _react2.default.createClass({
 
   propTypes: {
     to: oneOfType([string, object, func]),
+    query: object,
+    hash: string,
+    state: object,
     activeStyle: object,
     activeClassName: string,
     onlyActiveOnIndex: bool.isRequired,
@@ -44674,30 +44701,28 @@ var _React$PropTypes = _react2.default.PropTypes,
     func = _React$PropTypes.func,
     object = _React$PropTypes.object;
 
-
-var propTypes = {
-  history: object,
-  children: _InternalPropTypes.routes,
-  routes: _InternalPropTypes.routes, // alias for children
-  render: func,
-  createElement: func,
-  onError: func,
-  onUpdate: func,
-
-  // PRIVATE: For client-side rehydration of server match.
-  matchContext: object
-};
-
 /**
  * A <Router> is a high-level API for automatically setting up
  * a router that renders a <RouterContext> with all the props
  * it needs each time the URL changes.
  */
+
 var Router = _react2.default.createClass({
   displayName: 'Router',
 
 
-  propTypes: propTypes,
+  propTypes: {
+    history: object,
+    children: _InternalPropTypes.routes,
+    routes: _InternalPropTypes.routes, // alias for children
+    render: func,
+    createElement: func,
+    onError: func,
+    onUpdate: func,
+
+    // PRIVATE: For client-side rehydration of server match.
+    matchContext: object
+  },
 
   getDefaultProps: function getDefaultProps() {
     return {
@@ -44794,7 +44819,7 @@ var Router = _react2.default.createClass({
 
     // Only forward non-Router-specific props to routing context, as those are
     // the only ones that might be custom routing context props.
-    Object.keys(propTypes).forEach(function (propType) {
+    Object.keys(Router.propTypes).forEach(function (propType) {
       return delete props[propType];
     });
 
@@ -45248,29 +45273,31 @@ function computeChangedRoutes(prevState, nextState) {
       changeRoutes = void 0,
       enterRoutes = void 0;
   if (prevRoutes) {
-    var parentIsLeaving = false;
-    leaveRoutes = prevRoutes.filter(function (route) {
-      if (parentIsLeaving) {
-        return true;
-      } else {
-        var isLeaving = nextRoutes.indexOf(route) === -1 || routeParamsChanged(route, prevState, nextState);
-        if (isLeaving) parentIsLeaving = true;
-        return isLeaving;
-      }
-    });
+    (function () {
+      var parentIsLeaving = false;
+      leaveRoutes = prevRoutes.filter(function (route) {
+        if (parentIsLeaving) {
+          return true;
+        } else {
+          var isLeaving = nextRoutes.indexOf(route) === -1 || routeParamsChanged(route, prevState, nextState);
+          if (isLeaving) parentIsLeaving = true;
+          return isLeaving;
+        }
+      });
 
-    // onLeave hooks start at the leaf route.
-    leaveRoutes.reverse();
+      // onLeave hooks start at the leaf route.
+      leaveRoutes.reverse();
 
-    enterRoutes = [];
-    changeRoutes = [];
+      enterRoutes = [];
+      changeRoutes = [];
 
-    nextRoutes.forEach(function (route) {
-      var isNew = prevRoutes.indexOf(route) === -1;
-      var paramsChanged = leaveRoutes.indexOf(route) !== -1;
+      nextRoutes.forEach(function (route) {
+        var isNew = prevRoutes.indexOf(route) === -1;
+        var paramsChanged = leaveRoutes.indexOf(route) !== -1;
 
-      if (isNew || paramsChanged) enterRoutes.push(route);else changeRoutes.push(route);
-    });
+        if (isNew || paramsChanged) enterRoutes.push(route);else changeRoutes.push(route);
+      });
+    })();
   } else {
     leaveRoutes = [];
     changeRoutes = [];
@@ -45322,7 +45349,12 @@ module.exports = exports['default'];
 'use strict';
 
 exports.__esModule = true;
-exports.default = createRouterHistory;
+
+exports.default = function (createHistory) {
+  var history = void 0;
+  if (canUseDOM) history = (0, _useRouterHistory2.default)(createHistory)();
+  return history;
+};
 
 var _useRouterHistory = require('./useRouterHistory');
 
@@ -45332,11 +45364,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
 
-function createRouterHistory(createHistory) {
-  var history = void 0;
-  if (canUseDOM) history = (0, _useRouterHistory2.default)(createHistory)();
-  return history;
-}
 module.exports = exports['default'];
 },{"./useRouterHistory":320}],311:[function(require,module,exports){
 (function (process){
@@ -46063,6 +46090,8 @@ exports.__esModule = true;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 exports.default = matchRoutes;
 
 var _AsyncUtils = require('./AsyncUtils');
@@ -46211,32 +46240,38 @@ function matchRouteDeep(route, location, remainingPathname, paramNames, paramVal
     // By assumption, pattern is non-empty here, which is the prerequisite for
     // actually terminating a match.
     if (remainingPathname === '') {
-      var match = {
-        routes: [route],
-        params: createParams(paramNames, paramValues)
-      };
+      var _ret = function () {
+        var match = {
+          routes: [route],
+          params: createParams(paramNames, paramValues)
+        };
 
-      getIndexRoute(route, location, paramNames, paramValues, function (error, indexRoute) {
-        if (error) {
-          callback(error);
-        } else {
-          if (Array.isArray(indexRoute)) {
-            var _match$routes;
+        getIndexRoute(route, location, paramNames, paramValues, function (error, indexRoute) {
+          if (error) {
+            callback(error);
+          } else {
+            if (Array.isArray(indexRoute)) {
+              var _match$routes;
 
-            process.env.NODE_ENV !== 'production' ? (0, _routerWarning2.default)(indexRoute.every(function (route) {
-              return !route.path;
-            }), 'Index routes should not have paths') : void 0;
-            (_match$routes = match.routes).push.apply(_match$routes, indexRoute);
-          } else if (indexRoute) {
-            process.env.NODE_ENV !== 'production' ? (0, _routerWarning2.default)(!indexRoute.path, 'Index routes should not have paths') : void 0;
-            match.routes.push(indexRoute);
+              process.env.NODE_ENV !== 'production' ? (0, _routerWarning2.default)(indexRoute.every(function (route) {
+                return !route.path;
+              }), 'Index routes should not have paths') : void 0;
+              (_match$routes = match.routes).push.apply(_match$routes, indexRoute);
+            } else if (indexRoute) {
+              process.env.NODE_ENV !== 'production' ? (0, _routerWarning2.default)(!indexRoute.path, 'Index routes should not have paths') : void 0;
+              match.routes.push(indexRoute);
+            }
+
+            callback(null, match);
           }
+        });
 
-          callback(null, match);
-        }
-      });
+        return {
+          v: void 0
+        };
+      }();
 
-      return;
+      if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
     }
   }
 

@@ -36,8 +36,8 @@ class Signin extends React.Component {
             {
                 if (!error)
                 {
-                    this.props.dispatch(connectUser(result.token, "ADMIN"));
-                    cookie.save('user', { "token": result.token,"rank":"ADMIN" });
+                    this.props.dispatch(connectUser(result.token, result.email, "ADMIN"));
+                    cookie.save('user', { "token": result.token, "email": result.email, "rank":"ADMIN" });
                     this.props.router.push("/");
                 }
                 else
