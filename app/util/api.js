@@ -59,3 +59,40 @@ export const addAccount = (user_email, user_token, consumer_key, cunsumer_secret
         callback(error, result);
     });
 }
+
+export const resetPassword = (email) =>
+{
+    const send = "email=" + email;
+
+    useAPI("POST", "reset_password", send, (error, result) =>
+    {
+        callback(error, result);
+    });
+}
+
+export const getUser = (user_email, user_token) =>
+{
+    const send = 
+        "email="+user_email+
+        "&token="+user_token;
+    
+    useAPI("GET", "user", send, (error, result) =>
+    {
+        callback(error, result);
+    });
+}
+
+export const updateUser = (user_email, user_token, user_firstname, user_lastname, user_password) =>
+{
+    const send =
+        "email="+user_email+
+        "&token="+user_token+
+        "&firstname="+user_firstname+
+        "&lastname="+user_lastname+
+        "&password="+user_password;
+
+    useAPI("UPDATE", "user", send, (error, result) =>
+    {
+        callback(error, result);
+    });
+}

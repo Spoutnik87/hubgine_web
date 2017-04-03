@@ -14,7 +14,6 @@ class Register extends React.Component {
         this.state = { loading: false, firstname: "", lastname: "", email: "", password: "", cpassword: "", useterms: false };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-
     }
 
     handleSubmit(event)
@@ -62,7 +61,6 @@ class Register extends React.Component {
                     this.props.dispatch(sendFailureMessage(messages));
                     this.setState({ loading: false });
                 }
-                
             });
         }
         else
