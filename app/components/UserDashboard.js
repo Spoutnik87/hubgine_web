@@ -6,7 +6,6 @@ class UserDashboard extends React.Component {
     {
         super(props);
         this.state = { email: "" };
-        //this.api = new botAPI();
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }

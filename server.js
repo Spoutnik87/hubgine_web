@@ -57,7 +57,8 @@ app.use(function(req, res) {
   cookie.setRawCookie(req.headers.cookie);
   const initialState = {
     messages: {},
-    user: cookie.load('user') || {}
+    user: cookie.load('user') || {},
+    profile: {}
   };
   const store = configureStore(initialState);
 

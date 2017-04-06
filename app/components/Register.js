@@ -50,7 +50,7 @@ class Register extends React.Component {
         {
             addUser(this.state.email, this.state.password, this.state.firstname, this.state.lastname, (error, result) =>
             {
-                if (!error)
+                if (!error && result.token && result.email)
                 {
                     this.props.dispatch(connectUser(result.token, result.email, "ADMIN"));
                     cookie.save('user', { "token": result.token, "email": result.email, "rank": ranks.MEMBER });
@@ -73,7 +73,14 @@ class Register extends React.Component {
 
     handleChange(event)
     {
-        this.setState({ [event.target.name]: event.target.value });
+        if (event.target.type === "checkbox")
+        {
+            this.setState({ [event.target.name]: event.target.checked });
+        }
+        else
+        {
+            this.setState({ [event.target.name]: event.target.value });
+        }
     }
     
     render()
@@ -121,7 +128,7 @@ class Register extends React.Component {
                             <div className="form-group">
                                 <label htmlFor="useterms" className="col-sm-2">Accept use terms</label>
                                 <div className="col-sm-8 form-checkbox">
-                                    <input type="checkbox" name="useterms" id="useterms" value={this.state.useterms} onChange={this.handleChange} autoFocus/>
+                                    <input type="checkbox" name="useterms" id="useterms" onChange={this.handleChange} autoFocus/>
                                     <label htmlFor="useterms" className="green-background"></label>
                                 </div>
                             </div>

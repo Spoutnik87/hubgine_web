@@ -5,13 +5,13 @@
   "scripts": {
     "build": "npm-run-all build:*",
     "build:css": "node-sass public/css/main.scss > public/css/main.css",
-    "build:js": "browserify app/main.js -t [ babelify --presets [es2015 react] ] -o public/js/bundle.js",
+    "build:js": "browserify app/main.js -t [ babelify --presets [es2015 react] --plugins transform-object-rest-spread ] -o public/js/bundle.js",
     "postinstall": "npm run build",
     "start": "node server.js",
     "start:production": "pm2 start server.js -i 4",
     "watch": "npm-run-all --parallel watch:*",
     "watch:css": "nodemon -e scss -w public/css -x npm run build:css",
-    "watch:js": "watchify app/main.js -t [ babelify --presets [es2015 react] ] -v -o public/js/bundle.js"
+    "watch:js": "watchify app/main.js -t [ babelify --presets [es2015 react] --plugins transform-object-rest-spread ] -v -o public/js/bundle.js"
   },
   "dependencies": {
     "babel-core": "^6.23.1",

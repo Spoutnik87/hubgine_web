@@ -12,7 +12,11 @@ class Signin extends React.Component {
     constructor(props)
     {
         super(props);
-        this.state = { loading: false, email: "", password: "" };
+        this.state = { 
+            loading: false, 
+            email: "", 
+            password: ""
+        };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -34,9 +38,9 @@ class Signin extends React.Component {
         {
             connectAPI(this.state.email, this.state.password, (error, result) =>
             {
-                if (!error)
+                if (!error && result.token && result.email)
                 {
-                    this.props.dispatch(connectUser(result.token, result.email, "ADMIN"));
+                    this.props.dispatch(connectUser(result.token, result.email, "MEMBER"));
                     cookie.save('user', { "token": result.token, "email": result.email, "rank":"ADMIN" });
                     this.props.router.push("/");
                 }

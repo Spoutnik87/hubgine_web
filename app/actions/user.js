@@ -20,3 +20,25 @@ export function disconnect()
         });
     };
 }
+
+export function updateInfos(email, firstname, lastname)
+{
+    return (dispatch) => {
+        return dispatch({
+            type: types.USER_UPDATE_INFOS,
+            email: email,
+            firstname: firstname,
+            lastname: lastname
+        });
+    };
+}
+
+export function updateEmail(email)
+{
+    return (dispatch) => {
+        return dispatch({
+            type: types.USER_UPDATE_EMAIL,
+            email: email
+        });
+    };
+}

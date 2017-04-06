@@ -86,16 +86,15 @@ export const getUser = (user_email, user_token, callback) =>
     });
 }
 
-export const updateUser = (user_email, user_token, user_firstname, user_lastname, user_password, callback) =>
+export const updateUser = (user_email, user_token, field, value, callback) =>
 {
     const send =
         "email="+user_email+
         "&token="+user_token+
-        "&firstname="+user_firstname+
-        "&lastname="+user_lastname+
-        "&password="+user_password;
+        "&field="+field+
+        "&value="+value
 
-    useAPI("UPDATE", "user", send, (error, result) =>
+    useAPI("PUT", "user", send, (error, result) =>
     {
         callback(error, result);
     });

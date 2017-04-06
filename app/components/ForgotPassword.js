@@ -22,9 +22,9 @@ class Forgotpassword extends React.Component {
         {
             messages.push({ msg: "Email is not valid." });
         }
-        if (messages.length == 0)
+        if (messages.length === 0)
         {
-            /*resetPassword(this.state.email, (error, result) =>
+            resetPassword(this.state.email, (error, result) =>
             {
                 if (!error)
                 {
@@ -37,7 +37,7 @@ class Forgotpassword extends React.Component {
                     this.props.dispatch(sendFailureMessage(messages));
                 }
                 this.setState({ loading: false });
-            });*/
+            });
         }
         else
         {

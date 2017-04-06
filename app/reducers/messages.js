@@ -26,6 +26,14 @@ export default function messages(state = {}, action) {
       return {
         success: action.messages
       };
+    case types.EDIT_PROFILE_FAILURE:
+      return {
+        error: action.messages
+      };
+    case types.EDIT_PROFILE_SUCCESS:
+      return {
+        success: action.messages
+      };
     case 'CLEAR_MESSAGES':
       return {};
     default:
