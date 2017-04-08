@@ -10,9 +10,11 @@ const useAPI = (method, search, send, callback) =>
         dataType:'json',
         cache: false,
         success : (result, status) => {
-            callback(null, result);
+            const error = true ? status === "error" : false;
+            callback(error, result);
         },
-        error : (result, status, error) => {
+        error : (result, status) => {
+            const error = true ? status === "error" : false;
             callback(error, result);
         }
     });

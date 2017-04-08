@@ -160,6 +160,8 @@ exports.connect = connect;
 exports.disconnect = disconnect;
 exports.updateInfos = updateInfos;
 exports.updateEmail = updateEmail;
+exports.updateFirstname = updateFirstname;
+exports.updateLastname = updateLastname;
 
 var _ActionTypes = require('../constants/ActionTypes');
 
@@ -202,6 +204,24 @@ function updateEmail(email) {
         return dispatch({
             type: types.USER_UPDATE_EMAIL,
             email: email
+        });
+    };
+}
+
+function updateFirstname(firstname) {
+    return function (dispatch) {
+        return dispatch({
+            type: types.USER_UPDATE_FIRSTNAME,
+            firstname: firstname
+        });
+    };
+}
+
+function updateLastname(lastname) {
+    return function (dispatch) {
+        return dispatch({
+            type: types.USER_UPDATE_LASTNAME,
+            lastname: lastname
         });
     };
 }
@@ -387,17 +407,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _profile = require('../actions/profile');
 
-var _Messages = require('./Messages');
-
-var _Messages2 = _interopRequireDefault(_Messages);
-
-var _validator = require('validator');
-
-var _validator2 = _interopRequireDefault(_validator);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -414,10 +424,9 @@ var AutoInputText = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (AutoInputText.__proto__ || Object.getPrototypeOf(AutoInputText)).call(this, props));
 
         _this.state = {
-            editText: false,
-            last_text: "",
+            edit: false,
             name: _this.props.name,
-            text: _this.props.value
+            value: ""
         };
         _this.handleChange = _this.handleChange.bind(_this);
         _this.handleClick = _this.handleClick.bind(_this);
@@ -427,45 +436,32 @@ var AutoInputText = function (_React$Component) {
     _createClass(AutoInputText, [{
         key: 'handleChange',
         value: function handleChange(event) {
-            this.setState(_defineProperty({}, event.target.name, event.target.value));
+            this.setState({ value: event.target.value });
         }
     }, {
         key: 'handleClick',
         value: function handleClick(event) {
             if (event.target.id == "buttonTextEdit") {
-                this.setState({ last_text: this.state.text, editText: true });
+                this.setState({ value: this.props.value, edit: true });
             }
-
             if (event.target.id == "buttonTextCancel") {
-                this.setState({ text: this.state.last_text, editText: false });
+                this.setState({ edit: false });
             }
-
             if (event.target.id == "buttonTextValidate") {
-                this.setState({ editText: false });
-                this.props.onValidate({ name: this.state.name, value: this.state.text });
-                /*if (!validator.isEmpty(this.state.text))
-                {
-                    this.setState({ editText: !this.state.editText });
-                    const messages = [{ msg: "You edited your text successfully." }];
-                    this.props.dispatch(sendSuccessMessage(messages));
-                }
-                else
-                {
-                    const messages = [{ msg: "Text is not valid." }];
-                    this.props.dispatch(sendFailureMessage(messages));
-                }*/
+                this.setState({ edit: false });
+                this.props.onValidate({ name: this.state.name, value: this.state.value });
             }
         }
     }, {
         key: 'render',
         value: function render() {
-            var divText = !this.state.editText ? _react2.default.createElement(
+            return !this.state.edit ? _react2.default.createElement(
                 'div',
                 { className: 'input-group' },
                 _react2.default.createElement(
                     'div',
                     { className: 'form-control' },
-                    this.state.text
+                    this.props.value
                 ),
                 _react2.default.createElement(
                     'span',
@@ -475,7 +471,7 @@ var AutoInputText = function (_React$Component) {
             ) : _react2.default.createElement(
                 'div',
                 { className: 'input-group' },
-                _react2.default.createElement('input', { type: 'text', name: 'text', id: 'text', className: 'form-control', value: this.state.text, onChange: this.handleChange, autoFocus: true }),
+                _react2.default.createElement('input', { type: 'text', className: 'form-control', value: this.state.value, onChange: this.handleChange, autoFocus: true }),
                 _react2.default.createElement(
                     'span',
                     { id: 'buttonTextValidate', className: 'input-group-addon edit-button', onClick: this.handleClick },
@@ -487,8 +483,6 @@ var AutoInputText = function (_React$Component) {
                     _react2.default.createElement('i', { id: 'buttonTextCancel', className: 'fa fa-remove fa-fw' })
                 )
             );
-
-            return divText;
         }
     }]);
 
@@ -497,7 +491,7 @@ var AutoInputText = function (_React$Component) {
 
 exports.default = AutoInputText;
 
-},{"../actions/profile":3,"./Messages":19,"react":349,"validator":368}],10:[function(require,module,exports){
+},{"../actions/profile":3,"react":349}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -691,7 +685,7 @@ var Disconnect = function (_React$Component) {
     key: 'componentWillMount',
     value: function componentWillMount() {
       this.props.dispatch((0, _user.disconnect)());
-      _reactCookie2.default.save('user', {});
+      _reactCookie2.default.remove('user');
       this.props.router.push("/");
     }
   }, {
@@ -1574,6 +1568,10 @@ var _Messages = require('./Messages');
 
 var _Messages2 = _interopRequireDefault(_Messages);
 
+var _reactCookie = require('react-cookie');
+
+var _reactCookie2 = _interopRequireDefault(_reactCookie);
+
 var _validator = require('validator');
 
 var _validator2 = _interopRequireDefault(_validator);
@@ -1583,8 +1581,6 @@ var _AutoInputText = require('./AutoInputText');
 var _AutoInputText2 = _interopRequireDefault(_AutoInputText);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1602,316 +1598,174 @@ var Profile = function (_React$Component) {
 
         _this.state = {
             isLoaded: false,
-            editEmail: false,
-            editFirstname: false,
-            editLastname: false,
             loadingEmail: false,
             loadingFirstname: false,
-            loadingLastname: false,
-            last_email: "",
-            last_firstname: "",
-            last_lastname: "",
-            email: "Loading...",
-            firstname: "Loading...",
-            lastname: "Loading..."
+            loadingLastname: false
         };
-        _this.handleChange = _this.handleChange.bind(_this);
-        _this.handleClick = _this.handleClick.bind(_this);
         _this.onValidate = _this.onValidate.bind(_this);
         return _this;
     }
 
     _createClass(Profile, [{
-        key: 'handleChange',
-        value: function handleChange(event) {
-            this.setState(_defineProperty({}, event.target.name, event.target.value));
-        }
-    }, {
-        key: 'handleClick',
-        value: function handleClick(event) {
-            var _this2 = this;
-
-            if (this.state.isLoaded) {
-                if (event.target.id == "buttonEmailEdit") {
-                    this.setState({ last_email: this.state.email, editEmail: true });
-                } else if (event.target.id == "buttonFirstnameEdit") {
-                    this.setState({ last_firstname: this.state.firstname, editFirstname: true });
-                } else if (event.target.id == "buttonLastnameEdit") {
-                    this.setState({ last_lastname: this.state.lastname, editLastname: true });
-                }
-
-                if (event.target.id == "buttonEmailCancel") {
-                    this.setState({ email: this.state.last_email, editEmail: false });
-                } else if (event.target.id == "buttonFirstnameCancel") {
-                    this.setState({ first_name: this.state.last_firstname, editFirstname: false });
-                } else if (event.target.id == "buttonLastnameCancel") {
-                    this.setState({ lastname: this.state.last_lastname, editLastname: false });
-                }
-
-                if (event.target.id == "buttonEmailValidate") {
-                    if (!_validator2.default.isEmpty(this.state.email) && _validator2.default.isEmail(this.state.email) && this.state.email != this.props.user.email) {
-                        (0, _api.updateUser)(this.props.user.email, this.props.user.token, "email", this.state.email, function (error, result) {
-                            if (!error) {
-                                _this2.setState({ editEmail: !_this2.state.editEmail });
-                                var messages = [{ msg: "You edited your email successfully." }];
-                                _this2.props.dispatch((0, _profile.sendSuccessMessage)(messages));
-                                _this2.props.dispatch((0, _user.updateEmail)(_this2.state.email));
-                            } else {
-                                var _messages = [{ msg: "Error." }];
-                                _this2.props.dispatch((0, _profile.sendFailureMessage)(_messages));
-                            }
-                        });
-                    } else {
-                        var messages = [{ msg: "Email is not valid." }];
-                        this.props.dispatch((0, _profile.sendFailureMessage)(messages));
-                    }
-                } else if (event.target.id == "buttonFirstnameValidate") {
-                    if (!_validator2.default.isEmpty(this.state.firstname)) {
-                        this.setState({ editFirstname: !this.state.editFirstname });
-                        var _messages2 = [{ msg: "You edited your first name successfully." }];
-                        this.props.dispatch((0, _profile.sendSuccessMessage)(_messages2));
-                    } else {
-                        var _messages3 = [{ msg: "First name field is empty." }];
-                        this.props.dispatch((0, _profile.sendFailureMessage)(_messages3));
-                    }
-                } else if (event.target.id == "buttonLastnameValidate") {
-                    if (!_validator2.default.isEmpty(this.state.lastname)) {
-                        this.setState({ editLastname: !this.state.editLastname });
-                        var _messages4 = [{ msg: "You edited your last name successfully." }];
-                        this.props.dispatch((0, _profile.sendSuccessMessage)(_messages4));
-                    } else {
-                        var _messages5 = [{ msg: "Last name field is empty." }];
-                        this.props.dispatch((0, _profile.sendFailureMessage)(_messages5));
-                    }
-                }
-            }
-        }
-    }, {
         key: 'componentDidMount',
         value: function componentDidMount() {
-            var _this3 = this;
+            var _this2 = this;
 
             (0, _api.getUser)(this.props.user.email, this.props.user.token, function (error, result) {
                 if (!error) {
-                    _this3.setState({ isLoaded: true, email: result.email, firstname: result.first_name, lastname: result.last_name });
-                    _this3.props.dispatch((0, _user.updateInfos)(result.email, result.first_name, result.last_name));
+                    _this2.setState({ isLoaded: true, email: result.email, firstname: result.first_name, lastname: result.last_name });
+                    _this2.props.dispatch((0, _user.updateInfos)(result.email, result.first_name, result.last_name));
+                } else {
+                    _this2.props.dispatch((0, _profile.sendFailureMessage)([{ msg: "An error happened." }]));
                 }
             });
         }
     }, {
         key: 'onValidate',
-        value: function onValidate(event) {
-            var _this4 = this;
+        value: function onValidate(input) {
+            var _this3 = this;
 
-            this.setState({ loadingEmail: true });
-            (0, _api.updateUser)(this.props.user.email, this.props.user.token, "email", event.value, function (error, result) {
-                _this4.setState({ loadingEmail: false });
-                if (!error) {
-                    _this4.props.dispatch((0, _user.updateEmail)(event.value));
+            if (input.name === "email") {
+                if (_validator2.default.isEmail(input.value) && !_validator2.default.isEmpty(input.value)) {
+                    if (input.value !== this.props.user.email) {
+                        this.setState({ loadingEmail: true });
+                        (0, _api.updateUser)(this.props.user.email, this.props.user.token, "email", input.value, function (error, result) {
+                            _this3.setState({ loadingEmail: false });
+                            if (!error) {
+                                _this3.props.dispatch((0, _profile.sendSuccessMessage)([{ msg: "You edited your email successfully." }]));
+                                _this3.props.dispatch((0, _user.updateEmail)(input.value));
+                                _reactCookie2.default.save('user', { "token": _this3.props.user.token, "email": _this3.props.user.email, "rank": _this3.props.user.rank });
+                            } else {
+                                _this3.props.dispatch((0, _profile.sendFailureMessage)([{ msg: "An error happened." }]));
+                            }
+                        });
+                    }
+                } else {
+                    this.props.dispatch((0, _profile.sendFailureMessage)([{ msg: "Email is not valid." }]));
                 }
-            });
+            } else if (input.name === "firstname") {
+                if (!_validator2.default.isEmpty(input.value)) {
+                    if (input.value !== this.props.user.firstname) {
+                        this.setState({ loadingFirstname: true });
+                        (0, _api.updateUser)(this.props.user.email, this.props.user.token, "first_name", input.value, function (error, result) {
+                            _this3.setState({ loadingFirstname: false });
+                            if (!error) {
+                                _this3.props.dispatch((0, _profile.sendSuccessMessage)([{ msg: "You edited your first name successfully." }]));
+                                _this3.props.dispatch((0, _user.updateFirstname)(input.value));
+                            } else {
+                                _this3.props.dispatch((0, _profile.sendFailureMessage)([{ msg: "An error happened." }]));
+                            }
+                        });
+                    }
+                } else {
+                    this.props.dispatch((0, _profile.sendFailureMessage)([{ msg: "The first name field cannot be empty." }]));
+                }
+            } else if (input.name === "lastname") {
+                if (!_validator2.default.isEmpty(input.value)) {
+                    if (input.value !== this.props.user.lastname) {
+                        this.setState({ loadingLastname: true });
+                        (0, _api.updateUser)(this.props.user.email, this.props.user.token, "last_name", input.value, function (error, result) {
+                            _this3.setState({ loadingLastname: false });
+                            if (!error) {
+                                _this3.props.dispatch((0, _profile.sendSuccessMessage)([{ msg: "You edited your last name successfully." }]));
+                                _this3.props.dispatch((0, _user.updateLastname)(input.value));
+                            } else {
+                                _this3.props.dispatch((0, _profile.sendFailureMessage)([{ msg: "An error happened." }]));
+                            }
+                        });
+                    }
+                } else {
+                    this.props.dispatch((0, _profile.sendFailureMessage)([{ msg: "The last name field cannot be empty." }]));
+                }
+            }
         }
     }, {
         key: 'render',
         value: function render() {
+            var loadingCog = _react2.default.createElement('i', { className: 'fa fa-cog fa-spin fa-3x fa-fw' });
+            var panelBody = void 0;
             if (this.state.isLoaded) {
-                var styleEmail = !this.state.editEmail ? _react2.default.createElement(
+                var emailInput = !this.state.loadingEmail ? _react2.default.createElement(_AutoInputText2.default, { name: 'email', value: this.props.user.email, onValidate: this.onValidate }) : loadingCog;
+                var firstnameInput = !this.state.loadingFirstname ? _react2.default.createElement(_AutoInputText2.default, { name: 'firstname', value: this.props.user.firstname, onValidate: this.onValidate }) : loadingCog;
+                var lastnameInput = !this.state.loadingLastname ? _react2.default.createElement(_AutoInputText2.default, { name: 'lastname', value: this.props.user.lastname, onValidate: this.onValidate }) : loadingCog;
+
+                panelBody = _react2.default.createElement(
                     'div',
-                    { className: 'input-group' },
+                    { className: 'panel-body' },
+                    _react2.default.createElement(_Messages2.default, { messages: this.props.messages }),
                     _react2.default.createElement(
                         'div',
-                        { className: 'form-control' },
-                        this.props.user.email
-                    ),
-                    _react2.default.createElement(
-                        'span',
-                        { id: 'buttonEmailEdit', className: 'input-group-addon edit-button', onClick: this.handleClick },
-                        _react2.default.createElement('i', { id: 'buttonEmailEdit', className: 'fa fa-pencil fa-fw' })
-                    )
-                ) : _react2.default.createElement(
-                    'div',
-                    { className: 'input-group' },
-                    _react2.default.createElement('input', { type: 'text', name: 'email', id: 'email', className: 'form-control', value: this.state.email, onChange: this.handleChange, autoFocus: true }),
-                    _react2.default.createElement(
-                        'span',
-                        { id: 'buttonEmailValidate', className: 'input-group-addon edit-button', onClick: this.handleClick },
-                        _react2.default.createElement('i', { id: 'buttonEmailValidate', className: 'fa fa-check fa-fw' })
-                    ),
-                    _react2.default.createElement(
-                        'span',
-                        { id: 'buttonEmailCancel', className: 'input-group-addon edit-button', onClick: this.handleClick },
-                        _react2.default.createElement('i', { id: 'buttonEmailCancel', className: 'fa fa-remove fa-fw' })
-                    )
-                );
-
-                var styleFirstname = !this.state.editFirstname ? _react2.default.createElement(
-                    'div',
-                    { className: 'input-group' },
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'form-control' },
-                        this.state.firstname
-                    ),
-                    _react2.default.createElement(
-                        'span',
-                        { id: 'buttonFirstnameEdit', className: 'input-group-addon edit-button', onClick: this.handleClick },
-                        _react2.default.createElement('i', { id: 'buttonFirstnameEdit', className: 'fa fa-pencil fa-fw' })
-                    )
-                ) : _react2.default.createElement(
-                    'div',
-                    { className: 'input-group' },
-                    _react2.default.createElement('input', { type: 'text', name: 'firstname', id: 'firstname', className: 'form-control', value: this.state.firstname, onChange: this.handleChange, autoFocus: true }),
-                    _react2.default.createElement(
-                        'span',
-                        { id: 'buttonFirstnameValidate', className: 'input-group-addon edit-button', onClick: this.handleClick },
-                        _react2.default.createElement('i', { id: 'buttonFirstnameValidate', className: 'fa fa-check fa-fw' })
-                    ),
-                    _react2.default.createElement(
-                        'span',
-                        { id: 'buttonFirstnameCancel', className: 'input-group-addon edit-button', onClick: this.handleClick },
-                        _react2.default.createElement('i', { id: 'buttonFirstnameCancel', className: 'fa fa-remove fa-fw' })
-                    )
-                );
-
-                var styleLastname = !this.state.editLastname ? _react2.default.createElement(
-                    'div',
-                    { className: 'input-group' },
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'form-control' },
-                        this.state.lastname
-                    ),
-                    _react2.default.createElement(
-                        'span',
-                        { id: 'buttonLastnameEdit', className: 'input-group-addon edit-button', onClick: this.handleClick },
-                        _react2.default.createElement('i', { id: 'buttonLastnameEdit', className: 'fa fa-pencil fa-fw' })
-                    )
-                ) : _react2.default.createElement(
-                    'div',
-                    { className: 'input-group' },
-                    _react2.default.createElement('input', { type: 'text', name: 'lastname', id: 'lastname', className: 'form-control', value: this.state.lastname, onChange: this.handleChange, autoFocus: true }),
-                    _react2.default.createElement(
-                        'span',
-                        { id: 'buttonLastnameValidate', className: 'input-group-addon edit-button', onClick: this.handleClick },
-                        _react2.default.createElement('i', { id: 'buttonLastnameValidate', className: 'fa fa-check fa-fw' })
-                    ),
-                    _react2.default.createElement(
-                        'span',
-                        { id: 'buttonLastnameCancel', className: 'input-group-addon edit-button', onClick: this.handleClick },
-                        _react2.default.createElement('i', { id: 'buttonLastnameCancel', className: 'fa fa-remove fa-fw' })
-                    )
-                );
-
-                var loadingEmailCog = this.state.loadingEmail ? _react2.default.createElement('i', { className: 'fa fa-cog fa-spin fa-3x fa-fw' }) : _react2.default.createElement(_AutoInputText2.default, { name: 'email', value: this.props.user.email, onValidate: this.onValidate });
-                var loadingFirstnameCog = this.state.firstname ? _react2.default.createElement('i', { className: 'fa fa-cog fa-spin fa-3x fa-fw' }) : null;
-                var loadingLastnameCog = this.state.lastname ? _react2.default.createElement('i', { className: 'fa fa-cog fa-spin fa-3x fa-fw' }) : null;
-
-                return _react2.default.createElement(
-                    'div',
-                    { className: 'container' },
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'panel' },
+                        { className: 'form-horizontal' },
                         _react2.default.createElement(
                             'div',
-                            { className: 'panel-heading' },
+                            { className: 'form-group' },
                             _react2.default.createElement(
-                                'h3',
-                                { className: 'panel-title' },
-                                'Profile'
+                                'label',
+                                { htmlFor: 'email', className: 'col-sm-2' },
+                                'Email'
+                            ),
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'col-sm-8' },
+                                emailInput
                             )
                         ),
                         _react2.default.createElement(
                             'div',
-                            { className: 'panel-body' },
-                            _react2.default.createElement(_Messages2.default, { messages: this.props.messages }),
+                            { className: 'form-group' },
+                            _react2.default.createElement(
+                                'label',
+                                { htmlFor: 'firstname', className: 'col-sm-2' },
+                                'First name'
+                            ),
                             _react2.default.createElement(
                                 'div',
-                                { className: 'form-horizontal' },
-                                _react2.default.createElement(
-                                    'div',
-                                    { className: 'form-group' },
-                                    _react2.default.createElement(
-                                        'label',
-                                        { htmlFor: 'email', className: 'col-sm-2' },
-                                        'Email'
-                                    ),
-                                    _react2.default.createElement(
-                                        'div',
-                                        { className: 'col-sm-8' },
-                                        styleEmail
-                                    )
-                                ),
-                                _react2.default.createElement(
-                                    'div',
-                                    { className: 'form-group' },
-                                    _react2.default.createElement(
-                                        'label',
-                                        { htmlFor: 'firstname', className: 'col-sm-2' },
-                                        'First name'
-                                    ),
-                                    _react2.default.createElement(
-                                        'div',
-                                        { className: 'col-sm-8' },
-                                        styleFirstname
-                                    )
-                                ),
-                                _react2.default.createElement(
-                                    'div',
-                                    { className: 'form-group' },
-                                    _react2.default.createElement(
-                                        'label',
-                                        { htmlFor: 'lastname', className: 'col-sm-2' },
-                                        'Last name'
-                                    ),
-                                    _react2.default.createElement(
-                                        'div',
-                                        { className: 'col-sm-8' },
-                                        styleLastname
-                                    )
-                                ),
-                                _react2.default.createElement(
-                                    'div',
-                                    { className: 'form-group' },
-                                    _react2.default.createElement(
-                                        'label',
-                                        { htmlFor: 'lastname', className: 'col-sm-2' },
-                                        'Last name'
-                                    ),
-                                    _react2.default.createElement(
-                                        'div',
-                                        { className: 'col-sm-8' },
-                                        loadingEmailCog
-                                    )
-                                )
+                                { className: 'col-sm-8' },
+                                firstnameInput
+                            )
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'form-group' },
+                            _react2.default.createElement(
+                                'label',
+                                { htmlFor: 'lastname', className: 'col-sm-2' },
+                                'Last name'
+                            ),
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'col-sm-8' },
+                                lastnameInput
                             )
                         )
                     )
                 );
             } else {
-                return _react2.default.createElement(
+                panelBody = _react2.default.createElement(
                     'div',
-                    { className: 'container' },
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'panel' },
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'panel-heading' },
-                            _react2.default.createElement(
-                                'h3',
-                                { className: 'panel-title' },
-                                'Profile'
-                            )
-                        ),
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'panel-body', style: { textAlign: "center" } },
-                            _react2.default.createElement('i', { className: 'fa fa-cog fa-spin fa-3x fa-fw' })
-                        )
-                    )
+                    { className: 'panel-body', style: { textAlign: "center" } },
+                    _react2.default.createElement(_Messages2.default, { messages: this.props.messages }),
+                    loadingCog
                 );
             }
+            return _react2.default.createElement(
+                'div',
+                { className: 'container' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'panel' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'panel-heading' },
+                        _react2.default.createElement(
+                            'h3',
+                            { className: 'panel-title' },
+                            'Profile'
+                        )
+                    ),
+                    panelBody
+                )
+            );
         }
     }]);
 
@@ -1927,7 +1781,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(Profile);
 
-},{"../actions/profile":3,"../actions/user":6,"../util/api":34,"./AutoInputText":9,"./Messages":19,"react":349,"react-redux":286,"validator":368}],22:[function(require,module,exports){
+},{"../actions/profile":3,"../actions/user":6,"../util/api":34,"./AutoInputText":9,"./Messages":19,"react":349,"react-cookie":149,"react-redux":286,"validator":368}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2018,12 +1872,12 @@ var Register = function (_React$Component) {
             }
             if (messages.length == 0) {
                 (0, _api.addUser)(this.state.email, this.state.password, this.state.firstname, this.state.lastname, function (error, result) {
-                    if (!error && result.token && result.email) {
+                    if (!error) {
                         _this2.props.dispatch((0, _user.connect)(result.token, result.email, "ADMIN"));
                         _reactCookie2.default.save('user', { "token": result.token, "email": result.email, "rank": ranks.MEMBER });
                         _this2.props.router.push("/");
                     } else {
-                        messages.push({ msg: "An error append during the subscription." });
+                        messages.push({ msg: "An error happened during the subscription." });
                         _this2.props.dispatch((0, _register.sendFailureMessage)(messages));
                         _this2.setState({ loading: false });
                     }
@@ -2263,7 +2117,7 @@ var Signin = function (_React$Component) {
             }
             if (messages.length == 0) {
                 (0, _api.connect)(this.state.email, this.state.password, function (error, result) {
-                    if (!error && result.token && result.email) {
+                    if (!error) {
                         _this2.props.dispatch((0, _user.connect)(result.token, result.email, "MEMBER"));
                         _reactCookie2.default.save('user', { "token": result.token, "email": result.email, "rank": "ADMIN" });
                         _this2.props.router.push("/");
@@ -2532,6 +2386,9 @@ var USER_CONNECT = exports.USER_CONNECT = 'USER_CONNECT';
 var USER_DISCONNECT = exports.USER_DISCONNECT = 'USER_DISCONNECT';
 var USER_UPDATE_INFOS = exports.USER_UPDATE_INFOS = 'USER_UPDATE_INFOS';
 var USER_UPDATE_EMAIL = exports.USER_UPDATE_EMAIL = 'USER_UPDATE_EMAIL';
+var USER_UPDATE_FIRSTNAME = exports.USER_UPDATE_FIRSTNAME = 'USER_UPDATE_FIRSTNAME';
+var USER_UPDATE_LASTNAME = exports.USER_UPDATE_LASTNAME = 'USER_UPDATE_LASTNAME';
+var ACCOUNT_UPDATE_INFOS = exports.ACCOUNT_UPDATE_INFOS = 'ACCOUNT_UPDATE_INFOS';
 var SIGNIN_FORM_FAILURE = exports.SIGNIN_FORM_FAILURE = 'SIGNIN_FORM_FAILURE';
 var REGISTER_FORM_FAILURE = exports.REGISTER_FORM_FAILURE = 'REGISTER_FORM_FAILURE';
 var FORGOTPASSWORD_FORM_FAILURE = exports.FORGOTPASSWORD_FORM_FAILURE = 'FORGOTPASSWORD_FORM_FAILURE';
@@ -2739,6 +2596,14 @@ var user = function user() {
             return _extends({}, state, {
                 email: action.email
             });
+        case types.USER_UPDATE_FIRSTNAME:
+            return _extends({}, state, {
+                firstname: action.firstname
+            });
+        case types.USER_UPDATE_LASTNAME:
+            return _extends({}, state, {
+                lastname: action.lastname
+            });
         case types.USER_DISCONNECT:
             return {};
         default:
@@ -2906,10 +2771,12 @@ var useAPI = function useAPI(method, search, send, callback) {
         dataType: 'json',
         cache: false,
         success: function success(result, status) {
-            callback(null, result);
+            var error = true ? status === "error" : false;
+            callback(error, result);
         },
-        error: function error(result, status, _error) {
-            callback(_error, result);
+        error: function error(result, status) {
+            var error = true ? status === "error" : false;
+            callback(error, result);
         }
     });
 };

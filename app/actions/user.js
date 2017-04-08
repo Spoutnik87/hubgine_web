@@ -42,3 +42,23 @@ export function updateEmail(email)
         });
     };
 }
+
+export function updateFirstname(firstname)
+{
+    return (dispatch) => {
+        return dispatch({
+            type: types.USER_UPDATE_FIRSTNAME,
+            firstname: firstname
+        });
+    };
+}
+
+export function updateLastname(lastname)
+{
+    return (dispatch) => {
+        return dispatch({
+            type: types.USER_UPDATE_LASTNAME,
+            lastname: lastname
+        });
+    };
+}

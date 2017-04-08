@@ -22,7 +22,17 @@ const user = (state = {}, action) =>
             return {
                 ...state,
                 email: action.email
-            }
+            };
+        case types.USER_UPDATE_FIRSTNAME:
+            return {
+                ...state,
+                firstname: action.firstname
+            };
+        case types.USER_UPDATE_LASTNAME:
+            return {
+                ...state,
+                lastname: action.lastname
+            };
         case types.USER_DISCONNECT:
             return {};
         default:

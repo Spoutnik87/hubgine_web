@@ -7,7 +7,7 @@ class Disconnect extends React.Component {
   componentWillMount()
   {
       this.props.dispatch(disconnect());
-      cookie.save('user', {});
+      cookie.remove('user');
       this.props.router.push("/");
   }
 

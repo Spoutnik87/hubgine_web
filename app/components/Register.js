@@ -50,7 +50,7 @@ class Register extends React.Component {
         {
             addUser(this.state.email, this.state.password, this.state.firstname, this.state.lastname, (error, result) =>
             {
-                if (!error && result.token && result.email)
+                if (!error)
                 {
                     this.props.dispatch(connectUser(result.token, result.email, "ADMIN"));
                     cookie.save('user', { "token": result.token, "email": result.email, "rank": ranks.MEMBER });
@@ -58,7 +58,7 @@ class Register extends React.Component {
                 }
                 else
                 {
-                    messages.push({ msg: "An error append during the subscription." });
+                    messages.push({ msg: "An error happened during the subscription." });
                     this.props.dispatch(sendFailureMessage(messages));
                     this.setState({ loading: false });
                 }

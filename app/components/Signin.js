@@ -38,7 +38,7 @@ class Signin extends React.Component {
         {
             connectAPI(this.state.email, this.state.password, (error, result) =>
             {
-                if (!error && result.token && result.email)
+                if (!error)
                 {
                     this.props.dispatch(connectUser(result.token, result.email, "MEMBER"));
                     cookie.save('user', { "token": result.token, "email": result.email, "rank":"ADMIN" });
