@@ -3,6 +3,7 @@ import { sendFailureMessage, sendSuccessMessage } from '../actions/forgotpasswor
 import Messages from './Messages';
 import validator from 'validator';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 class Forgotpassword extends React.Component {
     constructor(props)
@@ -88,4 +89,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(Forgotpassword);
+export default withRouter(connect(mapStateToProps)(Forgotpassword));

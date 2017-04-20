@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { submitContactForm } from '../actions/contact';
 import Messages from './Messages';
+import { withRouter } from 'react-router-dom';
 
 class Contact extends React.Component {
   constructor(props) {
@@ -65,4 +66,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(Contact);
+export default withRouter(connect(mapStateToProps)(Contact));

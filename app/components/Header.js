@@ -1,5 +1,5 @@
 import React from 'react';
-import { IndexLink, Link } from 'react-router';
+import { Link, NavLink, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as ranks from '../constants/Ranks';
 
@@ -7,12 +7,12 @@ class Header extends React.Component {
   render()
   {
     const active = { borderBottomColor: '#3f51b5' };
-    const adminDashboard = this.props.user.rank == ranks.ADMIN ? <li><Link to="/admin-dashboard" activeStyle={active}>Admin Dashboard</Link></li> : null;
-    const userDashboard = this.props.user.token != null ? <li><Link to="/user-dashboard" activeStyle={active}>User Dashboard</Link></li> : null;
-    const profile = this.props.user.token != null ? <li><Link to="/profile" activeStyle={active}>Profile</Link></li> : null;
-    const disconnect = this.props.user.token != null ? <li><Link to="/disconnect" activeStyle={active}>Disconnect</Link></li> : null;
-    const signIn = this.props.user.token == null ? <li><Link to="/signin" activeStyle={active}>Sign In</Link></li> : null;
-    const register = this.props.user.token == null ? <li><Link to="/register" activeStyle={active}>Register</Link></li> : null;
+    const adminDashboard = this.props.user.rank == ranks.ADMIN ? <li><NavLink to="/admin-dashboard" activeStyle={active}>Admin Dashboard</NavLink></li> : null;
+    const userDashboard = this.props.user.token != null ? <li><NavLink to="/user-dashboard" activeStyle={active}>User Dashboard</NavLink></li> : null;
+    const profile = this.props.user.token != null ? <li><NavLink to="/profile" activeStyle={active}>Profile</NavLink></li> : null;
+    const disconnect = this.props.user.token != null ? <li><NavLink to="/disconnect" activeStyle={active}>Disconnect</NavLink></li> : null;
+    const signIn = this.props.user.token == null ? <li><NavLink to="/signin" activeStyle={active}>Sign In</NavLink></li> : null;
+    const register = this.props.user.token == null ? <li><NavLink to="/register" activeStyle={active}>Register</NavLink></li> : null;
     return (
       <nav className="navbar navbar-default navbar-static-top">
         <div className="container">
@@ -23,12 +23,12 @@ class Header extends React.Component {
               <span className="icon-bar"></span>
               <span className="icon-bar"></span>
             </button>
-            <IndexLink to="/" className="navbar-brand">Hubgine</IndexLink>
+            <Link to="/" className="navbar-brand">Hubgine</Link>
           </div>
           <div id="navbar" className="navbar-collapse collapse">
             <ul className="nav navbar-nav">
-              <li><IndexLink to="/" activeStyle={active}>Home</IndexLink></li>
-              <li><Link to="/contact" activeStyle={active}>Contact</Link></li>
+              <li><NavLink to="/" activeStyle={active} exact>Home</NavLink></li>
+              <li><NavLink to="/contact" activeStyle={active}>Contact</NavLink></li>
               {adminDashboard}
               {userDashboard}
               {profile}
@@ -49,4 +49,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(Header);
+export default withRouter(connect(mapStateToProps)(Header));

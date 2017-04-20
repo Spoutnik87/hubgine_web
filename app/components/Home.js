@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux'
 import Messages from './Messages';
 
-const chartData = {
+/*const chartData = {
     labels: ["January", "February", "March", "April", "May", "June", "July"],
     datasets: [
       {
@@ -24,7 +24,7 @@ function rand(min, max, num) {
   }
   return rtn;
 }
-const chartOptions = {};
+const chartOptions = {};*/
 
 class Home extends React.Component {
   constructor(props)
@@ -33,11 +33,11 @@ class Home extends React.Component {
     this.state = { a: null };
   }
 
-  componentDidMount()
+  /*componentDidMount()
   {
     const Line = require('react-chartjs-2').Line;
     this.setState({ a: <Line data={chartData}/> });
-  }
+  }*/
 
   render() {
     return (
@@ -52,7 +52,7 @@ class Home extends React.Component {
                   mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna
                   mollis euismod. Donec sed odio dui.</p>
                 <a href="#" role="button" className="btn btn-default">View details</a>
-                {this.state.a}
+                {/*this.state.a*/}
               </div>
             </div>
           </div>
