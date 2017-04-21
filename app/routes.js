@@ -1,5 +1,6 @@
 import React from 'react';
-import { IndexRoute, Route, Router, Switch, StaticRouter } from 'react-router-dom';
+import { IndexRoute, Route } from 'react-router';
+import * as types from './constants/ActionTypes';
 import App from './components/App';
 import Home from './components/Home';
 import Contact from './components/Contact';
@@ -18,45 +19,11 @@ import NotFound from './components/NotFound';
 export default function getRoutes(store) {
   const clearMessages = () => {
     store.dispatch({
-      type: 'CLEAR_MESSAGES'
-    });
-    console.log("dfbs");
-  };
-
-  return [
-    {
-      path: '/',
-      exact: true,
-      component: Home,
-      onLeave: clearMessages
-    },
-    {
-      path: '/contact',
-      component: Contact
-    },
-    {
-      component: NotFound
-    }
-  ];
-}
-
-/*export default function getRoutes(store) {
-  const clearMessages = () => {
-    store.dispatch({
-      type: 'CLEAR_MESSAGES'
+      type: types.CLEAR_MESSAGES
     });
   };
 
-  const routes = [
-    {
-      path: '/',
-      component: App
-    }
-  ];
-  return routes;
-*/
-
-  /*return (
+  return (
     <Route path="/" component={App}>
       <IndexRoute component={Home} onLeave={clearMessages}/>
       <Route path="/contact" component={Contact} onLeave={clearMessages}/>
@@ -75,18 +42,5 @@ export default function getRoutes(store) {
       </Route>
       <Route path="*" component={NotFound} onLeave={clearMessages}/>
     </Route>
-  );*/
-//}
-
-/*export default function getRoutes(url, context) {
-  return (
-    <Route path="/contact" component={Contact} />*/
-    /*<StaticRouter location={url} context={context}>
-      <Switch>
-        <Route exact path='/' component={Home} onLeave={this.clearMessages} />
-        <Route path="/contact" component={Contact} />
-        <Route component={NotFound} />
-      </Switch>
-    </StaticRouter>*/
-  /*);
-}*/
+  );
+}

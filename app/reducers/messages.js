@@ -34,7 +34,7 @@ export default function messages(state = {}, action) {
       return {
         success: action.messages
       };
-    case 'CLEAR_MESSAGES':
+    case types.CLEAR_MESSAGES:
       return {};
     default:
       return state;

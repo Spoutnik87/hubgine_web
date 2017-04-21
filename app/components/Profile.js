@@ -7,6 +7,7 @@ import Messages from './Messages';
 import cookie from 'react-cookie';
 import validator from 'validator';
 import AutoInputText from './AutoInputText';
+import LoadingCog from './LoadingCog';
 
 class Profile extends React.Component {
     constructor(props)
@@ -14,6 +15,7 @@ class Profile extends React.Component {
         super(props);
         this.state = {
             isLoaded: false,
+            isAccountListLoaded: false,
             loadingEmail: false,
             loadingFirstname: false,
             loadingLastname: false,
@@ -32,6 +34,16 @@ class Profile extends React.Component {
             else
             {
                 this.props.dispatch(sendFailureMessage([{ msg: "An error happened." }]));
+            }
+        });
+        getAccountList(this.props.user.email, this.props.user.token, (error, result) => {
+            if (!error)
+            {
+                this.setState({ isAccountListLoaded: true });
+            }
+            else
+            {
+                this.props.dispatch(sendFailureMessage([{ msg: "An error happened during account list loading." }]));
             }
         });
     }
@@ -121,59 +133,90 @@ class Profile extends React.Component {
 
     render()
     {
-        const loadingCog = <i className="fa fa-cog fa-spin fa-3x fa-fw"></i>;
-        let panelBody;
-        if (this.state.isLoaded)
+        let panel;
+        let accountList;
+        if (this.state.isLoaded && this.state.isAccountListLoaded)
         {
             const emailInput = !this.state.loadingEmail ?
-                <AutoInputText name="email" value={this.props.user.email} onValidate={this.onValidate}/> : loadingCog;
+                <AutoInputText name="email" value={this.props.user.email} onValidate={this.onValidate}/> : <LoadingCog/>;
             const firstnameInput = !this.state.loadingFirstname ?
-                <AutoInputText name="firstname" value={this.props.user.firstname} onValidate={this.onValidate}/> : loadingCog;
+                <AutoInputText name="firstname" value={this.props.user.firstname} onValidate={this.onValidate}/> : <LoadingCog/>;
             const lastnameInput = !this.state.loadingLastname ?
-                <AutoInputText name="lastname" value={this.props.user.lastname} onValidate={this.onValidate}/> : loadingCog;
-            
-            panelBody = (
-                <div className="panel-body">
-                    <Messages messages={this.props.messages}/>
-                    <div className="form-horizontal">
-                        <div className="form-group">
-                            <label htmlFor="email" className="col-sm-2">Email</label>
-                            <div className="col-sm-8">
-                                {emailInput}
+                <AutoInputText name="lastname" value={this.props.user.lastname} onValidate={this.onValidate}/> : <LoadingCog/>;
+            panel = (
+                <div className="panel">
+                    <div className="panel-heading">
+                        <h3 className="panel-title">Profile</h3>
+                    </div>
+                    <div className="panel-body">
+                        <Messages messages={this.props.messages}/>
+                        <div className="form-horizontal">
+                            <div className="form-group">
+                                <label htmlFor="email" className="col-sm-2">Email</label>
+                                <div className="col-sm-8">
+                                    {emailInput}
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="firstname" className="col-sm-2">First name</label>
+                                <div className="col-sm-8">
+                                    {firstnameInput}
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="lastname" className="col-sm-2">Last name</label>
+                                <div className="col-sm-8">
+                                    {lastnameInput}
+                                </div>
                             </div>
                         </div>
-                        <div className="form-group">
-                            <label htmlFor="firstname" className="col-sm-2">First name</label>
-                            <div className="col-sm-8">
-                                {firstnameInput}
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="lastname" className="col-sm-2">Last name</label>
-                            <div className="col-sm-8">
-                                {lastnameInput}
-                            </div>
-                        </div>
+                    </div>
+                    <div className="panel-heading">
+                        <h3 className="panel-title">Account list</h3>
+                    </div>
+                    <div className="panel-body">
+                        {accountList}
                     </div>
                 </div>
             );
         }
         else
         {
-            panelBody =
-                (<div className="panel-body" style={ { textAlign: "center" } }>
-                    <Messages messages={this.props.messages}/>
-                    {loadingCog}
-                </div>);
-        }
-        return (
-            <div className="container">
+            panel = (
                 <div className="panel">
                     <div className="panel-heading">
                         <h3 className="panel-title">Profile</h3>
                     </div>
-                    {panelBody}
+                    <div className="panel-body" style={ { textAlign: "center" } }>
+                        <Messages messages={this.props.messages}/>
+                        <LoadingCog/>
+                    </div>
                 </div>
+            );
+        }
+        /*if (this.state.isAccountListLoaded)
+        {
+            accountList = (
+                <ul className="list-group">
+                    {this.props.accounts.map(
+                        (account, index) => (
+                            <li key={index} className="list-group-item">{account.name}</li>   
+                        )
+                    )}
+                </ul>
+            );
+        }
+        else
+        {
+            accountList = (
+                <div className="panel-body" style={ { textAlign: "center" } }>
+                    <LoadingCog/>
+                </div>
+            );
+        }*/
+        return (
+            <div className="container">
+                {panel}
             </div>
         );
     }

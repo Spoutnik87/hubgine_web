@@ -7,6 +7,7 @@ import { sendFailureMessage } from '../actions/register';
 import Messages from './Messages';
 import validator from 'validator';
 import * as ranks from '../constants/Ranks';
+import LoadingCog from './LoadingCog';
 
 class Register extends React.Component {
     constructor(props)
@@ -85,7 +86,7 @@ class Register extends React.Component {
     
     render()
     {
-        const loadingDisplay = this.state.loading ? <i className="fa fa-cog fa-spin fa-3x fa-fw"></i> : <button type="submit" className="btn btn-success">Register</button>;
+        const loadingDisplay = !this.state.loading ?<button type="submit" className="btn btn-success">Register</button> : <LoadingCog/>;
         return (
             <div className="container">
                 <div className="panel">

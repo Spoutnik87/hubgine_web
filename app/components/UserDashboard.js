@@ -1,5 +1,5 @@
 import React from 'react';
-//const botAPI = require('../util/api');
+import { getAccount } from '../util/api';
 
 class UserDashboard extends React.Component {
     constructor(props)

@@ -66,6 +66,18 @@ export const addAccount = (user_email, user_token, consumer_key, cunsumer_secret
     });
 }
 
+export const getAccount = (user_email, user_token, callback) =>
+{
+    const send =
+        "email="+user_email+
+        "&token="+user_token;
+    
+    useAPI("GET", "account", send, (error, result) =>
+    {
+        callback(error, result);
+    });
+}
+
 export const resetPassword = (email, callback) =>
 {
     const send = "email=" + email;

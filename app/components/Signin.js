@@ -5,8 +5,9 @@ import { connect as connectUser } from '../actions/user';
 import { sendFailureMessage } from '../actions/signin';
 import cookie from 'react-cookie';
 import { connect as connectAPI } from '../util/api';
-import Messages from './Messages';
 import validator from 'validator';
+import Messages from './Messages';
+import LoadingCog from './LoadingCog';
 
 class Signin extends React.Component {
     constructor(props)
@@ -66,7 +67,7 @@ class Signin extends React.Component {
     
     render()
     {
-        const loadingDisplay = this.state.loading ? <i className="fa fa-cog fa-spin fa-3x fa-fw"></i> : <button type="submit" className="btn btn-success">Sign In</button>;
+        const loadingDisplay = !this.state.loading ? <button type="submit" className="btn btn-success">Sign In</button> : <LoadingCog/>;
         return (
             <div className="container">
                 <div className="panel">

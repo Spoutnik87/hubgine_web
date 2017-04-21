@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, NavLink, withRouter } from 'react-router-dom';
+import { IndexLink, Link } from 'react-router';
 import { connect } from 'react-redux';
 import * as ranks from '../constants/Ranks';
 
@@ -7,12 +7,12 @@ class Header extends React.Component {
   render()
   {
     const active = { borderBottomColor: '#3f51b5' };
-    const adminDashboard = this.props.user.rank == ranks.ADMIN ? <li><NavLink to="/admin-dashboard" activeStyle={active}>Admin Dashboard</NavLink></li> : null;
-    const userDashboard = this.props.user.token != null ? <li><NavLink to="/user-dashboard" activeStyle={active}>User Dashboard</NavLink></li> : null;
-    const profile = this.props.user.token != null ? <li><NavLink to="/profile" activeStyle={active}>Profile</NavLink></li> : null;
-    const disconnect = this.props.user.token != null ? <li><NavLink to="/disconnect" activeStyle={active}>Disconnect</NavLink></li> : null;
-    const signIn = this.props.user.token == null ? <li><NavLink to="/signin" activeStyle={active}>Sign In</NavLink></li> : null;
-    const register = this.props.user.token == null ? <li><NavLink to="/register" activeStyle={active}>Register</NavLink></li> : null;
+    const adminDashboard = this.props.user.rank == ranks.ADMIN ? <li><Link to="/admin-dashboard" activeStyle={active}>{this.props.lang.HEADER_ADMIN_DASHBOARD}</Link></li> : null;
+    const userDashboard = this.props.user.token != null ? <li><Link to="/user-dashboard" activeStyle={active}>{this.props.lang.HEADER_USER_DASHBOARD}</Link></li> : null;
+    const profile = this.props.user.token != null ? <li><Link to="/profile" activeStyle={active}>{this.props.lang.HEADER_PROFILE}</Link></li> : null;
+    const disconnect = this.props.user.token != null ? <li><Link to="/disconnect" activeStyle={active}>{this.props.lang.HEADER_DISCONNECT}</Link></li> : null;
+    const signIn = this.props.user.token == null ? <li><Link to="/signin" activeStyle={active}>{this.props.lang.HEADER_SIGNIN}</Link></li> : null;
+    const register = this.props.user.token == null ? <li><Link to="/register" activeStyle={active}>{this.props.lang.HEADER_REGISTER}</Link></li> : null;
     return (
       <nav className="navbar navbar-default navbar-static-top">
         <div className="container">
@@ -23,12 +23,12 @@ class Header extends React.Component {
               <span className="icon-bar"></span>
               <span className="icon-bar"></span>
             </button>
-            <Link to="/" className="navbar-brand">Hubgine</Link>
+            <IndexLink to="/" className="navbar-brand">{this.props.lang.COMPANY_NAME}</IndexLink>
           </div>
           <div id="navbar" className="navbar-collapse collapse">
             <ul className="nav navbar-nav">
-              <li><NavLink to="/" activeStyle={active} exact>Home</NavLink></li>
-              <li><NavLink to="/contact" activeStyle={active}>Contact</NavLink></li>
+              <li><IndexLink to="/" activeStyle={active}>{this.props.lang.HEADER_HOME}</IndexLink></li>
+              <li><Link to="/contact" activeStyle={active}>{this.props.lang.HEADER_CONTACT}</Link></li>
               {adminDashboard}
               {userDashboard}
               {profile}
@@ -45,8 +45,9 @@ class Header extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user
+    user: state.user,
+    lang: state.lang
   };
 };
 
-export default withRouter(connect(mapStateToProps)(Header));
+export default connect(mapStateToProps)(Header);
