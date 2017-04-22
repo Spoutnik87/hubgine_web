@@ -30,7 +30,7 @@ var contactController = require('./controllers/contact');
 // React and Server-Side Rendering
 const routes = require('./app/routes');
 const configureStore = require('./app/store/configureStore').default;
-const lang = require('./app/languages/lang').default;
+const lang = require('./app/languages/lang');
 
 var app = express();
 
@@ -62,8 +62,8 @@ app.use(function(req, res) {
     messages: {},
     user: cookie.load('user') || {},
     profile: {},
-    account: {},
-    lang: lang("en")
+    accounts: [],
+    lang: lang.default(lang.ENGLISH)
   };
   const store = configureStore(initialState);
 

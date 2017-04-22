@@ -78,6 +78,18 @@ export const getAccount = (user_email, user_token, callback) =>
     });
 }
 
+export const getAccountList = (user_email, user_token, callback) =>
+{
+    const send =
+        "email="+user_email+
+        "&token="+user_token;
+
+    useAPI("GET", "account/list", send, (error, result) =>
+    {
+        callback(error, result);
+    });
+}
+
 export const resetPassword = (email, callback) =>
 {
     const send = "email=" + email;

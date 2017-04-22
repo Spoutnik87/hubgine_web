@@ -13,7 +13,15 @@ class Register extends React.Component {
     constructor(props)
     {
         super(props);
-        this.state = { loading: false, firstname: "", lastname: "", email: "", password: "", cpassword: "", useterms: false };
+        this.state = {
+            loading: false,
+            firstname: "",
+            lastname: "",
+            email: "",
+            password: "",
+            cpassword: "",
+            useterms: false
+        };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -25,27 +33,27 @@ class Register extends React.Component {
         const messages = [];
         if (validator.isEmpty(this.state.firstname))
         {
-            messages.push({ msg: "First name field cannot be empty." });
+            messages.push({ msg: this.props.lang.REGISTER_FIRSTNAME_INCORRECT });
         }
         if (validator.isEmpty(this.state.lastname))
         {
-            messages.push({ msg: "Last name field cannot be empty." });
+            messages.push({ msg: this.props.lang.REGISTER_LASTNAME_INCORRECT });
         }
         if (!validator.isEmail(this.state.email))
         {
-            messages.push({ msg: "Email is not valid." });
+            messages.push({ msg: this.props.lang.REGISTER_EMAIL_INCORRECT });
         }
         if (!validator.isLength(this.state.password, { min: 6 }))
         {
-            messages.push({ msg: "Password length must be at least 6 characters." });
+            messages.push({ msg: this.props.lang.REGISTER_PASSWORD_INCORRECT });
         }
         if (!validator.equals(this.state.password, this.state.cpassword))
         {
-            messages.push({ msg: "Your password doesn't match." });
+            messages.push({ msg: this.props.lang.REGISTER_PASSWORD_NOT_MATCH });
         }
         if (!this.state.useterms)
         {
-            messages.push({ msg: "You need to accept the terms of use." });
+            messages.push({ msg: this.props.lang.REGISTER_USETERMS_INCORRECT });
         }
         if (messages.length == 0)
         {
@@ -54,12 +62,12 @@ class Register extends React.Component {
                 if (!error)
                 {
                     this.props.dispatch(connectUser(result.token, result.email, "ADMIN"));
-                    cookie.save('user', { "token": result.token, "email": result.email, "rank": ranks.MEMBER });
+                    cookie.save('user', { "token": result.token, "email": result.email, "rank": result.rank });
                     this.props.router.push("/");
                 }
                 else
                 {
-                    messages.push({ msg: "An error happened during the subscription." });
+                    messages.push({ msg: this.props.lang.REGISTER_ERROR });
                     this.props.dispatch(sendFailureMessage(messages));
                     this.setState({ loading: false });
                 }
@@ -86,48 +94,48 @@ class Register extends React.Component {
     
     render()
     {
-        const loadingDisplay = !this.state.loading ?<button type="submit" className="btn btn-success">Register</button> : <LoadingCog/>;
+        const loadingDisplay = !this.state.loading ? <button type="submit" className="btn btn-success">{this.props.lang.REGISTER_SUBMIT}</button> : <LoadingCog/>;
         return (
             <div className="container">
                 <div className="panel">
                     <div className="panel-heading">
-                        <h3 className="panel-title">Register</h3>
+                        <h3 className="panel-title">{this.props.lang.REGISTER_TITLE}</h3>
                     </div>
                     <div className="panel-body">
                         <Messages messages={this.props.messages}/>
                         <form onSubmit={this.handleSubmit} className="form-horizontal">
                             <div className="form-group">
-                                <label htmlFor="firstname" className="col-sm-2">First name</label>
+                                <label htmlFor="firstname" className="col-sm-2">{this.props.lang.REGISTER_FIRSTNAME}</label>
                                 <div className="col-sm-8">
                                     <input type="text" name="firstname" id="firstname" className="form-control" value={this.state.firstname} onChange={this.handleChange} autoFocus/>
                                 </div>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="lastname" className="col-sm-2">Last name</label>
+                                <label htmlFor="lastname" className="col-sm-2">{this.props.lang.REGISTER_LASTNAME}</label>
                                 <div className="col-sm-8">
                                     <input type="text" name="lastname" id="lastname" className="form-control" value={this.state.lastname} onChange={this.handleChange} autoFocus/>
                                 </div>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="email" className="col-sm-2">Email</label>
+                                <label htmlFor="email" className="col-sm-2">{this.props.lang.REGISTER_EMAIL}</label>
                                 <div className="col-sm-8">
                                     <input type="text" name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
                                 </div>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="password" className="col-sm-2">Password</label>
+                                <label htmlFor="password" className="col-sm-2">{this.props.lang.REGISTER_PASSWORD}</label>
                                 <div className="col-sm-8">
                                     <input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange} autoFocus/>
                                 </div>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="cpassword" className="col-sm-2">Confirm password</label>
+                                <label htmlFor="cpassword" className="col-sm-2">{this.props.lang.REGISTER_CONFIRMPASSWORD}</label>
                                 <div className="col-sm-8">
                                     <input type="password" name="cpassword" id="cpassword" className="form-control" value={this.state.cpassword} onChange={this.handleChange} autoFocus/>
                                 </div>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="useterms" className="col-sm-2">Accept use terms</label>
+                                <label htmlFor="useterms" className="col-sm-2">{this.props.lang.REGISTER_USETERMS}</label>
                                 <div className="col-sm-8 form-checkbox">
                                     <input type="checkbox" name="useterms" id="useterms" onChange={this.handleChange} autoFocus/>
                                     <label htmlFor="useterms" className="green-background"></label>
@@ -148,7 +156,8 @@ class Register extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    messages: state.messages
+    messages: state.messages,
+    lang: state.lang
   };
 };
 

@@ -1,13 +1,20 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 class Footer extends React.Component {
   render() {
     return (
       <footer>
-        <p>© 2017 Company, Inc. All Rights Reserved.</p>
+        <p>{this.props.lang.FOOTER_TITLE}</p>
       </footer>
     );
   }
 }
 
-export default Footer;
+const mapStateToProps = (state) => {
+  return {
+    lang: state.lang
+  };
+};
+
+export default connect(mapStateToProps)(Footer);

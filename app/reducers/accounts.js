@@ -1,6 +1,6 @@
 import * as types from '../constants/ActionTypes';
 
-const account = (state = {}, action) =>
+const accounts = (state = {}, action) =>
 {
     switch (action.type)
     {
@@ -9,7 +9,7 @@ const account = (state = {}, action) =>
                 consumer_key: action.consumer_key,
                 consumer_secret: action.consumer_secret,
                 access_token_key: action.access_token_key,
-                access_token_secret: access_token_secret
+                access_token_secret: action.access_token_secret
             };
         case types.UPDATE_ACCOUNT:
             return {
@@ -19,13 +19,11 @@ const account = (state = {}, action) =>
             return {
 
             };
-        case types.ACCOUNT_GET_LIST:
-            return {
-                
-            };
+        case types.ACCOUNT_UPDATE_LIST:
+            return action.accounts;
         default:
             return state;
     }
 }
 
-export default account;
+export default accounts;

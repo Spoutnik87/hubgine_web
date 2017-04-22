@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getUser, updateUser } from '../util/api';
+import { getUser, updateUser, getAccountList } from '../util/api';
 import { sendFailureMessage, sendSuccessMessage } from '../actions/profile';
 import { updateInfos, updateEmail, updateFirstname, updateLastname } from '../actions/user';
+import { updateAccountList } from '../actions/accounts';
 import Messages from './Messages';
 import cookie from 'react-cookie';
 import validator from 'validator';
@@ -40,6 +41,7 @@ class Profile extends React.Component {
             if (!error)
             {
                 this.setState({ isAccountListLoaded: true });
+                this.props.dispatch(updateAccountList(result.accounts));
             }
             else
             {
@@ -135,6 +137,18 @@ class Profile extends React.Component {
     {
         let panel;
         let accountList;
+        if (this.state.isAccountListLoaded)
+        {
+            accountList = (
+                <ul className="list-group">
+                    {this.props.accounts.map(
+                        (account, index) => (
+                            <li key={index} className="list-group-item">{account.name}</li>   
+                        )
+                    )}
+                </ul>
+            );
+        }
         if (this.state.isLoaded && this.state.isAccountListLoaded)
         {
             const emailInput = !this.state.loadingEmail ?
@@ -146,25 +160,25 @@ class Profile extends React.Component {
             panel = (
                 <div className="panel">
                     <div className="panel-heading">
-                        <h3 className="panel-title">Profile</h3>
+                        <h3 className="panel-title">{this.props.lang.PROFILE_PROFILE}</h3>
                     </div>
                     <div className="panel-body">
                         <Messages messages={this.props.messages}/>
                         <div className="form-horizontal">
                             <div className="form-group">
-                                <label htmlFor="email" className="col-sm-2">Email</label>
+                                <label htmlFor="email" className="col-sm-2">{this.props.lang.PROFILE_EMAIL}</label>
                                 <div className="col-sm-8">
                                     {emailInput}
                                 </div>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="firstname" className="col-sm-2">First name</label>
+                                <label htmlFor="firstname" className="col-sm-2">{this.props.lang.PROFILE_FIRSTNAME}</label>
                                 <div className="col-sm-8">
                                     {firstnameInput}
                                 </div>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="lastname" className="col-sm-2">Last name</label>
+                                <label htmlFor="lastname" className="col-sm-2">{this.props.lang.PROFILE_LASTNAME}</label>
                                 <div className="col-sm-8">
                                     {lastnameInput}
                                 </div>
@@ -172,7 +186,7 @@ class Profile extends React.Component {
                         </div>
                     </div>
                     <div className="panel-heading">
-                        <h3 className="panel-title">Account list</h3>
+                        <h3 className="panel-title">{this.props.lang.PROFILE_ACCOUNT_LIST}</h3>
                     </div>
                     <div className="panel-body">
                         {accountList}
@@ -185,7 +199,7 @@ class Profile extends React.Component {
             panel = (
                 <div className="panel">
                     <div className="panel-heading">
-                        <h3 className="panel-title">Profile</h3>
+                        <h3 className="panel-title">{this.props.lang.PROFILE_PROFILE}</h3>
                     </div>
                     <div className="panel-body" style={ { textAlign: "center" } }>
                         <Messages messages={this.props.messages}/>
@@ -194,26 +208,6 @@ class Profile extends React.Component {
                 </div>
             );
         }
-        /*if (this.state.isAccountListLoaded)
-        {
-            accountList = (
-                <ul className="list-group">
-                    {this.props.accounts.map(
-                        (account, index) => (
-                            <li key={index} className="list-group-item">{account.name}</li>   
-                        )
-                    )}
-                </ul>
-            );
-        }
-        else
-        {
-            accountList = (
-                <div className="panel-body" style={ { textAlign: "center" } }>
-                    <LoadingCog/>
-                </div>
-            );
-        }*/
         return (
             <div className="container">
                 {panel}
@@ -225,7 +219,9 @@ class Profile extends React.Component {
 const mapStateToProps = (state) => {
   return {
     user: state.user,
-    messages: state.messages
+    messages: state.messages,
+    lang: state.lang,
+    accounts: state.accounts
   };
 };
 

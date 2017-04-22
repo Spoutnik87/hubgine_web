@@ -29,25 +29,26 @@ class Signin extends React.Component {
         const messages = [];
         if (!validator.isEmail(this.state.email))
         {
-            messages.push({ msg: "Email is not valid." });
+            messages.push({ msg: this.props.lang.SIGNIN_EMAIL_INCORRECT });
         }
         if (!validator.isLength(this.state.password, { min: 6 }))
         {
-            messages.push({ msg: "Password length must be at least 6 characters." });
+            messages.push({ msg: this.props.lang.SIGNIN_PASSWORD_INCORRECT });
         }
         if (messages.length == 0)
         {
+            let email = this.state.email;
             connectAPI(this.state.email, this.state.password, (error, result) =>
             {
                 if (!error)
                 {
-                    this.props.dispatch(connectUser(result.token, result.email, "MEMBER"));
-                    cookie.save('user', { "token": result.token, "email": result.email, "rank":"ADMIN" });
+                    this.props.dispatch(connectUser(result.token, email, result.rank));
+                    cookie.save('user', { "token": result.token, "email": email, "rank": result.rank });
                     this.props.router.push("/");
                 }
                 else
                 {
-                    messages.push({ msg: "Your credentials are incorrect. Please try again or reset your password." });
+                    messages.push({ msg: this.props.lang.SIGNIN_CREDENTIALS_INCORRECT });
                     this.props.dispatch(sendFailureMessage(messages));
                     this.setState({ loading: false });
                 }
@@ -67,24 +68,24 @@ class Signin extends React.Component {
     
     render()
     {
-        const loadingDisplay = !this.state.loading ? <button type="submit" className="btn btn-success">Sign In</button> : <LoadingCog/>;
+        const loadingDisplay = !this.state.loading ? <button type="submit" className="btn btn-success">{this.props.lang.SIGNIN_SUBMIT}</button> : <LoadingCog/>;
         return (
             <div className="container">
                 <div className="panel">
                     <div className="panel-heading">
-                        <h3 className="panel-title">Sign In</h3>
+                        <h3 className="panel-title">{this.props.lang.SIGNIN_TITLE}</h3>
                     </div>
                     <div className="panel-body">
                         <Messages messages={this.props.messages}/>
                         <form onSubmit={this.handleSubmit} className="form-horizontal">
                             <div className="form-group">
-                                <label htmlFor="email" className="col-sm-2">Email</label>
+                                <label htmlFor="email" className="col-sm-2">{this.props.lang.SIGNIN_EMAIL}</label>
                                 <div className="col-sm-8">
                                     <input type="text" name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
                                 </div>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="password" className="col-sm-2">Password</label>
+                                <label htmlFor="password" className="col-sm-2">{this.props.lang.SIGNIN_PASSWORD}</label>
                                 <div className="col-sm-8">
                                     <input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange} autoFocus/>
                                 </div>
@@ -95,7 +96,7 @@ class Signin extends React.Component {
                                 </div>
                             </div>
                         </form>
-                        <Link to="/forgot-password">Forgot password?</Link>
+                        <Link to="/forgot-password">{this.props.lang.SIGNIN_FORGOTPASSWORD}</Link>
                     </div>
                 </div>
             </div>
@@ -105,7 +106,8 @@ class Signin extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    messages: state.messages
+    messages: state.messages,
+    lang: state.lang
   };
 };
 
