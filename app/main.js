@@ -6,12 +6,16 @@ import configureStore from './store/configureStore';
 import getRoutes from './routes';
 import App from './components/App';
 import { Router, browserHistory } from 'react-router';
+import { CookiesProvider } from 'react-cookie';
 
 const store = configureStore(window.INITIAL_STATE);
 
 ReactDOM.render(
+  
   <Provider store={store}>
-    <Router history={browserHistory} routes={getRoutes(store)} />
+    <CookiesProvider>
+      <Router history={browserHistory} routes={getRoutes(store)} />
+    </CookiesProvider>
   </Provider>,
   document.getElementById('app')
 );

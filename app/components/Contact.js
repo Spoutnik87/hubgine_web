@@ -6,7 +6,11 @@ import Messages from './Messages';
 class Contact extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { name: '', email: '', message: '' };
+    this.state = {
+      name: '',
+      email: '',
+      message: ''
+    };
   }
 
   handleChange(event) {

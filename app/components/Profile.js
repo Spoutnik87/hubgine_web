@@ -5,10 +5,11 @@ import { sendFailureMessage, sendSuccessMessage } from '../actions/profile';
 import { updateInfos, updateEmail, updateFirstname, updateLastname } from '../actions/user';
 import { updateAccountList } from '../actions/accounts';
 import Messages from './Messages';
-import cookie from 'react-cookie';
+import { withCookies } from 'react-cookie';
 import validator from 'validator';
 import AutoInputText from './AutoInputText';
 import LoadingCog from './LoadingCog';
+import { ENGLISH } from '../languages/lang';
 
 class Profile extends React.Component {
     constructor(props)
@@ -65,7 +66,7 @@ class Profile extends React.Component {
                         {
                             this.props.dispatch(sendSuccessMessage([{ msg: "You edited your email successfully." }]));
                             this.props.dispatch(updateEmail(input.value));
-                            cookie.save('user', { "token": this.props.user.token, "email": this.props.user.email, "rank": this.props.user.rank });
+                            this.props.cookies.set("user", { token: this.props.user.token, email: this.props.user.email, rank: this.props.user.rank, lang: ENGLISH });
                         }
                         else
                         {
@@ -225,4 +226,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(Profile);
+export default connect(mapStateToProps)(withCookies(Profile));

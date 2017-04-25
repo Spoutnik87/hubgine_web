@@ -1,8 +1,10 @@
+import { ENGLISH } from './lang';
+
 export default function getLanguage()
 {
     return {
         //---MAIN VALUES---
-        LANG: 'EN',
+        LANG: ENGLISH,
         COMPANY_NAME: 'Hubgine',
         //---HEADER---
         HEADER_HOME: 'Home',
@@ -39,7 +41,7 @@ export default function getLanguage()
         REGISTER_PASSWORD_INCORRECT: 'Password length must be at least 6 characters.',
         REGISTER_PASSWORD_NOT_MATCH: 'Your password doesn\'t match.',
         REGISTER_USETERMS_INCORRECT: 'You need to accept the terms of use.',
-        REGISTER_ERROR: 'You need to accept the terms of use.',
+        REGISTER_ERROR: 'An error happened during the subscription.',
         //---PROFILE---
         PROFILE_PROFILE: 'Profile',
         PROFILE_ACCOUNT_LIST: 'Account list',

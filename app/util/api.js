@@ -14,6 +14,8 @@ const useAPI = (method, search, send, callback) =>
             callback(error, result);
         },
         error : (result, status) => {
+            console.log(result);
+            console.log(status);
             const error = true ? status === "error" : false;
             callback(error, result);
         }
@@ -32,13 +34,14 @@ export const connect = (email, password, callback) =>
     });
 }
 
-export const addUser = (email, password, firstname, lastname, callback) =>
+export const addUser = (email, password, firstname, lastname, lang, callback) =>
 {
     const send =
         "email="+email+
         "&password="+password+
         "&firstname="+firstname+
-        "&lastname="+lastname;
+        "&lastname="+lastname+
+        "&lang="+lang;
 
     useAPI("POST", "create_user", send, (error, result) =>
     {

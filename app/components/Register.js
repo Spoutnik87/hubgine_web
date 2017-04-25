@@ -1,13 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { connect as connectUser } from '../actions/user';
-import cookie from 'react-cookie';
+import { withCookies } from 'react-cookie';
 import { addUser } from '../util/api';
 import { sendFailureMessage } from '../actions/register';
 import Messages from './Messages';
 import validator from 'validator';
 import * as ranks from '../constants/Ranks';
 import LoadingCog from './LoadingCog';
+import { changeLanguage } from '../actions/lang';
+import { ENGLISH } from '../languages/lang';
 
 class Register extends React.Component {
     constructor(props)
@@ -57,12 +59,17 @@ class Register extends React.Component {
         }
         if (messages.length == 0)
         {
-            addUser(this.state.email, this.state.password, this.state.firstname, this.state.lastname, (error, result) =>
+            let email = this.state.email;
+            addUser(email, this.state.password, this.state.firstname, this.state.lastname, ENGLISH, (error, result) =>
             {
                 if (!error)
                 {
-                    this.props.dispatch(connectUser(result.token, result.email, "ADMIN"));
-                    cookie.save('user', { "token": result.token, "email": result.email, "rank": result.rank });
+                    this.props.dispatch(connectUser(result.token, email, result.rank, result.lang));
+                    if (this.props.lang.LANG !== result.lang)
+                    {
+                        this.props.dispatch(changeLanguage(result.lang));
+                    }
+                    this.props.cookies.set("user", { token: result.token, email: email, rank: result.rank, lang: result.lang });
                     this.props.router.push("/");
                 }
                 else
@@ -161,4 +168,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(Register);
+export default connect(mapStateToProps)(withCookies(Register));

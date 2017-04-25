@@ -1,13 +1,13 @@
 import React from 'react';
 import { disconnect } from '../actions/user';
 import { connect } from 'react-redux';
-import cookie from 'react-cookie';
+import { withCookies } from 'react-cookie';
 
 class Disconnect extends React.Component { 
   componentWillMount()
   {
       this.props.dispatch(disconnect());
-      cookie.remove('user');
+      this.props.cookies.remove('user');
       this.props.router.push("/");
   }
 
@@ -17,4 +17,4 @@ class Disconnect extends React.Component {
   }
 }
 
-export default connect()(Disconnect);
+export default connect()(withCookies(Disconnect));

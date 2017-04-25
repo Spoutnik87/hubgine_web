@@ -1,67 +1,82 @@
 import React from 'react';
-import { getAccount } from '../util/api';
+import { getAccountList } from '../util/api';
+import { connect } from 'react-redux';
+import { updateAccountList } from '../actions/accounts';
+import LoadingCog from './LoadingCog';
 
 class UserDashboard extends React.Component {
     constructor(props)
     {
         super(props);
-        this.state = { email: "" };
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.state = {
+            isLoaded: false
+        };
     }
 
-    handleSubmit(event)
-    {
-        event.preventDefault();
-    }
-
-    handleChange(event)
-    {
-        this.setState({ [event.target.name]: event.target.value });
-    }
+    componentDidMount() {
+        getAccountList(this.props.user.email, this.props.user.token, (error, result) => {
+            if (!error)
+            {
+                this.setState({ isLoaded: true });
+                this.props.dispatch(updateAccountList(result.accounts));
+            }
+            else
+            {
+                this.props.dispatch(sendFailureMessage([{ msg: "An error happened during account list loading." }]));
+            }
+        });
+    }    
     
     render()
     {
+        let tabs;
+        let content = (
+            <div>
+                {  }
+            </div>
+        );
+        if (this.state.isLoaded)
+        {
+            tabs = (
+                <div className="panel-body">
+                    <ul className="nav nav-tabs">
+                        { this.props.accounts.map((account, index) => (
+                            <li key={index} className={ this.props.location.hash == "#" + index ? "active" : "" }><a href={ "#" + index }>{account.name}</a></li>
+                         ) ) }
+                    </ul>
+                    {content}
+                </div>
+            );
+        }
+        else
+        {
+            tabs = (
+                <div className="panel-body" style={ { textAlign: "center" } }>
+                    <LoadingCog/>
+                </div>
+            );
+        }
+
         return (
-            <div className="container-fluid">
-                <div className="row">
-                <div className="col-sm-4">
-                    <div className="panel">
-                    <div className="panel-body">
-                        <h3>Heading</h3>
-                        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor
-                        mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna
-                        mollis euismod. Donec sed odio dui.</p>
-                        <a href="#" role="button" className="btn btn-default">View details</a>
+            <div className="container">
+                <div className="panel">
+                    <div className="panel-heading">
+                        <h3 className="panel-title">DASHBOARD</h3>
                     </div>
-                    </div>
-                </div>
-                <div className="col-sm-4">
-                    <div className="panel">
-                    <div className="panel-body">
-                        <h3>Heading</h3>
-                        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor
-                        mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna
-                        mollis euismod. Donec sed odio dui.</p>
-                        <a href="#" role="button" className="btn btn-default">View details</a>
-                    </div>
-                    </div>
-                </div>
-                <div className="col-sm-4">
-                    <div className="panel">
-                    <div className="panel-body">
-                        <h3>Heading</h3>
-                        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor
-                        mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna
-                        mollis euismod. Donec sed odio dui.</p>
-                        <a href="#" role="button" className="btn btn-default">View details</a>
-                    </div>
-                    </div>
-                </div>
+                    {tabs}
                 </div>
             </div>
         );
     }
 }
 
-export default UserDashboard;
+const mapStateToProps = (state) => {
+  return {
+    messages: state.messages,
+    lang: state.lang,
+    user: state.user,
+    accounts: state.accounts
+  };
+};
+
+export default connect(mapStateToProps)(UserDashboard);

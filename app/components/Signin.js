@@ -3,11 +3,12 @@ import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { connect as connectUser } from '../actions/user';
 import { sendFailureMessage } from '../actions/signin';
-import cookie from 'react-cookie';
 import { connect as connectAPI } from '../util/api';
+import { withCookies } from 'react-cookie';
 import validator from 'validator';
 import Messages from './Messages';
 import LoadingCog from './LoadingCog';
+import { changeLanguage } from '../actions/lang';
 
 class Signin extends React.Component {
     constructor(props)
@@ -42,8 +43,12 @@ class Signin extends React.Component {
             {
                 if (!error)
                 {
-                    this.props.dispatch(connectUser(result.token, email, result.rank));
-                    cookie.save('user', { "token": result.token, "email": email, "rank": result.rank });
+                    this.props.dispatch(connectUser(result.token, email, result.rank, result.lang));
+                    if (this.props.lang.LANG !== result.lang)
+                    {
+                        this.props.dispatch(changeLanguage(result.lang));
+                    }
+                    this.props.cookies.set("user", { "token": result.token, "email": email, "rank": result.rank, lang: result.lang });
                     this.props.router.push("/");
                 }
                 else
@@ -111,4 +116,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(Signin);
+export default connect(mapStateToProps)(withCookies(Signin));

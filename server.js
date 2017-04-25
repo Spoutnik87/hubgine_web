@@ -5,17 +5,17 @@ const express = require('express');
 const path = require('path');
 const logger = require('morgan');
 const compression = require('compression');
-const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
 const dotenv = require('dotenv');
 const React = require('react');
 const ReactDOM = require('react-dom/server');
 const Provider = require('react-redux').Provider;
-const cookie = require('react-cookie');
 const mime = require('mime');
 
 const Router = require('react-router');
+const CookiesProvider = require('react-cookie').CookiesProvider;
+const cookiesMiddleware = require('universal-cookie-express');
 const favicon = require('serve-favicon');
 // Load environment variables from .env file
 dotenv.load();
@@ -44,11 +44,10 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public'),  {
-    setHeaders: function (res) {
-      const type = mime.lookup(res.req.url)
-        res.setHeader('Content-Type', type);
+app.use(cookiesMiddleware());
+app.use(express.static(path.join(__dirname, 'public'), {
+    setHeaders: res => {
+        res.setHeader('Content-Type', mime.lookup(res.req.url));
     }
 }));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -56,14 +55,14 @@ app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.post('/contact', contactController.contactPost);
 
 // React server rendering
-app.use(function(req, res) {
-  cookie.setRawCookie(req.headers.cookie);
+app.use((req, res) => {
+  const user = req.universalCookies.get('user') || {};
   const initialState = {
     messages: {},
-    user: cookie.load('user') || {},
+    user: user,
     profile: {},
     accounts: [],
-    lang: lang.default(lang.ENGLISH)
+    lang: lang.default(user.lang || lang.ENGLISH),
   };
   const store = configureStore(initialState);
 
@@ -77,9 +76,9 @@ app.use(function(req, res) {
     }
     else if (renderProps)
     {
-      const html = ReactDOM.renderToString(React.createElement(Provider, { store: store },
+      const html = ReactDOM.renderToString(React.createElement(Provider, { store: store }, React.createElement(CookiesProvider, { cookies: req.universalCookies }, 
         React.createElement(Router.RouterContext, renderProps)
-      ));
+      )));
       res.render('layout', {
         html: html,
         initialState: store.getState()
@@ -94,20 +93,20 @@ app.use(function(req, res) {
 
 // Production error handler
 if (app.get('env') === 'production') {
-  app.use(function(err, req, res, next) {
+  app.use((err, req, res, next) => {
     console.error(err.stack);
     res.sendStatus(err.status || 500);
   });
 }
 
-io.on('connection', function (socket) {
+io.on('connection', (socket) => {
   socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
+  socket.on('my other event', (data) => {
     console.log(data);
   });
 });
 
-server.listen(app.get('port'), function(){
+server.listen(app.get('port'), () => {
   console.log('Express server listening on port ' + app.get('port'));
 });
 

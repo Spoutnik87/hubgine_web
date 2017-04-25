@@ -1,13 +1,14 @@
 import * as types from '../constants/ActionTypes';
 
-export function connect(token, email, rank)
+export function connect(token, email, rank, lang)
 {
     return (dispatch) => {
         return dispatch({ 
             type: types.USER_CONNECT,
             token: token,
             email: email,
-            rank: rank
+            rank: rank,
+            lang: lang
         });
     };
 }

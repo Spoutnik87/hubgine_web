@@ -4,7 +4,9 @@ class AdminDashboard extends React.Component {
     constructor(props)
     {
         super(props);
-        this.state = { email: "" };
+        this.state = {
+            email: ""
+        };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }

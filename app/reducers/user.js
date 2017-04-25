@@ -8,7 +8,8 @@ const user = (state = {}, action) =>
             return {
                 token: action.token,
                 email: action.email,
-                rank: action.rank
+                rank: action.rank,
+                lang: action.lang
             };
         case types.USER_UPDATE_INFOS:
             return {

@@ -3,7 +3,7 @@ import fr from './fr';
 
 export default function getLanguage(lang)
 {
-    if (lang === "fr") return fr();
+    if (lang === FRENCH) return fr();
     else return en();
 }
 
