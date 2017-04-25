@@ -8,7 +8,6 @@ export default function getLanguage()
         COMPANY_NAME: 'Hubgine',
         //---HEADER---
         HEADER_HOME: 'Home',
-        HEADER_CONTACT: 'Contact',
         HEADER_ADMIN_DASHBOARD: 'Admin Dashboard',
         HEADER_USER_DASHBOARD: 'User Dashboard',
         HEADER_PROFILE: 'Profile',

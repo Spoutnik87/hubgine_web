@@ -3,7 +3,6 @@ import { IndexRoute, Route } from 'react-router';
 import * as types from './constants/ActionTypes';
 import App from './components/App';
 import Home from './components/Home';
-import Contact from './components/Contact';
 import Signin from './components/Signin';
 import Register from './components/Register';
 import ForgotPassword from './components/ForgotPassword';
@@ -26,7 +25,6 @@ export default function getRoutes(store) {
   return (
     <Route path="/" component={App}>
       <IndexRoute component={Home} onLeave={clearMessages}/>
-      <Route path="/contact" component={Contact} onLeave={clearMessages}/>
       <Route component={EnsureLoggedInContainer}>
         <Route path="/user-dashboard" component={UserDashboard} onLeave={clearMessages}/>
         <Route path="/profile" component={Profile} onLeave={clearMessages}/>
