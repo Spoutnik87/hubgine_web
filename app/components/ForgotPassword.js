@@ -3,6 +3,7 @@ import { sendFailureMessage, sendSuccessMessage } from '../actions/forgotpasswor
 import Messages from './Messages';
 import validator from 'validator';
 import { connect } from 'react-redux';
+import { clearMessages } from '../actions/messages';
 
 class Forgotpassword extends React.Component {
     constructor(props)
@@ -81,6 +82,10 @@ class Forgotpassword extends React.Component {
                 </div>
             </div>
         );
+    }
+
+    componentWillUnmount() {
+        this.props.dispatch(clearMessages());
     }
 }
 

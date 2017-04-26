@@ -10,6 +10,7 @@ import validator from 'validator';
 import AutoInputText from './AutoInputText';
 import LoadingCog from './LoadingCog';
 import { ENGLISH } from '../languages/lang';
+import { clearMessages } from '../actions/messages';
 
 class Profile extends React.Component {
     constructor(props)
@@ -214,6 +215,10 @@ class Profile extends React.Component {
                 {panel}
             </div>
         );
+    }
+
+    componentWillUnmount() {
+        this.props.dispatch(clearMessages());
     }
 }
 

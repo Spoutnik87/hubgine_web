@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import { connect as connectUser } from '../actions/user';
 import { withCookies } from 'react-cookie';
 import { addUser } from '../util/api';
@@ -10,6 +11,7 @@ import * as ranks from '../constants/Ranks';
 import LoadingCog from './LoadingCog';
 import { changeLanguage } from '../actions/lang';
 import { ENGLISH } from '../languages/lang';
+import { clearMessages } from '../actions/messages';
 
 class Register extends React.Component {
     constructor(props)
@@ -70,7 +72,7 @@ class Register extends React.Component {
                         this.props.dispatch(changeLanguage(result.lang));
                     }
                     this.props.cookies.set("user", { token: result.token, email: email, rank: result.rank, lang: result.lang });
-                    this.props.router.push("/");
+                    this.props.history.push("/");
                 }
                 else
                 {
@@ -159,6 +161,10 @@ class Register extends React.Component {
             </div>
         );
     }
+
+    componentWillUnmount() {
+        this.props.dispatch(clearMessages());
+    }
 }
 
 const mapStateToProps = (state) => {
@@ -168,4 +174,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(withCookies(Register));
+export default withRouter(connect(mapStateToProps)(withCookies(Register)));

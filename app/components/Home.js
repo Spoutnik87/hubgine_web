@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux'
-import Messages from './Messages';
 
 /*const chartData = {
     labels: ["January", "February", "March", "April", "May", "June", "July"],
@@ -42,7 +41,6 @@ class Home extends React.Component {
   render() {
     return (
       <div className="container-fluid">
-        <Messages messages={this.props.messages}/>
         <div className="row">
           <div className="col-sm-4">
             <div className="panel">

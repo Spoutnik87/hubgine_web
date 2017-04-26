@@ -12,20 +12,19 @@ const ReactDOM = require('react-dom/server');
 const Provider = require('react-redux').Provider;
 const mime = require('mime');
 
-const Router = require('react-router');
+const Router = require('react-router-dom');
 const CookiesProvider = require('react-cookie').CookiesProvider;
 const cookiesMiddleware = require('universal-cookie-express');
 const favicon = require('serve-favicon');
-// Load environment variables from .env file
 
 // ES6 Transpiler
 require('babel-core/register');
 require('babel-polyfill');
 
 // React and Server-Side Rendering
-const routes = require('./app/routes');
 const configureStore = require('./app/store/configureStore').default;
 const lang = require('./app/languages/lang');
+const App = require('./app/components/App');
 
 var app = express();
 
@@ -57,30 +56,26 @@ app.use((req, res) => {
     lang: lang.default(user.lang || lang.ENGLISH),
   };
   const store = configureStore(initialState);
+  const context = {};
 
-  Router.match({ routes: routes.default(store), location: req.url }, (err, redirectLocation, renderProps) => {
-    if (err)
+  const html = ReactDOM.renderToString(
+    React.createElement(Provider, { store: store }, 
+      React.createElement(CookiesProvider, { cookies: req.universalCookies }, 
+        React.createElement(Router.StaticRouter, { location: req.url, context: context },
+          React.createElement(App.default)
+    ))));
+
+    if (context.url)
     {
-      res.status(500).send(err.message);
+      res.redirect(302, context.url);
     }
-    else if (redirectLocation) {
-      res.status(302).redirect(redirectLocation.pathname + redirectLocation.search);
-    }
-    else if (renderProps)
+    else
     {
-      const html = ReactDOM.renderToString(React.createElement(Provider, { store: store }, React.createElement(CookiesProvider, { cookies: req.universalCookies }, 
-        React.createElement(Router.RouterContext, renderProps)
-      )));
       res.render('layout', {
         html: html,
         initialState: store.getState()
       });
     }
-    else
-    {
-      res.sendStatus(404);
-    }
-  });
 });
 
 // Production error handler
