@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getUser, updateUser, getAccountList } from '../util/api';
-import { sendFailureMessage, sendSuccessMessage } from '../actions/profile';
+import { sendFailureMessage, sendSuccessMessage } from '../actions/messages';
 import { updateInfos, updateEmail, updateFirstname, updateLastname } from '../actions/user';
 import { updateAccountList } from '../actions/accounts';
 import Messages from './Messages';

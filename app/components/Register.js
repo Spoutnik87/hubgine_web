@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { connect as connectUser } from '../actions/user';
 import { withCookies } from 'react-cookie';
+import { connect as connectUser } from '../actions/user';
 import { addUser } from '../util/api';
-import { sendFailureMessage } from '../actions/register';
+import { sendFailureMessage } from '../actions/messages';
 import Messages from './Messages';
 import validator from 'validator';
 import * as ranks from '../constants/Ranks';

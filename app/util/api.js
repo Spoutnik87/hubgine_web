@@ -69,30 +69,6 @@ export const addAccount = (user_email, user_token, consumer_key, cunsumer_secret
     });
 }
 
-export const getAccount = (user_email, user_token, callback) =>
-{
-    const send =
-        "email="+user_email+
-        "&token="+user_token;
-    
-    useAPI("GET", "account", send, (error, result) =>
-    {
-        callback(error, result);
-    });
-}
-
-export const getAccountList = (user_email, user_token, callback) =>
-{
-    const send =
-        "email="+user_email+
-        "&token="+user_token;
-
-    useAPI("GET", "account/list", send, (error, result) =>
-    {
-        callback(error, result);
-    });
-}
-
 export const resetPassword = (email, callback) =>
 {
     const send = "email=" + email;
@@ -124,6 +100,121 @@ export const updateUser = (user_email, user_token, field, value, callback) =>
         "&value="+value
 
     useAPI("PUT", "user", send, (error, result) =>
+    {
+        callback(error, result);
+    });
+}
+
+export const getAccountList = (user_email, user_token, callback) =>
+{
+    const send =
+        "email="+user_email+
+        "&token="+user_token;
+
+    useAPI("GET", "account/list", send, (error, result) =>
+    {
+        callback(error, result);
+    });
+}
+
+export const getAccountNameList = (user_email, user_token, callback) =>
+{
+    const send =
+        "email="+user_email+
+        "&token="+user_token;
+
+    useAPI("GET", "account/list/name", send, (error, result) =>
+    {
+        callback(error, result);
+    });
+}
+
+export const getAccount = (user_email, user_token, account_id, callback) =>
+{
+    const send =
+        "email="+user_email+
+        "&token="+user_token+
+        "&id="+account_id;
+    
+    useAPI("GET", "account", send, (error, result) =>
+    {
+        callback(error, result);
+    });
+}
+
+export const getAccountName = (user_email, user_token, account_id, callback) =>
+{
+    const send =
+        "email="+user_email+
+        "&token="+user_token+
+        "&id="+account_id;
+
+    useAPI("GET", "account/item/name", send, (error, result) =>
+    {
+        callback(error, result);
+    });
+}
+
+export const getAccountKeys = (user_email, user_token, account_id, callback) =>
+{
+    const send =
+        "email="+user_email+
+        "&token="+user_token+
+        "&id="+account_id;
+
+    useAPI("GET", "account/item/keys", send, (error, result) =>
+    {
+        callback(error, result);
+    });
+}
+
+export const getAccountCampaign = (user_email, user_token, account_id, callback) =>
+{
+    const send =
+        "email="+user_email+
+        "&token="+user_token+
+        "&id="+account_id;
+
+    useAPI("GET", "account/item/campaign", send, (error, result) =>
+    {
+        callback(error, result);
+    });
+}
+
+export const getAccountBlacklist = (user_email, user_token, account_id, callback) =>
+{
+    const send =
+        "email="+user_email+
+        "&token="+user_token+
+        "&id="+account_id;
+
+    useAPI("GET", "account/item/blacklist", send, (error, result) =>
+    {
+        callback(error, result);
+    });
+}
+
+export const getAccountCache = (user_email, user_token, account_id, callback) =>
+{
+    const send =
+        "email="+user_email+
+        "&token="+user_token+
+        "&id="+account_id;
+
+    useAPI("GET", "account/item/cache", send, (error, result) =>
+    {
+        callback(error, result);
+    });
+}
+
+export const getAccountStats = (user_email, user_token, account_id, callback) =>
+{
+    const send =
+        "email="+user_email+
+        "&token="+user_token+
+        "&id="+account_id;
+
+    useAPI("GET", "account/item/stats", send, (error, result) =>
     {
         callback(error, result);
     });

@@ -8,3 +8,23 @@ export function clearMessages()
         });
     };
 }
+
+export function sendFailureMessage(messages)
+{
+    return (dispatch) => {
+        return dispatch({ 
+            type: types.FAILURE_MESSAGE,
+            messages: messages
+        });
+    };
+}
+
+export function sendSuccessMessage(messages)
+{
+    return (dispatch) => {
+        return dispatch({ 
+            type: types.SUCCESS_MESSAGE,
+            messages: messages
+        });
+    };
+}

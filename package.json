@@ -32,7 +32,7 @@
     "node-sass": "^4.5.2",
     "nodemon": "^1.11.0",
     "npm-run-all": "^4.0.2",
-    "pm2": "^2.4.5",
+    "pm2": "^2.4.6",
     "prop-types": "^15.5.8",
     "pug": "^2.0.0-beta.12",
     "react": "15.5.4",
@@ -46,7 +46,7 @@
     "redux-promise": "^0.5.3",
     "redux-thunk": "^2.2.0",
     "serve-favicon": "^2.4.2",
-    "universal-cookie-express": "^2.0.4",
+    "universal-cookie-express": "^2.0.5",
     "validator": "^7.0.0",
     "watchify": "^3.9.0"
   },

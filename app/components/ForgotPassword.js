@@ -1,5 +1,5 @@
 import React from 'react';
-import { sendFailureMessage, sendSuccessMessage } from '../actions/forgotpassword';
+import { sendFailureMessage, sendSuccessMessage } from '../actions/messages';
 import Messages from './Messages';
 import validator from 'validator';
 import { connect } from 'react-redux';

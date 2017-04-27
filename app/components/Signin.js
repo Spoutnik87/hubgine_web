@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { connect as connectUser } from '../actions/user';
-import { sendFailureMessage } from '../actions/signin';
+import { sendFailureMessage } from '../actions/messages';
 import { connect as connectAPI } from '../util/api';
 import { withCookies } from 'react-cookie';
 import validator from 'validator';

@@ -1,5 +1,4 @@
 import React from 'react';
-import { sendFailureMessage, sendSuccessMessage } from '../actions/profile';
 
 class AutoInputText extends React.Component {
     constructor(props)
