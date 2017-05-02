@@ -17,8 +17,8 @@ class UserDashboard extends React.Component {
         getAccountList(this.props.user.email, this.props.user.token, (error, result) => {
             if (!error)
             {
-                this.setState({ isLoaded: true });
                 this.props.dispatch(updateAccountList(result.accounts));
+                this.setState({ isLoaded: true });
             }
             else
             {
@@ -30,6 +30,7 @@ class UserDashboard extends React.Component {
     render()
     {
         let tabs;
+        let menu;
         let content = (
             <div>
                 {  }
@@ -37,7 +38,7 @@ class UserDashboard extends React.Component {
         );
         if (this.state.isLoaded)
         {
-            tabs = (
+            /*tabs = (
                 <div className="panel-body">
                     <ul className="nav nav-tabs">
                         { this.props.accounts.map((account, index) => (
@@ -46,7 +47,20 @@ class UserDashboard extends React.Component {
                     </ul>
                     {content}
                 </div>
-            );
+            );*/
+
+            /*leftMenu = (
+                <div className="col-md-2 sidenav">
+                    Hello
+                </div>
+            );*/
+            const overviewActive = this.props.location.hash == ("#" | "");
+            /*menu = (
+                <ul className="nav nav-tabs">
+                    <li className={overviewActive ? "active" : ""}><a href="#">Overview</a></li>
+                    <li><a href="#oui">Oui</a></li>
+                </ul>
+            );*/
         }
         else
         {
@@ -58,13 +72,20 @@ class UserDashboard extends React.Component {
         }
 
         return (
-            <div className="container">
-                <div className="panel">
-                    <div className="panel-heading">
-                        <h3 className="panel-title">DASHBOARD</h3>
+            <div>
+                <div className="col-md-1"></div>
+                <div className="col-md-10">
+                    <div className="panel">
+                        <div className="panel-heading">
+                            <h3 className="panel-title">DASHBOARD</h3>
+                        </div>
+                        <div className="panel-body">
+                            {menu}
+                            {tabs}
+                        </div>
                     </div>
-                    {tabs}
                 </div>
+                <div className="col-md-1"></div>
             </div>
         );
     }

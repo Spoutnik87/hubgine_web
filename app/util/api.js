@@ -105,6 +105,20 @@ export const updateUser = (user_email, user_token, field, value, callback) =>
     });
 }
 
+export const updateAccount = (user_email, user_token, field, value, callback) =>
+{
+    const send =
+        "email="+user_email+
+        "&token="+user_token+
+        "&field="+field+
+        "&value="+value
+
+    useAPI("PUT", "account", send, (error, result) =>
+    {
+        callback(error, result);
+    });
+}
+
 export const getAccountList = (user_email, user_token, callback) =>
 {
     const send =

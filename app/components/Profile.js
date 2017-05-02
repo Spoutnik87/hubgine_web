@@ -8,6 +8,7 @@ import Messages from './Messages';
 import { withCookies } from 'react-cookie';
 import validator from 'validator';
 import AutoInputText from './AutoInputText';
+import AccountEditForm from './AccountEditForm';
 import LoadingCog from './LoadingCog';
 import { ENGLISH } from '../languages/lang';
 import { clearMessages } from '../actions/messages';
@@ -31,8 +32,8 @@ class Profile extends React.Component {
         {
             if (!error)
             {
-                this.setState({ isLoaded: true, email: result.email, firstname: result.first_name, lastname: result.last_name });
                 this.props.dispatch(updateInfos(result.email, result.first_name, result.last_name));
+                this.setState({ isLoaded: true, email: result.email, firstname: result.first_name, lastname: result.last_name });
             }
             else
             {
@@ -42,8 +43,8 @@ class Profile extends React.Component {
         getAccountList(this.props.user.email, this.props.user.token, (error, result) => {
             if (!error)
             {
+                this.props.dispatch(updateAccountList(result.accounts, result.length));                
                 this.setState({ isAccountListLoaded: true });
-                this.props.dispatch(updateAccountList(result.accounts));
             }
             else
             {
@@ -143,9 +144,9 @@ class Profile extends React.Component {
         {
             accountList = (
                 <ul className="list-group">
-                    {this.props.accounts.map(
+                    {this.props.accounts.list.map(
                         (account, index) => (
-                            <li key={index} className="list-group-item">{account.name}</li>   
+                            <li key={index} className="list-group-item"><AccountEditForm className="list-group-item" account={account} /></li>
                         )
                     )}
                 </ul>

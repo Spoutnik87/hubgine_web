@@ -24,7 +24,7 @@ require('babel-polyfill');
 // React and Server-Side Rendering
 const configureStore = require('./app/store/configureStore').default;
 const lang = require('./app/languages/lang');
-const App = require('./app/components/App');
+const App = require('./app/components/App').default;
 
 var app = express();
 
@@ -52,7 +52,7 @@ app.use((req, res) => {
     messages: {},
     user: user,
     profile: {},
-    accounts: [],
+    accounts: {},
     lang: lang.default(user.lang || lang.ENGLISH),
   };
   const store = configureStore(initialState);
@@ -62,7 +62,7 @@ app.use((req, res) => {
     React.createElement(Provider, { store: store }, 
       React.createElement(CookiesProvider, { cookies: req.universalCookies }, 
         React.createElement(Router.StaticRouter, { location: req.url, context: context },
-          React.createElement(App.default)
+          React.createElement(App)
     ))));
 
     if (context.url)

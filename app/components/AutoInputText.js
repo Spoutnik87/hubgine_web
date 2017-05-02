@@ -5,7 +5,7 @@ class AutoInputText extends React.Component {
     {
         super(props);
         this.state = {
-            edit: false,
+            onEditMode: false,
             name: this.props.name,
             value: ""
         };
@@ -20,24 +20,24 @@ class AutoInputText extends React.Component {
 
     handleClick(event)
     {
-        if (event.target.id == "buttonTextEdit")
+        if (event.target.id === "buttonTextEdit")
         {
-            this.setState({ value: this.props.value, edit: true });
+            this.setState({ value: this.props.value, onEditMode: true });
         }
-        if (event.target.id == "buttonTextCancel")
+        if (event.target.id === "buttonTextCancel")
         {
-            this.setState({ edit: false });
+            this.setState({ onEditMode: false });
         }
-        if (event.target.id == "buttonTextValidate")
+        if (event.target.id === "buttonTextValidate")
         {
-            this.setState({ edit: false });
+            this.setState({ onEditMode: false });
             this.props.onValidate({ name: this.state.name, value: this.state.value });
         }
     }
     
     render()
     {
-        return !this.state.edit ? 
+        return !this.state.onEditMode ? 
             <div className="input-group">
                 <div className="form-control">{this.props.value}</div>
                 <span id="buttonTextEdit" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonTextEdit" className="fa fa-pencil fa-fw"></i></span>
