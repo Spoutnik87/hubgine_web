@@ -1,53 +1,54 @@
 // Newrelic Node.js agent
-require('newrelic');
+require("newrelic");
+const express = require("express");
+const path = require("path");
+const logger = require("morgan");
+const compression = require("compression");
+const bodyParser = require("body-parser");
+const expressValidator = require("express-validator");
+const React = require("react");
+const ReactDOM = require("react-dom/server");
+const Provider = require("react-redux").Provider;
+const mime = require("mime");
 
-const express = require('express');
-const path = require('path');
-const logger = require('morgan');
-const compression = require('compression');
-const bodyParser = require('body-parser');
-const expressValidator = require('express-validator');
-const React = require('react');
-const ReactDOM = require('react-dom/server');
-const Provider = require('react-redux').Provider;
-const mime = require('mime');
-
-const Router = require('react-router-dom');
-const CookiesProvider = require('react-cookie').CookiesProvider;
-const cookiesMiddleware = require('universal-cookie-express');
-const favicon = require('serve-favicon');
+const Router = require("react-router-dom");
+const CookiesProvider = require("react-cookie").CookiesProvider;
+const cookiesMiddleware = require("universal-cookie-express");
+const favicon = require("serve-favicon");
 
 // ES6 Transpiler
-require('babel-core/register');
-require('babel-polyfill');
+require("babel-core/register");
+require("babel-polyfill");
 
 // React and Server-Side Rendering
-const configureStore = require('./app/store/configureStore').default;
-const lang = require('./app/languages/lang');
-const App = require('./app/components/App').default;
+const configureStore = require("./app/store/configureStore").default;
+const lang = require("./app/languages/lang");
+const App = require("./app/components/App").default;
 
-var app = express();
-
-var server = require('http').Server(app);
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
-app.set('port', process.env.PORT || 3000);
+let app = express();
+let server = require("http").Server(app);
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "pug");
+app.set("port", process.env.PORT || 3000);
 app.use(compression());
-app.use(logger('dev'));
+app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
 app.use(cookiesMiddleware());
-app.use(express.static(path.join(__dirname, 'public'), {
+app.all("/css/*.scss", (req, res, next) => {
+  res.status(403).end("forbidden");
+});
+app.use(express.static(path.join(__dirname, "public"), {
     setHeaders: res => {
-        res.setHeader('Content-Type', mime.lookup(res.req.url));
+        res.setHeader("Content-Type", mime.lookup(res.req.url));
     }
 }));
-app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 // React server rendering
 app.use((req, res) => {
-  const user = req.universalCookies.get('user') || {};
+  const user = req.universalCookies.get("user") || {};
   const initialState = {
     messages: {},
     user: user,
@@ -71,7 +72,7 @@ app.use((req, res) => {
     }
     else
     {
-      res.render('layout', {
+      res.render("layout", {
         html: html,
         initialState: store.getState()
       });
@@ -79,15 +80,16 @@ app.use((req, res) => {
 });
 
 // Production error handler
-if (app.get('env') === 'production') {
+if (process.env.NODE_ENV === "production")
+{
   app.use((err, req, res, next) => {
     console.error(err.stack);
     res.sendStatus(err.status || 500);
   });
 }
 
-server.listen(app.get('port'), () => {
-  console.log('Express server listening on port ' + app.get('port'));
+server.listen(app.get("port"), () => {
+  console.log("Express server listening on port " + app.get("port"));
 });
 
 module.exports = app;
