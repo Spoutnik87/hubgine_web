@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Component } from "react";
 
-class Messages extends React.Component {
-  render() {
+class Messages extends Component {
+  render()
+  {
     return this.props.messages.success ? (
       <div role="alert" className="alert alert-success">
         {this.props.messages.success.map((message, index) => <div key={index}>{message.msg}</div>)}

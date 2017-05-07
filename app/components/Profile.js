@@ -1,19 +1,19 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { getUser, updateUser, getAccountList } from '../util/api';
-import { sendFailureMessage, sendSuccessMessage } from '../actions/messages';
-import { updateInfos, updateEmail, updateFirstname, updateLastname } from '../actions/user';
-import { updateAccountList } from '../actions/accounts';
-import Messages from './Messages';
-import { withCookies } from 'react-cookie';
-import validator from 'validator';
-import AutoInputText from './AutoInputText';
-import AccountEditForm from './AccountEditForm';
-import LoadingCog from './LoadingCog';
-import { ENGLISH } from '../languages/lang';
-import { clearMessages } from '../actions/messages';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { withCookies } from "react-cookie";
+import validator from "validator";
+import { getUser, updateUser, getAccountList } from "../util/api";
+import { sendFailureMessage, sendSuccessMessage } from "../actions/messages";
+import { updateInfos, updateEmail, updateFirstname, updateLastname } from "../actions/user";
+import { updateAccountList } from "../actions/accounts";
+import Messages from "./Messages";
+import AutoInputText from "./AutoInputText";
+import AccountEditForm from "./AccountEditForm";
+import LoadingCog from "./LoadingCog";
+import { ENGLISH } from "../languages/lang";
+import { clearMessages } from "../actions/messages";
 
-class Profile extends React.Component {
+class Profile extends Component {
     constructor(props)
     {
         super(props);
@@ -27,9 +27,9 @@ class Profile extends React.Component {
         this.onValidate = this.onValidate.bind(this);
     }
 
-    componentDidMount() {
-        getUser(this.props.user.email, this.props.user.token, (error, result) =>
-        {
+    componentDidMount()
+    {
+        getUser(this.props.user.email, this.props.user.token, (error, result) => {
             if (!error)
             {
                 this.props.dispatch(updateInfos(result.email, result.first_name, result.last_name));
@@ -51,6 +51,11 @@ class Profile extends React.Component {
                 this.props.dispatch(sendFailureMessage([{ msg: "An error happened during account list loading." }]));
             }
         });
+    }
+
+    componentWillUnmount()
+    {
+        this.props.dispatch(clearMessages());
     }
 
     onValidate(input)
@@ -217,19 +222,15 @@ class Profile extends React.Component {
             </div>
         );
     }
-
-    componentWillUnmount() {
-        this.props.dispatch(clearMessages());
-    }
 }
 
 const mapStateToProps = (state) => {
-  return {
-    user: state.user,
-    messages: state.messages,
-    lang: state.lang,
-    accounts: state.accounts
-  };
+    return {
+        user: state.user,
+        messages: state.messages,
+        lang: state.lang,
+        accounts: state.accounts
+    };
 };
 
-export default connect(mapStateToProps)(withCookies(Profile));
+export default withCookies(connect(mapStateToProps)(Profile));

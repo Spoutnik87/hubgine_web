@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { Component } from "react";
 
-class AdminDashboard extends React.Component {
+class AdminDashboard extends Component {
     constructor(props)
     {
         super(props);

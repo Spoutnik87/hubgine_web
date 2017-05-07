@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
-import validator from 'validator';
-import { connect } from 'react-redux';
-import AutoInputText from './AutoInputText';
-import { updateAccount } from '../util/api';
-import { updateAccountName, updateAccountConsumerKey, updateAccountConsumerSecret, updateAccountAccessToken, updateAccountAccessTokenKey } from '../actions/accounts';
+import React, { Component } from "react";
+import validator from "validator";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import AutoInputText from "./AutoInputText";
+import { updateAccount } from "../util/api";
+import { updateAccountName, updateAccountConsumerKey, updateAccountConsumerSecret, updateAccountAccessToken, updateAccountAccessTokenKey } from "../actions/accounts";
 
 class AccountEditForm extends Component {
     constructor(props)
@@ -41,7 +42,8 @@ class AccountEditForm extends Component {
         }
     }
 
-    render() {
+    render()
+    {
         return (
             this.state.onEditMode ?
             <div className="panel">
@@ -62,12 +64,21 @@ class AccountEditForm extends Component {
     }
 }
 
+AccountEditForm.propTypes = {
+    user: PropTypes.shape({
+        email: PropTypes.string,
+        token: PropTypes.string
+    }),
+    messages: PropTypes.object,
+    lang: PropTypes.object
+};
+
 const mapStateToProps = (state) => {
-  return {
-    user: state.user,
-    messages: state.messages,
-    lang: state.lang,
-  };
+    return {
+        user: state.user,
+        messages: state.messages,
+        lang: state.lang,
+    };
 };
 
 export default connect(mapStateToProps)(AccountEditForm);

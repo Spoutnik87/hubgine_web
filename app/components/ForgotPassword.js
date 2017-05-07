@@ -1,9 +1,9 @@
-import React from 'react';
-import { sendFailureMessage, sendSuccessMessage } from '../actions/messages';
-import Messages from './Messages';
-import validator from 'validator';
-import { connect } from 'react-redux';
-import { clearMessages } from '../actions/messages';
+import React, { Component } from "react";
+import { sendFailureMessage, sendSuccessMessage } from "../actions/messages";
+import Messages from "./Messages";
+import validator from "validator";
+import { connect } from "react-redux";
+import { clearMessages } from "../actions/messages";
 
 class Forgotpassword extends React.Component {
     constructor(props)
@@ -53,6 +53,11 @@ class Forgotpassword extends React.Component {
     {
         this.setState({ [event.target.name]: event.target.value });
     }
+
+    componentWillUnmount()
+    {
+        this.props.dispatch(clearMessages());
+    }
     
     render()
     {
@@ -83,16 +88,12 @@ class Forgotpassword extends React.Component {
             </div>
         );
     }
-
-    componentWillUnmount() {
-        this.props.dispatch(clearMessages());
-    }
 }
 
 const mapStateToProps = (state) => {
-  return {
-    messages: state.messages
-  };
+    return {
+        messages: state.messages
+    };
 };
 
 export default connect(mapStateToProps)(Forgotpassword);

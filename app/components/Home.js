@@ -1,15 +1,16 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import UserSubscriptionChart from './UserSubscriptionChart';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import UserSubscriptionChart from "./UserSubscriptionChart";
 
-class Home extends React.Component {
+class Home extends Component {
   constructor(props)
   {
     super(props);
-    this.state = { a: null };
   }
 
-  render() {
+  render()
+  {
     const data = [
         {index: '01/05', value: 10},
         {index: '02/05', value: 15},
@@ -19,7 +20,6 @@ class Home extends React.Component {
         {index: '06/05', value: 72},
         {index: '07/05', value: 84},
     ];
-
     return (
       <div className="container-fluid">
         <div className="row">
@@ -62,6 +62,10 @@ class Home extends React.Component {
     );
   }
 }
+
+Home.propTypes = {
+  lang: PropTypes.object
+};
 
 const mapStateToProps = (state) => {
   return {

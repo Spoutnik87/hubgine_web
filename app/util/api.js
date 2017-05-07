@@ -6,8 +6,8 @@ const useAPI = (method, search, send, callback) =>
     $.ajax({
         type: method,
         url: url,
-        contentType: 'application/json',
-        dataType:'json',
+        contentType: "application/json",
+        dataType:"json",
         cache: false,
         success : (result, status) => {
             const error = true ? status === "error" : false;

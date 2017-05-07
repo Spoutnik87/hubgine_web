@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 
-class AutoInputText extends React.Component {
+class AutoInputText extends Component {
     constructor(props)
     {
         super(props);
@@ -50,5 +51,10 @@ class AutoInputText extends React.Component {
             </div>;
     }
 }
+
+AutoInputText.propTypes = {
+    value: PropTypes.any,
+    onValidate: PropTypes.func
+};
 
 export default AutoInputText;

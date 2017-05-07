@@ -1,12 +1,13 @@
-import React from 'react';
-import { withRouter, Link, NavLink } from 'react-router-dom';
-import { connect } from 'react-redux';
-import * as ranks from '../constants/Ranks';
+import React, { Component } from "react";
+import { withRouter, Link, NavLink } from "react-router-dom";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import * as ranks from "../constants/Ranks";
 
-class Header extends React.Component {
+class Header extends Component {
   render()
   {
-    const active = { borderBottomColor: '#3f51b5' };
+    const active = { borderBottomColor: "#3f51b5" };
     const adminDashboard = this.props.user.rank == ranks.ADMIN ? <li><NavLink to="/admin-dashboard" activeStyle={active}>{this.props.lang.HEADER_ADMIN_DASHBOARD}</NavLink></li> : null;
     const userDashboard = this.props.user.token != null ? <li><NavLink to="/user-dashboard" activeStyle={active}>{this.props.lang.HEADER_USER_DASHBOARD}</NavLink></li> : null;
     const profile = this.props.user.token != null ? <li><NavLink to="/profile" activeStyle={active}>{this.props.lang.HEADER_PROFILE}</NavLink></li> : null;
@@ -41,6 +42,11 @@ class Header extends React.Component {
     );
   }
 }
+
+Header.propTypes = {
+  user: PropTypes.object,
+  lang: PropTypes.object
+};
 
 const mapStateToProps = (state) => {
   return {

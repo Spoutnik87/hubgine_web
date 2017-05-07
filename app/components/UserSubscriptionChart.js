@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import React, { Component } from "react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 class UserSubscriptionChart extends Component {
-    constructor(props) {
+    constructor(props)
+    {
         super(props);
         this.state = {
             data: 
@@ -13,7 +14,8 @@ class UserSubscriptionChart extends Component {
         };
     }
 
-    render() {
+    render()
+    {
         return (
             <ResponsiveContainer height={200}>
                 <BarChart data={this.state.data}>

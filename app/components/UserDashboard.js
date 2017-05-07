@@ -1,19 +1,27 @@
-import React from 'react';
-import { getAccountList } from '../util/api';
-import { connect } from 'react-redux';
-import { updateAccountList } from '../actions/accounts';
-import LoadingCog from './LoadingCog';
+import React, { Component } from "react";
+import { getAccountList } from "../util/api";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
+import { updateAccountList } from "../actions/accounts";
+import LoadingCog from "./LoadingCog";
+import AccountTile from "./AccountTile";
+import { sendFailureMessage } from "../actions/messages";
+import AccountOverview from "./AccountOverview";
 
-class UserDashboard extends React.Component {
+class UserDashboard extends Component {
     constructor(props)
     {
         super(props);
         this.state = {
-            isLoaded: false
+            isLoaded: false,
+            tabsMenu: "Overview"
         };
+        this.handleClick = this.handleClick.bind(this);
     }
 
-    componentDidMount() {
+    componentDidMount()
+    {
         getAccountList(this.props.user.email, this.props.user.token, (error, result) => {
             if (!error)
             {
@@ -25,42 +33,66 @@ class UserDashboard extends React.Component {
                 this.props.dispatch(sendFailureMessage([{ msg: "An error happened during account list loading." }]));
             }
         });
-    }    
+    }
+
+    handleClick(event)
+    {
+        if (event.target.id === "returnMenu")
+        {
+            this.props.history.push(this.props.location.pathname);
+        }
+        else
+        {
+            if (this.state.tabsMenu !== event.target.id)
+            {
+                this.setState({
+                    tabsMenu: event.target.id
+                });
+            }
+        }
+    }
     
     render()
     {
-        let tabs;
+        let tiles;
         let menu;
-        let content = (
-            <div>
-                {  }
-            </div>
-        );
+        let tab;
         if (this.state.isLoaded)
         {
-            /*tabs = (
-                <div className="panel-body">
-                    <ul className="nav nav-tabs">
-                        { this.props.accounts.map((account, index) => (
-                            <li key={index} className={ this.props.location.hash == "#" + index ? "active" : "" }><a href={ "#" + index }>{account.name}</a></li>
-                         ) ) }
-                    </ul>
-                    {content}
-                </div>
-            );*/
+            const overviewActive = this.state.tabsMenu === "Overview";
+            const settingsActive = this.state.tabsMenu === "Settings";
+            if (this.props.location.hash === "")
+            {
+                tiles = (
+                    this.props.accounts.list.map((account, index) => (
+                        <div key={index} className="col-md-4 col-sm-6">
+                            <AccountTile account={account} href={"#" + index}/>
+                        </div>
+                    )));
+            }
+            else
+            {
+                menu = (
+                    <div>
+                        <ul className="nav nav-tabs account-tab-return">
+                            <li onClick={this.handleClick}><a id="returnMenu">Return to menu <i className="fa fa-level-up"></i></a></li>
+                        </ul>
+                        <ul className="nav nav-tabs">
+                            <li className={this.state.tabsMenu === "Overview" ? "active" : "account-tab-option"} onClick={this.handleClick}><a id="Overview">Overview</a></li>
+                            <li className={this.state.tabsMenu === "Settings" ? "active" : "account-tab-option"} onClick={this.handleClick}><a id="Settings">Settings</a></li>
+                        </ul>
+                    </div>
+                );
 
-            /*leftMenu = (
-                <div className="col-md-2 sidenav">
-                    Hello
-                </div>
-            );*/
-            const overviewActive = this.props.location.hash == ("#" | "");
-            /*menu = (
-                <ul className="nav nav-tabs">
-                    <li className={overviewActive ? "active" : ""}><a href="#">Overview</a></li>
-                    <li><a href="#oui">Oui</a></li>
-                </ul>
-            );*/
+                if (overviewActive)
+                {
+                    tab = <AccountOverview account={this.props.accounts.list[this.props.location.hash.substring(1)]} />;
+                }
+                else if (settingsActive)
+                {
+
+                }
+            }
         }
         else
         {
@@ -80,6 +112,7 @@ class UserDashboard extends React.Component {
                             <h3 className="panel-title">DASHBOARD</h3>
                         </div>
                         <div className="panel-body">
+                            {tiles}
                             {menu}
                             {tabs}
                         </div>
@@ -91,13 +124,20 @@ class UserDashboard extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    messages: state.messages,
-    lang: state.lang,
-    user: state.user,
-    accounts: state.accounts
-  };
+UserDashboard.propTypes = {
+    messages: PropTypes.object,
+    lang: PropTypes.object,
+    user: PropTypes.object,
+    accounts: PropTypes.object
 };
 
-export default connect(mapStateToProps)(UserDashboard);
+const mapStateToProps = (state) => {
+    return {
+        messages: state.messages,
+        lang: state.lang,
+        user: state.user,
+        accounts: state.accounts
+    };
+};
+
+export default withRouter(connect(mapStateToProps)(UserDashboard));

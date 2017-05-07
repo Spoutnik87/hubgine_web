@@ -1,18 +1,17 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
-import { connect as connectUser } from '../actions/user';
-import { sendFailureMessage } from '../actions/messages';
-import { connect as connectAPI } from '../util/api';
-import { withCookies } from 'react-cookie';
-import validator from 'validator';
-import Messages from './Messages';
-import LoadingCog from './LoadingCog';
-import { changeLanguage } from '../actions/lang';
-import { clearMessages } from '../actions/messages';
+import React, { Component } from "react";
+import { Link, withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import { withCookies } from "react-cookie";
+import validator from "validator";
+import { connect as connectUser } from "../actions/user";
+import { sendFailureMessage } from "../actions/messages";
+import { connect as connectAPI } from "../util/api";
+import Messages from "./Messages";
+import LoadingCog from "./LoadingCog";
+import { changeLanguage } from "../actions/lang";
+import { clearMessages } from "../actions/messages";
 
-class Signin extends React.Component {
+class Signin extends Component {
     constructor(props)
     {
         super(props);
@@ -73,6 +72,11 @@ class Signin extends React.Component {
         this.setState({ [event.target.name]: event.target.value });
     }
     
+    componentWillUnmount()
+    {
+        this.props.dispatch(clearMessages());
+    }
+
     render()
     {
         const loadingDisplay = !this.state.loading ? <button type="submit" className="btn btn-success">{this.props.lang.SIGNIN_SUBMIT}</button> : <LoadingCog/>;
@@ -109,17 +113,13 @@ class Signin extends React.Component {
             </div>
         );
     }
-
-    componentWillUnmount() {
-        this.props.dispatch(clearMessages());
-    }
 }
 
 const mapStateToProps = (state) => {
-  return {
-    messages: state.messages,
-    lang: state.lang
-  };
+    return {
+        messages: state.messages,
+        lang: state.lang
+    };
 };
 
-export default withRouter(connect(mapStateToProps)(withCookies(Signin)));
+export default withRouter(withCookies(connect(mapStateToProps)(Signin)));

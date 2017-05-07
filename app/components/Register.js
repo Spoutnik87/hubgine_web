@@ -1,19 +1,19 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
-import { withCookies } from 'react-cookie';
-import { connect as connectUser } from '../actions/user';
-import { addUser } from '../util/api';
-import { sendFailureMessage } from '../actions/messages';
-import Messages from './Messages';
-import validator from 'validator';
-import * as ranks from '../constants/Ranks';
-import LoadingCog from './LoadingCog';
-import { changeLanguage } from '../actions/lang';
-import { ENGLISH } from '../languages/lang';
-import { clearMessages } from '../actions/messages';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
+import { withCookies } from "react-cookie";
+import validator from "validator";
+import { connect as connectUser } from "../actions/user";
+import { addUser } from "../util/api";
+import { sendFailureMessage } from "../actions/messages";
+import Messages from "./Messages";
+import * as ranks from "../constants/Ranks";
+import LoadingCog from "./LoadingCog";
+import { changeLanguage } from "../actions/lang";
+import { ENGLISH } from "../languages/lang";
+import { clearMessages } from "../actions/messages";
 
-class Register extends React.Component {
+class Register extends Component {
     constructor(props)
     {
         super(props);
@@ -100,6 +100,10 @@ class Register extends React.Component {
             this.setState({ [event.target.name]: event.target.value });
         }
     }
+
+    componentWillUnmount() {
+        this.props.dispatch(clearMessages());
+    }
     
     render()
     {
@@ -161,17 +165,13 @@ class Register extends React.Component {
             </div>
         );
     }
-
-    componentWillUnmount() {
-        this.props.dispatch(clearMessages());
-    }
 }
 
 const mapStateToProps = (state) => {
-  return {
-    messages: state.messages,
-    lang: state.lang
-  };
+    return {
+        messages: state.messages,
+        lang: state.lang
+    };
 };
 
-export default withRouter(connect(mapStateToProps)(withCookies(Register)));
+export default withRouter(withCookies(connect(mapStateToProps)(Register)));

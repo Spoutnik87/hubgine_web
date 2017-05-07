@@ -1,8 +1,10 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
 
-class Footer extends React.Component {
-  render() {
+class Footer extends Component {
+  render()
+  {
     return (
       <footer>
         <p>{this.props.lang.FOOTER_TITLE}</p>
@@ -10,6 +12,10 @@ class Footer extends React.Component {
     );
   }
 }
+
+Footer.propTypes = {
+  lang: PropTypes.object
+};
 
 const mapStateToProps = (state) => {
   return {
