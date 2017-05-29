@@ -1,15 +1,32 @@
 import React, { Component } from "react";
-import { getAccountList } from "../util/api";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
 import { updateAccountList } from "../actions/accounts";
+import { sendFailureMessage, clearMessages } from "../actions/messages";
+import * as Ranks from "../constants/Ranks";
+import * as Languages from "../constants/Languages";
+import { getAccountNameList, getAccount } from "../util/api";
 import LoadingCog from "./LoadingCog";
 import AccountTile from "./AccountTile";
-import { sendFailureMessage } from "../actions/messages";
 import AccountOverview from "./AccountOverview";
+import AccountSettings from "./AccountSettings";
 
 class UserDashboard extends Component {
+    static propTypes = {
+        messages: PropTypes.object.isRequired,
+        lang: PropTypes.shape({
+
+        }).isRequired,
+        user: PropTypes.shape({
+            email: PropTypes.string.isRequired,
+            token: PropTypes.string.isRequired,
+            rank: PropTypes.oneOf(Object.values(Ranks)).isRequired,
+            lang: PropTypes.oneOf(Object.values(Languages)).isRequired
+        }).isRequired,
+        accounts: PropTypes.object.isRequired
+    };
+
     constructor(props)
     {
         super(props);
@@ -22,17 +39,43 @@ class UserDashboard extends Component {
 
     componentDidMount()
     {
-        getAccountList(this.props.user.email, this.props.user.token, (error, result) => {
-            if (!error)
-            {
-                this.props.dispatch(updateAccountList(result.accounts));
-                this.setState({ isLoaded: true });
-            }
-            else
-            {
-                this.props.dispatch(sendFailureMessage([{ msg: "An error happened during account list loading." }]));
-            }
-        });
+        if (this.props.location.hash === "")
+        {
+            getAccountNameList(this.props.user.email, this.props.user.token, (error, result) => {
+                if (!error)
+                {
+                    const data = [];
+                    for (let i = 0; i < result.accounts.length; i++)
+                    {
+                        data.push({ name: result.accounts[i] });
+                    }
+                    this.props.dispatch(updateAccountList(data));
+                    this.setState({ isLoaded: true });
+                }
+                else
+                {
+                    this.props.dispatch(sendFailureMessage([{ msg: "An error happened during account list loading." }]));
+                }
+            });
+        }
+        else
+        {
+            const id = this.props.location.hash.substring(1);
+            getAccount(this.props.user.email, this.props.user.token, id, (error, result) => {
+                if (!error)
+                {
+                    console.log(result);
+                }
+                else
+                {
+                    this.props.dispatch(sendFailureMessage([{ msg: "An error happened during account loading." }]));
+                }
+            });
+        }
+    }
+    
+    componentWillMount() {
+        this.props.dispatch(clearMessages());
     }
 
     handleClick(event)
@@ -90,13 +133,13 @@ class UserDashboard extends Component {
                 }
                 else if (settingsActive)
                 {
-
+                    tab = <AccountSettings account={this.props.accounts.list[this.props.location.hash.substring(1)]} />
                 }
             }
         }
         else
         {
-            tabs = (
+            tab = (
                 <div className="panel-body" style={ { textAlign: "center" } }>
                     <LoadingCog/>
                 </div>
@@ -114,7 +157,7 @@ class UserDashboard extends Component {
                         <div className="panel-body">
                             {tiles}
                             {menu}
-                            {tabs}
+                            {tab}
                         </div>
                     </div>
                 </div>
@@ -123,13 +166,6 @@ class UserDashboard extends Component {
         );
     }
 }
-
-UserDashboard.propTypes = {
-    messages: PropTypes.object,
-    lang: PropTypes.object,
-    user: PropTypes.object,
-    accounts: PropTypes.object
-};
 
 const mapStateToProps = (state) => {
     return {

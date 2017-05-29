@@ -1,8 +1,23 @@
-const useAPI = (method, search, send, callback) =>
-{
-    const domain = "flavien.cc";
-    const port = 8001;
-    const url = "http://"+domain+":"+port+"/"+search+"?"+send;
+import { api as config } from "../../client-config.json";
+
+const method = {
+    GET: "GET",
+    POST: "POST",
+    PUT: "PUT"
+};
+
+const useAPI = (method, endpoint, data, callback) => {
+    let serializedData = "";
+    let first = true;
+    for (const key in data)
+    {
+        if (data.hasOwnProperty(key))
+        {
+            serializedData += ((first ? "?" : "&").toString() + key + "=" + data[key]);
+        }
+        if (first) first = false;
+    }
+    const url = config.host + ":" + config.port + "/" + endpoint + serializedData;
     $.ajax({
         type: method,
         url: url,
@@ -14,37 +29,24 @@ const useAPI = (method, search, send, callback) =>
             callback(error, result);
         },
         error : (result, status) => {
-            console.log(result);
-            console.log(status);
             const error = true ? status === "error" : false;
             callback(error, result);
         }
     });
 }
 
-export const connect = (email, password, callback) =>
-{
-    const send =
-        "email="+email+
-        "&password="+password;
-
-    useAPI("GET", "login", send, (error, result) =>
-    {
+export const connect = (email, password, callback) => {
+    const data = { email, password };
+    
+    useAPI(method.GET, "login", data, (error, result) => {
         callback(error, result);
     });
 }
 
-export const addUser = (email, password, firstname, lastname, lang, callback) =>
-{
-    const send =
-        "email="+email+
-        "&password="+password+
-        "&firstname="+firstname+
-        "&lastname="+lastname+
-        "&lang="+lang;
-
-    useAPI("POST", "create_user", send, (error, result) =>
-    {
+export const addUser = (email, password, firstname, lastname, lang, callback) => {
+    const data = { email, password, firstname, lastname, lang };
+    
+    useAPI(method.POST, "create_user", data, (error, result) => {
         if (!error)
         {
             result.email = email;
@@ -53,183 +55,114 @@ export const addUser = (email, password, firstname, lastname, lang, callback) =>
     });
 }
 
-export const addAccount = (user_email, user_token, consumer_key, cunsumer_secret, access_token_key, access_token_secret, callback) =>
-{
-    const send =
-        "email="+user_email+
-        "&token="+user_token+
-        "&consumer_key="+consumer_key+
-        "&consumer_secret="+cunsumer_secret+
-        "&access_token_key="+access_token_key+
-        "&access_token_secret="+access_token_secret;
+export const addAccount = (email, token, name, consumer_key, consumer_secret, access_token_key, access_token_secret, callback) => {
+    const data = { email, token, name, consumer_key, consumer_secret, access_token_key, access_token_secret };
+
+    useAPI(method.POST, "account", data, (error, result) => {
+        callback(error, result);
+    });
+}
+
+export const resetPassword = (email, callback) => {
+    const data = { email };
+
+    useAPI(method.POST, "reset_password", data, (error, result) => {
+        callback(error, result);
+    });
+}
+
+export const getUser = (email, token, callback) => {
+    const data  = { email, token };
+
+    useAPI(method.GET, "user", data, (error, result) => {
+        callback(error, result);
+    });
+}
+
+export const updateUser = (email, token, field, value, callback) => {
+    const data = { email, token, field, value };
+
+    useAPI(method.PUT, "user", data, (error, result) => {
+        callback(error, result);
+    });
+}
+
+export const updateAccount = (email, token, id, field, value, callback) => {
+    const data = { email, token, id, field, value };
+
+    useAPI(method.PUT, "account", data, (error, result) => {
+        callback(error, result);
+    });
+}
+
+export const getAccountList = (email, token, callback) => {
+    const data = { email, token };
+
+    useAPI(method.GET, "account/list", data, (error, result) => {
+        callback(error, result);
+    });
+}
+
+export const getAccountNameList = (email, token, callback) => {
+    const data = { email, token };
+
+    useAPI(method.GET, "account/list/name", data, (error, result) => {
+        callback(error, result);
+    });
+}
+
+export const getAccount = (email, token, id, callback) => {
+    const data = { email, token, id };
     
-    useAPI("post", "account", send, (error, result) =>
-    {
+    useAPI(method.GET, "account", data, (error, result) => {
         callback(error, result);
     });
 }
 
-export const resetPassword = (email, callback) =>
-{
-    const send = "email=" + email;
+export const getAccountName = (email, token, id, callback) => {
+    const data = { email, token, id };
 
-    useAPI("POST", "reset_password", send, (error, result) =>
-    {
+    useAPI(method.GET, "account/item/name", data, (error, result) => {
         callback(error, result);
     });
 }
 
-export const getUser = (user_email, user_token, callback) =>
-{
-    const send = 
-        "email="+user_email+
-        "&token="+user_token;
-    
-    useAPI("GET", "user", send, (error, result) =>
-    {
+export const getAccountKeys = (email, token, id, callback) => {
+    const data = { email, token, id };
+
+    useAPI(method.GET, "account/item/keys", data, (error, result) => {
         callback(error, result);
     });
 }
 
-export const updateUser = (user_email, user_token, field, value, callback) =>
-{
-    const send =
-        "email="+user_email+
-        "&token="+user_token+
-        "&field="+field+
-        "&value="+value
+export const getAccountCampaign = (email, token, id, callback) => {
+    const data = { email, token, id };
 
-    useAPI("PUT", "user", send, (error, result) =>
-    {
+    useAPI(method.GET, "account/item/campaign", data, (error, result) => {
         callback(error, result);
     });
 }
 
-export const updateAccount = (user_email, user_token, field, value, callback) =>
-{
-    const send =
-        "email="+user_email+
-        "&token="+user_token+
-        "&field="+field+
-        "&value="+value
+export const getAccountBlacklist = (email, token, id, callback) => {
+    const data = { email, token, id };
 
-    useAPI("PUT", "account", send, (error, result) =>
-    {
+    useAPI(method.GET, "account/item/blacklist", data, (error, result) => {
         callback(error, result);
     });
 }
 
-export const getAccountList = (user_email, user_token, callback) =>
-{
-    const send =
-        "email="+user_email+
-        "&token="+user_token;
+export const getAccountCache = (email, token, id, callback) => {
+    const data = { email, token, id };
 
-    useAPI("GET", "account/list", send, (error, result) =>
-    {
+    useAPI(method.GET, "account/item/cache", data, (error, result) => {
         callback(error, result);
     });
 }
 
-export const getAccountNameList = (user_email, user_token, callback) =>
-{
-    const send =
-        "email="+user_email+
-        "&token="+user_token;
+export const getAccountStats = (email, token, id, callback) => {
+    const data = { email, token, id };
 
-    useAPI("GET", "account/list/name", send, (error, result) =>
-    {
-        callback(error, result);
-    });
-}
-
-export const getAccount = (user_email, user_token, account_id, callback) =>
-{
-    const send =
-        "email="+user_email+
-        "&token="+user_token+
-        "&id="+account_id;
-    
-    useAPI("GET", "account", send, (error, result) =>
-    {
-        callback(error, result);
-    });
-}
-
-export const getAccountName = (user_email, user_token, account_id, callback) =>
-{
-    const send =
-        "email="+user_email+
-        "&token="+user_token+
-        "&id="+account_id;
-
-    useAPI("GET", "account/item/name", send, (error, result) =>
-    {
-        callback(error, result);
-    });
-}
-
-export const getAccountKeys = (user_email, user_token, account_id, callback) =>
-{
-    const send =
-        "email="+user_email+
-        "&token="+user_token+
-        "&id="+account_id;
-
-    useAPI("GET", "account/item/keys", send, (error, result) =>
-    {
-        callback(error, result);
-    });
-}
-
-export const getAccountCampaign = (user_email, user_token, account_id, callback) =>
-{
-    const send =
-        "email="+user_email+
-        "&token="+user_token+
-        "&id="+account_id;
-
-    useAPI("GET", "account/item/campaign", send, (error, result) =>
-    {
-        callback(error, result);
-    });
-}
-
-export const getAccountBlacklist = (user_email, user_token, account_id, callback) =>
-{
-    const send =
-        "email="+user_email+
-        "&token="+user_token+
-        "&id="+account_id;
-
-    useAPI("GET", "account/item/blacklist", send, (error, result) =>
-    {
-        callback(error, result);
-    });
-}
-
-export const getAccountCache = (user_email, user_token, account_id, callback) =>
-{
-    const send =
-        "email="+user_email+
-        "&token="+user_token+
-        "&id="+account_id;
-
-    useAPI("GET", "account/item/cache", send, (error, result) =>
-    {
-        callback(error, result);
-    });
-}
-
-export const getAccountStats = (user_email, user_token, account_id, callback) =>
-{
-    const send =
-        "email="+user_email+
-        "&token="+user_token+
-        "&id="+account_id;
-
-    useAPI("GET", "account/item/stats", send, (error, result) =>
-    {
+    useAPI(method.GET, "account/item/stats", data, (error, result) => {
         callback(error, result);
     });
 }

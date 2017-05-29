@@ -3,15 +3,29 @@ import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withCookies } from "react-cookie";
 import validator from "validator";
+import PropTypes from "prop-types";
 import { connect as connectUser } from "../actions/user";
-import { sendFailureMessage } from "../actions/messages";
+import { sendFailureMessage, clearMessages } from "../actions/messages";
+import { changeLanguage } from "../actions/lang";
 import { connect as connectAPI } from "../util/api";
 import Messages from "./Messages";
 import LoadingCog from "./LoadingCog";
-import { changeLanguage } from "../actions/lang";
-import { clearMessages } from "../actions/messages";
 
 class Signin extends Component {
+    static propTypes = {
+        messages: PropTypes.object.isRequired,
+        lang: PropTypes.shape({
+            SIGNIN_EMAIL_INCORRECT: PropTypes.string.isRequired,
+            SIGNIN_PASSWORD_INCORRECT: PropTypes.string.isRequired,
+            SIGNIN_CREDENTIALS_INCORRECT: PropTypes.string.isRequired,
+            SIGNIN_TITLE: PropTypes.string.isRequired,
+            SIGNIN_EMAIL: PropTypes.string.isRequired,
+            SIGNIN_PASSWORD: PropTypes.string.isRequired,
+            SIGNIN_FORGOTPASSWORD: PropTypes.string.isRequired,
+            SIGNIN_SUBMIT: PropTypes.string.isRequired
+        }).isRequired
+    };
+
     constructor(props)
     {
         super(props);
@@ -28,14 +42,15 @@ class Signin extends Component {
     {
         event.preventDefault();
         this.setState({ loading: true });
+        const { SIGNIN_EMAIL_INCORRECT, SIGNIN_PASSWORD_INCORRECT, SIGNIN_CREDENTIALS_INCORRECT } = this.props.lang;
         const messages = [];
         if (!validator.isEmail(this.state.email))
         {
-            messages.push({ msg: this.props.lang.SIGNIN_EMAIL_INCORRECT });
+            messages.push({ msg: SIGNIN_EMAIL_INCORRECT });
         }
         if (!validator.isLength(this.state.password, { min: 6 }))
         {
-            messages.push({ msg: this.props.lang.SIGNIN_PASSWORD_INCORRECT });
+            messages.push({ msg: SIGNIN_PASSWORD_INCORRECT });
         }
         if (messages.length == 0)
         {
@@ -54,7 +69,7 @@ class Signin extends Component {
                 }
                 else
                 {
-                    messages.push({ msg: this.props.lang.SIGNIN_CREDENTIALS_INCORRECT });
+                    messages.push({ msg: SIGNIN_CREDENTIALS_INCORRECT });
                     this.props.dispatch(sendFailureMessage(messages));
                     this.setState({ loading: false });
                 }
@@ -79,24 +94,25 @@ class Signin extends Component {
 
     render()
     {
-        const loadingDisplay = !this.state.loading ? <button type="submit" className="btn btn-success">{this.props.lang.SIGNIN_SUBMIT}</button> : <LoadingCog/>;
+        const { SIGNIN_TITLE, SIGNIN_EMAIL, SIGNIN_PASSWORD, SIGNIN_FORGOTPASSWORD, SIGNIN_SUBMIT } = this.props.lang;
+        const loadingDisplay = !this.state.loading ? <button type="submit" className="btn btn-success">{SIGNIN_SUBMIT}</button> : <LoadingCog/>;
         return (
             <div className="container">
                 <div className="panel">
                     <div className="panel-heading">
-                        <h3 className="panel-title">{this.props.lang.SIGNIN_TITLE}</h3>
+                        <h3 className="panel-title">{SIGNIN_TITLE}</h3>
                     </div>
                     <div className="panel-body">
                         <Messages messages={this.props.messages}/>
                         <form onSubmit={this.handleSubmit} className="form-horizontal">
                             <div className="form-group">
-                                <label htmlFor="email" className="col-sm-2">{this.props.lang.SIGNIN_EMAIL}</label>
+                                <label htmlFor="email" className="col-sm-2">{SIGNIN_EMAIL}</label>
                                 <div className="col-sm-8">
                                     <input type="text" name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
                                 </div>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="password" className="col-sm-2">{this.props.lang.SIGNIN_PASSWORD}</label>
+                                <label htmlFor="password" className="col-sm-2">{SIGNIN_PASSWORD}</label>
                                 <div className="col-sm-8">
                                     <input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange} autoFocus/>
                                 </div>
@@ -107,7 +123,7 @@ class Signin extends Component {
                                 </div>
                             </div>
                         </form>
-                        <Link to="/forgot-password">{this.props.lang.SIGNIN_FORGOTPASSWORD}</Link>
+                        <Link to="/forgot-password">{SIGNIN_FORGOTPASSWORD}</Link>
                     </div>
                 </div>
             </div>

@@ -1,11 +1,10 @@
-// Newrelic Node.js agent
+//New Relic performance monitoring
 require("newrelic");
 const express = require("express");
 const path = require("path");
 const logger = require("morgan");
 const compression = require("compression");
 const bodyParser = require("body-parser");
-const expressValidator = require("express-validator");
 const React = require("react");
 const ReactDOM = require("react-dom/server");
 const Provider = require("react-redux").Provider;
@@ -24,17 +23,18 @@ require("babel-polyfill");
 const configureStore = require("./app/store/configureStore").default;
 const lang = require("./app/languages/lang");
 const App = require("./app/components/App").default;
+const Languages = require("./app/constants/Languages");
+const config = require("./server-config.json");
 
 let app = express();
 let server = require("http").Server(app);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
-app.set("port", process.env.PORT || 3000);
+app.set("port", config.port);
 app.use(compression());
-app.use(logger("dev"));
+app.use(logger(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(expressValidator());
 app.use(cookiesMiddleware());
 app.all("/css/*.scss", (req, res, next) => {
   res.status(403).end("forbidden");
@@ -54,15 +54,15 @@ app.use((req, res) => {
     user: user,
     profile: {},
     accounts: {},
-    lang: lang.default(user.lang || lang.ENGLISH),
+    lang: lang.default(user.lang || Languages.ENGLISH),
   };
   const store = configureStore(initialState);
   const context = {};
 
   const html = ReactDOM.renderToString(
-    React.createElement(Provider, { store: store }, 
+    React.createElement(Provider, { store }, 
       React.createElement(CookiesProvider, { cookies: req.universalCookies }, 
-        React.createElement(Router.StaticRouter, { location: req.url, context: context },
+        React.createElement(Router.StaticRouter, { location: req.url, context },
           React.createElement(App)
     ))));
 

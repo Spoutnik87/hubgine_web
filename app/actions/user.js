@@ -1,10 +1,10 @@
-import * as types from "../constants/ActionTypes";
+import * as ActionTypes from "../constants/ActionTypes";
 
 export function connect(token, email, rank, lang)
 {
     return (dispatch) => {
         return dispatch({ 
-            type: types.USER_CONNECT,
+            type: ActionTypes.USER_CONNECT,
             token: token,
             email: email,
             rank: rank,
@@ -17,7 +17,7 @@ export function disconnect()
 {
     return (dispatch) => {
         return dispatch({
-            type: types.USER_DISCONNECT
+            type: ActionTypes.USER_DISCONNECT
         });
     };
 }
@@ -26,7 +26,7 @@ export function updateInfos(email, firstname, lastname)
 {
     return (dispatch) => {
         return dispatch({
-            type: types.USER_UPDATE_INFOS,
+            type: ActionTypes.USER_UPDATE_INFOS,
             email: email,
             firstname: firstname,
             lastname: lastname
@@ -38,7 +38,7 @@ export function updateEmail(email)
 {
     return (dispatch) => {
         return dispatch({
-            type: types.USER_UPDATE_EMAIL,
+            type: ActionTypes.USER_UPDATE_EMAIL,
             email: email
         });
     };
@@ -48,7 +48,7 @@ export function updateFirstname(firstname)
 {
     return (dispatch) => {
         return dispatch({
-            type: types.USER_UPDATE_FIRSTNAME,
+            type: ActionTypes.USER_UPDATE_FIRSTNAME,
             firstname: firstname
         });
     };
@@ -58,7 +58,7 @@ export function updateLastname(lastname)
 {
     return (dispatch) => {
         return dispatch({
-            type: types.USER_UPDATE_LASTNAME,
+            type: ActionTypes.USER_UPDATE_LASTNAME,
             lastname: lastname
         });
     };

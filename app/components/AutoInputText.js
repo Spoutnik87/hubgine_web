@@ -2,6 +2,11 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 class AutoInputText extends Component {
+    static propTypes = {
+        value: PropTypes.string.isRequired,
+        onValidate: PropTypes.func.isRequired
+    };
+
     constructor(props)
     {
         super(props);
@@ -51,10 +56,5 @@ class AutoInputText extends Component {
             </div>;
     }
 }
-
-AutoInputText.propTypes = {
-    value: PropTypes.any,
-    onValidate: PropTypes.func
-};
 
 export default AutoInputText;

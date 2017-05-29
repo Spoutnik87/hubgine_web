@@ -3,6 +3,27 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
 class AccountOverview extends Component {
+    static propTypes = {
+        account: PropTypes.shape({
+            name: PropTypes.string.isRequired
+        }),
+        lang: PropTypes.shape({
+            
+        }).isRequired
+    };
+
+    constructor(props)
+    {
+        super(props);
+        this.state = {
+            isLoaded: false
+        };
+    }
+
+    componentDidMount() {
+        
+    }
+
     render()
     {
         return (
@@ -15,13 +36,6 @@ class AccountOverview extends Component {
         );
     }
 }
-
-AccountOverview.propTypes = {
-    account: PropTypes.shape({
-        name: PropTypes.string
-    }),
-    lang: PropTypes.object
-};
 
 const mapStateToProps = (state) => {
     return {

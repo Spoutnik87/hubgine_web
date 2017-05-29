@@ -1,4 +1,4 @@
-import { ENGLISH } from "./lang";
+import { ENGLISH } from "../constants/Languages";
 
 export default function getLanguage()
 {
@@ -7,6 +7,7 @@ export default function getLanguage()
         LANG: ENGLISH,
         COMPANY_NAME: "Hubgine",
         //---HEADER---
+        HEADER_SR_ONLY: "Toggle navigation",
         HEADER_HOME: "Home",
         HEADER_ADMIN_DASHBOARD: "Admin Dashboard",
         HEADER_USER_DASHBOARD: "User Dashboard",
@@ -16,11 +17,13 @@ export default function getLanguage()
         HEADER_REGISTER: "Register",
         //---FOOTER---
         FOOTER_TITLE: "© 2017 Company, Inc. All Rights Reserved.",
+        //---NOTFOUND---
+        NOTFOUND_TITLE: "Page Not Found",
         //---SIGNIN---
         SIGNIN_TITLE: "Sign In",
         SIGNIN_EMAIL: "Email",
         SIGNIN_PASSWORD: "Password",
-        SIGNIN_FORGOT_PASSWORD: "Forgot password?",
+        SIGNIN_FORGOTPASSWORD: "Forgot password?",
         SIGNIN_SUBMIT: "Sign In",
         SIGNIN_EMAIL_INCORRECT: "Email is not valid.",
         SIGNIN_PASSWORD_INCORRECT: "Password length must be at least 6 characters.",
@@ -42,10 +45,25 @@ export default function getLanguage()
         REGISTER_USETERMS_INCORRECT: "You need to accept the terms of use.",
         REGISTER_ERROR: "An error happened during the subscription.",
         //---PROFILE---
-        PROFILE_PROFILE: "Profile",
-        PROFILE_ACCOUNT_LIST: "Account list",
+        PROFILE_TITLE: "Profile",
+        PROFILE_ACCOUNT_LIST: "Your accounts",
         PROFILE_EMAIL: "Email",
         PROFILE_FIRSTNAME: "First name",
-        PROFILE_LASTNAME: "Last name"
+        PROFILE_LASTNAME: "Last name",
+        PROFILE_ERROR_GENERIC: "An error happened.",
+        PROFILE_ERRORLOADING_USER: "An error happened during user loading.",
+        PROFILE_ERRORLOADING_ACCOUNTLIST: "An error happened during account list loading.",
+        PROFILE_ERROREDITING_EMAIL: "Email is not valid.",
+        PROFILE_SUCCESSEDITING_EMAIL: "You edited your email successfully.",
+        PROFILE_ERROREDITING_FIRSTNAME: "The first name field cannot be empty.",
+        PROFILE_SUCCESSEDITING_FIRSTNAME: "You edited your first name successfully.",
+        PROFILE_ERROREDITING_LASTNAME: "The last name field cannot be empty.",
+        PROFILE_SUCCESSEDITING_LASTNAME: "You edited your last name successfully.",
+        //---FORGOTPASSWORD---
+        FORGOTPASSWORD_TITLE: "Reset password",
+        FORGOTPASSWORD_SUBMIT: "Reset password",
+        FORGOTPASSWORD_EMAIL: "Email",
+        //---ACCOUNTTILE---
+        ACCOUNTTILE_NAME: "Name : "
     }
 }

@@ -1,11 +1,20 @@
 import React, { Component } from "react";
-import { sendFailureMessage, sendSuccessMessage } from "../actions/messages";
-import Messages from "./Messages";
 import validator from "validator";
 import { connect } from "react-redux";
-import { clearMessages } from "../actions/messages";
+import PropTypes from "prop-types";
+import { sendFailureMessage, sendSuccessMessage, clearMessages } from "../actions/messages";
+import Messages from "./Messages";
 
-class Forgotpassword extends React.Component {
+class ForgotPassword extends Component {
+    static propTypes = {
+        messages: PropTypes.object.isRequired,
+        lang: PropTypes.shape({
+            FORGOTPASSWORD_TITLE: PropTypes.string.isRequired,
+            FORGOTPASSWORD_SUBMIT: PropTypes.string.isRequired,
+            FORGOTPASSWORD_EMAIL: PropTypes.string.isRequired
+        }).isRequired
+    };
+
     constructor(props)
     {
         super(props);
@@ -61,18 +70,19 @@ class Forgotpassword extends React.Component {
     
     render()
     {
-        const loadingDisplay = this.state.loading ? <i className="fa fa-cog fa-spin fa-3x fa-fw"></i> : <button type="submit" className="btn btn-success">Reset password</button>;
+        const { FORGOTPASSWORD_TITLE, FORGOTPASSWORD_EMAIL, FORGOTPASSWORD_SUBMIT } = this.props.lang;
+        const loadingDisplay = this.state.loading ? <i className="fa fa-cog fa-spin fa-3x fa-fw"></i> : <button type="submit" className="btn btn-success">{FORGOTPASSWORD_SUBMIT}</button>;
         return (
             <div className="container">
                 <div className="panel">
                     <div className="panel-heading">
-                        <h3 className="panel-title">Reset password</h3>
+                        <h3 className="panel-title">{FORGOTPASSWORD_TITLE}</h3>
                     </div>
                     <div className="panel-body">
                         <Messages messages={this.props.messages}/>
                         <form onSubmit={this.handleSubmit} className="form-horizontal">
                             <div className="form-group">
-                                <label htmlFor="email" className="col-sm-2">Email</label>
+                                <label htmlFor="email" className="col-sm-2">{FORGOTPASSWORD_EMAIL}</label>
                                 <div className="col-sm-8">
                                     <input type="text" name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
                                 </div>
@@ -92,8 +102,9 @@ class Forgotpassword extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        messages: state.messages
+        messages: state.messages,
+        lang: state.lang
     };
 };
 
-export default connect(mapStateToProps)(Forgotpassword);
+export default connect(mapStateToProps)(ForgotPassword);

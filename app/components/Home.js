@@ -4,6 +4,10 @@ import PropTypes from "prop-types";
 import UserSubscriptionChart from "./UserSubscriptionChart";
 
 class Home extends Component {
+  static propTypes = {
+    messages: PropTypes.object.isRequired
+  };
+
   constructor(props)
   {
     super(props);
@@ -62,10 +66,6 @@ class Home extends Component {
     );
   }
 }
-
-Home.propTypes = {
-  lang: PropTypes.object
-};
 
 const mapStateToProps = (state) => {
   return {

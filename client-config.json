@@ -1,0 +1,6 @@
+{
+  "api": {
+    "host": "http://flavien.cc",
+    "port": 8001
+  }
+}

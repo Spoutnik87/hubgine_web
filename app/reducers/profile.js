@@ -1,10 +1,10 @@
-import * as types from "../constants/ActionTypes";
+import * as ActionTypes from "../constants/ActionTypes";
 
 const profile = (state = {}, action) =>
 {
     switch (action.type)
     {
-        case types.USER_GET_INFOS:
+        case ActionTypes.USER_GET_INFOS:
             return {
                 email: action.email,
                 firstname: action.firstname,

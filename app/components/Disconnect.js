@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { disconnect } from "../actions/user";
 import { connect } from "react-redux";
 import { withCookies } from "react-cookie";
 import { withRouter } from "react-router-dom";
+import { disconnect } from "../actions/user";
 
 class Disconnect extends Component {
   componentWillMount() {

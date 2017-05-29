@@ -1,10 +1,10 @@
-import * as types from "../constants/ActionTypes";
+import * as ActionTypes from "../constants/ActionTypes";
 
 export function clearMessages()
 {
     return (dispatch) => {
         return dispatch({ 
-            type: types.CLEAR_MESSAGES
+            type: ActionTypes.CLEAR_MESSAGES
         });
     };
 }
@@ -13,7 +13,7 @@ export function sendFailureMessage(messages)
 {
     return (dispatch) => {
         return dispatch({ 
-            type: types.FAILURE_MESSAGE,
+            type: ActionTypes.FAILURE_MESSAGE,
             messages: messages
         });
     };
@@ -23,7 +23,7 @@ export function sendSuccessMessage(messages)
 {
     return (dispatch) => {
         return dispatch({ 
-            type: types.SUCCESS_MESSAGE,
+            type: ActionTypes.SUCCESS_MESSAGE,
             messages: messages
         });
     };

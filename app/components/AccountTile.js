@@ -4,6 +4,15 @@ import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 
 class AccountTile extends Component {
+    static propTypes = {
+        account: PropTypes.shape({
+            name: PropTypes.string.isRequired
+        }),
+        lang: PropTypes.shape({
+            ACCOUNTTILE_NAME: PropTypes.string.isRequired
+        }).isRequired
+    };
+
     constructor(props)
     {
         super(props);
@@ -17,24 +26,18 @@ class AccountTile extends Component {
 
     render()
     {
+        const { ACCOUNTTILE_NAME } = this.props.lang;
         return (
             <div className="account-tile" onClick={this.handleClick}>
                 <i className="fa fa-twitter fa-3x fa-fw"></i>
                 <div className="account-tile-body">
-                    Name : {this.props.account.name} <br/>
+                    {ACCOUNTTILE_NAME} {this.props.account.name} <br/>
                     Status : <span className="account-active">Active</span>
                 </div>
             </div>
         );
     }
 }
-
-AccountTile.propTypes = {
-    account: PropTypes.shape({
-        name: PropTypes.string
-    }),
-    lang: PropTypes.object
-};
 
 const mapStateToProps = (state) => {
     return {
