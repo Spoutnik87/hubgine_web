@@ -3,7 +3,8 @@ import { api as config } from "../../client-config.json";
 const method = {
     GET: "GET",
     POST: "POST",
-    PUT: "PUT"
+    PUT: "PUT",
+    DELETE: "DELETE"
 };
 
 const useAPI = (method, endpoint, data, callback) => {
@@ -11,28 +12,30 @@ const useAPI = (method, endpoint, data, callback) => {
     let first = true;
     for (const key in data)
     {
-        if (data.hasOwnProperty(key))
+        if (data.hasOwnProperty(key) && data[key] !== null)
         {
             serializedData += ((first ? "?" : "&").toString() + key + "=" + data[key]);
         }
         if (first) first = false;
     }
     const url = config.host + ":" + config.port + "/" + endpoint + serializedData;
-    $.ajax({
-        type: method,
-        url: url,
-        contentType: "application/json",
-        dataType:"json",
-        cache: false,
-        success : (result, status) => {
-            const error = true ? status === "error" : false;
-            callback(error, result);
-        },
-        error : (result, status) => {
-            const error = true ? status === "error" : false;
-            callback(error, result);
+    const req = new XMLHttpRequest();
+    req.onreadystatechange = () => {
+        if (req.readyState === XMLHttpRequest.DONE)
+        {
+            if (req.status === 200)
+            {
+                callback(false, JSON.parse(req.responseText));
+            }
+            else
+            {
+                callback(true, JSON.parse(req.responseText));
+            }
         }
-    });
+    };
+    req.open(method, url, true);
+    req.setRequestHeader("Content-Type", "application/json");
+    req.send();
 }
 
 export const connect = (email, password, callback) => {
@@ -58,7 +61,15 @@ export const addUser = (email, password, firstname, lastname, lang, callback) =>
 export const addAccount = (email, token, name, consumer_key, consumer_secret, access_token_key, access_token_secret, callback) => {
     const data = { email, token, name, consumer_key, consumer_secret, access_token_key, access_token_secret };
 
-    useAPI(method.POST, "account", data, (error, result) => {
+    useAPI(method.POST, "twitter/account", data, (error, result) => {
+        callback(error, result);
+    });
+}
+
+export const removeAccount = (email, token, id, callback) => {
+    const data = { email, token, id };
+
+    useAPI(method.DELETE, "account", data, (error, result) => {
         callback(error, result);
     });
 }
@@ -79,18 +90,26 @@ export const getUser = (email, token, callback) => {
     });
 }
 
-export const updateUser = (email, token, field, value, callback) => {
-    const data = { email, token, field, value };
+export const getMaxAccounts = (email, token, callback) => {
+    const data  = { email, token };
+
+    useAPI(method.GET, "max_accounts", data, (error, result) => {
+        callback(error, result);
+    });
+}
+
+export const updateUser = (email, token, new_email, new_password, new_firstname, new_lastname, new_lang, callback) => {
+    const data = { email, token, new_email, new_password, new_firstname, new_lastname, new_lang };
 
     useAPI(method.PUT, "user", data, (error, result) => {
         callback(error, result);
     });
 }
 
-export const updateAccount = (email, token, id, field, value, callback) => {
-    const data = { email, token, id, field, value };
+export const updateAccount = (email, token, id, new_name, new_consumer_key, new_consumer_secret, new_access_token_key, new_access_token_secret, callback) => {
+    const data = { email, token, id, new_name, new_consumer_key, new_consumer_secret, new_access_token_key, new_access_token_secret };
 
-    useAPI(method.PUT, "account", data, (error, result) => {
+    useAPI(method.PUT, "twitter/account", data, (error, result) => {
         callback(error, result);
     });
 }
@@ -111,58 +130,58 @@ export const getAccountNameList = (email, token, callback) => {
     });
 }
 
-export const getAccount = (email, token, id, callback) => {
+export const getTwitterAccount = (email, token, id, callback) => {
     const data = { email, token, id };
     
-    useAPI(method.GET, "account", data, (error, result) => {
+    useAPI(method.GET, "twitter/account", data, (error, result) => {
         callback(error, result);
     });
 }
 
-export const getAccountName = (email, token, id, callback) => {
+export const getTwitterAccountName = (email, token, id, callback) => {
     const data = { email, token, id };
 
-    useAPI(method.GET, "account/item/name", data, (error, result) => {
+    useAPI(method.GET, "twitter/account/item/name", data, (error, result) => {
         callback(error, result);
     });
 }
 
-export const getAccountKeys = (email, token, id, callback) => {
+export const getTwitterAccountKeys = (email, token, id, callback) => {
     const data = { email, token, id };
 
-    useAPI(method.GET, "account/item/keys", data, (error, result) => {
+    useAPI(method.GET, "twitter/account/item/keys", data, (error, result) => {
         callback(error, result);
     });
 }
 
-export const getAccountCampaign = (email, token, id, callback) => {
+export const getTwitterAccountCampaign = (email, token, id, callback) => {
     const data = { email, token, id };
 
-    useAPI(method.GET, "account/item/campaign", data, (error, result) => {
+    useAPI(method.GET, "twitter/account/item/campaign", data, (error, result) => {
         callback(error, result);
     });
 }
 
-export const getAccountBlacklist = (email, token, id, callback) => {
+export const getTwitterAccountBlacklist = (email, token, id, callback) => {
     const data = { email, token, id };
 
-    useAPI(method.GET, "account/item/blacklist", data, (error, result) => {
+    useAPI(method.GET, "twitter/account/item/blacklist", data, (error, result) => {
         callback(error, result);
     });
 }
 
-export const getAccountCache = (email, token, id, callback) => {
+export const getTwitterAccountCache = (email, token, id, callback) => {
     const data = { email, token, id };
 
-    useAPI(method.GET, "account/item/cache", data, (error, result) => {
+    useAPI(method.GET, "twitter/account/item/cache", data, (error, result) => {
         callback(error, result);
     });
 }
 
-export const getAccountStats = (email, token, id, callback) => {
+export const getTwitterAccountStats = (email, token, id, callback) => {
     const data = { email, token, id };
 
-    useAPI(method.GET, "account/item/stats", data, (error, result) => {
+    useAPI(method.GET, "twitter/account/item/stats", data, (error, result) => {
         callback(error, result);
     });
 }

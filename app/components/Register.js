@@ -2,12 +2,12 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { withCookies } from "react-cookie";
-import validator from "validator";
+import { isValidEmail, isValidPassword, isValidFirstname, isValidLastname } from "validator";
 import PropTypes from "prop-types";
 import { addUser } from "../util/api";
 import { connect as connectUser } from "../actions/user";
 import { changeLanguage } from "../actions/lang";
-import { sendFailureMessage, clearMessages } from "../actions/messages";
+import { sendFailureMessages, clearMessages } from "../actions/messages";
 import { ENGLISH } from "../constants/Languages";
 import Messages from "./Messages";
 import LoadingCog from "./LoadingCog";
@@ -57,29 +57,29 @@ class Register extends Component {
         const { REGISTER_FIRSTNAME_INCORRECT, REGISTER_LASTNAME_INCORRECT, REGISTER_EMAIL_INCORRECT,
             REGISTER_PASSWORD_INCORRECT, REGISTER_PASSWORD_NOT_MATCH, REGISTER_USETERMS_INCORRECT, REGISTER_ERROR } = this.props.lang;
         const messages = [];
-        if (validator.isEmpty(this.state.firstname))
+        if (!isValidFirstname(this.state.firstname))
         {
-            messages.push({ msg: REGISTER_FIRSTNAME_INCORRECT });
+            messages.push(REGISTER_FIRSTNAME_INCORRECT);
         }
-        if (validator.isEmpty(this.state.lastname))
+        if (!isValidLastname(this.state.lastname))
         {
-            messages.push({ msg: REGISTER_LASTNAME_INCORRECT });
+            messages.push(REGISTER_LASTNAME_INCORRECT);
         }
-        if (!validator.isEmail(this.state.email))
+        if (!isValidEmail(this.state.email))
         {
-            messages.push({ msg: REGISTER_EMAIL_INCORRECT });
+            messages.push(REGISTER_EMAIL_INCORRECT);
         }
-        if (!validator.isLength(this.state.password, { min: 6 }))
+        if (!isValidPassword(this.state.password, { min: 6 }))
         {
-            messages.push({ msg: REGISTER_PASSWORD_INCORRECT });
+            messages.push(REGISTER_PASSWORD_INCORRECT);
         }
-        if (!validator.equals(this.state.password, this.state.cpassword))
+        if (!(this.state.password.length === this.state.cpassword.length))
         {
-            messages.push({ msg: REGISTER_PASSWORD_NOT_MATCH });
+            messages.push(REGISTER_PASSWORD_NOT_MATCH);
         }
         if (!this.state.useterms)
         {
-            messages.push({ msg: REGISTER_USETERMS_INCORRECT });
+            messages.push(REGISTER_USETERMS_INCORRECT);
         }
         if (messages.length == 0)
         {
@@ -98,15 +98,15 @@ class Register extends Component {
                 }
                 else
                 {
-                    messages.push({ msg: REGISTER_ERROR });
-                    this.props.dispatch(sendFailureMessage(messages));
+                    messages.push(REGISTER_ERROR);
+                    this.props.dispatch(sendFailureMessages(messages));
                     this.setState({ loading: false });
                 }
             });
         }
         else
         {
-            this.props.dispatch(sendFailureMessage(messages));
+            this.props.dispatch(sendFailureMessages(messages));
             this.setState({ loading: false });
         }
     }

@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import validator from "validator";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { getAccountKeys, updateAccount } from "../util/api";
-import { updateAccountName } from "../actions/accounts";
-import { sendFailureMessage } from "../actions/messages";
+import { isValidTwitterAccountName, isValidTwitterAccountConsumerKey, isValidTwitterAccountConsumerSecret, isValidTwitterAccountAccessTokenKey, isValidTwitterAccountAccessTokenSecret } from "validator";
+import { getTwitterAccountKeys, updateAccount, removeAccount } from "../util/api";
+import { sendFailureMessage, sendSuccessMessage } from "../actions/messages";
+import { removeAccount as removeAccountFromProps } from "../actions/accounts";
 import * as Ranks from "../constants/Ranks";
 import * as Languages from "../constants/Languages";
 import LoadingCog from "./LoadingCog";
@@ -12,7 +12,6 @@ import LoadingCog from "./LoadingCog";
 class AccountEditForm extends Component {
     static propTypes = {
         messages: PropTypes.object.isRequired,
-        id: PropTypes.number.isRequired,
         name: PropTypes.string.isRequired,
         user: PropTypes.shape({
             email: PropTypes.string.isRequired,
@@ -29,12 +28,12 @@ class AccountEditForm extends Component {
         this.state = {
             onEditMode: false,
             isLoaded: true,
-            initialName: "",
+            initialName: this.props.name,
             initialConsumerKey: "",
             initialConsumerSecret: "",
             initialAccessTokenKey: "",
             initialAccessTokenSecret: "",
-            name: "",
+            name: this.props.name,
             consumerKey: "",
             consumerSecret: "",
             accessTokenKey: "",
@@ -51,17 +50,15 @@ class AccountEditForm extends Component {
             this.setState({
                 isLoaded: false
             });
-            getAccountKeys(this.props.user.email, this.props.user.token, this.props.name, (error, result) => {
+            getTwitterAccountKeys(this.props.user.email, this.props.user.token, this.state.initialName, (error, result) => {
                 if (!error)
                 {
                     this.setState({
                         isLoaded: true,
-                        initialName: this.props.name,
                         initialConsumerKey: result.consumer_key,
                         initialConsumerSecret: result.consumer_secret,
                         initialAccessTokenKey: result.access_token_key,
                         initialAccessTokenSecret: result.access_token_secret,
-                        name: this.props.name,
                         consumerKey: result.consumer_key,
                         consumerSecret: result.consumer_secret,
                         accessTokenKey: result.access_token_key,
@@ -70,7 +67,7 @@ class AccountEditForm extends Component {
                 }
                 else
                 {
-                    this.props.dispatch(sendFailureMessage([{ msg: "An error happened." }]));
+                    this.props.dispatch(sendFailureMessage("An error happened."));
                 }
             });
         }
@@ -85,13 +82,13 @@ class AccountEditForm extends Component {
                 onEditMode: true
             });
         }
-        if (event.target.id === "buttonCancel")
+        else if (event.target.id === "buttonCancel")
         {
             this.setState({
                 onEditMode: false
             });
         }
-        if (event.target.id === "buttonValidate")
+        else if (event.target.id === "buttonValidate")
         {
             const values = {
                 name: this.state.name,
@@ -100,176 +97,56 @@ class AccountEditForm extends Component {
                 accessTokenKey: this.state.accessTokenKey,
                 accessTokenSecret: this.state.accessTokenSecret
             };
-            const progress = {
-                nameUpdated: false,
-                consumerKeyUpdated: false,
-                consumerSecretUpdated: false,
-                accessTokenKeyUpdated: false,
-                accessTokenSecretUpdated: false
-            };
-            if (!validator.isEmpty(values.name) && !validator.isEmpty(values.consumerKey) && !validator.isEmpty(values.consumerSecret) && !validator.isEmpty(values.accessTokenKey) && !validator.isEmpty(values.accessTokenSecret))
+            if (isValidTwitterAccountName(values.name) && 
+                isValidTwitterAccountConsumerKey(values.consumerKey) && 
+                isValidTwitterAccountConsumerSecret(values.consumerSecret) && 
+                isValidTwitterAccountAccessTokenKey(values.accessTokenKey) && 
+                isValidTwitterAccountAccessTokenSecret(values.accessTokenSecret))
             {
                 this.setState({
                     onEditMode: false,
                     isLoaded: false
                 });
-                if (values.name !== this.state.initialName)
-                {
-                    updateAccount(this.props.user.email, this.props.user.token, this.props.name, "name", values.name, (error, result) => {
-                        if (!error)
-                        {
-                            progress.nameUpdated = true;
-                            this.props.dispatch(updateAccountName(this.props.id, values.name));
-                            if (progress.nameUpdated && progress.consumerKeyUpdated && progress.consumerSecretUpdated && progress.accessTokenKeyUpdated && progress.accessTokenSecretUpdated && !this.state.isLoaded)
-                            {
-                                this.setState({
-                                    isLoaded: true
-                                });
-                            }
-                        }
-                    });
-                }
-                else
-                {
-                    progress.nameUpdated = true;
-                }
-                if (values.consumerKey !== this.state.initialConsumerKey)
-                {
-                    updateAccount(this.props.user.email, this.props.user.token, this.props.name, "consumer_key", values.consumerKey, (error, result) => {
-                        if (!error)
-                        {
-                            progress.consumerKeyUpdated = true;
-                            if (progress.nameUpdated && progress.consumerKeyUpdated && progress.consumerSecretUpdated && progress.accessTokenKeyUpdated && progress.accessTokenSecretUpdated && !this.state.isLoaded)
-                            {
-                                this.setState({
-                                    isLoaded: true
-                                });
-                            }
-                        }
-                    });
-                }
-                else
-                {
-                    progress.consumerKeyUpdated = true;
-                }
-                if (values.consumerSecret !== this.state.initialConsumerSecret)
-                {
-                    updateAccount(this.props.user.email, this.props.user.token, this.props.name, "consumer_secret", values.consumerSecret, (error, result) => {
-                        if (!error)
-                        {
-                            progress.consumerSecretUpdated = true;
-                            if (progress.nameUpdated && progress.consumerKeyUpdated && progress.consumerSecretUpdated && progress.accessTokenKeyUpdated && progress.accessTokenSecretUpdated && !this.state.isLoaded)
-                            {
-                                this.setState({
-                                    isLoaded: true
-                                });
-                            }
-                        }
-                    });
-                }
-                else
-                {
-                    progress.consumerSecretUpdated = true;
-                }
-                if (values.accessTokenKey !== this.state.initialAccessTokenKey)
-                {
-                    updateAccount(this.props.user.email, this.props.user.token, this.props.name, "access_token_key", values.accessTokenKey, (error, result) => {
-                        if (!error)
-                        {
-                            progress.accessTokenKeyUpdated = true;
-                            if (progress.nameUpdated && progress.consumerKeyUpdated && progress.consumerSecretUpdated && progress.accessTokenKeyUpdated && progress.accessTokenSecretUpdated && !this.state.isLoaded)
-                            {
-                                this.setState({
-                                    isLoaded: true
-                                });
-                            }
-                        }
-                    });
-                }
-                else
-                {
-                    progress.accessTokenKeyUpdated = true;
-                }
-                if (values.accessTokenSecret !== this.state.initialAccessTokenSecret)
-                {
-                    updateAccount(this.props.user.email, this.props.user.token, this.props.name, "access_token_secret", values.accessTokenSecret, (error, result) => {
-                        if (!error)
-                        {
-                            progress.accessTokenSecretUpdated = true;
-                            if (progress.nameUpdated && progress.consumerKeyUpdated && progress.consumerSecretUpdated && progress.accessTokenKeyUpdated && progress.accessTokenSecretUpdated && !this.state.isLoaded)
-                            {
-                                this.setState({
-                                    isLoaded: true
-                                });
-                            }
-                        }
-                    });
-                }
-                else
-                {
-                    progress.accessTokenSecretUpdated = true;
-                }
-                if (progress.nameUpdated && progress.consumerKeyUpdated && progress.consumerSecretUpdated && progress.accessTokenKeyUpdated && progress.accessTokenSecretUpdated && !this.state.isLoaded)
-                {
-                    this.setState({
-                        isLoaded: true
-                    });
-                }
+                const newName = values.name !== this.state.initialName ? values.name : null;
+                const newConsumerKey = values.consumerKey !== this.state.initialConsumerKey ? values.consumerKey : null;
+                const newConsumerSecret = values.consumerSecret !== this.state.initialConsumerSecret ? values.consumerSecret : null;
+                const newAccessTokenKey = values.accessTokenKey !== this.state.initialAccessTokenKey ? values.accessTokenKey : null;
+                const newAccessTokenSecret = values.accessTokenSecret !== this.state.initialAccessTokenSecret ? values.accessTokenSecret : null;
+                updateAccount(this.props.user.email, this.props.user.token, this.state.initialName, newName, newConsumerKey, newConsumerSecret, newAccessTokenKey, newAccessTokenSecret, (error, result) => {
+                    if (!error)
+                    {
+                        this.setState({
+                            isLoaded: true,
+                            initialName: values.name,
+                            initialConsumerKey: values.consumerKey,
+                            initialConsumerSecret: values.consumerSecret,
+                            initialAccessTokenKey: values.accessTokenKey,
+                            initialAccessTokenSecret: values.accessTokenSecret
+                        });
+                    }
+                });
             }
             else
             {
-                this.props.dispatch(sendFailureMessage([{ msg: "An error happened." }]));
+                this.props.dispatch(sendFailureMessage("An error happened."));
             }
-            /*if (!validator.isEmpty(this.state.name))
-            {
-                if (this.state.name !== this.state.initialName)
+        }
+        else if (event.target.id === "buttonDelete")
+        {
+            removeAccount(this.props.user.email, this.props.user.token, this.props.name, (error, result) => {
+                if (!error)
                 {
-                    this.setState({
-                        isLoaded: false
-                    });
-                    updateAccount(this.props.user.email, this.props.user.token, "name", this.state.name, (error, result) => {
-                        this.setState({ loadingLastname: false });
-                        if (!error)
-                        {
-                            this.props.dispatch(sendSuccessMessage([{ msg: PROFILE_SUCCESSEDITING_LASTNAME }]));
-                            this.props.dispatch(updateLastname(input.value));
-                        }
-                        else
-                        {
-                            this.props.dispatch(sendFailureMessage([{ msg: PROFILE_ERROR_GENERIC }]));
-                        }
-                    });
+                    this.props.dispatch(removeAccountFromProps(this.props.name));
+                    this.props.dispatch(sendSuccessMessage("This account was deleted successfully."));
                 }
-            }*/
-            /*const values = {};
-            if (this.state.name !== this.state.initialName)
-            {
-                values["name"] = this.state.name;
-            }
-            if (this.state.consumerKey !== this.state.initialConsumerKey)
-            {
-                values["consumerKey"] = this.state.consumerKey;
-            }
-            if (this.state.consumerSecret !== this.state.initialConsumerSecret)
-            {
-                values["consumerSecret"] = this.state.consumerSecret;
-            }
-            if (this.state.accessTokenKey !== this.state.initialAccessTokenKey)
-            {
-                values["accessTokenKey"] = this.state.accessTokenKey;
-            }
-            if (this.state.accessTokenSecret !== this.state.initialAccessTokenSecret)
-            {
-                values["accessTokenSecret"] = this.state.accessTokenSecret;
-            }
-            this.props.onValidate({
-                name: "account",
-                id: this.state.initialName,
-                values
-            });*/
+                else
+                {
+                    this.props.dispatch(sendFailureMessage("An error happened."));
+                }
+            });
         }
     }
-
+    
     handleChange(event)
     {
         this.setState({ [event.target.name]: event.target.value });
@@ -282,23 +159,20 @@ class AccountEditForm extends Component {
                 this.state.isLoaded ?
                 <div className="panel">
                     <div className="panel-heading">
-                        <div className="col-sm-10">
-                            <h3 className="panel-title">Account name : {this.props.name}</h3>
-                        </div>
-                        <div className="col-sm-2">
-                            <span id="buttonValidate" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonValidate" className="fa fa-check fa-fw"></i></span>
-                            <span id="buttonCancel" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonCancel" className="fa fa-remove fa-fw"></i></span>
+                        <div className="form-group">
+                            <label className="col-sm-2">Account name</label>
+                            <span className="input-group col-sm-10">
+                                <span className="col-sm-9">
+                                    <input type="text" className="form-control" name="name" value={this.state.name} onChange={this.handleChange} autoFocus/>
+                                </span>
+                                <span id="buttonValidate" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonValidate" className="fa fa-check fa-fw"></i></span>
+                                <span id="buttonCancel" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonCancel" className="fa fa-remove fa-fw"></i></span>
+                            </span>
                         </div>
                         <hr/>
                     </div>
                     <div className="panel-body">
                         <div className="form-horizontal">
-                            <div className="form-group">
-                                <label className="col-sm-2">Name</label>
-                                <div className="col-sm-8">
-                                    <input type="text" className="form-control" name="name" value={this.state.name} onChange={this.handleChange} autoFocus/>
-                                </div>
-                            </div>
                             <div className="form-group">
                                 <label className="col-sm-2">Consumer key</label>
                                 <div className="col-sm-8">
@@ -320,9 +194,10 @@ class AccountEditForm extends Component {
                             <div className="form-group">
                                 <label className="col-sm-2">Access token secret</label>
                                 <div className="col-sm-8">
-                                    <input type="text" className="form-control" name="accessTokenKey" value={this.state.accessTokenSecret} onChange={this.handleChange} autoFocus/>
+                                    <input type="text" className="form-control" name="accessTokenSecret" value={this.state.accessTokenSecret} onChange={this.handleChange} autoFocus/>
                                 </div>
                             </div>
+                            <button id="buttonDelete" type="button" className="btn btn-danger" onClick={this.handleClick}><i className="fa fa-trash"></i> Delete this account</button>
                         </div>
                     </div>
                 </div>
@@ -331,7 +206,7 @@ class AccountEditForm extends Component {
             :
                 this.state.isLoaded ? 
                 <div className="input-group">
-                    <div className="form-control">{this.props.name}</div>
+                    <div className="form-control">{this.state.initialName}</div>
                     <span id="buttonEditMode" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonEditMode" className="fa fa-pencil fa-fw"></i></span>
                 </div>
                 :
@@ -344,7 +219,7 @@ const mapStateToProps = (state) => {
     return {
         user: state.user,
         messages: state.messages,
-        lang: state.lang,
+        lang: state.lang
     };
 };
 

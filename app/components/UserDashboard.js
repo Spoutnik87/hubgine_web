@@ -6,7 +6,7 @@ import { updateAccountList } from "../actions/accounts";
 import { sendFailureMessage, clearMessages } from "../actions/messages";
 import * as Ranks from "../constants/Ranks";
 import * as Languages from "../constants/Languages";
-import { getAccountNameList, getAccount } from "../util/api";
+import { getAccountNameList, getTwitterAccount } from "../util/api";
 import LoadingCog from "./LoadingCog";
 import AccountTile from "./AccountTile";
 import AccountOverview from "./AccountOverview";
@@ -24,7 +24,7 @@ class UserDashboard extends Component {
             rank: PropTypes.oneOf(Object.values(Ranks)).isRequired,
             lang: PropTypes.oneOf(Object.values(Languages)).isRequired
         }).isRequired,
-        accounts: PropTypes.object.isRequired
+        accounts: PropTypes.array.isRequired
     };
 
     constructor(props)
@@ -44,31 +44,26 @@ class UserDashboard extends Component {
             getAccountNameList(this.props.user.email, this.props.user.token, (error, result) => {
                 if (!error)
                 {
-                    const data = [];
-                    for (let i = 0; i < result.accounts.length; i++)
-                    {
-                        data.push({ name: result.accounts[i] });
-                    }
-                    this.props.dispatch(updateAccountList(data));
+                    this.props.dispatch(updateAccountList(result.accounts));
                     this.setState({ isLoaded: true });
                 }
                 else
                 {
-                    this.props.dispatch(sendFailureMessage([{ msg: "An error happened during account list loading." }]));
+                    this.props.dispatch(sendFailureMessage("An error happened during account list loading."));
                 }
             });
         }
         else
         {
             const id = this.props.location.hash.substring(1);
-            getAccount(this.props.user.email, this.props.user.token, id, (error, result) => {
+            getTwitterAccount(this.props.user.email, this.props.user.token, id, (error, result) => {
                 if (!error)
                 {
                     console.log(result);
                 }
                 else
                 {
-                    this.props.dispatch(sendFailureMessage([{ msg: "An error happened during account loading." }]));
+                    this.props.dispatch(sendFailureMessage("An error happened during account loading."));
                 }
             });
         }
@@ -107,7 +102,7 @@ class UserDashboard extends Component {
             if (this.props.location.hash === "")
             {
                 tiles = (
-                    this.props.accounts.list.map((account, index) => (
+                    this.props.accounts.map((account, index) => (
                         <div key={index} className="col-md-4 col-sm-6">
                             <AccountTile account={account} href={"#" + index}/>
                         </div>
@@ -129,11 +124,11 @@ class UserDashboard extends Component {
 
                 if (overviewActive)
                 {
-                    tab = <AccountOverview account={this.props.accounts.list[this.props.location.hash.substring(1)]} />;
+                    tab = <AccountOverview account={this.props.accounts[this.props.location.hash.substring(1)]} />;
                 }
                 else if (settingsActive)
                 {
-                    tab = <AccountSettings account={this.props.accounts.list[this.props.location.hash.substring(1)]} />
+                    tab = <AccountSettings account={this.props.accounts[this.props.location.hash.substring(1)]} />
                 }
             }
         }

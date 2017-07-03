@@ -53,7 +53,7 @@ app.use((req, res) => {
     messages: {},
     user: user,
     profile: {},
-    accounts: {},
+    accounts: [],
     lang: lang.default(user.lang || Languages.ENGLISH),
   };
   const store = configureStore(initialState);

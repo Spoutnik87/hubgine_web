@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import validator from "validator";
+import { isValidEmail } from "validator";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { sendFailureMessage, sendSuccessMessage, clearMessages } from "../actions/messages";
+import { sendFailureMessages, sendSuccessMessages, clearMessages } from "../actions/messages";
 import Messages from "./Messages";
 
 class ForgotPassword extends Component {
@@ -30,9 +30,9 @@ class ForgotPassword extends Component {
         event.preventDefault();
         this.setState({ loading: true });
         const messages = [];
-        if (!validator.isEmail(this.state.email))
+        if (!isValidEmail(this.state.email))
         {
-            messages.push({ msg: "Email is not valid." });
+            messages.push("Email is not valid.");
         }
         if (messages.length === 0)
         {
@@ -40,20 +40,20 @@ class ForgotPassword extends Component {
             {
                 if (!error)
                 {
-                    messages.push({ msg: "An email was send." });
-                    this.props.dispatch(sendSuccessMessage(messages));                    
+                    messages.push("An email was send.");
+                    this.props.dispatch(sendSuccessMessages(messages));                    
                 }
                 else
                 {
-                    messages.push({ msg: "An error append during the subscription." });
-                    this.props.dispatch(sendFailureMessage(messages));
+                    messages.push("An error append during the subscription.");
+                    this.props.dispatch(sendFailureMessages(messages));
                 }
                 this.setState({ loading: false });
             });
         }
         else
         {
-            this.props.dispatch(sendFailureMessage(messages));
+            this.props.dispatch(sendFailureMessages(messages));
             this.setState({ loading: false });
         }
     }

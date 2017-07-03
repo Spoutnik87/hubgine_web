@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withCookies } from "react-cookie";
-import validator from "validator";
+import { isValidEmail, isValidFirstname, isValidLastname } from "validator";
 import PropTypes from "prop-types";
-import { getUser, updateUser, getAccountList } from "../util/api";
+import { getUser, updateUser, getAccountList, getMaxAccounts } from "../util/api";
 import { sendFailureMessage, sendSuccessMessage, clearMessages } from "../actions/messages";
 import { updateInfos, updateEmail, updateFirstname, updateLastname } from "../actions/user";
 import { updateAccountList } from "../actions/accounts";
@@ -12,12 +12,13 @@ import * as Languages from "../constants/Languages";
 import Messages from "./Messages";
 import AutoInputText from "./AutoInputText";
 import AccountEditForm from "./AccountEditForm";
+import AccountCreateForm from "./AccountCreateForm";
 import LoadingCog from "./LoadingCog";
 
 class Profile extends Component {
     static propTypes = {
         messages: PropTypes.object.isRequired,
-        accounts: PropTypes.object.isRequired,
+        accounts: PropTypes.array.isRequired,
         user: PropTypes.shape({
             email: PropTypes.string.isRequired,
             token: PropTypes.string.isRequired,
@@ -50,11 +51,16 @@ class Profile extends Component {
         this.state = {
             isLoaded: false,
             isAccountListLoaded: false,
+            isAccountCreationFormDisplayed: false,
             loadingEmail: false,
             loadingFirstname: false,
-            loadingLastname: false
+            loadingLastname: false,
+            maxAccounts: 0
         };
-        this.onValidate = this.onValidate.bind(this);
+        this.handleValidate = this.handleValidate.bind(this);
+        this.handleClick = this.handleClick.bind(this);
+        this.handleAccountFormCreationQuit = this.handleAccountFormCreationQuit.bind(this);
+        this.handleAccountFormCreationSubmit = this.handleAccountFormCreationSubmit.bind(this);
     }
 
     componentDidMount()
@@ -63,23 +69,36 @@ class Profile extends Component {
         getUser(this.props.user.email, this.props.user.token, (error, result) => {
             if (!error)
             {
-                this.props.dispatch(updateInfos(result.email, result.first_name, result.last_name));
-                this.setState({ isLoaded: true, email: result.email, firstname: result.first_name, lastname: result.last_name });
+                this.props.dispatch(updateInfos(result.email, result.firstname, result.lastname));
+                this.setState({
+                    isLoaded: true,
+                    email: result.email,
+                    firstname: result.firstname,
+                    lastname: result.lastname
+                });
             }
             else
             {
-                this.props.dispatch(sendFailureMessage([{ msg: PROFILE_ERRORLOADING_USER }]));
+                this.props.dispatch(sendFailureMessage(PROFILE_ERRORLOADING_USER));
             }
         });
         getAccountList(this.props.user.email, this.props.user.token, (error, result) => {
             if (!error)
             {
-                this.props.dispatch(updateAccountList(result.accounts, result.length));                
+                this.props.dispatch(updateAccountList(result.accounts));                
                 this.setState({ isAccountListLoaded: true });
             }
             else
             {
-                this.props.dispatch(sendFailureMessage([{ msg: PROFILE_ERRORLOADING_ACCOUNTLIST }]));
+                this.props.dispatch(sendFailureMessage(PROFILE_ERRORLOADING_ACCOUNTLIST));
+            }
+        });
+        getMaxAccounts(this.props.user.email, this.props.user.token, (error, result) => {
+            if (!error)
+            {
+                this.setState({
+                    maxAccounts: result.nbr
+                })
             }
         });
     }
@@ -89,123 +108,110 @@ class Profile extends Component {
         this.props.dispatch(clearMessages());
     }
 
-    onValidate(input)
+    handleValidate(input)
     {
         const { PROFILE_ERROR_GENERIC, PROFILE_SUCCESSEDITING_EMAIL, PROFILE_ERROREDITING_EMAIL,
             PROFILE_SUCCESSEDITING_FIRSTNAME, PROFILE_ERROREDITING_FIRSTNAME, PROFILE_SUCCESSEDITING_LASTNAME, PROFILE_ERROREDITING_LASTNAME } = this.props.lang;
         if (input.name === "email")
         {
-            if (validator.isEmail(input.value) && !validator.isEmpty(input.value))
+            if (isValidEmail(input.value))
             {
                 if (input.value !== this.props.user.email)
                 {
                     this.setState({ loadingEmail: true });
-                    updateUser(this.props.user.email, this.props.user.token, "email", input.value, (error, result) => {
+                    updateUser(this.props.user.email, this.props.user.token, input.value, null, null, null, null, (error, result) => {
                         this.setState({ loadingEmail: false });
                         if (!error)
                         {
-                            this.props.dispatch(sendSuccessMessage([{ msg: PROFILE_SUCCESSEDITING_EMAIL }]));
+                            this.props.dispatch(sendSuccessMessage(PROFILE_SUCCESSEDITING_EMAIL));
                             this.props.dispatch(updateEmail(input.value));
                             this.props.cookies.set("user", { token: this.props.user.token, email: this.props.user.email, rank: this.props.user.rank, lang: Languages.ENGLISH });
                         }
                         else
                         {
-                            this.props.dispatch(sendFailureMessage([{ msg: PROFILE_ERROR_GENERIC }]));
+                            this.props.dispatch(sendFailureMessage(PROFILE_ERROR_GENERIC));
                         }
                     });
                 }
             }
             else
             {
-                this.props.dispatch(sendFailureMessage([{ msg: PROFILE_ERROREDITING_EMAIL }]));
+                this.props.dispatch(sendFailureMessage(PROFILE_ERROREDITING_EMAIL));
             }
         }
         else if (input.name === "firstname")
         {
-            if (!validator.isEmpty(input.value))
+            if (isValidFirstname(input.value))
             {
                 if (input.value !== this.props.user.firstname)
                 {
                     this.setState({ loadingFirstname: true });
-                    updateUser(this.props.user.email, this.props.user.token, "first_name", input.value, (error, result) => {
+                    updateUser(this.props.user.email, this.props.user.token, null, null, input.value, null, null, (error, result) => {
                         this.setState({ loadingFirstname: false });
                         if (!error)
                         {
-                            this.props.dispatch(sendSuccessMessage([{ msg: PROFILE_SUCCESSEDITING_FIRSTNAME }]));
+                            this.props.dispatch(sendSuccessMessage(PROFILE_SUCCESSEDITING_FIRSTNAME));
                             this.props.dispatch(updateFirstname(input.value));
                         }
                         else
                         {
-                            this.props.dispatch(sendFailureMessage([{ msg: PROFILE_ERROR_GENERIC }]));
+                            this.props.dispatch(sendFailureMessage(PROFILE_ERROR_GENERIC));
                         }
                     });
                 }
             }
             else
             {
-                this.props.dispatch(sendFailureMessage([{ msg: PROFILE_ERROREDITING_FIRSTNAME }]));
+                this.props.dispatch(sendFailureMessage(PROFILE_ERROREDITING_FIRSTNAME));
             }
         }
         else if (input.name === "lastname")
         {
-            if (!validator.isEmpty(input.value))
+            if (isValidLastname(input.value))
             {
                 if (input.value !== this.props.user.lastname)
                 {
                     this.setState({
                         loadingLastname: true
                     });
-                    updateUser(this.props.user.email, this.props.user.token, "last_name", input.value, (error, result) => {
+                    updateUser(this.props.user.email, this.props.user.token, null, null, null, input.value, null, (error, result) => {
                         this.setState({ loadingLastname: false });
                         if (!error)
                         {
-                            this.props.dispatch(sendSuccessMessage([{ msg: PROFILE_SUCCESSEDITING_LASTNAME }]));
+                            this.props.dispatch(sendSuccessMessage(PROFILE_SUCCESSEDITING_LASTNAME));
                             this.props.dispatch(updateLastname(input.value));
                         }
                         else
                         {
-                            this.props.dispatch(sendFailureMessage([{ msg: PROFILE_ERROR_GENERIC }]));
+                            this.props.dispatch(sendFailureMessage(PROFILE_ERROR_GENERIC));
                         }
                     });
                 }
             }
             else
             {
-                this.props.dispatch(sendFailureMessage([{ msg: PROFILE_ERROREDITING_LASTNAME }]));
+                this.props.dispatch(sendFailureMessage(PROFILE_ERROREDITING_LASTNAME));
             }
         }
-        else if (input.name === "account")
+    }
+
+    handleClick(event)
+    {
+        if (event.target.id === "buttonAccountCreation")
         {
-            this.setState({
-                isAccountListLoaded: false
-            });
-            if (input.values.name)
-            {
-                if (!validator.isEmpty(input.values.name))
-                {
-
-                }
-            }
-            if (input.values.consumerKey)
-            {
-                if (!validator.isEmpty(input.values.consumerKey))
-                {
-                    
-                }
-            }
-            if (input.values.consumerSecret)
-            {
-
-            }
-            if (input.values.accessTokenKey)
-            {
-
-            }
-            if (input.values.accessTokenSecret)
-            {
-
-            }
+            this.setState({ isAccountCreationFormDisplayed: !this.state.isAccountCreationFormDisplayed });
         }
+    }
+
+    handleAccountFormCreationSubmit()
+    {
+        this.setState({ isAccountCreationFormDisplayed: !this.state.isAccountCreationFormDisplayed });
+        
+    }
+
+    handleAccountFormCreationQuit()
+    {
+        this.setState({ isAccountCreationFormDisplayed: !this.state.isAccountCreationFormDisplayed });
     }
 
     render()
@@ -217,22 +223,40 @@ class Profile extends Component {
         {
             accountList = (
                 <ul className="list-group">
-                    {this.props.accounts.list.map(
-                        (account, index) => (
-                            <li key={index} className="list-group-item"><AccountEditForm className="list-group-item" id={index} name={account.name} /></li>
+                    {this.props.accounts.map(
+                        account => (
+                            <li key={account.uid} className="list-group-item"><AccountEditForm className="list-group-item" account={account} name={account.name} /></li>
                         )
                     )}
                 </ul>
             );
         }
-        if (this.state.isLoaded && this.state.isAccountListLoaded)
+        if (this.state.isLoaded && this.state.isAccountListLoaded && this.state.maxAccounts > 0)
         {
             const emailInput = !this.state.loadingEmail ?
-                <AutoInputText name="email" value={this.props.user.email} onValidate={this.onValidate}/> : <LoadingCog/>;
+                <AutoInputText name="email" value={this.props.user.email} onValidate={this.handleValidate}/> : <LoadingCog/>;
             const firstnameInput = !this.state.loadingFirstname ?
-                <AutoInputText name="firstname" value={this.props.user.firstname} onValidate={this.onValidate}/> : <LoadingCog/>;
+                <AutoInputText name="firstname" value={this.props.user.firstname} onValidate={this.handleValidate}/> : <LoadingCog/>;
             const lastnameInput = !this.state.loadingLastname ?
-                <AutoInputText name="lastname" value={this.props.user.lastname} onValidate={this.onValidate}/> : <LoadingCog/>;
+                <AutoInputText name="lastname" value={this.props.user.lastname} onValidate={this.handleValidate}/> : <LoadingCog/>;
+            
+            const maxAccountsDisplay = (this.props.accounts.length >= this.state.maxAccounts) ? <span style={ { float: "right" } }>{this.props.accounts.length}/{this.state.maxAccounts}</span> : <span style={ { float: "right" } }>{this.props.accounts.length}/{this.state.maxAccounts}<div id="buttonAccountCreation" className="input-group-addon edit-button" onClick={this.handleClick} style={ { display: "inline" } }><i id="buttonAccountCreation" className="fa fa-plus fa-fw"></i></div></span>;
+
+            const accountContainer = (
+                this.state.isAccountCreationFormDisplayed ?
+                <AccountCreateForm onSubmit={this.handleAccountFormCreationSubmit} onQuit={this.handleAccountFormCreationQuit} />
+                :
+                <span>
+                    <div className="panel-heading">
+                        <div className="input-group">
+                            <h3 className="panel-title" style={ { width: "1000px" } }>{PROFILE_ACCOUNT_LIST} {maxAccountsDisplay}</h3>
+                        </div>
+                    </div>
+                    <div className="panel-body">
+                        {accountList}
+                    </div>
+                </span>
+            );
             panel = (
                 <div className="panel">
                     <div className="panel-heading">
@@ -259,13 +283,8 @@ class Profile extends Component {
                                     {lastnameInput}
                                 </div>
                             </div>
+                            {accountContainer}
                         </div>
-                    </div>
-                    <div className="panel-heading">
-                        <h3 className="panel-title">{PROFILE_ACCOUNT_LIST}</h3>
-                    </div>
-                    <div className="panel-body">
-                        {accountList}
                     </div>
                 </div>
             );

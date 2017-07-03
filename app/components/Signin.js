@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withCookies } from "react-cookie";
-import validator from "validator";
 import PropTypes from "prop-types";
+import { isValidEmail, isValidPassword } from "validator";
 import { connect as connectUser } from "../actions/user";
-import { sendFailureMessage, clearMessages } from "../actions/messages";
+import { sendFailureMessages, clearMessages } from "../actions/messages";
 import { changeLanguage } from "../actions/lang";
 import { connect as connectAPI } from "../util/api";
 import Messages from "./Messages";
@@ -44,13 +44,13 @@ class Signin extends Component {
         this.setState({ loading: true });
         const { SIGNIN_EMAIL_INCORRECT, SIGNIN_PASSWORD_INCORRECT, SIGNIN_CREDENTIALS_INCORRECT } = this.props.lang;
         const messages = [];
-        if (!validator.isEmail(this.state.email))
+        if (!isValidEmail(this.state.email))
         {
-            messages.push({ msg: SIGNIN_EMAIL_INCORRECT });
+            messages.push(SIGNIN_EMAIL_INCORRECT);
         }
-        if (!validator.isLength(this.state.password, { min: 6 }))
+        if (!isValidPassword(this.state.password))
         {
-            messages.push({ msg: SIGNIN_PASSWORD_INCORRECT });
+            messages.push(SIGNIN_PASSWORD_INCORRECT);
         }
         if (messages.length == 0)
         {
@@ -69,15 +69,15 @@ class Signin extends Component {
                 }
                 else
                 {
-                    messages.push({ msg: SIGNIN_CREDENTIALS_INCORRECT });
-                    this.props.dispatch(sendFailureMessage(messages));
+                    messages.push(SIGNIN_CREDENTIALS_INCORRECT);
+                    this.props.dispatch(sendFailureMessages(messages));
                     this.setState({ loading: false });
                 }
             });
         }
         else
         {
-            this.props.dispatch(sendFailureMessage(messages));
+            this.props.dispatch(sendFailureMessages(messages));
             this.setState({ loading: false });
         }
     }

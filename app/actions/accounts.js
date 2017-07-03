@@ -1,12 +1,31 @@
 import * as ActionTypes from "../constants/ActionTypes";
 
-export function updateAccountList(accounts, length)
+export function updateAccountList(accounts)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.ACCOUNT_UPDATE_LIST,
-            length: length,
             accounts: accounts
+        });
+    };
+}
+
+export function addAccount(account)
+{
+    return (dispatch) => {
+        return dispatch({ 
+            type: ActionTypes.ACCOUNT_ADD,
+            account: account
+        });
+    };
+}
+
+export function removeAccount(account_id)
+{
+    return (dispatch) => {
+        return dispatch({ 
+            type: ActionTypes.ACCOUNT_DELETE,
+            account_id: account_id
         });
     };
 }
