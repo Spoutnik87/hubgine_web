@@ -2554,7 +2554,7 @@ var Profile = function (_Component) {
                         return _react2.default.createElement(
                             "li",
                             { key: account.uid, className: "list-group-item" },
-                            _react2.default.createElement(_AccountEditForm2.default, { className: "list-group-item", account: account, name: account.name })
+                            _react2.default.createElement(_AccountEditForm2.default, { className: "list-group-item", name: account.name })
                         );
                     })
                 );

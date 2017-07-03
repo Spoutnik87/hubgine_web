@@ -225,7 +225,7 @@ class Profile extends Component {
                 <ul className="list-group">
                     {this.props.accounts.map(
                         account => (
-                            <li key={account.uid} className="list-group-item"><AccountEditForm className="list-group-item" account={account} name={account.name} /></li>
+                            <li key={account.uid} className="list-group-item"><AccountEditForm className="list-group-item" name={account.name} /></li>
                         )
                     )}
                 </ul>
