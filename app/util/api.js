@@ -101,17 +101,31 @@ export const getMaxAccounts = (email, token, callback) => {
 export const updateUser = (email, token, new_email, new_password, new_firstname, new_lastname, new_lang, callback) => {
     const data = { email, token, new_email, new_password, new_firstname, new_lastname, new_lang };
 
-    useAPI(method.PUT, "user", data, (error, result) => {
-        callback(error, result);
-    });
+    if (!(new_email === null && new_password === null && new_firstname === null && new_lastname === null && new_lang === null))
+    {
+        useAPI(method.PUT, "user", data, (error, result) => {
+            callback(error, result);
+        });
+    }
+    else
+    {
+        callback(null, {});
+    }
 }
 
 export const updateAccount = (email, token, id, new_name, new_consumer_key, new_consumer_secret, new_access_token_key, new_access_token_secret, callback) => {
     const data = { email, token, id, new_name, new_consumer_key, new_consumer_secret, new_access_token_key, new_access_token_secret };
 
-    useAPI(method.PUT, "twitter/account", data, (error, result) => {
-        callback(error, result);
-    });
+    if (!(new_name === null && new_consumer_key === null && new_consumer_secret === null && new_access_token_key === null && new_access_token_secret === null))
+    {
+        useAPI(method.PUT, "twitter/account", data, (error, result) => {
+            callback(error, result);
+        });
+    }
+    else
+    {
+        callback(null, {});
+    }
 }
 
 export const getAccountList = (email, token, callback) => {

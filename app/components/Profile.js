@@ -11,8 +11,8 @@ import * as Ranks from "../constants/Ranks";
 import * as Languages from "../constants/Languages";
 import Messages from "./Messages";
 import AutoInputText from "./AutoInputText";
-import AccountEditForm from "./AccountEditForm";
-import AccountCreateForm from "./AccountCreateForm";
+import TwitterAccountEditForm from "./TwitterAccountEditForm";
+import TwitterAccountCreateForm from "./TwitterAccountCreateForm";
 import LoadingCog from "./LoadingCog";
 
 class Profile extends Component {
@@ -225,7 +225,7 @@ class Profile extends Component {
                 <ul className="list-group">
                     {this.props.accounts.map(
                         account => (
-                            <li key={account.uid} className="list-group-item"><AccountEditForm className="list-group-item" name={account.name} /></li>
+                            <li key={account.uid} className="list-group-item"><TwitterAccountEditForm className="list-group-item" uid={account.uid} name={account.name} /></li>
                         )
                     )}
                 </ul>
@@ -244,7 +244,7 @@ class Profile extends Component {
 
             const accountContainer = (
                 this.state.isAccountCreationFormDisplayed ?
-                <AccountCreateForm onSubmit={this.handleAccountFormCreationSubmit} onQuit={this.handleAccountFormCreationQuit} />
+                <TwitterAccountCreateForm onSubmit={this.handleAccountFormCreationSubmit} onQuit={this.handleAccountFormCreationQuit} />
                 :
                 <span>
                     <div className="panel-heading">

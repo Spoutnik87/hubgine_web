@@ -64,6 +64,28 @@ export default function getLanguage()
         FORGOTPASSWORD_SUBMIT: "Réinitialiser le mot de passe",
         FORGOTPASSWORD_EMAIL: "Email",
         //---ACCOUNTTILE---
-        ACCOUNTTILE_NAME: "Nom : "
+        ACCOUNTTILE_NAME: "Nom : ",
+        //---TWITTERACCOUNTFORM---
+        TWITTERACCOUNTFORM_NAME: "Nom",
+        TWITTERACCOUNTFORM_CONSUMERKEY: "Consumer key",
+        TWITTERACCOUNTFORM_CONSUMERSECRET: "Consumer secret",
+        TWITTERACCOUNTFORM_ACCESSTOKENKEY: "Access token key",
+        TWITTERACCOUNTFORM_ACCESSTOKENSECRET: "Access token secret",
+        TWITTERACCOUNTFORM_NAME_INCORRECT: "Un nom valide est requis.",
+        TWITTERACCOUNTFORM_NAME_NOT_UNIQUE: "Ce nom existe déjà.",
+        TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT: "Votre \"consumer key\" est invalide.",
+        TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT: "Votre \"consumer secret\" est invalide.",
+        TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT: "Votre \"access token key\" est invalide.",
+        TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT: "Votre \"access token secret\" est invalide.",
+        TWITTERACCOUNTFORM_GENERIC_ERROR: "Une erreur est survenue.",
+        //---TWITTERACCOUNTCREATEFORM---
+        TWITTERACCOUNTCREATEFORM_SUCCESS: "Un compte a été créé avec succès.",
+        TWITTERACCOUNTCREATEFORM_TITLE: "Créer un compte",
+        //---TWITTERACCOUNTEDITFORM---
+        TWITTERACCOUNTEDITFORM_EDIT_SUCCESS: "Ce compte a été mis à jour.",
+        TWITTERACCOUNTEDITFORM_EDIT_ERROR: "Une erreur est survenue lors de la mise à jour du compte.",
+        TWITTERACCOUNTEDITFORM_DELETE_SUCCESS: "Ce compte a été supprimé avec succès.",
+        TWITTERACCOUNTEDITFORM_DELETE_ERROR: "Une errreur est survenue lors de la suppression du compte.",
+        TWITTERACCOUNTEDITFORM_DELETE_BUTTON: "Supprimer"
     }
 }

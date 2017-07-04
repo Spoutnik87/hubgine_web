@@ -297,591 +297,6 @@ var _propTypes = require("prop-types");
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _validator = require("validator");
-
-var _LoadingCog = require("./LoadingCog");
-
-var _LoadingCog2 = _interopRequireDefault(_LoadingCog);
-
-var _api = require("../util/api");
-
-var _Ranks = require("../constants/Ranks");
-
-var Ranks = _interopRequireWildcard(_Ranks);
-
-var _Languages = require("../constants/Languages");
-
-var Languages = _interopRequireWildcard(_Languages);
-
-var _accounts = require("../actions/accounts");
-
-var _messages = require("../actions/messages");
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var AccountCreateForm = function (_Component) {
-    _inherits(AccountCreateForm, _Component);
-
-    function AccountCreateForm(props) {
-        _classCallCheck(this, AccountCreateForm);
-
-        var _this = _possibleConstructorReturn(this, (AccountCreateForm.__proto__ || Object.getPrototypeOf(AccountCreateForm)).call(this, props));
-
-        _this.state = {
-            isLoaded: true,
-            name: "",
-            consumerKey: "",
-            consumerSecret: "",
-            accessTokenKey: "",
-            accessTokenSecret: ""
-        };
-        _this.handleChange = _this.handleChange.bind(_this);
-        _this.handleClick = _this.handleClick.bind(_this);
-        return _this;
-    }
-
-    _createClass(AccountCreateForm, [{
-        key: "handleChange",
-        value: function handleChange(event) {
-            this.setState(_defineProperty({}, event.target.name, event.target.value));
-        }
-    }, {
-        key: "handleClick",
-        value: function handleClick(event) {
-            var _this2 = this;
-
-            if (event.target.id === "buttonSubmit") {
-                var values = {
-                    name: this.state.name,
-                    consumerKey: this.state.consumerKey,
-                    consumerSecret: this.state.consumerSecret,
-                    accessTokenKey: this.state.accessTokenKey,
-                    accessTokenSecret: this.state.accessTokenSecret
-                };
-                if ((0, _validator.isValidTwitterAccountName)(values.name) && (0, _validator.isValidTwitterAccountConsumerKey)(values.consumerKey) && (0, _validator.isValidTwitterAccountConsumerSecret)(values.consumerSecret) && (0, _validator.isValidTwitterAccountAccessTokenKey)(values.accessTokenKey) && (0, _validator.isValidTwitterAccountAccessTokenSecret)(values.accessTokenSecret)) {
-                    this.setState({
-                        isLoaded: false
-                    });
-                    (0, _api.addAccount)(this.props.user.email, this.props.user.token, values.name, values.consumerKey, values.consumerSecret, values.accessTokenKey, values.accessTokenSecret, function (error, result) {
-                        if (!error) {
-                            _this2.setState({
-                                isLoaded: true
-                            });
-                            _this2.props.dispatch((0, _accounts.addAccount)({
-                                name: values.name,
-                                consumerKey: values.consumerKey,
-                                consumerSecret: values.consumerSecret,
-                                accessTokenKey: values.accessTokenKey,
-                                accessTokenSecret: values.accessTokenSecret
-                            }));
-                            _this2.props.dispatch((0, _messages.sendSuccessMessage)("An account was created successfully."));
-                        } else {
-                            _this2.props.dispatch((0, _messages.sendFailureMessage)("An error happened."));
-                        }
-                        _this2.props.onSubmit({
-                            name: values.name,
-                            consumerKey: values.consumerKey,
-                            consumerSecret: values.consumerSecret,
-                            accessTokenKey: values.accessTokenKey,
-                            accessTokenSecret: values.accessTokenSecret
-                        });
-                    });
-                }
-            } else if (event.target.id === "buttonQuit") {
-                this.props.onQuit();
-            }
-        }
-    }, {
-        key: "render",
-        value: function render() {
-            return this.state.isLoaded ? _react2.default.createElement(
-                "div",
-                null,
-                _react2.default.createElement(
-                    "div",
-                    { className: "panel-heading" },
-                    _react2.default.createElement(
-                        "div",
-                        { className: "input-group" },
-                        _react2.default.createElement(
-                            "h3",
-                            { className: "panel-title" },
-                            "Create an account"
-                        ),
-                        _react2.default.createElement(
-                            "span",
-                            { id: "buttonSubmit", className: "input-group-addon edit-button", onClick: this.handleClick },
-                            _react2.default.createElement("i", { id: "buttonSubmit", className: "fa fa-check fa-fw" })
-                        ),
-                        _react2.default.createElement(
-                            "span",
-                            { id: "buttonQuit", className: "input-group-addon edit-button", onClick: this.handleClick },
-                            _react2.default.createElement("i", { id: "buttonQuit", className: "fa fa-remove fa-fw" })
-                        )
-                    )
-                ),
-                _react2.default.createElement(
-                    "div",
-                    { className: "panel-body" },
-                    _react2.default.createElement(
-                        "div",
-                        { className: "form-horizontal" },
-                        _react2.default.createElement(
-                            "div",
-                            { className: "form-group" },
-                            _react2.default.createElement(
-                                "label",
-                                { className: "col-sm-2" },
-                                "Name"
-                            ),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "col-sm-8" },
-                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "name", value: this.state.name, onChange: this.handleChange, autoFocus: true })
-                            )
-                        ),
-                        _react2.default.createElement(
-                            "div",
-                            { className: "form-group" },
-                            _react2.default.createElement(
-                                "label",
-                                { className: "col-sm-2" },
-                                "Consumer key"
-                            ),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "col-sm-8" },
-                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "consumerKey", value: this.state.consumerKey, onChange: this.handleChange, autoFocus: true })
-                            )
-                        ),
-                        _react2.default.createElement(
-                            "div",
-                            { className: "form-group" },
-                            _react2.default.createElement(
-                                "label",
-                                { className: "col-sm-2" },
-                                "Consumer secret"
-                            ),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "col-sm-8" },
-                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "consumerSecret", value: this.state.consumerSecret, onChange: this.handleChange, autoFocus: true })
-                            )
-                        ),
-                        _react2.default.createElement(
-                            "div",
-                            { className: "form-group" },
-                            _react2.default.createElement(
-                                "label",
-                                { className: "col-sm-2" },
-                                "Access token key"
-                            ),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "col-sm-8" },
-                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "accessTokenKey", value: this.state.accessTokenKey, onChange: this.handleChange, autoFocus: true })
-                            )
-                        ),
-                        _react2.default.createElement(
-                            "div",
-                            { className: "form-group" },
-                            _react2.default.createElement(
-                                "label",
-                                { className: "col-sm-2" },
-                                "Access token secret"
-                            ),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "col-sm-8" },
-                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "accessTokenSecret", value: this.state.accessTokenSecret, onChange: this.handleChange, autoFocus: true })
-                            )
-                        )
-                    )
-                )
-            ) : _react2.default.createElement(
-                "div",
-                { style: { textAlign: "center" } },
-                _react2.default.createElement(_LoadingCog2.default, null)
-            );
-        }
-    }]);
-
-    return AccountCreateForm;
-}(_react.Component);
-
-AccountCreateForm.propTypes = {
-    onSubmit: _propTypes2.default.func,
-    onQuit: _propTypes2.default.func,
-    user: _propTypes2.default.shape({
-        email: _propTypes2.default.string.isRequired,
-        token: _propTypes2.default.string.isRequired,
-        rank: _propTypes2.default.oneOf(Object.values(Ranks)).isRequired,
-        lang: _propTypes2.default.oneOf(Object.values(Languages)).isRequired
-    }),
-    lang: _propTypes2.default.object.isRequired
-};
-
-
-var mapStateToProps = function mapStateToProps(state) {
-    return {
-        user: state.user,
-        messages: state.messages,
-        lang: state.lang
-    };
-};
-
-exports.default = (0, _reactRedux.connect)(mapStateToProps)(AccountCreateForm);
-
-},{"../actions/accounts":1,"../actions/messages":3,"../constants/Languages":30,"../constants/Ranks":31,"../util/api":43,"./LoadingCog":18,"prop-types":323,"react":543,"react-redux":467,"validator":614}],6:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = require("react");
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactRedux = require("react-redux");
-
-var _propTypes = require("prop-types");
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-var _validator = require("validator");
-
-var _api = require("../util/api");
-
-var _messages = require("../actions/messages");
-
-var _accounts = require("../actions/accounts");
-
-var _Ranks = require("../constants/Ranks");
-
-var Ranks = _interopRequireWildcard(_Ranks);
-
-var _Languages = require("../constants/Languages");
-
-var Languages = _interopRequireWildcard(_Languages);
-
-var _LoadingCog = require("./LoadingCog");
-
-var _LoadingCog2 = _interopRequireDefault(_LoadingCog);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var AccountEditForm = function (_Component) {
-    _inherits(AccountEditForm, _Component);
-
-    function AccountEditForm(props) {
-        _classCallCheck(this, AccountEditForm);
-
-        var _this = _possibleConstructorReturn(this, (AccountEditForm.__proto__ || Object.getPrototypeOf(AccountEditForm)).call(this, props));
-
-        _this.state = {
-            onEditMode: false,
-            isLoaded: true,
-            initialName: _this.props.name,
-            initialConsumerKey: "",
-            initialConsumerSecret: "",
-            initialAccessTokenKey: "",
-            initialAccessTokenSecret: "",
-            name: _this.props.name,
-            consumerKey: "",
-            consumerSecret: "",
-            accessTokenKey: "",
-            accessTokenSecret: ""
-        };
-        _this.handleClick = _this.handleClick.bind(_this);
-        _this.handleChange = _this.handleChange.bind(_this);
-        return _this;
-    }
-
-    _createClass(AccountEditForm, [{
-        key: "componentDidUpdate",
-        value: function componentDidUpdate(prevProps, prevState) {
-            var _this2 = this;
-
-            if (!prevState.onEditMode && this.state.onEditMode) {
-                this.setState({
-                    isLoaded: false
-                });
-                (0, _api.getTwitterAccountKeys)(this.props.user.email, this.props.user.token, this.state.initialName, function (error, result) {
-                    if (!error) {
-                        _this2.setState({
-                            isLoaded: true,
-                            initialConsumerKey: result.consumer_key,
-                            initialConsumerSecret: result.consumer_secret,
-                            initialAccessTokenKey: result.access_token_key,
-                            initialAccessTokenSecret: result.access_token_secret,
-                            consumerKey: result.consumer_key,
-                            consumerSecret: result.consumer_secret,
-                            accessTokenKey: result.access_token_key,
-                            accessTokenSecret: result.access_token_secret
-                        });
-                    } else {
-                        _this2.props.dispatch((0, _messages.sendFailureMessage)("An error happened."));
-                    }
-                });
-            }
-        }
-    }, {
-        key: "handleClick",
-        value: function handleClick(event) {
-            var _this3 = this;
-
-            if (event.target.id === "buttonEditMode") {
-                this.setState({
-                    value: this.props.value,
-                    onEditMode: true
-                });
-            } else if (event.target.id === "buttonCancel") {
-                this.setState({
-                    onEditMode: false
-                });
-            } else if (event.target.id === "buttonValidate") {
-                var values = {
-                    name: this.state.name,
-                    consumerKey: this.state.consumerKey,
-                    consumerSecret: this.state.consumerSecret,
-                    accessTokenKey: this.state.accessTokenKey,
-                    accessTokenSecret: this.state.accessTokenSecret
-                };
-                if ((0, _validator.isValidTwitterAccountName)(values.name) && (0, _validator.isValidTwitterAccountConsumerKey)(values.consumerKey) && (0, _validator.isValidTwitterAccountConsumerSecret)(values.consumerSecret) && (0, _validator.isValidTwitterAccountAccessTokenKey)(values.accessTokenKey) && (0, _validator.isValidTwitterAccountAccessTokenSecret)(values.accessTokenSecret)) {
-                    this.setState({
-                        onEditMode: false,
-                        isLoaded: false
-                    });
-                    var newName = values.name !== this.state.initialName ? values.name : null;
-                    var newConsumerKey = values.consumerKey !== this.state.initialConsumerKey ? values.consumerKey : null;
-                    var newConsumerSecret = values.consumerSecret !== this.state.initialConsumerSecret ? values.consumerSecret : null;
-                    var newAccessTokenKey = values.accessTokenKey !== this.state.initialAccessTokenKey ? values.accessTokenKey : null;
-                    var newAccessTokenSecret = values.accessTokenSecret !== this.state.initialAccessTokenSecret ? values.accessTokenSecret : null;
-                    (0, _api.updateAccount)(this.props.user.email, this.props.user.token, this.state.initialName, newName, newConsumerKey, newConsumerSecret, newAccessTokenKey, newAccessTokenSecret, function (error, result) {
-                        if (!error) {
-                            _this3.setState({
-                                isLoaded: true,
-                                initialName: values.name,
-                                initialConsumerKey: values.consumerKey,
-                                initialConsumerSecret: values.consumerSecret,
-                                initialAccessTokenKey: values.accessTokenKey,
-                                initialAccessTokenSecret: values.accessTokenSecret
-                            });
-                        }
-                    });
-                } else {
-                    this.props.dispatch((0, _messages.sendFailureMessage)("An error happened."));
-                }
-            } else if (event.target.id === "buttonDelete") {
-                (0, _api.removeAccount)(this.props.user.email, this.props.user.token, this.props.name, function (error, result) {
-                    if (!error) {
-                        _this3.props.dispatch((0, _accounts.removeAccount)(_this3.props.name));
-                        _this3.props.dispatch((0, _messages.sendSuccessMessage)("This account was deleted successfully."));
-                    } else {
-                        _this3.props.dispatch((0, _messages.sendFailureMessage)("An error happened."));
-                    }
-                });
-            }
-        }
-    }, {
-        key: "handleChange",
-        value: function handleChange(event) {
-            this.setState(_defineProperty({}, event.target.name, event.target.value));
-        }
-    }, {
-        key: "render",
-        value: function render() {
-            return this.state.onEditMode ? this.state.isLoaded ? _react2.default.createElement(
-                "div",
-                { className: "panel" },
-                _react2.default.createElement(
-                    "div",
-                    { className: "panel-heading" },
-                    _react2.default.createElement(
-                        "div",
-                        { className: "form-group" },
-                        _react2.default.createElement(
-                            "label",
-                            { className: "col-sm-2" },
-                            "Account name"
-                        ),
-                        _react2.default.createElement(
-                            "span",
-                            { className: "input-group col-sm-10" },
-                            _react2.default.createElement(
-                                "span",
-                                { className: "col-sm-9" },
-                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "name", value: this.state.name, onChange: this.handleChange, autoFocus: true })
-                            ),
-                            _react2.default.createElement(
-                                "span",
-                                { id: "buttonValidate", className: "input-group-addon edit-button", onClick: this.handleClick },
-                                _react2.default.createElement("i", { id: "buttonValidate", className: "fa fa-check fa-fw" })
-                            ),
-                            _react2.default.createElement(
-                                "span",
-                                { id: "buttonCancel", className: "input-group-addon edit-button", onClick: this.handleClick },
-                                _react2.default.createElement("i", { id: "buttonCancel", className: "fa fa-remove fa-fw" })
-                            )
-                        )
-                    ),
-                    _react2.default.createElement("hr", null)
-                ),
-                _react2.default.createElement(
-                    "div",
-                    { className: "panel-body" },
-                    _react2.default.createElement(
-                        "div",
-                        { className: "form-horizontal" },
-                        _react2.default.createElement(
-                            "div",
-                            { className: "form-group" },
-                            _react2.default.createElement(
-                                "label",
-                                { className: "col-sm-2" },
-                                "Consumer key"
-                            ),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "col-sm-8" },
-                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "consumerKey", value: this.state.consumerKey, onChange: this.handleChange, autoFocus: true })
-                            )
-                        ),
-                        _react2.default.createElement(
-                            "div",
-                            { className: "form-group" },
-                            _react2.default.createElement(
-                                "label",
-                                { className: "col-sm-2" },
-                                "Consumer secret"
-                            ),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "col-sm-8" },
-                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "consumerSecret", value: this.state.consumerSecret, onChange: this.handleChange, autoFocus: true })
-                            )
-                        ),
-                        _react2.default.createElement(
-                            "div",
-                            { className: "form-group" },
-                            _react2.default.createElement(
-                                "label",
-                                { className: "col-sm-2" },
-                                "Access token key"
-                            ),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "col-sm-8" },
-                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "accessTokenKey", value: this.state.accessTokenKey, onChange: this.handleChange, autoFocus: true })
-                            )
-                        ),
-                        _react2.default.createElement(
-                            "div",
-                            { className: "form-group" },
-                            _react2.default.createElement(
-                                "label",
-                                { className: "col-sm-2" },
-                                "Access token secret"
-                            ),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "col-sm-8" },
-                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "accessTokenSecret", value: this.state.accessTokenSecret, onChange: this.handleChange, autoFocus: true })
-                            )
-                        ),
-                        _react2.default.createElement(
-                            "button",
-                            { id: "buttonDelete", type: "button", className: "btn btn-danger", onClick: this.handleClick },
-                            _react2.default.createElement("i", { className: "fa fa-trash" }),
-                            " Delete this account"
-                        )
-                    )
-                )
-            ) : _react2.default.createElement(_LoadingCog2.default, null) : this.state.isLoaded ? _react2.default.createElement(
-                "div",
-                { className: "input-group" },
-                _react2.default.createElement(
-                    "div",
-                    { className: "form-control" },
-                    this.state.initialName
-                ),
-                _react2.default.createElement(
-                    "span",
-                    { id: "buttonEditMode", className: "input-group-addon edit-button", onClick: this.handleClick },
-                    _react2.default.createElement("i", { id: "buttonEditMode", className: "fa fa-pencil fa-fw" })
-                )
-            ) : _react2.default.createElement(_LoadingCog2.default, null);
-        }
-    }]);
-
-    return AccountEditForm;
-}(_react.Component);
-
-AccountEditForm.propTypes = {
-    messages: _propTypes2.default.object.isRequired,
-    name: _propTypes2.default.string.isRequired,
-    user: _propTypes2.default.shape({
-        email: _propTypes2.default.string.isRequired,
-        token: _propTypes2.default.string.isRequired,
-        rank: _propTypes2.default.oneOf(Object.values(Ranks)).isRequired,
-        lang: _propTypes2.default.oneOf(Object.values(Languages)).isRequired
-    }),
-    lang: _propTypes2.default.object.isRequired
-};
-
-
-var mapStateToProps = function mapStateToProps(state) {
-    return {
-        user: state.user,
-        messages: state.messages,
-        lang: state.lang
-    };
-};
-
-exports.default = (0, _reactRedux.connect)(mapStateToProps)(AccountEditForm);
-
-},{"../actions/accounts":1,"../actions/messages":3,"../constants/Languages":30,"../constants/Ranks":31,"../util/api":43,"./LoadingCog":18,"prop-types":323,"react":543,"react-redux":467,"validator":614}],7:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = require("react");
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactRedux = require("react-redux");
-
-var _propTypes = require("prop-types");
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -946,7 +361,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(AccountOverview);
 
-},{"prop-types":323,"react":543,"react-redux":467}],8:[function(require,module,exports){
+},{"prop-types":323,"react":543,"react-redux":467}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1008,7 +423,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(AccountSettings);
 
-},{"prop-types":323,"react":543,"react-redux":467}],9:[function(require,module,exports){
+},{"prop-types":323,"react":543,"react-redux":467}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1103,7 +518,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _reactRedux.connect)(mapStateToProps)(AccountTile));
 
-},{"prop-types":323,"react":543,"react-redux":467,"react-router-dom":487}],10:[function(require,module,exports){
+},{"prop-types":323,"react":543,"react-redux":467,"react-router-dom":487}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1215,7 +630,7 @@ var AdminDashboard = function (_Component) {
 
 exports.default = AdminDashboard;
 
-},{"react":543}],11:[function(require,module,exports){
+},{"react":543}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1358,7 +773,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _reactRedux.connect)(mapStateToProps)(App));
 
-},{"../constants/Ranks":31,"./AdminDashboard":10,"./Disconnect":13,"./Footer":14,"./ForgotPassword":15,"./Header":16,"./Home":17,"./NotFound":20,"./Profile":21,"./Register":22,"./Signin":23,"./UserDashboard":24,"./routes/AdminRoute":26,"./routes/LoggedInRoute":27,"./routes/NotLoggedInRoute":28,"prop-types":323,"react":543,"react-redux":467,"react-router-dom":487}],12:[function(require,module,exports){
+},{"../constants/Ranks":31,"./AdminDashboard":8,"./Disconnect":11,"./Footer":12,"./ForgotPassword":13,"./Header":14,"./Home":15,"./NotFound":18,"./Profile":19,"./Register":20,"./Signin":21,"./UserDashboard":24,"./routes/AdminRoute":26,"./routes/LoggedInRoute":27,"./routes/NotLoggedInRoute":28,"prop-types":323,"react":543,"react-redux":467,"react-router-dom":487}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1463,7 +878,7 @@ AutoInputText.propTypes = {
 };
 exports.default = AutoInputText;
 
-},{"prop-types":323,"react":543}],13:[function(require,module,exports){
+},{"prop-types":323,"react":543}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1520,7 +935,7 @@ var Disconnect = function (_Component) {
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _reactCookie.withCookies)((0, _reactRedux.connect)()(Disconnect)));
 
-},{"../actions/user":4,"react":543,"react-cookie":329,"react-redux":467,"react-router-dom":487}],14:[function(require,module,exports){
+},{"../actions/user":4,"react":543,"react-cookie":329,"react-redux":467,"react-router-dom":487}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1591,7 +1006,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(Footer);
 
-},{"prop-types":323,"react":543,"react-redux":467}],15:[function(require,module,exports){
+},{"prop-types":323,"react":543,"react-redux":467}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1768,7 +1183,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(ForgotPassword);
 
-},{"../actions/messages":3,"./Messages":19,"prop-types":323,"react":543,"react-redux":467,"validator":614}],16:[function(require,module,exports){
+},{"../actions/messages":3,"./Messages":17,"prop-types":323,"react":543,"react-redux":467,"validator":614}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1975,7 +1390,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _reactRedux.connect)(mapStateToProps)(Header));
 
-},{"../constants/Ranks":31,"prop-types":323,"react":543,"react-redux":467,"react-router-dom":487}],17:[function(require,module,exports){
+},{"../constants/Ranks":31,"prop-types":323,"react":543,"react-redux":467,"react-router-dom":487}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2128,7 +1543,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(Home);
 
-},{"./UserSubscriptionChart":25,"prop-types":323,"react":543,"react-redux":467}],18:[function(require,module,exports){
+},{"./UserSubscriptionChart":25,"prop-types":323,"react":543,"react-redux":467}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2147,7 +1562,7 @@ var LoadingCog = function LoadingCog(props) {
 
 exports.default = LoadingCog;
 
-},{"react":543}],19:[function(require,module,exports){
+},{"react":543}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2235,7 +1650,7 @@ Messages.propTypes = {
 };
 exports.default = Messages;
 
-},{"prop-types":323,"react":543}],20:[function(require,module,exports){
+},{"prop-types":323,"react":543}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2311,7 +1726,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(NotFound);
 
-},{"prop-types":323,"react":543,"react-redux":467}],21:[function(require,module,exports){
+},{"prop-types":323,"react":543,"react-redux":467}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2358,13 +1773,13 @@ var _AutoInputText = require("./AutoInputText");
 
 var _AutoInputText2 = _interopRequireDefault(_AutoInputText);
 
-var _AccountEditForm = require("./AccountEditForm");
+var _TwitterAccountEditForm = require("./TwitterAccountEditForm");
 
-var _AccountEditForm2 = _interopRequireDefault(_AccountEditForm);
+var _TwitterAccountEditForm2 = _interopRequireDefault(_TwitterAccountEditForm);
 
-var _AccountCreateForm = require("./AccountCreateForm");
+var _TwitterAccountCreateForm = require("./TwitterAccountCreateForm");
 
-var _AccountCreateForm2 = _interopRequireDefault(_AccountCreateForm);
+var _TwitterAccountCreateForm2 = _interopRequireDefault(_TwitterAccountCreateForm);
 
 var _LoadingCog = require("./LoadingCog");
 
@@ -2554,7 +1969,7 @@ var Profile = function (_Component) {
                         return _react2.default.createElement(
                             "li",
                             { key: account.uid, className: "list-group-item" },
-                            _react2.default.createElement(_AccountEditForm2.default, { className: "list-group-item", name: account.name })
+                            _react2.default.createElement(_TwitterAccountEditForm2.default, { className: "list-group-item", uid: account.uid, name: account.name })
                         );
                     })
                 );
@@ -2583,7 +1998,7 @@ var Profile = function (_Component) {
                     )
                 );
 
-                var accountContainer = this.state.isAccountCreationFormDisplayed ? _react2.default.createElement(_AccountCreateForm2.default, { onSubmit: this.handleAccountFormCreationSubmit, onQuit: this.handleAccountFormCreationQuit }) : _react2.default.createElement(
+                var accountContainer = this.state.isAccountCreationFormDisplayed ? _react2.default.createElement(_TwitterAccountCreateForm2.default, { onSubmit: this.handleAccountFormCreationSubmit, onQuit: this.handleAccountFormCreationQuit }) : _react2.default.createElement(
                     "span",
                     null,
                     _react2.default.createElement(
@@ -2745,7 +2160,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactCookie.withCookies)((0, _reactRedux.connect)(mapStateToProps)(Profile));
 
-},{"../actions/accounts":1,"../actions/messages":3,"../actions/user":4,"../constants/Languages":30,"../constants/Ranks":31,"../util/api":43,"./AccountCreateForm":5,"./AccountEditForm":6,"./AutoInputText":12,"./LoadingCog":18,"./Messages":19,"prop-types":323,"react":543,"react-cookie":329,"react-redux":467,"validator":614}],22:[function(require,module,exports){
+},{"../actions/accounts":1,"../actions/messages":3,"../actions/user":4,"../constants/Languages":30,"../constants/Ranks":31,"../util/api":43,"./AutoInputText":10,"./LoadingCog":16,"./Messages":17,"./TwitterAccountCreateForm":22,"./TwitterAccountEditForm":23,"prop-types":323,"react":543,"react-cookie":329,"react-redux":467,"validator":614}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3065,7 +2480,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _reactCookie.withCookies)((0, _reactRedux.connect)(mapStateToProps)(Register)));
 
-},{"../actions/lang":2,"../actions/messages":3,"../actions/user":4,"../constants/Languages":30,"../util/api":43,"./LoadingCog":18,"./Messages":19,"prop-types":323,"react":543,"react-cookie":329,"react-redux":467,"react-router-dom":487,"validator":614}],23:[function(require,module,exports){
+},{"../actions/lang":2,"../actions/messages":3,"../actions/user":4,"../constants/Languages":30,"../util/api":43,"./LoadingCog":16,"./Messages":17,"prop-types":323,"react":543,"react-cookie":329,"react-redux":467,"react-router-dom":487,"validator":614}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3153,7 +2568,7 @@ var Signin = function (_Component) {
             if (!(0, _validator.isValidPassword)(this.state.password)) {
                 messages.push(SIGNIN_PASSWORD_INCORRECT);
             }
-            if (messages.length == 0) {
+            if (messages.length === 0) {
                 var email = this.state.email;
                 (0, _api.connect)(this.state.email, this.state.password, function (error, result) {
                     if (!error) {
@@ -3297,7 +2712,709 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _reactCookie.withCookies)((0, _reactRedux.connect)(mapStateToProps)(Signin)));
 
-},{"../actions/lang":2,"../actions/messages":3,"../actions/user":4,"../util/api":43,"./LoadingCog":18,"./Messages":19,"prop-types":323,"react":543,"react-cookie":329,"react-redux":467,"react-router-dom":487,"validator":614}],24:[function(require,module,exports){
+},{"../actions/lang":2,"../actions/messages":3,"../actions/user":4,"../util/api":43,"./LoadingCog":16,"./Messages":17,"prop-types":323,"react":543,"react-cookie":329,"react-redux":467,"react-router-dom":487,"validator":614}],22:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = require("react-redux");
+
+var _propTypes = require("prop-types");
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _validator = require("validator");
+
+var _LoadingCog = require("./LoadingCog");
+
+var _LoadingCog2 = _interopRequireDefault(_LoadingCog);
+
+var _api = require("../util/api");
+
+var _Ranks = require("../constants/Ranks");
+
+var Ranks = _interopRequireWildcard(_Ranks);
+
+var _Languages = require("../constants/Languages");
+
+var Languages = _interopRequireWildcard(_Languages);
+
+var _accounts = require("../actions/accounts");
+
+var _messages = require("../actions/messages");
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var AccountCreateForm = function (_Component) {
+    _inherits(AccountCreateForm, _Component);
+
+    function AccountCreateForm(props) {
+        _classCallCheck(this, AccountCreateForm);
+
+        var _this = _possibleConstructorReturn(this, (AccountCreateForm.__proto__ || Object.getPrototypeOf(AccountCreateForm)).call(this, props));
+
+        _this.state = {
+            isLoaded: true,
+            name: "",
+            consumerKey: "",
+            consumerSecret: "",
+            accessTokenKey: "",
+            accessTokenSecret: ""
+        };
+        _this.handleChange = _this.handleChange.bind(_this);
+        _this.handleClick = _this.handleClick.bind(_this);
+        return _this;
+    }
+
+    _createClass(AccountCreateForm, [{
+        key: "handleChange",
+        value: function handleChange(event) {
+            this.setState(_defineProperty({}, event.target.name, event.target.value));
+        }
+    }, {
+        key: "handleClick",
+        value: function handleClick(event) {
+            var _this2 = this;
+
+            var _props$lang = this.props.lang,
+                TWITTERACCOUNTFORM_NAME_INCORRECT = _props$lang.TWITTERACCOUNTFORM_NAME_INCORRECT,
+                TWITTERACCOUNTFORM_NAME_NOT_UNIQUE = _props$lang.TWITTERACCOUNTFORM_NAME_NOT_UNIQUE,
+                TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT = _props$lang.TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT,
+                TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT = _props$lang.TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT,
+                TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT = _props$lang.TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT,
+                TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT = _props$lang.TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT,
+                TWITTERACCOUNTFORM_GENERIC_ERROR = _props$lang.TWITTERACCOUNTFORM_GENERIC_ERROR,
+                TWITTERACCOUNTCREATEFORM_SUCCESS = _props$lang.TWITTERACCOUNTCREATEFORM_SUCCESS;
+
+            if (event.target.id === "buttonSubmit") {
+                var values = {
+                    name: this.state.name,
+                    consumerKey: this.state.consumerKey,
+                    consumerSecret: this.state.consumerSecret,
+                    accessTokenKey: this.state.accessTokenKey,
+                    accessTokenSecret: this.state.accessTokenSecret
+                };
+                var messages = [];
+                if (!(0, _validator.isValidTwitterAccountName)(values.name)) {
+                    messages.push(TWITTERACCOUNTFORM_NAME_INCORRECT);
+                }
+                if (!(0, _validator.isUniqueTwitterAccountName)(values.name, this.props.accounts.map(function (account) {
+                    return account.name;
+                }))) {
+                    messages.push(TWITTERACCOUNTFORM_NAME_NOT_UNIQUE);
+                }
+                if (!(0, _validator.isValidTwitterAccountConsumerKey)(values.consumerKey)) {
+                    messages.push(TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT);
+                }
+                if (!(0, _validator.isValidTwitterAccountConsumerSecret)(values.consumerSecret)) {
+                    messages.push(TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT);
+                }
+                if (!(0, _validator.isValidTwitterAccountAccessTokenKey)(values.accessTokenKey)) {
+                    messages.push(TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT);
+                }
+                if (!(0, _validator.isValidTwitterAccountAccessTokenSecret)(values.accessTokenSecret)) {
+                    messages.push(TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT);
+                }
+                if (messages.length === 0) {
+                    this.setState({
+                        isLoaded: false
+                    });
+                    (0, _api.addAccount)(this.props.user.email, this.props.user.token, values.name, values.consumerKey, values.consumerSecret, values.accessTokenKey, values.accessTokenSecret, function (error, result) {
+                        _this2.setState({
+                            isLoaded: true
+                        });
+                        if (!error) {
+                            _this2.props.dispatch((0, _accounts.addAccount)(values));
+                            _this2.props.dispatch((0, _messages.sendSuccessMessage)(TWITTERACCOUNTCREATEFORM_SUCCESS));
+                        } else {
+                            _this2.props.dispatch((0, _messages.sendFailureMessage)(TWITTERACCOUNTFORM_GENERIC_ERROR));
+                        }
+                        _this2.props.onSubmit(values);
+                    });
+                } else {
+                    this.props.dispatch((0, _messages.sendFailureMessages)(messages));
+                }
+            } else if (event.target.id === "buttonQuit") {
+                this.props.onQuit();
+            }
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            var _props$lang2 = this.props.lang,
+                TWITTERACCOUNTCREATEFORM_TITLE = _props$lang2.TWITTERACCOUNTCREATEFORM_TITLE,
+                TWITTERACCOUNTFORM_NAME = _props$lang2.TWITTERACCOUNTFORM_NAME,
+                TWITTERACCOUNTFORM_CONSUMERKEY = _props$lang2.TWITTERACCOUNTFORM_CONSUMERKEY,
+                TWITTERACCOUNTFORM_CONSUMERSECRET = _props$lang2.TWITTERACCOUNTFORM_CONSUMERSECRET,
+                TWITTERACCOUNTFORM_ACCESSTOKENKEY = _props$lang2.TWITTERACCOUNTFORM_ACCESSTOKENKEY,
+                TWITTERACCOUNTFORM_ACCESSTOKENSECRET = _props$lang2.TWITTERACCOUNTFORM_ACCESSTOKENSECRET;
+
+            return this.state.isLoaded ? _react2.default.createElement(
+                "div",
+                null,
+                _react2.default.createElement(
+                    "div",
+                    { className: "panel-heading" },
+                    _react2.default.createElement(
+                        "div",
+                        { className: "input-group" },
+                        _react2.default.createElement(
+                            "h3",
+                            { className: "panel-title" },
+                            TWITTERACCOUNTCREATEFORM_TITLE
+                        ),
+                        _react2.default.createElement(
+                            "span",
+                            { id: "buttonSubmit", className: "input-group-addon edit-button", onClick: this.handleClick },
+                            _react2.default.createElement("i", { id: "buttonSubmit", className: "fa fa-check fa-fw" })
+                        ),
+                        _react2.default.createElement(
+                            "span",
+                            { id: "buttonQuit", className: "input-group-addon edit-button", onClick: this.handleClick },
+                            _react2.default.createElement("i", { id: "buttonQuit", className: "fa fa-remove fa-fw" })
+                        )
+                    )
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "panel-body" },
+                    _react2.default.createElement(
+                        "div",
+                        { className: "form-horizontal" },
+                        _react2.default.createElement(
+                            "div",
+                            { className: "form-group" },
+                            _react2.default.createElement(
+                                "label",
+                                { className: "col-sm-2" },
+                                TWITTERACCOUNTFORM_NAME
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "col-sm-8" },
+                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "name", value: this.state.name, onChange: this.handleChange, autoFocus: true })
+                            )
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "form-group" },
+                            _react2.default.createElement(
+                                "label",
+                                { className: "col-sm-2" },
+                                TWITTERACCOUNTFORM_CONSUMERKEY
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "col-sm-8" },
+                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "consumerKey", value: this.state.consumerKey, onChange: this.handleChange, autoFocus: true })
+                            )
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "form-group" },
+                            _react2.default.createElement(
+                                "label",
+                                { className: "col-sm-2" },
+                                TWITTERACCOUNTFORM_CONSUMERSECRET
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "col-sm-8" },
+                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "consumerSecret", value: this.state.consumerSecret, onChange: this.handleChange, autoFocus: true })
+                            )
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "form-group" },
+                            _react2.default.createElement(
+                                "label",
+                                { className: "col-sm-2" },
+                                TWITTERACCOUNTFORM_ACCESSTOKENKEY
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "col-sm-8" },
+                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "accessTokenKey", value: this.state.accessTokenKey, onChange: this.handleChange, autoFocus: true })
+                            )
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "form-group" },
+                            _react2.default.createElement(
+                                "label",
+                                { className: "col-sm-2" },
+                                TWITTERACCOUNTFORM_ACCESSTOKENSECRET
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "col-sm-8" },
+                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "accessTokenSecret", value: this.state.accessTokenSecret, onChange: this.handleChange, autoFocus: true })
+                            )
+                        )
+                    )
+                )
+            ) : _react2.default.createElement(
+                "div",
+                { style: { textAlign: "center" } },
+                _react2.default.createElement(_LoadingCog2.default, null)
+            );
+        }
+    }]);
+
+    return AccountCreateForm;
+}(_react.Component);
+
+AccountCreateForm.propTypes = {
+    onSubmit: _propTypes2.default.func,
+    onQuit: _propTypes2.default.func,
+    accounts: _propTypes2.default.array.isRequired,
+    user: _propTypes2.default.shape({
+        email: _propTypes2.default.string.isRequired,
+        token: _propTypes2.default.string.isRequired,
+        rank: _propTypes2.default.oneOf(Object.values(Ranks)).isRequired,
+        lang: _propTypes2.default.oneOf(Object.values(Languages)).isRequired
+    }),
+    lang: _propTypes2.default.shape({
+        TWITTERACCOUNTFORM_NAME_INCORRECT: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_NAME_NOT_UNIQUE: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_GENERIC_ERROR: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_NAME: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_CONSUMERKEY: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_CONSUMERSECRET: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_ACCESSTOKENKEY: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_ACCESSTOKENSECRET: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTCREATEFORM_SUCCESS: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTCREATEFORM_TITLE: _propTypes2.default.string.isRequired
+    }).isRequired
+};
+
+
+var mapStateToProps = function mapStateToProps(state) {
+    return {
+        user: state.user,
+        messages: state.messages,
+        lang: state.lang,
+        accounts: state.accounts
+    };
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps)(AccountCreateForm);
+
+},{"../actions/accounts":1,"../actions/messages":3,"../constants/Languages":30,"../constants/Ranks":31,"../util/api":43,"./LoadingCog":16,"prop-types":323,"react":543,"react-redux":467,"validator":614}],23:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = require("react-redux");
+
+var _propTypes = require("prop-types");
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _validator = require("validator");
+
+var _api = require("../util/api");
+
+var _messages = require("../actions/messages");
+
+var _accounts = require("../actions/accounts");
+
+var _Ranks = require("../constants/Ranks");
+
+var Ranks = _interopRequireWildcard(_Ranks);
+
+var _Languages = require("../constants/Languages");
+
+var Languages = _interopRequireWildcard(_Languages);
+
+var _LoadingCog = require("./LoadingCog");
+
+var _LoadingCog2 = _interopRequireDefault(_LoadingCog);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var AccountEditForm = function (_Component) {
+    _inherits(AccountEditForm, _Component);
+
+    function AccountEditForm(props) {
+        _classCallCheck(this, AccountEditForm);
+
+        var _this = _possibleConstructorReturn(this, (AccountEditForm.__proto__ || Object.getPrototypeOf(AccountEditForm)).call(this, props));
+
+        _this.state = {
+            onEditMode: false,
+            isLoaded: true,
+            initialName: _this.props.name,
+            initialConsumerKey: "",
+            initialConsumerSecret: "",
+            initialAccessTokenKey: "",
+            initialAccessTokenSecret: "",
+            name: _this.props.name,
+            consumerKey: "",
+            consumerSecret: "",
+            accessTokenKey: "",
+            accessTokenSecret: ""
+        };
+        _this.handleClick = _this.handleClick.bind(_this);
+        _this.handleChange = _this.handleChange.bind(_this);
+        return _this;
+    }
+
+    _createClass(AccountEditForm, [{
+        key: "componentDidUpdate",
+        value: function componentDidUpdate(prevProps, prevState) {
+            var _this2 = this;
+
+            if (!prevState.onEditMode && this.state.onEditMode) {
+                this.setState({
+                    isLoaded: false
+                });
+                (0, _api.getTwitterAccountKeys)(this.props.user.email, this.props.user.token, this.state.initialName, function (error, result) {
+                    if (!error) {
+                        _this2.setState({
+                            isLoaded: true,
+                            initialConsumerKey: result.consumer_key,
+                            initialConsumerSecret: result.consumer_secret,
+                            initialAccessTokenKey: result.access_token_key,
+                            initialAccessTokenSecret: result.access_token_secret,
+                            consumerKey: result.consumer_key,
+                            consumerSecret: result.consumer_secret,
+                            accessTokenKey: result.access_token_key,
+                            accessTokenSecret: result.access_token_secret
+                        });
+                    } else {
+                        var TWITTERACCOUNTFORM_GENERIC_ERROR = _this2.props.lang.TWITTERACCOUNTFORM_GENERIC_ERROR;
+
+                        _this2.props.dispatch((0, _messages.sendFailureMessage)(TWITTERACCOUNTFORM_GENERIC_ERROR));
+                    }
+                });
+            }
+        }
+    }, {
+        key: "handleClick",
+        value: function handleClick(event) {
+            var _this3 = this;
+
+            var _props$lang = this.props.lang,
+                TWITTERACCOUNTFORM_NAME_INCORRECT = _props$lang.TWITTERACCOUNTFORM_NAME_INCORRECT,
+                TWITTERACCOUNTFORM_NAME_NOT_UNIQUE = _props$lang.TWITTERACCOUNTFORM_NAME_NOT_UNIQUE,
+                TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT = _props$lang.TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT,
+                TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT = _props$lang.TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT,
+                TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT = _props$lang.TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT,
+                TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT = _props$lang.TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT,
+                TWITTERACCOUNTEDITFORM_EDIT_SUCCESS = _props$lang.TWITTERACCOUNTEDITFORM_EDIT_SUCCESS,
+                TWITTERACCOUNTEDITFORM_EDIT_ERROR = _props$lang.TWITTERACCOUNTEDITFORM_EDIT_ERROR,
+                TWITTERACCOUNTEDITFORM_DELETE_SUCCESS = _props$lang.TWITTERACCOUNTEDITFORM_DELETE_SUCCESS,
+                TWITTERACCOUNTEDITFORM_DELETE_ERROR = _props$lang.TWITTERACCOUNTEDITFORM_DELETE_ERROR;
+
+            if (event.target.id === "buttonEditMode") {
+                this.setState({
+                    value: this.props.value,
+                    onEditMode: true
+                });
+            } else if (event.target.id === "buttonCancel") {
+                this.setState({
+                    onEditMode: false
+                });
+            } else if (event.target.id === "buttonValidate") {
+                var values = {
+                    name: this.state.name,
+                    consumerKey: this.state.consumerKey,
+                    consumerSecret: this.state.consumerSecret,
+                    accessTokenKey: this.state.accessTokenKey,
+                    accessTokenSecret: this.state.accessTokenSecret
+                };
+                var messages = [];
+                if (!(0, _validator.isValidTwitterAccountName)(values.name)) {
+                    messages.push(TWITTERACCOUNTFORM_NAME_INCORRECT);
+                }
+                if (!(0, _validator.isUniqueTwitterAccountName)(values.name, this.props.accounts.map(function (account) {
+                    if (_this3.props.uid !== account.uid) return account.name;
+                }))) {
+                    messages.push(TWITTERACCOUNTFORM_NAME_NOT_UNIQUE);
+                }
+                if (!(0, _validator.isValidTwitterAccountConsumerKey)(values.consumerKey)) {
+                    messages.push(TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT);
+                }
+                if (!(0, _validator.isValidTwitterAccountConsumerSecret)(values.consumerSecret)) {
+                    messages.push(TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT);
+                }
+                if (!(0, _validator.isValidTwitterAccountAccessTokenKey)(values.accessTokenKey)) {
+                    messages.push(TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT);
+                }
+                if (!(0, _validator.isValidTwitterAccountAccessTokenSecret)(values.accessTokenSecret)) {
+                    messages.push(TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT);
+                }
+                if (messages.length === 0) {
+                    this.setState({
+                        onEditMode: false,
+                        isLoaded: false
+                    });
+                    var newName = values.name !== this.state.initialName ? values.name : null;
+                    var newConsumerKey = values.consumerKey !== this.state.initialConsumerKey ? values.consumerKey : null;
+                    var newConsumerSecret = values.consumerSecret !== this.state.initialConsumerSecret ? values.consumerSecret : null;
+                    var newAccessTokenKey = values.accessTokenKey !== this.state.initialAccessTokenKey ? values.accessTokenKey : null;
+                    var newAccessTokenSecret = values.accessTokenSecret !== this.state.initialAccessTokenSecret ? values.accessTokenSecret : null;
+                    (0, _api.updateAccount)(this.props.user.email, this.props.user.token, this.state.initialName, newName, newConsumerKey, newConsumerSecret, newAccessTokenKey, newAccessTokenSecret, function (error, result) {
+                        if (!error) {
+                            _this3.setState({
+                                isLoaded: true,
+                                initialName: values.name,
+                                initialConsumerKey: values.consumerKey,
+                                initialConsumerSecret: values.consumerSecret,
+                                initialAccessTokenKey: values.accessTokenKey,
+                                initialAccessTokenSecret: values.accessTokenSecret
+                            });
+                            _this3.props.dispatch((0, _messages.sendSuccessMessage)(TWITTERACCOUNTEDITFORM_EDIT_SUCCESS));
+                        } else {
+                            _this3.setState({
+                                isLoaded: true
+                            });
+                            _this3.props.dispatch((0, _messages.sendFailureMessage)(TWITTERACCOUNTEDITFORM_EDIT_ERROR));
+                        }
+                    });
+                } else {
+                    this.props.dispatch((0, _messages.sendFailureMessages)(messages));
+                }
+            } else if (event.target.id === "buttonDelete") {
+                (0, _api.removeAccount)(this.props.user.email, this.props.user.token, this.props.name, function (error, result) {
+                    if (!error) {
+                        _this3.props.dispatch((0, _accounts.removeAccount)(_this3.props.name));
+                        _this3.props.dispatch((0, _messages.sendSuccessMessage)(TWITTERACCOUNTEDITFORM_DELETE_SUCCESS));
+                    } else {
+                        _this3.props.dispatch((0, _messages.sendFailureMessage)(TWITTERACCOUNTEDITFORM_DELETE_ERROR));
+                    }
+                });
+            }
+        }
+    }, {
+        key: "handleChange",
+        value: function handleChange(event) {
+            this.setState(_defineProperty({}, event.target.name, event.target.value));
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            var _props$lang2 = this.props.lang,
+                TWITTERACCOUNTFORM_NAME = _props$lang2.TWITTERACCOUNTFORM_NAME,
+                TWITTERACCOUNTFORM_CONSUMERKEY = _props$lang2.TWITTERACCOUNTFORM_CONSUMERKEY,
+                TWITTERACCOUNTFORM_CONSUMERSECRET = _props$lang2.TWITTERACCOUNTFORM_CONSUMERSECRET,
+                TWITTERACCOUNTFORM_ACCESSTOKENKEY = _props$lang2.TWITTERACCOUNTFORM_ACCESSTOKENKEY,
+                TWITTERACCOUNTFORM_ACCESSTOKENSECRET = _props$lang2.TWITTERACCOUNTFORM_ACCESSTOKENSECRET,
+                TWITTERACCOUNTEDITFORM_DELETE_BUTTON = _props$lang2.TWITTERACCOUNTEDITFORM_DELETE_BUTTON;
+
+            return this.state.onEditMode ? this.state.isLoaded ? _react2.default.createElement(
+                "div",
+                { className: "panel" },
+                _react2.default.createElement(
+                    "div",
+                    { className: "panel-heading" },
+                    _react2.default.createElement(
+                        "div",
+                        { className: "form-group" },
+                        _react2.default.createElement(
+                            "label",
+                            { className: "col-sm-2" },
+                            TWITTERACCOUNTFORM_NAME
+                        ),
+                        _react2.default.createElement(
+                            "span",
+                            { className: "input-group col-sm-10" },
+                            _react2.default.createElement(
+                                "span",
+                                { className: "col-sm-9" },
+                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "name", value: this.state.name, onChange: this.handleChange, autoFocus: true })
+                            ),
+                            _react2.default.createElement(
+                                "span",
+                                { id: "buttonValidate", className: "input-group-addon edit-button", onClick: this.handleClick },
+                                _react2.default.createElement("i", { id: "buttonValidate", className: "fa fa-check fa-fw" })
+                            ),
+                            _react2.default.createElement(
+                                "span",
+                                { id: "buttonCancel", className: "input-group-addon edit-button", onClick: this.handleClick },
+                                _react2.default.createElement("i", { id: "buttonCancel", className: "fa fa-remove fa-fw" })
+                            )
+                        )
+                    ),
+                    _react2.default.createElement("hr", null)
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "panel-body" },
+                    _react2.default.createElement(
+                        "div",
+                        { className: "form-horizontal" },
+                        _react2.default.createElement(
+                            "div",
+                            { className: "form-group" },
+                            _react2.default.createElement(
+                                "label",
+                                { className: "col-sm-2" },
+                                TWITTERACCOUNTFORM_CONSUMERKEY
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "col-sm-8" },
+                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "consumerKey", value: this.state.consumerKey, onChange: this.handleChange, autoFocus: true })
+                            )
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "form-group" },
+                            _react2.default.createElement(
+                                "label",
+                                { className: "col-sm-2" },
+                                TWITTERACCOUNTFORM_CONSUMERSECRET
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "col-sm-8" },
+                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "consumerSecret", value: this.state.consumerSecret, onChange: this.handleChange, autoFocus: true })
+                            )
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "form-group" },
+                            _react2.default.createElement(
+                                "label",
+                                { className: "col-sm-2" },
+                                TWITTERACCOUNTFORM_ACCESSTOKENKEY
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "col-sm-8" },
+                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "accessTokenKey", value: this.state.accessTokenKey, onChange: this.handleChange, autoFocus: true })
+                            )
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "form-group" },
+                            _react2.default.createElement(
+                                "label",
+                                { className: "col-sm-2" },
+                                TWITTERACCOUNTFORM_ACCESSTOKENSECRET
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "col-sm-8" },
+                                _react2.default.createElement("input", { type: "text", className: "form-control", name: "accessTokenSecret", value: this.state.accessTokenSecret, onChange: this.handleChange, autoFocus: true })
+                            )
+                        ),
+                        _react2.default.createElement(
+                            "button",
+                            { id: "buttonDelete", type: "button", className: "btn btn-danger", onClick: this.handleClick },
+                            _react2.default.createElement("i", { className: "fa fa-trash" }),
+                            " ",
+                            TWITTERACCOUNTEDITFORM_DELETE_BUTTON
+                        )
+                    )
+                )
+            ) : _react2.default.createElement(_LoadingCog2.default, null) : this.state.isLoaded ? _react2.default.createElement(
+                "div",
+                { className: "input-group" },
+                _react2.default.createElement(
+                    "div",
+                    { className: "form-control" },
+                    this.state.initialName
+                ),
+                _react2.default.createElement(
+                    "span",
+                    { id: "buttonEditMode", className: "input-group-addon edit-button", onClick: this.handleClick },
+                    _react2.default.createElement("i", { id: "buttonEditMode", className: "fa fa-pencil fa-fw" })
+                )
+            ) : _react2.default.createElement(_LoadingCog2.default, null);
+        }
+    }]);
+
+    return AccountEditForm;
+}(_react.Component);
+
+AccountEditForm.propTypes = {
+    messages: _propTypes2.default.object.isRequired,
+    uid: _propTypes2.default.string.isRequired,
+    name: _propTypes2.default.string.isRequired,
+    accounts: _propTypes2.default.array.isRequired,
+    user: _propTypes2.default.shape({
+        email: _propTypes2.default.string.isRequired,
+        token: _propTypes2.default.string.isRequired,
+        rank: _propTypes2.default.oneOf(Object.values(Ranks)).isRequired,
+        lang: _propTypes2.default.oneOf(Object.values(Languages)).isRequired
+    }),
+    lang: _propTypes2.default.shape({
+        TWITTERACCOUNTFORM_NAME_INCORRECT: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_NAME_NOT_UNIQUE: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_GENERIC_ERROR: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_NAME: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_CONSUMERKEY: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_CONSUMERSECRET: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_ACCESSTOKENKEY: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_ACCESSTOKENSECRET: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTEDITFORM_DELETE_BUTTON: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTEDITFORM_EDIT_SUCCESS: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTEDITFORM_EDIT_ERROR: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTEDITFORM_DELETE_SUCCESS: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTEDITFORM_DELETE_ERROR: _propTypes2.default.string.isRequired
+    }).isRequired
+};
+
+
+var mapStateToProps = function mapStateToProps(state) {
+    return {
+        user: state.user,
+        messages: state.messages,
+        lang: state.lang,
+        accounts: state.accounts
+    };
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps)(AccountEditForm);
+
+},{"../actions/accounts":1,"../actions/messages":3,"../constants/Languages":30,"../constants/Ranks":31,"../util/api":43,"./LoadingCog":16,"prop-types":323,"react":543,"react-redux":467,"validator":614}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3550,7 +3667,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _reactRedux.connect)(mapStateToProps)(UserDashboard));
 
-},{"../actions/accounts":1,"../actions/messages":3,"../constants/Languages":30,"../constants/Ranks":31,"../util/api":43,"./AccountOverview":7,"./AccountSettings":8,"./AccountTile":9,"./LoadingCog":18,"prop-types":323,"react":543,"react-redux":467,"react-router-dom":487}],25:[function(require,module,exports){
+},{"../actions/accounts":1,"../actions/messages":3,"../constants/Languages":30,"../constants/Ranks":31,"../util/api":43,"./AccountOverview":5,"./AccountSettings":6,"./AccountTile":7,"./LoadingCog":16,"prop-types":323,"react":543,"react-redux":467,"react-router-dom":487}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3933,7 +4050,29 @@ function getLanguage() {
         FORGOTPASSWORD_SUBMIT: "Reset password",
         FORGOTPASSWORD_EMAIL: "Email",
         //---ACCOUNTTILE---
-        ACCOUNTTILE_NAME: "Name : "
+        ACCOUNTTILE_NAME: "Name : ",
+        //---TWITTERACCOUNTFORM---
+        TWITTERACCOUNTFORM_NAME: "Name",
+        TWITTERACCOUNTFORM_CONSUMERKEY: "Consumer key",
+        TWITTERACCOUNTFORM_CONSUMERSECRET: "Consumer secret",
+        TWITTERACCOUNTFORM_ACCESSTOKENKEY: "Access token key",
+        TWITTERACCOUNTFORM_ACCESSTOKENSECRET: "Access token secret",
+        TWITTERACCOUNTFORM_NAME_INCORRECT: "A valid name is required.",
+        TWITTERACCOUNTFORM_NAME_NOT_UNIQUE: "This account name already exist.",
+        TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT: "A valid consumer key is required.",
+        TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT: "A valid consumer secret is required.",
+        TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT: "A valid access token key is required.",
+        TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT: "A valid access token secret required.",
+        TWITTERACCOUNTFORM_GENERIC_ERROR: "An error happened.",
+        //---TWITTERACCOUNTCREATEFORM---
+        TWITTERACCOUNTCREATEFORM_SUCCESS: "An account was created successfully.",
+        TWITTERACCOUNTCREATEFORM_TITLE: "Create an account",
+        //---TWITTERACCOUNTEDITFORM---
+        TWITTERACCOUNTEDITFORM_EDIT_SUCCESS: "This account was updated successfully.",
+        TWITTERACCOUNTEDITFORM_EDIT_ERROR: "An error happened during account update.",
+        TWITTERACCOUNTEDITFORM_DELETE_SUCCESS: "This account was deleted successfully.",
+        TWITTERACCOUNTEDITFORM_DELETE_ERROR: "An error happened during account deletion.",
+        TWITTERACCOUNTEDITFORM_DELETE_BUTTON: "Delete this account"
     };
 }
 
@@ -4010,7 +4149,29 @@ function getLanguage() {
         FORGOTPASSWORD_SUBMIT: "Réinitialiser le mot de passe",
         FORGOTPASSWORD_EMAIL: "Email",
         //---ACCOUNTTILE---
-        ACCOUNTTILE_NAME: "Nom : "
+        ACCOUNTTILE_NAME: "Nom : ",
+        //---TWITTERACCOUNTFORM---
+        TWITTERACCOUNTFORM_NAME: "Nom",
+        TWITTERACCOUNTFORM_CONSUMERKEY: "Consumer key",
+        TWITTERACCOUNTFORM_CONSUMERSECRET: "Consumer secret",
+        TWITTERACCOUNTFORM_ACCESSTOKENKEY: "Access token key",
+        TWITTERACCOUNTFORM_ACCESSTOKENSECRET: "Access token secret",
+        TWITTERACCOUNTFORM_NAME_INCORRECT: "Un nom valide est requis.",
+        TWITTERACCOUNTFORM_NAME_NOT_UNIQUE: "Ce nom existe déjà.",
+        TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT: "Votre \"consumer key\" est invalide.",
+        TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT: "Votre \"consumer secret\" est invalide.",
+        TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT: "Votre \"access token key\" est invalide.",
+        TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT: "Votre \"access token secret\" est invalide.",
+        TWITTERACCOUNTFORM_GENERIC_ERROR: "Une erreur est survenue.",
+        //---TWITTERACCOUNTCREATEFORM---
+        TWITTERACCOUNTCREATEFORM_SUCCESS: "Un compte a été créé avec succès.",
+        TWITTERACCOUNTCREATEFORM_TITLE: "Créer un compte",
+        //---TWITTERACCOUNTEDITFORM---
+        TWITTERACCOUNTEDITFORM_EDIT_SUCCESS: "Ce compte a été mis à jour.",
+        TWITTERACCOUNTEDITFORM_EDIT_ERROR: "Une erreur est survenue lors de la mise à jour du compte.",
+        TWITTERACCOUNTEDITFORM_DELETE_SUCCESS: "Ce compte a été supprimé avec succès.",
+        TWITTERACCOUNTEDITFORM_DELETE_ERROR: "Une errreur est survenue lors de la suppression du compte.",
+        TWITTERACCOUNTEDITFORM_DELETE_BUTTON: "Supprimer"
     };
 }
 
@@ -4085,7 +4246,7 @@ _reactDom2.default.render(_react2.default.createElement(
   )
 ), document.getElementById("app"));
 
-},{"./components/App":11,"./store/configureStore":42,"react":543,"react-cookie":329,"react-dom":331,"react-redux":467,"react-router-dom":487}],36:[function(require,module,exports){
+},{"./components/App":9,"./store/configureStore":42,"react":543,"react-cookie":329,"react-dom":331,"react-redux":467,"react-router-dom":487}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4495,17 +4656,25 @@ var getMaxAccounts = exports.getMaxAccounts = function getMaxAccounts(email, tok
 var updateUser = exports.updateUser = function updateUser(email, token, new_email, new_password, new_firstname, new_lastname, new_lang, callback) {
     var data = { email: email, token: token, new_email: new_email, new_password: new_password, new_firstname: new_firstname, new_lastname: new_lastname, new_lang: new_lang };
 
-    useAPI(method.PUT, "user", data, function (error, result) {
-        callback(error, result);
-    });
+    if (!(new_email === null && new_password === null && new_firstname === null && new_lastname === null && new_lang === null)) {
+        useAPI(method.PUT, "user", data, function (error, result) {
+            callback(error, result);
+        });
+    } else {
+        callback(null, {});
+    }
 };
 
 var updateAccount = exports.updateAccount = function updateAccount(email, token, id, new_name, new_consumer_key, new_consumer_secret, new_access_token_key, new_access_token_secret, callback) {
     var data = { email: email, token: token, id: id, new_name: new_name, new_consumer_key: new_consumer_key, new_consumer_secret: new_consumer_secret, new_access_token_key: new_access_token_key, new_access_token_secret: new_access_token_secret };
 
-    useAPI(method.PUT, "twitter/account", data, function (error, result) {
-        callback(error, result);
-    });
+    if (!(new_name === null && new_consumer_key === null && new_consumer_secret === null && new_access_token_key === null && new_access_token_secret === null)) {
+        useAPI(method.PUT, "twitter/account", data, function (error, result) {
+            callback(error, result);
+        });
+    } else {
+        callback(null, {});
+    }
 };
 
 var getAccountList = exports.getAccountList = function getAccountList(email, token, callback) {
@@ -58551,16 +58720,18 @@ module.exports = v4;
 
 },{"./lib/bytesToUuid":609,"./lib/rng":610}],613:[function(require,module,exports){
 module.exports={
-    "email": "^[^\\s]{1,64}@(?=(?:.+\\..+)$)(?=(?:.{1,255})$)",
-    "password": "^.{6,128}$",
-    "firstname": "^.{1,64}$",
-    "lastname": "^.{1,64}$",
+    "user": {
+        "email": "^[^\\s]{1,64}@(?=(?:.+\\..+)$)(?=(?:.{1,255})$)",
+        "password": "^.{6,128}$",
+        "firstname": "^[a-zA-Z\\s-]{1,64}$",
+        "lastname": "^[a-zA-Z\\s-]{1,64}$"
+    },
     "twitter_account": {
-        "name": "^.{1,64}$",
-        "consumer_key": "^.{1,256}$",
-        "consumer_secret": "^.{1,256}$",
-        "access_token_key": "^.{1,256}$",
-        "access_token_secret": "^.{1,256}$"
+        "name": "^[a-zA-Z0-9\\s-]{1,64}$",
+        "consumer_key": "^[a-zA-Z0-9-]{1,256}$",
+        "consumer_secret": "^[a-zA-Z0-9-]{1,256}$",
+        "access_token_key": "^[a-zA-Z0-9-]{1,256}$",
+        "access_token_secret": "^[a-zA-Z0-9-]{1,256}$"
     }
 }
 },{}],614:[function(require,module,exports){
@@ -58576,9 +58747,7 @@ const match = (value, rule, advanced = false) => {
             const result = regex.exec(value);
             if (result !== null)
             {
-                res = {
-                    result
-                }
+                res = result;
             }
             else
             {
@@ -58626,7 +58795,7 @@ const isValidForm = (...results) => {
     return result;
 };
 
-const isValidEmailProvider = (provider, providers) => {
+const isAllowedEmailProvider = (provider, providers) => {
     return !matchArray(provider, providers);
 };
 
@@ -58635,19 +58804,19 @@ const isValidLanguage = (lang, langs) => {
 };
 
 const isValidEmail = (email, advanced = false) => {
-    return match(email, rules.email, advanced);
+    return match(email, rules.user.email, advanced);
 };
 
 const isValidPassword = (password, advanced = false) => {
-    return match(password, rules.password, advanced);
+    return match(password, rules.user.password, advanced);
 };
 
 const isValidFirstname = (firstname, advanced = false) => {
-    return match(firstname, rules.firstname, advanced);
+    return match(firstname, rules.user.firstname, advanced);
 };
 
 const isValidLastname = (lastname, advanced = false) => {
-    return match(lastname, rules.lastname, advanced);
+    return match(lastname, rules.user.lastname, advanced);
 };
 
 const isValidSignupForm = (email, password, firstname, lastname) => {
@@ -58669,6 +58838,10 @@ const isValidSigninForm = (email, password) => {
 const isValidTwitterAccountName = (name, advanced = false) => {
     return match(name, rules.twitter_account.name, advanced);
 };
+
+const isUniqueTwitterAccountName = (name, names) => {
+    return !matchArray(name, names);
+}
 
 const isValidTwitterAccountConsumerKey = (consumerKey, advanced = false) => {
     return match(consumerKey, rules.twitter_account.consumer_key, advanced);
@@ -58697,7 +58870,7 @@ const isValidTwitterAccountForm = (name, consumerKey, consumerSecret, accessToke
 };
 
 module.exports = {
-    isValidEmailProvider,
+    isAllowedEmailProvider,
     isValidLanguage,
     isValidEmail,
     isValidPassword,
@@ -58706,6 +58879,7 @@ module.exports = {
     isValidSignupForm,
     isValidSigninForm,
     isValidTwitterAccountName,
+    isUniqueTwitterAccountName,
     isValidTwitterAccountConsumerKey,
     isValidTwitterAccountConsumerSecret,
     isValidTwitterAccountAccessTokenKey,

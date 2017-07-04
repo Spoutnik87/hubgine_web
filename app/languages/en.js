@@ -64,6 +64,28 @@ export default function getLanguage()
         FORGOTPASSWORD_SUBMIT: "Reset password",
         FORGOTPASSWORD_EMAIL: "Email",
         //---ACCOUNTTILE---
-        ACCOUNTTILE_NAME: "Name : "
+        ACCOUNTTILE_NAME: "Name : ",
+        //---TWITTERACCOUNTFORM---
+        TWITTERACCOUNTFORM_NAME: "Name",
+        TWITTERACCOUNTFORM_CONSUMERKEY: "Consumer key",
+        TWITTERACCOUNTFORM_CONSUMERSECRET: "Consumer secret",
+        TWITTERACCOUNTFORM_ACCESSTOKENKEY: "Access token key",
+        TWITTERACCOUNTFORM_ACCESSTOKENSECRET: "Access token secret",
+        TWITTERACCOUNTFORM_NAME_INCORRECT: "A valid name is required.",
+        TWITTERACCOUNTFORM_NAME_NOT_UNIQUE: "This account name already exist.",
+        TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT: "A valid consumer key is required.",
+        TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT: "A valid consumer secret is required.",
+        TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT: "A valid access token key is required.",
+        TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT: "A valid access token secret required.",
+        TWITTERACCOUNTFORM_GENERIC_ERROR: "An error happened.",
+        //---TWITTERACCOUNTCREATEFORM---
+        TWITTERACCOUNTCREATEFORM_SUCCESS: "An account was created successfully.",
+        TWITTERACCOUNTCREATEFORM_TITLE: "Create an account",
+        //---TWITTERACCOUNTEDITFORM---
+        TWITTERACCOUNTEDITFORM_EDIT_SUCCESS: "This account was updated successfully.",
+        TWITTERACCOUNTEDITFORM_EDIT_ERROR: "An error happened during account update.",
+        TWITTERACCOUNTEDITFORM_DELETE_SUCCESS: "This account was deleted successfully.",
+        TWITTERACCOUNTEDITFORM_DELETE_ERROR: "An error happened during account deletion.",
+        TWITTERACCOUNTEDITFORM_DELETE_BUTTON: "Delete this account"
     }
 }

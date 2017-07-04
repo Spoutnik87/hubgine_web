@@ -52,7 +52,7 @@ class Signin extends Component {
         {
             messages.push(SIGNIN_PASSWORD_INCORRECT);
         }
-        if (messages.length == 0)
+        if (messages.length === 0)
         {
             let email = this.state.email;
             connectAPI(this.state.email, this.state.password, (error, result) =>
