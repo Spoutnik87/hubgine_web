@@ -6,6 +6,7 @@ export default function getLanguage()
         //---MAIN VALUES---
         LANG: ENGLISH,
         COMPANY_NAME: "Hubgine",
+        REACT_DATETIME_LANGUAGE: "en",
         //---HEADER---
         HEADER_SR_ONLY: "Toggle navigation",
         HEADER_HOME: "Home",

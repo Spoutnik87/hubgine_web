@@ -10,9 +10,9 @@ import { updateAccountList } from "../actions/accounts";
 import * as Ranks from "../constants/Ranks";
 import * as Languages from "../constants/Languages";
 import Messages from "./Messages";
-import AutoInputText from "./AutoInputText";
-import TwitterAccountEditForm from "./TwitterAccountEditForm";
-import TwitterAccountCreateForm from "./TwitterAccountCreateForm";
+import TextInput from "./Inputs/TextInput";
+import TwitterAccountEditForm from "./Forms/TwitterAccountEditForm";
+import TwitterAccountCreateForm from "./Forms/TwitterAccountCreateForm";
 import LoadingCog from "./LoadingCog";
 
 class Profile extends Component {
@@ -57,7 +57,7 @@ class Profile extends Component {
             loadingLastname: false,
             maxAccounts: 0
         };
-        this.handleValidate = this.handleValidate.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleAccountFormCreationQuit = this.handleAccountFormCreationQuit.bind(this);
         this.handleAccountFormCreationSubmit = this.handleAccountFormCreationSubmit.bind(this);
@@ -108,7 +108,7 @@ class Profile extends Component {
         this.props.dispatch(clearMessages());
     }
 
-    handleValidate(input)
+    handleSubmit(input)
     {
         const { PROFILE_ERROR_GENERIC, PROFILE_SUCCESSEDITING_EMAIL, PROFILE_ERROREDITING_EMAIL,
             PROFILE_SUCCESSEDITING_FIRSTNAME, PROFILE_ERROREDITING_FIRSTNAME, PROFILE_SUCCESSEDITING_LASTNAME, PROFILE_ERROREDITING_LASTNAME } = this.props.lang;
@@ -234,11 +234,11 @@ class Profile extends Component {
         if (this.state.isLoaded && this.state.isAccountListLoaded && this.state.maxAccounts > 0)
         {
             const emailInput = !this.state.loadingEmail ?
-                <AutoInputText name="email" value={this.props.user.email} onValidate={this.handleValidate}/> : <LoadingCog/>;
+                <TextInput name="email" value={this.props.user.email} onSubmit={this.handleSubmit}/> : <LoadingCog/>;
             const firstnameInput = !this.state.loadingFirstname ?
-                <AutoInputText name="firstname" value={this.props.user.firstname} onValidate={this.handleValidate}/> : <LoadingCog/>;
+                <TextInput name="firstname" value={this.props.user.firstname} onSubmit={this.handleSubmit}/> : <LoadingCog/>;
             const lastnameInput = !this.state.loadingLastname ?
-                <AutoInputText name="lastname" value={this.props.user.lastname} onValidate={this.handleValidate}/> : <LoadingCog/>;
+                <TextInput name="lastname" value={this.props.user.lastname} onSubmit={this.handleSubmit}/> : <LoadingCog/>;
             
             const maxAccountsDisplay = (this.props.accounts.length >= this.state.maxAccounts) ? <span style={ { float: "right" } }>{this.props.accounts.length}/{this.state.maxAccounts}</span> : <span style={ { float: "right" } }>{this.props.accounts.length}/{this.state.maxAccounts}<div id="buttonAccountCreation" className="input-group-addon edit-button" onClick={this.handleClick} style={ { display: "inline" } }><i id="buttonAccountCreation" className="fa fa-plus fa-fw"></i></div></span>;
 

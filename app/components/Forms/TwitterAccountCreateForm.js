@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { isValidTwitterAccountName, isUniqueTwitterAccountName, isValidTwitterAccountConsumerKey, isValidTwitterAccountConsumerSecret, isValidTwitterAccountAccessTokenKey, isValidTwitterAccountAccessTokenSecret } from "validator";
-import LoadingCog from "./LoadingCog";
-import { addAccount } from "../util/api";
-import * as Ranks from "../constants/Ranks";
-import * as Languages from "../constants/Languages";
-import { addAccount as addAccountToProps } from "../actions/accounts";
-import { sendFailureMessage, sendFailureMessages, sendSuccessMessage } from "../actions/messages";
+import LoadingCog from "../LoadingCog";
+import { addAccount } from "../../util/api";
+import * as Ranks from "../../constants/Ranks";
+import * as Languages from "../../constants/Languages";
+import { addAccount as addAccountToProps } from "../../actions/accounts";
+import { sendFailureMessage, sendFailureMessages, sendSuccessMessage } from "../../actions/messages";
 
-class AccountCreateForm extends Component {
+class TwitterAccountCreateForm extends Component {
     static propTypes = {
         onSubmit: PropTypes.func,
         onQuit: PropTypes.func,
@@ -208,4 +208,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(AccountCreateForm);
+export default connect(mapStateToProps)(TwitterAccountCreateForm);

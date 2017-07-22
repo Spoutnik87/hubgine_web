@@ -1,13 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import NumberInput from "./Inputs/NumberInput";
+import ArrayInput from "../Inputs/ArrayInput";
+import ListInput from "../Inputs/ListInput";
 
-class AccountSettings extends Component {
+class TwitterRuleCreateForm extends Component {
     static propTypes = {
-        account: PropTypes.shape({
-            name: PropTypes.string.isRequired
-        }),
         lang: PropTypes.shape({
             
         }).isRequired
@@ -16,8 +14,8 @@ class AccountSettings extends Component {
     render()
     {
         return (
-            <div className="panel-body">
-                <NumberInput name="delay" value={0} onSubmit={() => {}} />
+            <div className="panel">
+                
             </div>
         );
     }
@@ -29,4 +27,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(AccountSettings);
+export default connect(mapStateToProps)(TwitterRuleCreateForm);

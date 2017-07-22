@@ -1,0 +1,52 @@
+.component-checkbox {
+    label {
+        display: inline-block;
+        user-select: none;
+        position: relative;
+        color: rgba(0, 0, 0, 0.1);
+        width: 35px;
+        height: 35px;
+        border:2px solid rgba(0, 0, 0, 0.3);
+        border-radius: 2px;
+        overflow: hidden;
+        color: rgba(0, 0, 0, 0.1);
+        text-align: center;
+        
+        &:hover {
+            border:2px solid rgba(0, 0, 0, 0.5);
+            color: black;
+        }
+        
+        &:after {
+            content: '';
+            display: block;
+            margin-left:9px;
+            margin-top:4px;  
+            width: 12px;
+            height: 18px;
+            border: solid rgba(0, 0, 0, 0.1);
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+    }
+
+    input {
+        display: none;
+        
+        &:checked + label {
+            border-color: #269b0a;
+            background: #269b0a;
+            
+            &:after {
+                content: '';
+                display: block;
+                margin-left:9px;
+                margin-top:4px;  
+                width: 12px;
+                height: 18px;
+                border: solid rgba(255, 255, 255, 1);
+                border-width: 0 6px 6px 0;
+            }
+        }
+    }
+}

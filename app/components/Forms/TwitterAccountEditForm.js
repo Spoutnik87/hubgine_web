@@ -2,14 +2,14 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { isValidTwitterAccountName, isUniqueTwitterAccountName, isValidTwitterAccountConsumerKey, isValidTwitterAccountConsumerSecret, isValidTwitterAccountAccessTokenKey, isValidTwitterAccountAccessTokenSecret } from "validator";
-import { getTwitterAccountKeys, updateAccount, removeAccount } from "../util/api";
-import { sendFailureMessage, sendFailureMessages, sendSuccessMessage } from "../actions/messages";
-import { removeAccount as removeAccountFromProps } from "../actions/accounts";
-import * as Ranks from "../constants/Ranks";
-import * as Languages from "../constants/Languages";
-import LoadingCog from "./LoadingCog";
+import { getTwitterAccountKeys, updateAccount, removeAccount } from "../../util/api";
+import { sendFailureMessage, sendFailureMessages, sendSuccessMessage } from "../../actions/messages";
+import { removeAccount as removeAccountFromProps } from "../../actions/accounts";
+import * as Ranks from "../../constants/Ranks";
+import * as Languages from "../../constants/Languages";
+import LoadingCog from "../LoadingCog";
 
-class AccountEditForm extends Component {
+class TwitterAccountEditForm extends Component {
     static propTypes = {
         messages: PropTypes.object.isRequired,
         uid: PropTypes.string.isRequired,
@@ -211,7 +211,9 @@ class AccountEditForm extends Component {
     
     handleChange(event)
     {
-        this.setState({ [event.target.name]: event.target.value });
+        this.setState({
+            [event.target.name]: event.target.value
+        });
     }
 
     render()
@@ -294,4 +296,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(AccountEditForm);
+export default connect(mapStateToProps)(TwitterAccountEditForm);

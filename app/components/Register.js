@@ -2,14 +2,15 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { withCookies } from "react-cookie";
-import { isValidEmail, isValidPassword, isValidFirstname, isValidLastname } from "validator";
 import PropTypes from "prop-types";
+import { isValidEmail, isValidPassword, isValidFirstname, isValidLastname } from "validator";
 import { addUser } from "../util/api";
 import { connect as connectUser } from "../actions/user";
 import { changeLanguage } from "../actions/lang";
 import { sendFailureMessages, clearMessages } from "../actions/messages";
 import { ENGLISH } from "../constants/Languages";
 import Messages from "./Messages";
+import Checkbox from "./Inputs/Checkbox";
 import LoadingCog from "./LoadingCog";
 
 class Register extends Component {
@@ -38,7 +39,7 @@ class Register extends Component {
     {
         super(props);
         this.state = {
-            loading: false,
+            isLoaded: true,
             firstname: "",
             lastname: "",
             email: "",
@@ -53,7 +54,9 @@ class Register extends Component {
     handleSubmit(event)
     {
         event.preventDefault();
-        this.setState({ loading: true });
+        this.setState({
+            isLoaded: false
+        });
         const { REGISTER_FIRSTNAME_INCORRECT, REGISTER_LASTNAME_INCORRECT, REGISTER_EMAIL_INCORRECT,
             REGISTER_PASSWORD_INCORRECT, REGISTER_PASSWORD_NOT_MATCH, REGISTER_USETERMS_INCORRECT, REGISTER_ERROR } = this.props.lang;
         const messages = [];
@@ -69,7 +72,7 @@ class Register extends Component {
         {
             messages.push(REGISTER_EMAIL_INCORRECT);
         }
-        if (!isValidPassword(this.state.password, { min: 6 }))
+        if (!isValidPassword(this.state.password))
         {
             messages.push(REGISTER_PASSWORD_INCORRECT);
         }
@@ -81,11 +84,10 @@ class Register extends Component {
         {
             messages.push(REGISTER_USETERMS_INCORRECT);
         }
-        if (messages.length == 0)
+        if (messages.length === 0)
         {
-            let email = this.state.email;
-            addUser(email, this.state.password, this.state.firstname, this.state.lastname, ENGLISH, (error, result) =>
-            {
+            const email = this.state.email;
+            addUser(email, this.state.password, this.state.firstname, this.state.lastname, ENGLISH, (error, result) => {
                 if (!error)
                 {
                     this.props.dispatch(connectUser(result.token, email, result.rank, result.lang));
@@ -100,14 +102,18 @@ class Register extends Component {
                 {
                     messages.push(REGISTER_ERROR);
                     this.props.dispatch(sendFailureMessages(messages));
-                    this.setState({ loading: false });
+                    this.setState({
+                        isLoaded: true
+                    });
                 }
             });
         }
         else
         {
             this.props.dispatch(sendFailureMessages(messages));
-            this.setState({ loading: false });
+            this.setState({
+                isLoaded: true
+            });
         }
     }
 
@@ -115,22 +121,27 @@ class Register extends Component {
     {
         if (event.target.type === "checkbox")
         {
-            this.setState({ [event.target.name]: event.target.checked });
+            this.setState({
+                [event.target.name]: event.target.checked
+            });
         }
         else
         {
-            this.setState({ [event.target.name]: event.target.value });
+            this.setState({
+                [event.target.name]: event.target.value
+            });
         }
     }
 
-    componentWillUnmount() {
+    componentWillUnmount()
+    {
         this.props.dispatch(clearMessages());
     }
     
     render()
     {
         const { REGISTER_SUBMIT, REGISTER_TITLE, REGISTER_FIRSTNAME, REGISTER_LASTNAME, REGISTER_EMAIL, REGISTER_PASSWORD, REGISTER_CONFIRMPASSWORD, REGISTER_USETERMS } = this.props.lang;
-        const loadingDisplay = !this.state.loading ? <button type="submit" className="btn btn-success">{REGISTER_SUBMIT}</button> : <LoadingCog/>;
+        const loadingDisplay = this.state.isLoaded ? <button type="submit" className="btn btn-success">{REGISTER_SUBMIT}</button> : <LoadingCog/>;
         return (
             <div className="container">
                 <div className="panel">
@@ -172,9 +183,8 @@ class Register extends Component {
                             </div>
                             <div className="form-group">
                                 <label htmlFor="useterms" className="col-sm-2">{REGISTER_USETERMS}</label>
-                                <div className="col-sm-8 form-checkbox">
-                                    <input type="checkbox" name="useterms" id="useterms" onChange={this.handleChange} autoFocus/>
-                                    <label htmlFor="useterms" className="green-background"></label>
+                                <div className="col-sm-8">
+                                    <Checkbox name="useterms" onChange={this.handleChange} />
                                 </div>
                             </div>
                             <div className="form-group">

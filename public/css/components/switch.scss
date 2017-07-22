@@ -1,0 +1,39 @@
+.switch {
+    overflow: hidden;
+}
+
+.switch input {
+    position: absolute;
+    visibility: hidden;
+}
+
+.switch label {
+    @extend .no-select;
+    width: 100px;
+    display: inline-block;
+    color: rgba(0, 0, 0, 0.6);
+    text-align: center;
+    padding: 5px 15px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    -ms-transition: all 0.1s ease-in-out;
+    -o-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    &:first-of-type {
+        border-radius: 4px 0 0 4px;
+    }
+
+    &:last-of-type {
+        border-radius: 0 4px 4px 0;
+    }
+}
+
+.switch input:checked + label {
+    background-color: #86bddc;
+}

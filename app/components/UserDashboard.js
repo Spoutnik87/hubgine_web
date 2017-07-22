@@ -39,7 +39,18 @@ class UserDashboard extends Component {
 
     componentDidMount()
     {
-        if (this.props.location.hash === "")
+        getAccountNameList(this.props.user.email, this.props.user.token, (error, result) => {
+            if (!error)
+            {
+                this.props.dispatch(updateAccountList(result.accounts));
+                this.setState({ isLoaded: true });
+            }
+            else
+            {
+                this.props.dispatch(sendFailureMessage("An error happened during account list loading."));
+            }
+        });
+        /*if (this.props.location.hash === "")
         {
             getAccountNameList(this.props.user.email, this.props.user.token, (error, result) => {
                 if (!error)
@@ -60,13 +71,16 @@ class UserDashboard extends Component {
                 if (!error)
                 {
                     console.log(result);
+                    this.setState({
+                        isLoaded: true
+                    });
                 }
                 else
                 {
                     this.props.dispatch(sendFailureMessage("An error happened during account loading."));
                 }
             });
-        }
+        }*/
     }
     
     componentWillMount() {
@@ -102,11 +116,12 @@ class UserDashboard extends Component {
             if (this.props.location.hash === "")
             {
                 tiles = (
-                    this.props.accounts.map((account, index) => (
-                        <div key={index} className="col-md-4 col-sm-6">
-                            <AccountTile account={account} href={"#" + index}/>
+                    this.props.accounts.map(account => (
+                        <div key={account.uid} className="col-md-4 col-sm-6">
+                            <AccountTile account={account} href={"#" + encodeURI(account.name)}/>
                         </div>
-                    )));
+                    ))
+                );
             }
             else
             {
@@ -124,11 +139,11 @@ class UserDashboard extends Component {
 
                 if (overviewActive)
                 {
-                    tab = <AccountOverview account={this.props.accounts[this.props.location.hash.substring(1)]} />;
+                    tab = <AccountOverview account={this.props.accounts.filter(account => { return decodeURI(this.props.location.hash.substring(1)) === account.name ? true : false; })[0]} />;
                 }
                 else if (settingsActive)
                 {
-                    tab = <AccountSettings account={this.props.accounts[this.props.location.hash.substring(1)]} />
+                    tab = <AccountSettings account={this.props.accounts.filter(account => { return decodeURI(this.props.location.hash.substring(1)) === account.name ? true : false; })[0]} />;
                 }
             }
         }

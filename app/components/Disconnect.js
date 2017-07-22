@@ -5,7 +5,8 @@ import { withRouter } from "react-router-dom";
 import { disconnect } from "../actions/user";
 
 class Disconnect extends Component {
-  componentWillMount() {
+  componentWillMount()
+  {
     this.props.dispatch(disconnect());
     this.props.cookies.remove("user");
     this.props.history.push("/");

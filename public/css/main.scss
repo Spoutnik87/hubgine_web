@@ -32,7 +32,10 @@ $panel-body-padding: 30px;
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800%7CRaleway:100,300,600,700,800");
 @import "vendor/bootstrap";
 @import "vendor/font-awesome/font-awesome";
-@import "components/account.scss";
+@import "vendor/react-datetime";
+@import "components/checkbox";
+@import "components/switch";
+@import "components/account";
 
 // Scaffolding
 // -------------------------
@@ -236,58 +239,6 @@ textarea {
   animation: $value;
 }
 
-.form-checkbox {
-  label {
-    display: inline-block;
-    user-select: none;
-    position: relative;
-    color: rgba(0, 0, 0, 0.1);
-    width: 35px;
-    height: 35px;
-    border:2px solid rgba(0, 0, 0, 0.3);
-    border-radius: 2px;
-    overflow: hidden;
-    color: rgba(0, 0, 0, 0.1);
-    text-align: center;
-    &:after {
-      content: '';
-      display: block;
-      margin-left:9px;
-      margin-top:4px;  
-      width: 12px;
-      height: 18px;
-      border: solid rgba(0, 0, 0, 0.1);
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg); 
-    }
-    &:hover {
-      border:2px solid rgba(0, 0, 0, 0.5);
-      color: black;
-    }
-  }
-
-  input {
-    display: none;
-    &:checked + {
-      .green-background {
-        border-color: #269b0a;
-        background: #269b0a;
-        &:after {
-            content: '';
-            display: block;
-            margin-left:9px;
-            margin-top:4px;  
-            width: 12px;
-            height: 18px;
-            border: solid rgba(255, 255, 255, 1);
-            border-width: 0 6px 6px 0;
-            //transform: rotate(45deg);
-        }
-      }
-    }
-  }
-}
-
 .form-group > label {
   text-transform: uppercase;
   font-size: 13px;
@@ -315,4 +266,13 @@ textarea {
 
 .edit-button {
   cursor: pointer;
+}
+
+.no-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
