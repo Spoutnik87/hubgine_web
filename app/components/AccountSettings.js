@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import NumberInput from "./Inputs/NumberInput";
 
 class AccountSettings extends Component {
     static propTypes = {
@@ -17,7 +16,7 @@ class AccountSettings extends Component {
     {
         return (
             <div className="panel-body">
-                <NumberInput name="delay" value={0} onSubmit={() => {}} />
+
             </div>
         );
     }

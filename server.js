@@ -52,7 +52,6 @@ app.use((req, res) => {
   const initialState = {
     messages: {},
     user: user,
-    profile: {},
     accounts: [],
     lang: lang.default(user.lang || Languages.ENGLISH),
   };

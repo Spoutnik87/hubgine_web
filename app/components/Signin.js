@@ -8,7 +8,7 @@ import { connect as connectUser } from "../actions/user";
 import { sendFailureMessages, clearMessages } from "../actions/messages";
 import { changeLanguage } from "../actions/lang";
 import { connect as connectAPI } from "../util/api";
-import Messages from "./Messages";
+import UserSigninForm from "./Forms/UserSigninForm";
 import LoadingCog from "./LoadingCog";
 
 class Signin extends Component {
@@ -30,32 +30,30 @@ class Signin extends Component {
     {
         super(props);
         this.state = { 
-            loading: false, 
-            email: "", 
-            password: ""
+            loading: false
         };
-        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleSubmit(event)
     {
-        event.preventDefault();
-        this.setState({ loading: true });
         const { SIGNIN_EMAIL_INCORRECT, SIGNIN_PASSWORD_INCORRECT, SIGNIN_CREDENTIALS_INCORRECT } = this.props.lang;
+        const { email, password } = event.result;
         const messages = [];
-        if (!isValidEmail(this.state.email))
+        if (!isValidEmail(email))
         {
             messages.push(SIGNIN_EMAIL_INCORRECT);
         }
-        if (!isValidPassword(this.state.password))
+        if (!isValidPassword(password))
         {
             messages.push(SIGNIN_PASSWORD_INCORRECT);
         }
         if (messages.length === 0)
         {
-            let email = this.state.email;
-            connectAPI(this.state.email, this.state.password, (error, result) =>
+            this.setState({
+                loading: true
+            });
+            connectAPI(email, password, (error, result) =>
             {
                 if (!error)
                 {
@@ -64,27 +62,28 @@ class Signin extends Component {
                     {
                         this.props.dispatch(changeLanguage(result.lang));
                     }
-                    this.props.cookies.set("user", { "token": result.token, "email": email, "rank": result.rank, lang: result.lang });
+                    this.props.cookies.set("user", {
+                        token: result.token,
+                        email: email,
+                        rank: result.rank,
+                        lang: result.lang
+                    });
                     this.props.history.push("/");
                 }
                 else
                 {
                     messages.push(SIGNIN_CREDENTIALS_INCORRECT);
                     this.props.dispatch(sendFailureMessages(messages));
-                    this.setState({ loading: false });
+                    this.setState({
+                        loading: false
+                    });
                 }
             });
         }
         else
         {
             this.props.dispatch(sendFailureMessages(messages));
-            this.setState({ loading: false });
         }
-    }
-
-    handleChange(event)
-    {
-        this.setState({ [event.target.name]: event.target.value });
     }
     
     componentWillUnmount()
@@ -94,37 +93,13 @@ class Signin extends Component {
 
     render()
     {
-        const { SIGNIN_TITLE, SIGNIN_EMAIL, SIGNIN_PASSWORD, SIGNIN_FORGOTPASSWORD, SIGNIN_SUBMIT } = this.props.lang;
-        const loadingDisplay = !this.state.loading ? <button type="submit" className="btn btn-success">{SIGNIN_SUBMIT}</button> : <LoadingCog/>;
+        const { SIGNIN_FORGOTPASSWORD } = this.props.lang;
         return (
             <div className="container">
                 <div className="panel">
-                    <div className="panel-heading">
-                        <h3 className="panel-title">{SIGNIN_TITLE}</h3>
-                    </div>
-                    <div className="panel-body">
-                        <Messages messages={this.props.messages}/>
-                        <form onSubmit={this.handleSubmit} className="form-horizontal">
-                            <div className="form-group">
-                                <label htmlFor="email" className="col-sm-2">{SIGNIN_EMAIL}</label>
-                                <div className="col-sm-8">
-                                    <input type="text" name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="password" className="col-sm-2">{SIGNIN_PASSWORD}</label>
-                                <div className="col-sm-8">
-                                    <input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange} autoFocus/>
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <div className="col-sm-offset-2 col-sm-8">
-                                    {loadingDisplay}
-                                </div>
-                            </div>
-                        </form>
+                    <UserSigninForm onSubmit={this.handleSubmit} loading={this.state.loading} messages={this.props.messages}>
                         <Link to="/forgot-password">{SIGNIN_FORGOTPASSWORD}</Link>
-                    </div>
+                    </UserSigninForm>
                 </div>
             </div>
         );

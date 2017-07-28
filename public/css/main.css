@@ -8480,6 +8480,32 @@ td.rdtYear:hover {
   transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
   color: #555555; }
 
+.component-tooltip {
+  position: relative;
+  display: inline-block; }
+  .component-tooltip .component-tooltiptext {
+    visibility: hidden;
+    opacity: 0;
+    width: 140px;
+    text-align: center;
+    background-color: #000000;
+    color: #FFFFFF;
+    border-radius: 8px;
+    padding: 3px 2px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -70px;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -ms-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out; }
+  .component-tooltip:hover .component-tooltiptext {
+    visibility: visible;
+    opacity: 1; }
+
 html {
   position: relative;
   min-height: 100%; }

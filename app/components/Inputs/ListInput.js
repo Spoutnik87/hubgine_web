@@ -11,14 +11,15 @@ class ListInput extends Component {
                 value: PropTypes.string.isRequired
             })).isRequired
         ]),
-        defaultIndex: PropTypes.number,
+        defaultOption: PropTypes.string,
         onClick: PropTypes.func,
-        onChange: PropTypes.func.isRequired,
+        onChange: PropTypes.func,
         customKeys: PropTypes.bool
     };
 
     static defaultProps = {
-        defaultIndex: 0,
+        onClick: () => {},
+        onChange: () => {},
         customKeys: false
     };
 
@@ -26,7 +27,7 @@ class ListInput extends Component {
     {
         super(props);
         this.state = {
-            value: this.props.customKeys ? this.props.options[this.props.defaultIndex].value : this.props.options[this.props.defaultIndex]
+            value: this.props.customKeys ? this.props.defaultOption.value : this.props.defaultOption
         };
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -42,7 +43,10 @@ class ListInput extends Component {
         this.setState({
             value: event.target.value
         });
-        this.props.onChange(event);
+        this.props.onChange({
+            name: this.props.name,
+            value: event.target.value
+        });
     }
 
     render()

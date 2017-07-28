@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withCookies } from "react-cookie";
-import { isValidEmail, isValidFirstname, isValidLastname } from "validator";
+import { isValidEmail, isValidFirstname, isValidLastname, isValidTwitterAccountName, isUniqueTwitterAccountName, 
+    isValidTwitterAccountConsumerKey, isValidTwitterAccountConsumerSecret, isValidTwitterAccountAccessTokenKey, isValidTwitterAccountAccessTokenSecret } from "validator";
 import PropTypes from "prop-types";
-import { getUser, updateUser, getAccountList, getMaxAccounts } from "../util/api";
-import { sendFailureMessage, sendSuccessMessage, clearMessages } from "../actions/messages";
+import { getUser, updateUser, getAccountList, getMaxAccounts, addAccount } from "../util/api";
+import { sendFailureMessage, sendFailureMessages, sendSuccessMessage, clearMessages } from "../actions/messages";
 import { updateInfos, updateEmail, updateFirstname, updateLastname } from "../actions/user";
-import { updateAccountList } from "../actions/accounts";
+import { updateAccountList, addAccount as addAccountToProps } from "../actions/accounts";
 import * as Ranks from "../constants/Ranks";
 import * as Languages from "../constants/Languages";
 import Messages from "./Messages";
@@ -42,6 +43,14 @@ class Profile extends Component {
             PROFILE_SUCCESSEDITING_FIRSTNAME: PropTypes.string.isRequired,
             PROFILE_ERROREDITING_LASTNAME: PropTypes.string.isRequired,
             PROFILE_SUCCESSEDITING_LASTNAME: PropTypes.string.isRequired,
+            TWITTERACCOUNTFORM_NAME_INCORRECT: PropTypes.string.isRequired,
+            TWITTERACCOUNTFORM_NAME_NOT_UNIQUE: PropTypes.string.isRequired,
+            TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT: PropTypes.string.isRequired,
+            TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT: PropTypes.string.isRequired,
+            TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT: PropTypes.string.isRequired,
+            TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT: PropTypes.string.isRequired,
+            TWITTERACCOUNTFORM_GENERIC_ERROR: PropTypes.string.isRequired,
+            TWITTERACCOUNTCREATEFORM_SUCCESS: PropTypes.string.isRequired
         }).isRequired
     };
 
@@ -49,6 +58,7 @@ class Profile extends Component {
     {
         super(props);
         this.state = {
+            loadingAccountForm: false,
             isLoaded: false,
             isAccountListLoaded: false,
             isAccountCreationFormDisplayed: false,
@@ -59,7 +69,7 @@ class Profile extends Component {
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleClick = this.handleClick.bind(this);
-        this.handleAccountFormCreationQuit = this.handleAccountFormCreationQuit.bind(this);
+        this.handleAccountFormCreationCancel = this.handleAccountFormCreationCancel.bind(this);
         this.handleAccountFormCreationSubmit = this.handleAccountFormCreationSubmit.bind(this);
     }
 
@@ -199,19 +209,83 @@ class Profile extends Component {
     {
         if (event.target.id === "buttonAccountCreation")
         {
-            this.setState({ isAccountCreationFormDisplayed: !this.state.isAccountCreationFormDisplayed });
+            this.setState({
+                isAccountCreationFormDisplayed: true
+            });
         }
     }
 
-    handleAccountFormCreationSubmit()
+    handleAccountFormCreationSubmit(event)
     {
-        this.setState({ isAccountCreationFormDisplayed: !this.state.isAccountCreationFormDisplayed });
-        
+        const { 
+            TWITTERACCOUNTFORM_NAME_INCORRECT,
+            TWITTERACCOUNTFORM_NAME_NOT_UNIQUE,
+            TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT,
+            TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT,
+            TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT,
+            TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT,
+            TWITTERACCOUNTFORM_GENERIC_ERROR,
+            TWITTERACCOUNTCREATEFORM_SUCCESS
+        } = this.props.lang;
+        const { name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret } = event.result;
+        const messages = [];
+        if (!isValidTwitterAccountName(name))
+        {
+            messages.push(TWITTERACCOUNTFORM_NAME_INCORRECT);
+        }
+        if (!isUniqueTwitterAccountName(name, this.props.accounts.map(account => { return account.name; })))
+        {
+            messages.push(TWITTERACCOUNTFORM_NAME_NOT_UNIQUE);
+        }
+        if (!isValidTwitterAccountConsumerKey(consumerKey))
+        {
+            messages.push(TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT);
+        }
+        if (!isValidTwitterAccountConsumerSecret(consumerSecret))
+        {
+            messages.push(TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT);
+        }
+        if (!isValidTwitterAccountAccessTokenKey(accessTokenKey))
+        {
+            messages.push(TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT);
+        }
+        if (!isValidTwitterAccountAccessTokenSecret(accessTokenSecret))
+        {
+            messages.push(TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT);
+        }
+        if (messages.length === 0)
+        {
+            this.setState({
+                loadingAccountForm: true
+            });
+            addAccount(this.props.user.email, this.props.user.token, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, (error, result) => {
+                const nextState = {
+                    loadingAccountForm: false
+                };
+                if (!error)
+                {
+                    this.props.dispatch(addAccountToProps(event.result));
+                    this.props.dispatch(sendSuccessMessage(TWITTERACCOUNTCREATEFORM_SUCCESS));
+                    nextState.isAccountCreationFormDisplayed = false;
+                }
+                else
+                {
+                    this.props.dispatch(sendFailureMessage(TWITTERACCOUNTFORM_GENERIC_ERROR));
+                }
+                this.setState(nextState);
+            });
+        }
+        else
+        {
+            this.props.dispatch(sendFailureMessages(messages));
+        }
     }
 
-    handleAccountFormCreationQuit()
+    handleAccountFormCreationCancel()
     {
-        this.setState({ isAccountCreationFormDisplayed: !this.state.isAccountCreationFormDisplayed });
+        this.setState({
+            isAccountCreationFormDisplayed: false
+        });
     }
 
     render()
@@ -244,7 +318,7 @@ class Profile extends Component {
 
             const accountContainer = (
                 this.state.isAccountCreationFormDisplayed ?
-                <TwitterAccountCreateForm onSubmit={this.handleAccountFormCreationSubmit} onQuit={this.handleAccountFormCreationQuit} />
+                <TwitterAccountCreateForm onSubmit={this.handleAccountFormCreationSubmit} cancel onCancel={this.handleAccountFormCreationCancel} loading={this.state.loadingAccountForm}/>
                 :
                 <span>
                     <div className="panel-heading">
@@ -296,9 +370,9 @@ class Profile extends Component {
                     <div className="panel-heading">
                         <h3 className="panel-title">{PROFILE_TITLE}</h3>
                     </div>
-                    <div className="panel-body" style={ { textAlign: "center" } }>
+                    <div className="panel-body">
                         <Messages messages={this.props.messages}/>
-                        <LoadingCog/>
+                        <LoadingCog center/>
                     </div>
                 </div>
             );

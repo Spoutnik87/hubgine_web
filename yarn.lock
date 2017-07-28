@@ -8,6 +8,10 @@
   dependencies:
     nan "^2.4.0"
 
+"@types/react@>=15":
+  version "15.6.0"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-15.6.0.tgz#3b3e92a60b65045e4df48fda324de84d83addbc4"
+
 JSONStream@^1.0.3:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-1.3.1.tgz#707f761e01dae9e16f1bcf93703b78c70966579a"
@@ -1111,19 +1115,13 @@ combined-stream@^1.0.5, combined-stream@~1.0.5:
   dependencies:
     delayed-stream "~1.0.0"
 
-commander@2.11.0, commander@2.x:
+commander@2.11.0, commander@2.x, commander@~2.11.0:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.11.0.tgz#157152fd1e7a6c8d98a5b715cf376df928004563"
 
 commander@2.8.x:
   version "2.8.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.8.1.tgz#06be367febfda0c330aa1e2a072d3dc9762425d4"
-  dependencies:
-    graceful-readlink ">= 1.0.0"
-
-commander@~2.9.0:
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-2.9.0.tgz#9c99094176e12240cb22d6c5146098400fe0f7d4"
   dependencies:
     graceful-readlink ">= 1.0.0"
 
@@ -1269,7 +1267,7 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-create-react-class@^15.5.2, create-react-class@^15.5.3, create-react-class@^15.5.x, create-react-class@^15.6.0:
+create-react-class@^15.5.3, create-react-class@^15.5.x, create-react-class@^15.6.0:
   version "15.6.0"
   resolved "https://registry.yarnpkg.com/create-react-class/-/create-react-class-15.6.0.tgz#ab448497c26566e1e29413e883207d57cfe7bed4"
   dependencies:
@@ -2770,9 +2768,9 @@ nested-error-stacks@^1.0.0:
   dependencies:
     inherits "~2.0.1"
 
-newrelic@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/newrelic/-/newrelic-2.0.0.tgz#bf242323e2c51d992077f417d6f09ca118f4ab69"
+newrelic@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/newrelic/-/newrelic-2.0.1.tgz#2e4c4edbc12cf6fe3245b82a5d964237ef73d7a7"
   dependencies:
     concat-stream "^1.5.0"
     https-proxy-agent "^0.3.5"
@@ -3164,7 +3162,7 @@ pm2-multimeter@^0.1.2:
   dependencies:
     charm "~0.1.1"
 
-pm2@^2.6.0:
+pm2@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/pm2/-/pm2-2.6.1.tgz#a9c2fdb7bf1676655935eb4176239003fca5c8da"
   dependencies:
@@ -3434,11 +3432,11 @@ react-cookie@^2.0.8:
     react "^15.0.0"
     universal-cookie "^2.0.1"
 
-react-datetime@^2.8.10:
-  version "2.8.10"
-  resolved "https://registry.yarnpkg.com/react-datetime/-/react-datetime-2.8.10.tgz#06d4317b7734310e0e8109555526656128346132"
+react-datetime@^2.8.11:
+  version "2.8.11"
+  resolved "https://registry.yarnpkg.com/react-datetime/-/react-datetime-2.8.11.tgz#54d672c13f82af17a14621da430e6e9d02b097e0"
   dependencies:
-    create-react-class "^15.5.2"
+    "@types/react" ">=15"
     object-assign "^3.0.0"
     prop-types "^15.5.7"
     react-onclickoutside "^5.9.0"
@@ -3457,6 +3455,10 @@ react-onclickoutside@^5.9.0:
   resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-5.11.1.tgz#00314e52567cf55faba94cabbacd119619070623"
   dependencies:
     create-react-class "^15.5.x"
+
+react-recaptcha@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/react-recaptcha/-/react-recaptcha-2.3.2.tgz#d69683d5b91c04f122011d8d15262dc84e66aae7"
 
 react-redux@5.0.5:
   version "5.0.5"
@@ -4271,11 +4273,11 @@ uglify-js@^2.6.1:
   optionalDependencies:
     uglify-to-browserify "~1.0.0"
 
-uglify-js@^3.0.25:
-  version "3.0.25"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.0.25.tgz#3dc190b0ee437497e449bc6f785665b06afbe052"
+uglify-js@^3.0.26:
+  version "3.0.26"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.0.26.tgz#ba279ca597b13fe6c62c2d87dd5188e57a7a3233"
   dependencies:
-    commander "~2.9.0"
+    commander "~2.11.0"
     source-map "~0.5.1"
 
 uglify-to-browserify@~1.0.0:
@@ -4359,9 +4361,9 @@ validate-npm-package-license@^3.0.1:
     spdx-correct "~1.0.0"
     spdx-expression-parse "~1.0.0"
 
-"validator@git+ssh://git@bitbucket.org/TWEET-BOT/validator.git#V1.1.0":
-  version "1.1.0"
-  resolved "git+ssh://git@bitbucket.org/TWEET-BOT/validator.git#e3c942199407af31ba3d65bbcfb8cf5f297cbc57"
+"validator@git+ssh://git@bitbucket.org/TWEET-BOT/validator.git#V1.1.1":
+  version "1.1.1"
+  resolved "git+ssh://git@bitbucket.org/TWEET-BOT/validator.git#50e4ed745818fef29572a008d11edfe41d9e83ea"
 
 value-equal@^0.2.0:
   version "0.2.1"

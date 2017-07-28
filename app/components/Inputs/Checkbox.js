@@ -5,24 +5,33 @@ class Checkbox extends Component {
     static propTypes = {
         name: PropTypes.string.isRequired,
         value: PropTypes.bool,
-        onChange: PropTypes.func.isRequired
+        onChange: PropTypes.func
+    };
+
+    static defaultProps = {
+        value: false,
+        onChange: () => {}
     };
 
     constructor(props)
     {
         super(props);
         this.state = {
-            value: this.props.value || false
+            value: this.props.value
         };
         this.handleChange = this.handleChange.bind(this);
     }
 
     handleChange(event)
     {
+        const value = !this.state.value;
         this.setState({
-            value: !this.state.value
+            value: value
         });
-        this.props.onChange(event);
+        this.props.onChange({
+            name: this.props.name,
+            value: value
+        });
     }
 
     render()

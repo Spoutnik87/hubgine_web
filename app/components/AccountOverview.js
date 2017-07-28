@@ -1,13 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import ListInput from "./Inputs/ListInput";
-import NumberInput from "./Inputs/NumberInput";
-import ArrayInput from "./Inputs/ArrayInput";
-import DateInput from "./Inputs/DateInput";
-import Switch from "./Inputs/Switch";
-import Checkbox from "./Inputs/Checkbox";
-import { isValidTwitterRuleKeyword } from "validator";
+import CampaignCreateForm from "./Forms/CampaignCreateForm";
 
 class AccountOverview extends Component {
     static propTypes = {
@@ -23,8 +17,15 @@ class AccountOverview extends Component {
     {
         super(props);
         this.state = {
-            isLoaded: false
+            isLoaded: false,
+            isCampaignCreateFormDisplayed: false
         };
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleClick(event)
+    {
+
     }
 
     componentDidMount()
@@ -36,16 +37,11 @@ class AccountOverview extends Component {
     {
         return (
             <div className="panel-body">
-                <Checkbox name="ch" value={true} onChange={() => {}} />
-                <Switch name="sw" values={["AND", "OR", "XOR"]} defaultOption="OR" onChange={() => {}} />
-                <DateInput name="date" onChange={() => {}} />
-                <ArrayInput name="array" onChange={() => {}} condition={isValidTwitterRuleKeyword} limit={5} unique />
-                <NumberInput name="num" value={1} onChange={() => {}} />
-                <ListInput name="test" options={[ { key: "qf", value: "a" }, { key: "qda", value: "b" }]} defaultIndex={1} onChange={() => {}} customKeys />
-                <div className="col-md-4 col-sm-6" style={ { height: "200px" } }>
-                    Name : {this.props.account.name} <br/>
-                    Daily quota : 25/150 <br/>
+                <div>
+                    You don't have campaigns actually.
                 </div>
+                <button type="submit" className="btn btn-success" onClick={this.handleClick}>Submit</button>
+                <CampaignCreateForm name="campaignform" />
             </div>
         );
     }

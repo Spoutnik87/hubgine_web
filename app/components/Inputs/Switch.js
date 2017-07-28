@@ -4,8 +4,8 @@ import PropTypes from "prop-types";
 class Switch extends Component {
     static propTypes = {
         name: PropTypes.string.isRequired,
-        values: PropTypes.array.isRequired,
-        defaultOption: PropTypes.string.isRequired,
+        options: PropTypes.array.isRequired,
+        defaultOption: PropTypes.string,
         onChange: PropTypes.func.isRequired
     };
 
@@ -13,7 +13,7 @@ class Switch extends Component {
     {
         super(props);
         this.state = {
-            selectedOption: this.props.defaultOption
+            selectedOption: this.props.defaultOption || this.props.options[0]
         };
         this.handleChange = this.handleChange.bind(this);
     }
@@ -34,7 +34,7 @@ class Switch extends Component {
         return (
             <div className="switch">
                 {
-                    this.props.values.map((value, index) => (
+                    this.props.options.map((value, index) => (
                         [
                             <input type="radio" id={index} name={this.props.name} value={value} onChange={this.handleChange} checked={this.state.selectedOption === value} />,
                             <label htmlFor={index}>{value}</label>

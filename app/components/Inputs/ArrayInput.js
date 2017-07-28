@@ -6,24 +6,24 @@ class ArrayInput extends Component {
     static propTypes = {
         name: PropTypes.string.isRequired,
         options: PropTypes.array,
-        defaultIndex: PropTypes.number,
-        onChange: PropTypes.func.isRequired,
+        defaultOption: PropTypes.string,
+        onChange: PropTypes.func,
         condition: PropTypes.func,
         limit: PropTypes.number,
         unique: PropTypes.bool
     };
 
     static defaultProps = {
-        defaultIndex: 0,
         limit: 0,
-        unique: false
+        unique: false,
+        onChange: () => {}
     };
 
     constructor(props)
     {
         super(props);
         this.state = {
-            value: this.props.options ? this.props.options[this.props.defaultIndex] : "",
+            value: this.props.options ? this.props.defaultOption : "",
             values: [],
             selectedElement: "input"
         };
@@ -108,7 +108,7 @@ class ArrayInput extends Component {
                 <div className="col-md-10 col-sm-9 col-xs-8" style={{ paddingLeft: 0 }}>
                     {
                         this.props.options ? 
-                            <ListInput name="list" options={this.props.options} defaultIndex={this.props.defaultIndex} onClick={this.handleClick} onChange={this.handleChange} />
+                            <ListInput name="list" options={this.props.options} defaultOption={this.props.defaultOption} onClick={this.handleClick} onChange={this.handleChange} />
                             : <input type="text" data-element="input" className="form-control" value={this.state.value} onClick={this.handleClick} onChange={this.handleChange} autoFocus/>
                     }
                 </div>

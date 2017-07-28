@@ -37,7 +37,10 @@ class NumberInput extends Component {
             this.setState({
                 value: event.target.value
             });
-            this.props.onChange(event);
+            this.props.onChange({
+                name: this.props.name,
+                value: event.target.value
+            });
         }
     }
 

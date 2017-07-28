@@ -3,40 +3,36 @@ import { isValidEmail } from "validator";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { sendFailureMessages, sendSuccessMessages, clearMessages } from "../actions/messages";
-import Messages from "./Messages";
+import UserForgotPasswordForm from "./Forms/UserForgotPasswordForm";
 
 class ForgotPassword extends Component {
     static propTypes = {
-        messages: PropTypes.object.isRequired,
-        lang: PropTypes.shape({
-            FORGOTPASSWORD_TITLE: PropTypes.string.isRequired,
-            FORGOTPASSWORD_SUBMIT: PropTypes.string.isRequired,
-            FORGOTPASSWORD_EMAIL: PropTypes.string.isRequired
-        }).isRequired
+        messages: PropTypes.object.isRequired
     };
 
     constructor(props)
     {
         super(props);
         this.state = {
-            email: ""
+            loading: false
         };
-        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleSubmit(event)
     {
-        event.preventDefault();
-        this.setState({ loading: true });
         const messages = [];
-        if (!isValidEmail(this.state.email))
+        const { email } = event.result;
+        if (!isValidEmail(email))
         {
             messages.push("Email is not valid.");
         }
         if (messages.length === 0)
         {
-            resetPassword(this.state.email, (error, result) =>
+            this.setState({
+                loading: true
+            });
+            resetPassword(email, (error, result) =>
             {
                 if (!error)
                 {
@@ -48,19 +44,15 @@ class ForgotPassword extends Component {
                     messages.push("An error append during the subscription.");
                     this.props.dispatch(sendFailureMessages(messages));
                 }
-                this.setState({ loading: false });
+                this.setState({
+                    loading: false
+                });
             });
         }
         else
         {
             this.props.dispatch(sendFailureMessages(messages));
-            this.setState({ loading: false });
         }
-    }
-
-    handleChange(event)
-    {
-        this.setState({ [event.target.name]: event.target.value });
     }
 
     componentWillUnmount()
@@ -70,30 +62,10 @@ class ForgotPassword extends Component {
     
     render()
     {
-        const { FORGOTPASSWORD_TITLE, FORGOTPASSWORD_EMAIL, FORGOTPASSWORD_SUBMIT } = this.props.lang;
-        const loadingDisplay = this.state.loading ? <i className="fa fa-cog fa-spin fa-3x fa-fw"></i> : <button type="submit" className="btn btn-success">{FORGOTPASSWORD_SUBMIT}</button>;
         return (
             <div className="container">
                 <div className="panel">
-                    <div className="panel-heading">
-                        <h3 className="panel-title">{FORGOTPASSWORD_TITLE}</h3>
-                    </div>
-                    <div className="panel-body">
-                        <Messages messages={this.props.messages}/>
-                        <form onSubmit={this.handleSubmit} className="form-horizontal">
-                            <div className="form-group">
-                                <label htmlFor="email" className="col-sm-2">{FORGOTPASSWORD_EMAIL}</label>
-                                <div className="col-sm-8">
-                                    <input type="text" name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <div className="col-sm-offset-2 col-sm-8">
-                                    {loadingDisplay}
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                    <UserForgotPasswordForm onSubmit={this.handleSubmit} loading={this.state.loading} messages={this.props.messages} />
                 </div>
             </div>
         );
@@ -102,8 +74,7 @@ class ForgotPassword extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        messages: state.messages,
-        lang: state.lang
+        messages: state.messages
     };
 };
 
