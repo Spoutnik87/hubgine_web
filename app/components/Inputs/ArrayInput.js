@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import ListInput from "./ListInput";
 import v4 from "uuid";
@@ -57,7 +58,7 @@ class ArrayInput extends Component {
         if (event.target.id === "buttonAdd")
         {
             const value = this.state.value;
-            if (((this.props.condition && this.props.condition(value)) || (!this.props.condition && value.match("^.+$"))) && ((this.props.unique && !this.state.values.includes(value)) || !this.props.unique))
+            if (((this.props.condition && this.props.condition(value)) || (!this.props.condition && value.match("^.+$"))) && ((this.props.unique && !this.state.values.map(elem => elem.value).includes(value)) || !this.props.unique))
             {
                 const values = [...this.state.values, {
                     key: v4(),
@@ -136,4 +137,10 @@ class ArrayInput extends Component {
     }
 }
 
-export default ArrayInput;
+const mapStateToProps = (state) => {
+    return {
+        lang: state.lang
+    };
+};
+
+export default connect(mapStateToProps)(ArrayInput);

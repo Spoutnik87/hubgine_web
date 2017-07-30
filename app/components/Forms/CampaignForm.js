@@ -8,6 +8,7 @@ class CampaignForm extends Component {
     static propTypes = {
         lang: PropTypes.shape({
             CAMPAIGNFORM_CREATE_TITLE: PropTypes.string.isRequired,
+            CAMPAIGNFORM_EDIT_TITLE: PropTypes.string.isRequired,
             CAMPAIGNFORM_CREATE_BUTTON: PropTypes.string.isRequired,
             CAMPAIGNFORM_EDIT_BUTTON: PropTypes.string.isRequired,
             CAMPAIGNFORM_CANCEL_BUTTON: PropTypes.string.isRequired,
@@ -125,6 +126,7 @@ class CampaignForm extends Component {
     {
         const {
             CAMPAIGNFORM_CREATE_TITLE,
+            CAMPAIGNFORM_EDIT_TITLE,
             CAMPAIGNFORM_CREATE_BUTTON,
             CAMPAIGNFORM_EDIT_BUTTON,
             CAMPAIGNFORM_CANCEL_BUTTON,
@@ -136,7 +138,7 @@ class CampaignForm extends Component {
         const buttonSubmit = this.props.loading ? <LoadingCog/> : this.props.edit ? <button id="buttonSubmit" className="btn btn-primary" onClick={this.handleClick}>{CAMPAIGNFORM_EDIT_BUTTON}</button> : <button id="buttonSubmit" className="btn btn-success" onClick={this.handleClick}>{CAMPAIGNFORM_CREATE_BUTTON}</button>;
         const buttonDelete = this.props.delete && !this.props.loading ? <button id="buttonDeleteMode" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{CAMPAIGNFORM_DELETE_BUTTON}</button> : undefined;
         const buttonCancel = this.props.cancel && !this.props.loading ? <button id="buttonCancel" className="btn btn-default" onClick={this.handleClick}>{CAMPAIGNFORM_CANCEL_BUTTON}</button> : undefined;
-        const title = this.props.title ? <div className="panel-heading"><h3 className="panel-title">{CAMPAIGNFORM_CREATE_TITLE}</h3></div> : undefined;
+        const title = this.props.title ? <div className="panel-heading"><h3 className="panel-title">{this.props.edit ? CAMPAIGNFORM_EDIT_TITLE : CAMPAIGNFORM_CREATE_TITLE}</h3></div> : undefined;
         const messages = this.props.messages ? <Messages messages={this.props.messages}/> : undefined;
         const deleteMode = this.state.deleteMode ? <div className="col-sm-12"><button id="buttonDeleteYes" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{CAMPAIGNFORM_DELETE_BUTTON}</button>
             <button id="buttonDeleteNo" className="btn btn-default" onClick={this.handleClick}>{CAMPAIGNFORM_CANCEL_BUTTON}</button></div> 

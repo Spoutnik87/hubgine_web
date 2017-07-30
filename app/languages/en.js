@@ -81,6 +81,7 @@ export default function getLanguage()
         TWITTERACCOUNTFORM_GENERIC_ERROR: "An error happened.",
         TWITTERACCOUNTFORM_CREATE_SUCCESS: "An account was created successfully.",
         TWITTERACCOUNTFORM_CREATE_TITLE: "Create an account",
+        TWITTERACCOUNTFORM_EDIT_TITLE: "Edit an account",
         TWITTERACCOUNTFORM_CREATE_BUTTON: "Create an account",
         TWITTERACCOUNTFORM_EDIT_BUTTON: "Edit this account",
         TWITTERACCOUNTFORM_CANCEL_BUTTON: "Cancel",

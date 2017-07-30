@@ -11,6 +11,7 @@ class TwitterRuleForm extends Component {
     static propTypes = {
         lang: PropTypes.shape({
             TWITTERRULEFORM_CREATE_TITLE: PropTypes.string.isRequired,
+            TWITTERRULEFORM_EDIT_TITLE: PropTypes.string.isRequired,
             TWITTERRULEFORM_CREATE_BUTTON: PropTypes.string.isRequired,
             TWITTERRULEFORM_EDIT_BUTTON: PropTypes.string.isRequired,
             TWITTERRULEFORM_CANCEL_BUTTON: PropTypes.string.isRequired,
@@ -125,6 +126,7 @@ class TwitterRuleForm extends Component {
     {
         const {
             TWITTERRULEFORM_CREATE_TITLE,
+            TWITTERRULEFORM_EDIT_TITLE,
             TWITTERRULEFORM_CREATE_BUTTON,
             TWITTERRULEFORM_EDIT_BUTTON,
             TWITTERRULEFORM_CANCEL_BUTTON,
@@ -138,7 +140,7 @@ class TwitterRuleForm extends Component {
         const buttonSubmit = this.props.loading ? <LoadingCog/> : this.props.edit ? <button id="buttonSubmit" className="btn btn-primary" onClick={this.handleClick}>{TWITTERRULEFORM_EDIT_BUTTON}</button> : <button id="buttonSubmit" className="btn btn-success" onClick={this.handleClick}>{TWITTERRULEFORM_CREATE_BUTTON}</button>;
         const buttonDelete = this.props.delete && !this.props.loading ? <button id="buttonDeleteMode" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERRULEFORM_DELETE_BUTTON}</button> : undefined;
         const buttonCancel = this.props.cancel && !this.props.loading ? <button id="buttonCancel" className="btn btn-default" onClick={this.handleClick}>{TWITTERRULEFORM_CANCEL_BUTTON}</button> : undefined;
-        const title = this.props.title ? <div className="panel-heading"><h3 className="panel-title">{TWITTERRULEFORM_CREATE_TITLE}</h3></div> : undefined;
+        const title = this.props.title ? <div className="panel-heading"><h3 className="panel-title">{this.props.edit ? TWITTERRULEFORM_EDIT_TITLE : TWITTERRULEFORM_CREATE_TITLE}</h3></div> : undefined;
         const messages = this.props.messages ? <Messages messages={this.props.messages}/> : undefined;
         const deleteMode = this.state.deleteMode ? <div className="col-sm-12"><button id="buttonDeleteYes" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERRULEFORM_DELETE_BUTTON}</button>
             <button id="buttonDeleteNo" className="btn btn-default" onClick={this.handleClick}>{TWITTERRULEFORM_CANCEL_BUTTON}</button></div> 
@@ -163,13 +165,13 @@ class TwitterRuleForm extends Component {
                     <div className="form-group">
                         <label className="col-sm-2">{TWITTERRULEFORM_KEYWORDS}</label>
                         <div className="col-sm-10">
-                            <ArrayInput name="keywords" onChange={this.handleChange} values={this.state.keywords} />
+                            <ArrayInput name="keywords" onChange={this.handleChange} values={this.state.keywords} unique />
                         </div>
                     </div>
                     <div className="form-group">
                         <label className="col-sm-2">{TWITTERRULEFORM_LANGUAGES}</label>
                         <div className="col-sm-10">
-                            <ArrayInput name="languages" options={["en", "fr"]} onChange={this.handleChange} values={this.state.languages} />
+                            <ArrayInput name="languages" options={["en", "fr"]} onChange={this.handleChange} values={this.state.languages} unique />
                         </div>
                     </div>
                     <div className="form-group">

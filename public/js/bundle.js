@@ -1156,6 +1156,7 @@ var CampaignForm = function (_Component) {
         value: function render() {
             var _props$lang = this.props.lang,
                 CAMPAIGNFORM_CREATE_TITLE = _props$lang.CAMPAIGNFORM_CREATE_TITLE,
+                CAMPAIGNFORM_EDIT_TITLE = _props$lang.CAMPAIGNFORM_EDIT_TITLE,
                 CAMPAIGNFORM_CREATE_BUTTON = _props$lang.CAMPAIGNFORM_CREATE_BUTTON,
                 CAMPAIGNFORM_EDIT_BUTTON = _props$lang.CAMPAIGNFORM_EDIT_BUTTON,
                 CAMPAIGNFORM_CANCEL_BUTTON = _props$lang.CAMPAIGNFORM_CANCEL_BUTTON,
@@ -1189,7 +1190,7 @@ var CampaignForm = function (_Component) {
                 _react2.default.createElement(
                     "h3",
                     { className: "panel-title" },
-                    CAMPAIGNFORM_CREATE_TITLE
+                    this.props.edit ? CAMPAIGNFORM_EDIT_TITLE : CAMPAIGNFORM_CREATE_TITLE
                 )
             ) : undefined;
             var messages = this.props.messages ? _react2.default.createElement(_Messages2.default, { messages: this.props.messages }) : undefined;
@@ -1284,6 +1285,7 @@ var CampaignForm = function (_Component) {
 CampaignForm.propTypes = {
     lang: _propTypes2.default.shape({
         CAMPAIGNFORM_CREATE_TITLE: _propTypes2.default.string.isRequired,
+        CAMPAIGNFORM_EDIT_TITLE: _propTypes2.default.string.isRequired,
         CAMPAIGNFORM_CREATE_BUTTON: _propTypes2.default.string.isRequired,
         CAMPAIGNFORM_EDIT_BUTTON: _propTypes2.default.string.isRequired,
         CAMPAIGNFORM_CANCEL_BUTTON: _propTypes2.default.string.isRequired,
@@ -1448,6 +1450,7 @@ var TwitterAccountForm = function (_Component) {
                 TWITTERACCOUNTFORM_EDIT_BUTTON = _props$lang.TWITTERACCOUNTFORM_EDIT_BUTTON,
                 TWITTERACCOUNTFORM_CANCEL_BUTTON = _props$lang.TWITTERACCOUNTFORM_CANCEL_BUTTON,
                 TWITTERACCOUNTFORM_CREATE_TITLE = _props$lang.TWITTERACCOUNTFORM_CREATE_TITLE,
+                TWITTERACCOUNTFORM_EDIT_TITLE = _props$lang.TWITTERACCOUNTFORM_EDIT_TITLE,
                 TWITTERACCOUNTFORM_NAME = _props$lang.TWITTERACCOUNTFORM_NAME,
                 TWITTERACCOUNTFORM_CONSUMERKEY = _props$lang.TWITTERACCOUNTFORM_CONSUMERKEY,
                 TWITTERACCOUNTFORM_CONSUMERSECRET = _props$lang.TWITTERACCOUNTFORM_CONSUMERSECRET,
@@ -1479,7 +1482,7 @@ var TwitterAccountForm = function (_Component) {
                 _react2.default.createElement(
                     "h3",
                     { className: "panel-title" },
-                    TWITTERACCOUNTFORM_CREATE_TITLE
+                    this.props.edit ? TWITTERACCOUNTFORM_EDIT_TITLE : TWITTERACCOUNTFORM_CREATE_TITLE
                 )
             ) : undefined;
             var deleteMode = this.state.deleteMode ? _react2.default.createElement(
@@ -1607,6 +1610,7 @@ TwitterAccountForm.propTypes = {
         TWITTERACCOUNTFORM_ACCESSTOKENKEY: _propTypes2.default.string.isRequired,
         TWITTERACCOUNTFORM_ACCESSTOKENSECRET: _propTypes2.default.string.isRequired,
         TWITTERACCOUNTFORM_CREATE_TITLE: _propTypes2.default.string.isRequired,
+        TWITTERACCOUNTFORM_EDIT_TITLE: _propTypes2.default.string.isRequired,
         TWITTERACCOUNTFORM_DELETE_BUTTON: _propTypes2.default.string.isRequired,
         TWITTERACCOUNTFORM_CREATE_BUTTON: _propTypes2.default.string.isRequired,
         TWITTERACCOUNTFORM_EDIT_BUTTON: _propTypes2.default.string.isRequired,
@@ -1767,6 +1771,7 @@ var TwitterRuleForm = function (_Component) {
         value: function render() {
             var _props$lang = this.props.lang,
                 TWITTERRULEFORM_CREATE_TITLE = _props$lang.TWITTERRULEFORM_CREATE_TITLE,
+                TWITTERRULEFORM_EDIT_TITLE = _props$lang.TWITTERRULEFORM_EDIT_TITLE,
                 TWITTERRULEFORM_CREATE_BUTTON = _props$lang.TWITTERRULEFORM_CREATE_BUTTON,
                 TWITTERRULEFORM_EDIT_BUTTON = _props$lang.TWITTERRULEFORM_EDIT_BUTTON,
                 TWITTERRULEFORM_CANCEL_BUTTON = _props$lang.TWITTERRULEFORM_CANCEL_BUTTON,
@@ -1802,7 +1807,7 @@ var TwitterRuleForm = function (_Component) {
                 _react2.default.createElement(
                     "h3",
                     { className: "panel-title" },
-                    TWITTERRULEFORM_CREATE_TITLE
+                    this.props.edit ? TWITTERRULEFORM_EDIT_TITLE : TWITTERRULEFORM_CREATE_TITLE
                 )
             ) : undefined;
             var messages = this.props.messages ? _react2.default.createElement(_Messages2.default, { messages: this.props.messages }) : undefined;
@@ -1877,7 +1882,7 @@ var TwitterRuleForm = function (_Component) {
                         _react2.default.createElement(
                             "div",
                             { className: "col-sm-10" },
-                            _react2.default.createElement(_ArrayInput2.default, { name: "keywords", onChange: this.handleChange, values: this.state.keywords })
+                            _react2.default.createElement(_ArrayInput2.default, { name: "keywords", onChange: this.handleChange, values: this.state.keywords, unique: true })
                         )
                     ),
                     _react2.default.createElement(
@@ -1891,7 +1896,7 @@ var TwitterRuleForm = function (_Component) {
                         _react2.default.createElement(
                             "div",
                             { className: "col-sm-10" },
-                            _react2.default.createElement(_ArrayInput2.default, { name: "languages", options: ["en", "fr"], onChange: this.handleChange, values: this.state.languages })
+                            _react2.default.createElement(_ArrayInput2.default, { name: "languages", options: ["en", "fr"], onChange: this.handleChange, values: this.state.languages, unique: true })
                         )
                     ),
                     _react2.default.createElement(
@@ -1925,6 +1930,7 @@ var TwitterRuleForm = function (_Component) {
 TwitterRuleForm.propTypes = {
     lang: _propTypes2.default.shape({
         TWITTERRULEFORM_CREATE_TITLE: _propTypes2.default.string.isRequired,
+        TWITTERRULEFORM_EDIT_TITLE: _propTypes2.default.string.isRequired,
         TWITTERRULEFORM_CREATE_BUTTON: _propTypes2.default.string.isRequired,
         TWITTERRULEFORM_EDIT_BUTTON: _propTypes2.default.string.isRequired,
         TWITTERRULEFORM_CANCEL_BUTTON: _propTypes2.default.string.isRequired,
@@ -2056,7 +2062,8 @@ var UserForgotPasswordForm = function (_Component) {
             this.props.onSubmit({
                 name: this.props.name,
                 result: {
-                    email: this.state.email
+                    email: this.state.email,
+                    recaptcha: this.state.recaptcha
                 }
             });
         }
@@ -3008,6 +3015,8 @@ var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactRedux = require("react-redux");
+
 var _propTypes = require("prop-types");
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
@@ -3067,7 +3076,9 @@ var ArrayInput = function (_Component) {
 
             if (event.target.id === "buttonAdd") {
                 var value = this.state.value;
-                if ((this.props.condition && this.props.condition(value) || !this.props.condition && value.match("^.+$")) && (this.props.unique && !this.state.values.includes(value) || !this.props.unique)) {
+                if ((this.props.condition && this.props.condition(value) || !this.props.condition && value.match("^.+$")) && (this.props.unique && !this.state.values.map(function (elem) {
+                    return elem.value;
+                }).includes(value) || !this.props.unique)) {
                     var values = [].concat(_toConsumableArray(this.state.values), [{
                         key: (0, _uuid2.default)(),
                         value: value
@@ -3185,9 +3196,17 @@ ArrayInput.defaultProps = {
     limit: 0,
     unique: false
 };
-exports.default = ArrayInput;
 
-},{"./ListInput":24,"prop-types":338,"react":567,"uuid":630}],22:[function(require,module,exports){
+
+var mapStateToProps = function mapStateToProps(state) {
+    return {
+        lang: state.lang
+    };
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps)(ArrayInput);
+
+},{"./ListInput":24,"prop-types":338,"react":567,"react-redux":491,"uuid":630}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3504,7 +3523,7 @@ var NumberInput = function (_Component) {
         };
 
         _this.state = {
-            value: _this.props.value.toString()
+            value: _this.isNumeric(_this.props.value.toString()) ? _this.props.value.toString() : "0"
         };
         _this.handleChange = _this.handleChange.bind(_this);
         _this.handleClick = _this.handleClick.bind(_this);
@@ -5855,6 +5874,7 @@ function getLanguage() {
         TWITTERACCOUNTFORM_GENERIC_ERROR: "An error happened.",
         TWITTERACCOUNTFORM_CREATE_SUCCESS: "An account was created successfully.",
         TWITTERACCOUNTFORM_CREATE_TITLE: "Create an account",
+        TWITTERACCOUNTFORM_EDIT_TITLE: "Edit an account",
         TWITTERACCOUNTFORM_CREATE_BUTTON: "Create an account",
         TWITTERACCOUNTFORM_EDIT_BUTTON: "Edit this account",
         TWITTERACCOUNTFORM_CANCEL_BUTTON: "Cancel",
@@ -5999,6 +6019,7 @@ function getLanguage() {
         TWITTERACCOUNTFORM_GENERIC_ERROR: "Une erreur est survenue.",
         TWITTERACCOUNTFORM_CREATE_SUCCESS: "Un compte a été créé avec succès.",
         TWITTERACCOUNTFORM_CREATE_TITLE: "Créer un compte",
+        TWITTERACCOUNTFORM_EDIT_TITLE: "Editer un compte",
         TWITTERACCOUNTFORM_CREATE_BUTTON: "Créer un compte",
         TWITTERACCOUNTFORM_EDIT_BUTTON: "Editer un compte",
         TWITTERACCOUNTFORM_CANCEL_BUTTON: "Annuler",

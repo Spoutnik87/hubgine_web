@@ -18,7 +18,7 @@ class NumberInput extends Component {
     {
         super(props);
         this.state = {
-            value: this.props.value.toString()
+            value: this.isNumeric(this.props.value.toString()) ? this.props.value.toString() : "0"
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleClick = this.handleClick.bind(this);

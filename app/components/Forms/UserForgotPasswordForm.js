@@ -59,7 +59,8 @@ class UserForgotPasswordForm extends Component {
         this.props.onSubmit({
             name: this.props.name,
             result: {
-                email: this.state.email
+                email: this.state.email,
+                recaptcha: this.state.recaptcha
             }
         });
     }
