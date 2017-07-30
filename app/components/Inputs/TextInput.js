@@ -3,9 +3,15 @@ import PropTypes from "prop-types";
 
 class TextInput extends Component {
     static propTypes = {
-        name: PropTypes.string.isRequired,
-        value: PropTypes.string.isRequired,
-        onSubmit: PropTypes.func.isRequired
+        name: PropTypes.string,
+        value: PropTypes.string,
+        onSubmit: PropTypes.func
+    };
+
+    defaultProps = {
+        name: "textinput",
+        value: "",
+        onSubmit: () => {}
     };
 
     constructor(props)

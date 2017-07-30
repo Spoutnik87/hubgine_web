@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import Recaptcha from "react-recaptcha";
+import Recaptcha from "../Recaptcha";
 import LoadingCog from "../LoadingCog";
 import Messages from "../Messages";
 import Checkbox from "../Inputs/Checkbox";
@@ -45,7 +45,7 @@ class UserRegisterForm extends Component {
             useterms: false,
             recaptcha: ""
         };
-        this.handleRecaptchaValidation = this.handleRecaptchaValidation.bind(this);
+        this.handleRecaptchaVerify = this.handleRecaptchaVerify.bind(this);
         this.handleRecaptchaExpired = this.handleRecaptchaExpired.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -83,9 +83,7 @@ class UserRegisterForm extends Component {
         }
     }
 
-    handleRecaptchaLoad() {}
-
-    handleRecaptchaValidation(response)
+    handleRecaptchaVerify(response)
     {
         this.setState({
             recaptcha: response
@@ -149,7 +147,7 @@ class UserRegisterForm extends Component {
                     <div className="form-group">
                         <label htmlFor="recaptcha" className="col-sm-2"></label>
                         <div className="col-sm-8">
-                            <Recaptcha sitekey="6Le-wvkSAAAAAPBMRTvw0Q4Muexq9bi0DJwx_mJ-" onloadCallback={this.handleRecaptchaLoad} verifyCallback={this.handleRecaptchaValidation} expiredCallback={this.handleRecaptchaExpired} render="explicit" />
+                            <Recaptcha verifyCallback={this.handleRecaptchaVerify} expiredCallback={this.handleRecaptchaExpired} />
                         </div>
                     </div>
                     <div className="form-group">

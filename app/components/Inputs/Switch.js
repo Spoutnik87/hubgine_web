@@ -3,10 +3,15 @@ import PropTypes from "prop-types";
 
 class Switch extends Component {
     static propTypes = {
-        name: PropTypes.string.isRequired,
+        name: PropTypes.string,
         options: PropTypes.array.isRequired,
         defaultOption: PropTypes.string,
-        onChange: PropTypes.func.isRequired
+        onChange: PropTypes.func
+    };
+
+    defaultProps = {
+        name: "switch",
+        onChange: () => {}
     };
 
     constructor(props)

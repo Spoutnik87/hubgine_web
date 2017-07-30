@@ -3,12 +3,13 @@ import PropTypes from "prop-types";
 
 class Checkbox extends Component {
     static propTypes = {
-        name: PropTypes.string.isRequired,
+        name: PropTypes.string,
         value: PropTypes.bool,
         onChange: PropTypes.func
     };
 
     static defaultProps = {
+        name: "checkbox",
         value: false,
         onChange: () => {}
     };

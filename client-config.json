@@ -1,4 +1,7 @@
 {
+  "recaptcha": {
+    "key": "6Le-wvkSAAAAAPBMRTvw0Q4Muexq9bi0DJwx_mJ-"
+  },
   "api": {
     "host": "http://flavien.cc",
     "port": 8001

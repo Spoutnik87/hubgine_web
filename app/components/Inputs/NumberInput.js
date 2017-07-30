@@ -3,9 +3,15 @@ import PropTypes from "prop-types";
 
 class NumberInput extends Component {
     static propTypes = {
-        name: PropTypes.string.isRequired,
-        value: PropTypes.number.isRequired,
-        onChange: PropTypes.func.isRequired
+        name: PropTypes.string,
+        value: PropTypes.number,
+        onChange: PropTypes.func
+    };
+
+    defaultProps = {
+        name: "switch",
+        value: 0,
+        onChange: () => {}
     };
 
     constructor(props)

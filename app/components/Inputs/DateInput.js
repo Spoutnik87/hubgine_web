@@ -7,11 +7,13 @@ require("moment/locale/fr");
 
 class DateInput extends Component {
     static propTypes = {
-        name: PropTypes.string.isRequired,
-        onChange: PropTypes.func
+        name: PropTypes.string,
+        onChange: PropTypes.func,
+        value: PropTypes.string
     };
 
     defaultProps = {
+        name: "dateinput",
         onChange: () => {}
     };
 
@@ -39,7 +41,7 @@ class DateInput extends Component {
             return current.isAfter(this.state.yesterday) && current.isBefore(this.state.nextYear);
         };
         return (
-            <Datetime locale={this.props.lang.REACT_DATETIME_LANGUAGE} isValidDate={valid} onChange={this.handleChange}/>
+            <Datetime locale={this.props.lang.REACT_DATETIME_LANGUAGE} isValidDate={valid} onChange={this.handleChange} value={this.props.value ? new Date(parseInt(this.props.value)*1000) : ""}/>
         );
     }
 }

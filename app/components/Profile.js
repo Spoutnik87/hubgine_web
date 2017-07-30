@@ -12,8 +12,8 @@ import * as Ranks from "../constants/Ranks";
 import * as Languages from "../constants/Languages";
 import Messages from "./Messages";
 import TextInput from "./Inputs/TextInput";
-import TwitterAccountEditForm from "./Forms/TwitterAccountEditForm";
-import TwitterAccountCreateForm from "./Forms/TwitterAccountCreateForm";
+import TwitterAccountEdit from "./TwitterAccountEdit";
+import TwitterAccountForm from "./Forms/TwitterAccountForm";
 import LoadingCog from "./LoadingCog";
 
 class Profile extends Component {
@@ -50,7 +50,7 @@ class Profile extends Component {
             TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT: PropTypes.string.isRequired,
             TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT: PropTypes.string.isRequired,
             TWITTERACCOUNTFORM_GENERIC_ERROR: PropTypes.string.isRequired,
-            TWITTERACCOUNTCREATEFORM_SUCCESS: PropTypes.string.isRequired
+            TWITTERACCOUNTFORM_CREATE_SUCCESS: PropTypes.string.isRequired
         }).isRequired
     };
 
@@ -299,7 +299,7 @@ class Profile extends Component {
                 <ul className="list-group">
                     {this.props.accounts.map(
                         account => (
-                            <li key={account.uid} className="list-group-item"><TwitterAccountEditForm className="list-group-item" uid={account.uid} name={account.name} /></li>
+                            <li key={account.uid} className="list-group-item"><TwitterAccountEdit className="list-group-item" uid={account.uid} name={account.name} /></li>
                         )
                     )}
                 </ul>
@@ -318,7 +318,7 @@ class Profile extends Component {
 
             const accountContainer = (
                 this.state.isAccountCreationFormDisplayed ?
-                <TwitterAccountCreateForm onSubmit={this.handleAccountFormCreationSubmit} cancel onCancel={this.handleAccountFormCreationCancel} loading={this.state.loadingAccountForm}/>
+                <TwitterAccountForm onSubmit={this.handleAccountFormCreationSubmit} cancel onCancel={this.handleAccountFormCreationCancel} loading={this.state.loadingAccountForm}/>
                 :
                 <span>
                     <div className="panel-heading">

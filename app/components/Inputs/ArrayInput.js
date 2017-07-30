@@ -1,10 +1,16 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import ListInput from "./ListInput";
+import v4 from "uuid";
 
 class ArrayInput extends Component {
     static propTypes = {
-        name: PropTypes.string.isRequired,
+        lang: PropTypes.shape({
+            ARRAYINPUT_ADD_BUTTON: PropTypes.string.isRequired,
+            ARRAYINPUT_DELETE_BUTTON: PropTypes.string.isRequired
+        }).isRequired,
+        name: PropTypes.string,
+        values: PropTypes.array,
         options: PropTypes.array,
         defaultOption: PropTypes.string,
         onChange: PropTypes.func,
@@ -14,17 +20,25 @@ class ArrayInput extends Component {
     };
 
     static defaultProps = {
+        name: "arrayinput",
+        values: [],
+        options: undefined,
+        defaultOption: undefined,
+        onChange: () => {},
+        condition: undefined,
         limit: 0,
         unique: false,
-        onChange: () => {}
     };
 
     constructor(props)
     {
         super(props);
         this.state = {
-            value: this.props.options ? this.props.defaultOption : "",
-            values: [],
+            value: this.props.options ? this.props.defaultOption || this.props.options[0] : "",
+            values: this.props.values.map(element => ({
+                key: v4(),
+                value: element
+            })),
             selectedElement: "input"
         };
         this.handleChange = this.handleChange.bind(this);
@@ -34,7 +48,7 @@ class ArrayInput extends Component {
     handleChange(event)
     {
         this.setState({
-            value: event.target.value
+            value: event.value || event.target.value
         });
     }
 
@@ -45,7 +59,10 @@ class ArrayInput extends Component {
             const value = this.state.value;
             if (((this.props.condition && this.props.condition(value)) || (!this.props.condition && value.match("^.+$"))) && ((this.props.unique && !this.state.values.includes(value)) || !this.props.unique))
             {
-                const values = [...this.state.values, value];
+                const values = [...this.state.values, {
+                    key: v4(),
+                    value: value
+                }];
                 this.setState({
                     values: values
                 });
@@ -98,13 +115,14 @@ class ArrayInput extends Component {
 
     render()
     {
-        const button = this.state.selectedElement === "input" ? <button id="buttonAdd" type="button" className="btn btn-success col-md-2 col-sm-3 col-xs-4" onClick={this.handleClick} disabled={this.props.limit > 0 ? this.state.values.length >= this.props.limit : false}><i className="fa fa-plus"></i> Post</button> 
-            : <button id="buttonRemove" type="button" className="btn btn-danger col-md-2 col-sm-3 col-xs-4" onClick={this.handleClick}><i className="fa fa-minus"></i> Remove</button>;
+        const { ARRAYINPUT_ADD_BUTTON, ARRAYINPUT_DELETE_BUTTON } = this.props.lang;
+        const button = this.state.selectedElement === "input" ? <button id="buttonAdd" type="button" className="btn btn-success col-md-2 col-sm-3 col-xs-4" onClick={this.handleClick} disabled={this.props.limit > 0 ? this.state.values.length >= this.props.limit : false}><i className="fa fa-plus"></i> {ARRAYINPUT_ADD_BUTTON}</button> 
+            : <button id="buttonRemove" type="button" className="btn btn-danger col-md-2 col-sm-3 col-xs-4" onClick={this.handleClick}><i className="fa fa-minus"></i> {ARRAYINPUT_DELETE_BUTTON}</button>;
         return (
             <div className="input-group" style={{ width: "100%" }}>
-                <div className="array-input-display">{this.state.values.map((value, index) => {
-                    return <div key={index} data-element={index} className={this.state.selectedElement === index.toString() ? "array-input-display-element no-select array-input-display-element-selected" : "array-input-display-element no-select"
-                    } onClick={this.handleClick}>{value}<br/></div>; })}</div>
+                <div className="array-input-display">{this.state.values.map((element, index) => {
+                    return <div key={element.key} data-element={index} className={this.state.selectedElement === index.toString() ? "array-input-display-element no-select array-input-display-element-selected" : "array-input-display-element no-select"
+                    } onClick={this.handleClick}>{element.value}<br/></div>; })}</div>
                 <div className="col-md-10 col-sm-9 col-xs-8" style={{ paddingLeft: 0 }}>
                     {
                         this.props.options ? 

@@ -56,7 +56,7 @@
     "redux-promise": "^0.5.3",
     "redux-thunk": "^2.2.0",
     "serve-favicon": "^2.4.3",
-    "uglify-js": "^3.0.26",
+    "uglify-js": "^3.0.27",
     "universal-cookie-express": "^2.0.6",
     "uuid": "^3.1.0",
     "validator": "git+ssh://git@bitbucket.org/TWEET-BOT/validator.git#V1.1.1",
