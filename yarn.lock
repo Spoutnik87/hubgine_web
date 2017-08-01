@@ -3432,9 +3432,9 @@ react-cookie@^2.0.8:
     react "^15.0.0"
     universal-cookie "^2.0.1"
 
-react-datetime@^2.8.11:
-  version "2.8.11"
-  resolved "https://registry.yarnpkg.com/react-datetime/-/react-datetime-2.8.11.tgz#54d672c13f82af17a14621da430e6e9d02b097e0"
+react-datetime@^2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/react-datetime/-/react-datetime-2.9.0.tgz#9ec80060cbb8e5c5d8f98f0acebb6f4712ce449a"
   dependencies:
     "@types/react" ">=15"
     object-assign "^3.0.0"

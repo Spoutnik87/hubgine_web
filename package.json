@@ -45,7 +45,7 @@
     "pug": "^2.0.0-rc.2",
     "react": "15.6.1",
     "react-cookie": "^2.0.8",
-    "react-datetime": "^2.8.11",
+    "react-datetime": "^2.9.0",
     "react-dom": "15.6.1",
     "react-recaptcha": "^2.3.2",
     "react-redux": "5.0.5",

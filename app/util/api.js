@@ -1,4 +1,4 @@
-import { api as config } from "../../client-config.json";
+import { api as config } from "../../client-config";
 
 const method = {
     GET: "GET",
@@ -196,6 +196,45 @@ export const getTwitterAccountStats = (email, token, id, callback) => {
     const data = { email, token, id };
 
     useAPI(method.GET, "twitter/account/item/stats", data, (error, result) => {
+        callback(error, result);
+    });
+}
+
+export const addCampaign = (email, token, name, date_begin, date_end, callback) => {
+    const data = { email, token, name, date_begin, date_end };
+
+    useAPI(method.POST, "campaign", data, (error, result) => {
+        callback(error, result);
+    });
+}
+
+export const removeCampaign = (email, token, id, callback) => {
+    const data = { email, token, id };
+
+    useAPI(method.DELETE, "campaign", data, (error, result) => {
+        callback(error, result);
+    });
+}
+
+export const updateCampaign = (email, token, id, new_name, new_date_begin, new_date_end, callback) => {
+    const data = { email, token, id, new_name, new_date_begin, new_date_end };
+
+    if (!(new_name === null && new_date_begin === null && new_date_end === null))
+    {
+        useAPI(method.PUT, "campaign", data, (error, result) => {
+            callback(error, result);
+        });
+    }
+    else
+    {
+        callback(null, {});
+    }
+}
+
+export const getCampaignList = (email, token, callback) => {
+    const data = { email, token };
+
+    useAPI(method.GET, "campaign/list", data, (error, result) => {
         callback(error, result);
     });
 }

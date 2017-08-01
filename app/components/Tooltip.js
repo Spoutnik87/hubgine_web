@@ -6,7 +6,7 @@ class ToolTip extends Component {
     {
         return (
             <div className="component-tooltip">
-                <i className="fa fa-info-circle" style={{ fontSize: "1.5em" }}></i>
+                <i className="fa fa-info-circle" style={{ fontSize: "1.5em", lineHeight: "2em" }}></i>
                 <span className="component-tooltiptext">
                     {this.props.children}
                 </span>

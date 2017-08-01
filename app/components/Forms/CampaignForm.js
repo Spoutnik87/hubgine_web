@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import DateInput from "../Inputs/DateInput";
 import Messages from "../Messages";
+import ToolTip from "../Tooltip";
 
 class CampaignForm extends Component {
     static propTypes = {
@@ -15,7 +16,8 @@ class CampaignForm extends Component {
             CAMPAIGNFORM_DELETE_BUTTON: PropTypes.string.isRequired,
             CAMPAIGNFORM_NAME: PropTypes.string.isRequired,
             CAMPAIGNFORM_DATEBEGIN: PropTypes.string.isRequired,
-            CAMPAIGNFORM_DATEEND: PropTypes.string.isRequired
+            CAMPAIGNFORM_DATEEND: PropTypes.string.isRequired,
+            CAMPAIGNFORM_NAME_TOOLTIP: PropTypes.string.isRequired
         }).isRequired,
         name: PropTypes.string,
         onSubmit: PropTypes.func,
@@ -133,7 +135,8 @@ class CampaignForm extends Component {
             CAMPAIGNFORM_DELETE_BUTTON,
             CAMPAIGNFORM_NAME,
             CAMPAIGNFORM_DATEBEGIN,
-            CAMPAIGNFORM_DATEEND
+            CAMPAIGNFORM_DATEEND,
+            CAMPAIGNFORM_NAME_TOOLTIP
         } = this.props.lang;
         const buttonSubmit = this.props.loading ? <LoadingCog/> : this.props.edit ? <button id="buttonSubmit" className="btn btn-primary" onClick={this.handleClick}>{CAMPAIGNFORM_EDIT_BUTTON}</button> : <button id="buttonSubmit" className="btn btn-success" onClick={this.handleClick}>{CAMPAIGNFORM_CREATE_BUTTON}</button>;
         const buttonDelete = this.props.delete && !this.props.loading ? <button id="buttonDeleteMode" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{CAMPAIGNFORM_DELETE_BUTTON}</button> : undefined;
@@ -149,7 +152,16 @@ class CampaignForm extends Component {
                 <div className="panel-body form-horizontal">
                     {messages}
                     <div className="form-group">
-                        <label htmlFor="name" className="col-sm-2">{CAMPAIGNFORM_NAME}</label>
+                        <div className="col-sm-2">
+                            <label>
+                                {CAMPAIGNFORM_NAME}
+                            </label>
+                            <span style={{ float: "right" }}>
+                                <ToolTip>
+                                    {CAMPAIGNFORM_NAME_TOOLTIP}
+                                </ToolTip>
+                            </span>
+                        </div>
                         <div className="col-sm-10">
                             <input type="text" name="name" id="name" className="form-control" value={this.state.name} onChange={this.handleChange} autoFocus value={this.state.name}/>
                         </div>

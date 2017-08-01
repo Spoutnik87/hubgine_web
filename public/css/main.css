@@ -8348,6 +8348,10 @@ td.rdtYear:hover {
   font-size: 1.2em;
   margin-top: 37px; }
 
+.numberinput-button:hover {
+  cursor: pointer;
+  border: 1px solid #BBB; }
+
 .component-checkbox label {
   display: inline-block;
   user-select: none;

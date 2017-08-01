@@ -1,12 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { withRouter } from "react-router-dom";
 import { updateAccountList } from "../actions/accounts";
 import { sendFailureMessage, clearMessages } from "../actions/messages";
 import * as Ranks from "../constants/Ranks";
 import * as Languages from "../constants/Languages";
-import { getAccountNameList, getTwitterAccount } from "../util/api";
+import { getAccountNameList } from "../util/api";
 import LoadingCog from "./LoadingCog";
 import AccountTile from "./AccountTile";
 import AccountOverview from "./AccountOverview";
@@ -31,8 +30,8 @@ class UserDashboard extends Component {
     {
         super(props);
         this.state = {
-            isLoaded: false,
-            tabsMenu: "Overview"
+            loading: true,
+            editMode: false
         };
         this.handleClick = this.handleClick.bind(this);
     }
@@ -43,135 +42,52 @@ class UserDashboard extends Component {
             if (!error)
             {
                 this.props.dispatch(updateAccountList(result.accounts));
-                this.setState({ isLoaded: true });
             }
             else
             {
                 this.props.dispatch(sendFailureMessage("An error happened during account list loading."));
             }
+            this.setState({
+                loading: false
+            });
         });
-        /*if (this.props.location.hash === "")
-        {
-            getAccountNameList(this.props.user.email, this.props.user.token, (error, result) => {
-                if (!error)
-                {
-                    this.props.dispatch(updateAccountList(result.accounts));
-                    this.setState({ isLoaded: true });
-                }
-                else
-                {
-                    this.props.dispatch(sendFailureMessage("An error happened during account list loading."));
-                }
-            });
-        }
-        else
-        {
-            const id = this.props.location.hash.substring(1);
-            getTwitterAccount(this.props.user.email, this.props.user.token, id, (error, result) => {
-                if (!error)
-                {
-                    console.log(result);
-                    this.setState({
-                        isLoaded: true
-                    });
-                }
-                else
-                {
-                    this.props.dispatch(sendFailureMessage("An error happened during account loading."));
-                }
-            });
-        }*/
     }
     
-    componentWillMount() {
+    componentWillMount()
+    {
         this.props.dispatch(clearMessages());
     }
 
     handleClick(event)
     {
-        if (event.target.id === "returnMenu")
+        if (event.target.id === "manageaccount")
         {
-            this.props.history.push(this.props.location.pathname);
-        }
-        else
-        {
-            if (this.state.tabsMenu !== event.target.id)
-            {
-                this.setState({
-                    tabsMenu: event.target.id
-                });
-            }
+            this.setState({
+                editMode: !this.state.editMode
+            });
         }
     }
     
     render()
     {
-        let tiles;
-        let menu;
-        let tab;
-        if (this.state.isLoaded)
-        {
-            const overviewActive = this.state.tabsMenu === "Overview";
-            const settingsActive = this.state.tabsMenu === "Settings";
-            if (this.props.location.hash === "")
-            {
-                tiles = (
-                    this.props.accounts.map(account => (
-                        <div key={account.uid} className="col-md-4 col-sm-6">
-                            <AccountTile account={account} href={"#" + encodeURI(account.name)}/>
-                        </div>
-                    ))
-                );
-            }
-            else
-            {
-                menu = (
-                    <div>
-                        <ul className="nav nav-tabs account-tab-return">
-                            <li onClick={this.handleClick}><a id="returnMenu">Return to menu <i className="fa fa-level-up"></i></a></li>
-                        </ul>
-                        <ul className="nav nav-tabs">
-                            <li className={this.state.tabsMenu === "Overview" ? "active" : "account-tab-option"} onClick={this.handleClick}><a id="Overview">Overview</a></li>
-                            <li className={this.state.tabsMenu === "Settings" ? "active" : "account-tab-option"} onClick={this.handleClick}><a id="Settings">Settings</a></li>
-                        </ul>
-                    </div>
-                );
-
-                if (overviewActive)
-                {
-                    tab = <AccountOverview account={this.props.accounts.filter(account => { return decodeURI(this.props.location.hash.substring(1)) === account.name ? true : false; })[0]} />;
-                }
-                else if (settingsActive)
-                {
-                    tab = <AccountSettings account={this.props.accounts.filter(account => { return decodeURI(this.props.location.hash.substring(1)) === account.name ? true : false; })[0]} />;
-                }
-            }
-        }
-        else
-        {
-            tab = (
-                <div className="panel-body" style={ { textAlign: "center" } }>
-                    <LoadingCog/>
-                </div>
-            );
-        }
-
+        const manageButton = !this.state.editMode ? <button id="manageaccount" type="submit" className="btn btn-primary" onClick={this.handleClick} style={{float: "right" }}><i className="fa fa-wrench"></i> Manage</button>
+            : <button id="manageaccount" type="submit" className="btn btn-primary" onClick={this.handleClick} style={{float: "right" }}><i className="fa fa-level-up"></i> Return</button>;
+        const selectedMenu = !this.state.editMode ? <AccountOverview account={this.props.accounts.filter(account => { return decodeURI(this.props.location.hash.substring(1)) === account.name ? true : false; })[0]} />
+            : <AccountSettings account={this.props.accounts.filter(account => { return decodeURI(this.props.location.hash.substring(1)) === account.name ? true : false; })[0]} /> 
+        
         return (
-            <div>
-                <div className="col-md-1"></div>
-                <div className="col-md-10">
-                    <div className="panel">
-                        <div className="panel-heading">
-                            <h3 className="panel-title">DASHBOARD</h3>
+            <div className="container">
+                <div className="panel">
+                    <div className="panel-heading">
+                        <h3 className="panel-title">DASHBOARD</h3>
+                    </div>
+                    <div className="panel-body">
+                        <div className="col-sm-12">
+                            {manageButton}
                         </div>
-                        <div className="panel-body">
-                            {tiles}
-                            {menu}
-                            {tab}
-                        </div>
+                    {selectedMenu}
                     </div>
                 </div>
-                <div className="col-md-1"></div>
             </div>
         );
     }
@@ -186,4 +102,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default withRouter(connect(mapStateToProps)(UserDashboard));
+export default connect(mapStateToProps)(UserDashboard);

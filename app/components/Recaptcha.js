@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import RecaptchaModule from "react-recaptcha";
-import { recaptcha as config } from "../../client-config.json";
+import { recaptcha as config } from "../../client-config";
 
 class Recaptcha extends Component {
     static propTypes = {
