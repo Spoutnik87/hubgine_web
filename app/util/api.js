@@ -1,4 +1,4 @@
-import { api as config } from "../../client-config";
+import { api as config } from "../../client-config.json";
 
 const method = {
     GET: "GET",
