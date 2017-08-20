@@ -1,5 +1,5 @@
 import * as ActionTypes from "../constants/ActionTypes";
-import { getLanguage } from "../languages/lang"
+import getLanguage from "../languages/lang";
 
 const lang = (state = {}, action) =>
 {

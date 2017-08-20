@@ -15,16 +15,16 @@ const campaigns = (state = [], action) =>
             return [ ...state, action.campaign ];
         case ActionTypes.CAMPAIGN_DELETE:
             return state.filter(campaign => {
-                return campaign.name !== action.campaign_id ? true : false;
+                return campaign.name !== action.campaignId ? true : false;
             });
         case ActionTypes.CAMPAIGN_UPDATE_NAME:
-            state[action.campaign_id].name = action.name;
+            state[action.campaignId].name = action.name;
             return state;
         case ActionTypes.CAMPAIGN_UPDATE_DATEBEGIN:
-            state[action.campaign_id].dateBegin = action.dateBegin;
+            state[action.campaignId].dateBegin = action.dateBegin;
             return state;
         case ActionTypes.CAMPAIGN_UPDATE_DATEEND:
-            state[action.campaign_id].dateEnd = action.dateEnd;
+            state[action.campaignId].dateEnd = action.dateEnd;
             return state;
         default:
             return state;

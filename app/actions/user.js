@@ -63,3 +63,13 @@ export function updateLastname(lastname)
         });
     };
 }
+
+export function updateLanguage(lang)
+{
+    return (dispatch) => {
+        return dispatch({
+            type: ActionTypes.USER_UPDATE_LANGUAGE,
+            lang: lang
+        });
+    };
+}

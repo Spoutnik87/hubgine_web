@@ -15,22 +15,22 @@ const accounts = (state = [], action) =>
             return [ ...state, action.account ];
         case ActionTypes.ACCOUNT_DELETE:
             return state.filter(account => {
-                return account.name !== action.account_id ? true : false;
+                return account.name !== action.accountId ? true : false;
             });
         case ActionTypes.ACCOUNT_UPDATE_NAME:
-            state[action.account_id].name = action.name;
+            state[action.accountId].name = action.name;
             return state;
         case ActionTypes.ACCOUNT_UPDATE_CONSUMER_KEY:
-            state[action.account_id].consumer_key = action.consumer_key;
+            state[action.accountId].consumer_key = action.consumer_key;
             return state;
         case ActionTypes.ACCOUNT_UPDATE_CONSUMER_SECRET:
-            state[action.account_id].consumer_key = action.consumer_secret;
+            state[action.accountId].consumer_key = action.consumer_secret;
             return state;
         case ActionTypes.ACCOUNT_UPDATE_ACCESS_TOKEN:
-            state[action.account_id].consumer_key = action.access_token;
+            state[action.accountId].consumer_key = action.access_token;
             return state;
         case ActionTypes.ACCOUNT_UPDATE_ACCESS_TOKEN_SECRET:
-            state[action.account_id].consumer_key = action.access_token_key;
+            state[action.accountId].consumer_key = action.access_token_key;
             return state;
         default:
             return state;

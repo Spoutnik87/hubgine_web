@@ -20,44 +20,44 @@ export function addCampaign(campaign)
     };
 }
 
-export function removeCampaign(campaign_id)
+export function removeCampaign(campaignId)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.CAMPAIGN_DELETE,
-            campaign_id: campaign_id
+            campaignId: campaignId
         });
     };
 }
 
-export function updateCampaignName(campaign_id, name)
+export function updateCampaignName(campaignId, name)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.CAMPAIGN_UPDATE_NAME,
-            campaign_id: campaign_id,
+            campaignId: campaignId,
             name: name
         });
     };
 }
 
-export function updateCampaignDateBegin(campaign_id, dateBegin)
+export function updateCampaignDateBegin(campaignId, dateBegin)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.CAMPAIGN_UPDATE_DATEBEGIN,
-            campaign_id: campaign_id,
+            campaignId: campaignId,
             dateBegin: dateBegin
         });
     };
 }
 
-export function updateCampaignDateEnd(campaign_id, dateEnd)
+export function updateCampaignDateEnd(campaignId, dateEnd)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.CAMPAIGN_UPDATE_DATEEND,
-            campaign_id: campaign_id,
+            campaignId: campaignId,
             dateEnd: dateEnd
         });
     };

@@ -1,17 +1,19 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withCookies } from "react-cookie";
-import { isValidEmail, isValidFirstname, isValidLastname, isValidTwitterAccountName, isUniqueTwitterAccountName, 
+import { isValidEmail, isValidFirstname, isValidLastname, isValidLanguage, isValidTwitterAccountName, isUniqueTwitterAccountName, 
     isValidTwitterAccountConsumerKey, isValidTwitterAccountConsumerSecret, isValidTwitterAccountAccessTokenKey, isValidTwitterAccountAccessTokenSecret } from "validator";
 import PropTypes from "prop-types";
 import { getUser, updateUser, getAccountList, getMaxAccounts, addAccount } from "../util/api";
 import { sendFailureMessage, sendFailureMessages, sendSuccessMessage, clearMessages } from "../actions/messages";
-import { updateInfos, updateEmail, updateFirstname, updateLastname } from "../actions/user";
+import { updateInfos, updateEmail, updateFirstname, updateLastname, updateLanguage } from "../actions/user";
+import { changeLanguage } from "../actions/lang";
 import { updateAccountList, addAccount as addAccountToProps } from "../actions/accounts";
 import * as Ranks from "../constants/Ranks";
 import * as Languages from "../constants/Languages";
 import Messages from "./Messages";
 import TextInput from "./Inputs/TextInput";
+import ListInput from "./Inputs/ListInput";
 import TwitterAccountEdit from "./TwitterAccountEdit";
 import TwitterAccountForm from "./Forms/TwitterAccountForm";
 import LoadingCog from "./LoadingCog";
@@ -34,6 +36,7 @@ class Profile extends Component {
             PROFILE_EMAIL: PropTypes.string.isRequired,
             PROFILE_FIRSTNAME: PropTypes.string.isRequired,
             PROFILE_LASTNAME: PropTypes.string.isRequired,
+            PROFILE_LANGUAGE: PropTypes.string.isRequired,
             PROFILE_ERROR_GENERIC: PropTypes.string.isRequired,
             PROFILE_ERRORLOADING_USER: PropTypes.string.isRequired,
             PROFILE_ERRORLOADING_ACCOUNTLIST: PropTypes.string.isRequired,
@@ -41,6 +44,8 @@ class Profile extends Component {
             PROFILE_SUCCESSEDITING_EMAIL: PropTypes.string.isRequired,
             PROFILE_ERROREDITING_FIRSTNAME: PropTypes.string.isRequired,
             PROFILE_SUCCESSEDITING_FIRSTNAME: PropTypes.string.isRequired,
+            PROFILE_ERROREDITING_LASTNAME: PropTypes.string.isRequired,
+            PROFILE_SUCCESSEDITING_LASTNAME: PropTypes.string.isRequired,
             PROFILE_ERROREDITING_LASTNAME: PropTypes.string.isRequired,
             PROFILE_SUCCESSEDITING_LASTNAME: PropTypes.string.isRequired,
             TWITTERACCOUNTFORM_NAME_INCORRECT: PropTypes.string.isRequired,
@@ -65,12 +70,14 @@ class Profile extends Component {
             loadingEmail: false,
             loadingFirstname: false,
             loadingLastname: false,
+            loadingLanguage: false,
             maxAccounts: 0
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleAccountFormCreationCancel = this.handleAccountFormCreationCancel.bind(this);
         this.handleAccountFormCreationSubmit = this.handleAccountFormCreationSubmit.bind(this);
+        this.handleLanguageChange = this.handleLanguageChange.bind(this);
     }
 
     componentDidMount()
@@ -135,7 +142,12 @@ class Profile extends Component {
                         {
                             this.props.dispatch(sendSuccessMessage(PROFILE_SUCCESSEDITING_EMAIL));
                             this.props.dispatch(updateEmail(input.value));
-                            this.props.cookies.set("user", { token: this.props.user.token, email: this.props.user.email, rank: this.props.user.rank, lang: Languages.ENGLISH });
+                            this.props.cookies.set("user", {
+                                token: this.props.user.token,
+                                email: this.props.user.email,
+                                rank: this.props.user.rank,
+                                lang: this.props.user.lang
+                            });
                         }
                         else
                         {
@@ -225,7 +237,7 @@ class Profile extends Component {
             TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT,
             TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT,
             TWITTERACCOUNTFORM_GENERIC_ERROR,
-            TWITTERACCOUNTCREATEFORM_SUCCESS
+            TWITTERACCOUNTFORM_CREATE_SUCCESS
         } = this.props.lang;
         const { name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret } = event.result;
         const messages = [];
@@ -233,7 +245,7 @@ class Profile extends Component {
         {
             messages.push(TWITTERACCOUNTFORM_NAME_INCORRECT);
         }
-        if (!isUniqueTwitterAccountName(name, this.props.accounts.map(account => { return account.name; })))
+        if (!isUniqueTwitterAccountName(name, this.props.accounts.map(account => account.name)))
         {
             messages.push(TWITTERACCOUNTFORM_NAME_NOT_UNIQUE);
         }
@@ -265,7 +277,7 @@ class Profile extends Component {
                 if (!error)
                 {
                     this.props.dispatch(addAccountToProps(event.result));
-                    this.props.dispatch(sendSuccessMessage(TWITTERACCOUNTCREATEFORM_SUCCESS));
+                    this.props.dispatch(sendSuccessMessage(TWITTERACCOUNTFORM_CREATE_SUCCESS));
                     nextState.isAccountCreationFormDisplayed = false;
                 }
                 else
@@ -288,11 +300,47 @@ class Profile extends Component {
         });
     }
 
+    handleLanguageChange(event)
+    {
+        const { PROFILE_SUCCESSEDITING_LANGUAGE, PROFILE_ERROREDITING_LASTNAME, PROFILE_ERROR_GENERIC } = this.props.lang;
+        if (isValidLanguage(event.value, Object.values(Languages)))
+        {
+            this.setState({
+                loadingLanguage: true
+            });
+            updateUser(this.props.user.email, this.props.user.token, null, null, null, null, event.value, (error, result) => {
+                this.setState({
+                    loadingLanguage: false
+                });
+                if (!error)
+                {
+                    this.props.dispatch(sendSuccessMessage(PROFILE_SUCCESSEDITING_LANGUAGE));
+                    this.props.dispatch(updateLanguage(event.value));
+                    this.props.dispatch(changeLanguage(event.value));
+                    this.props.cookies.set("user", {
+                        token: this.props.user.token,
+                        email: this.props.user.email,
+                        rank: this.props.user.rank,
+                        lang: this.props.user.lang
+                    });
+                }
+                else
+                {
+                    this.props.dispatch(sendFailureMessage(PROFILE_ERROR_GENERIC));
+                }
+            });
+        }
+        else
+        {
+            this.props.dispatch(sendFailureMessage(PROFILE_ERROREDITING_LASTNAME));
+        }
+    }
+
     render()
     {
         let panel;
         let accountList;
-        const { PROFILE_TITLE, PROFILE_EMAIL, PROFILE_FIRSTNAME, PROFILE_LASTNAME, PROFILE_ACCOUNT_LIST } = this.props.lang;
+        const { PROFILE_TITLE, PROFILE_EMAIL, PROFILE_FIRSTNAME, PROFILE_LASTNAME, PROFILE_LANGUAGE, PROFILE_ACCOUNT_LIST } = this.props.lang;
         if (this.state.isAccountListLoaded)
         {
             accountList = (
@@ -306,14 +354,7 @@ class Profile extends Component {
             );
         }
         if (this.state.isLoaded && this.state.isAccountListLoaded && this.state.maxAccounts > 0)
-        {
-            const emailInput = !this.state.loadingEmail ?
-                <TextInput name="email" value={this.props.user.email} onSubmit={this.handleSubmit}/> : <LoadingCog/>;
-            const firstnameInput = !this.state.loadingFirstname ?
-                <TextInput name="firstname" value={this.props.user.firstname} onSubmit={this.handleSubmit}/> : <LoadingCog/>;
-            const lastnameInput = !this.state.loadingLastname ?
-                <TextInput name="lastname" value={this.props.user.lastname} onSubmit={this.handleSubmit}/> : <LoadingCog/>;
-            
+        {            
             const maxAccountsDisplay = (this.props.accounts.length >= this.state.maxAccounts) ? <span style={ { float: "right" } }>{this.props.accounts.length}/{this.state.maxAccounts}</span> : <span style={ { float: "right" } }>{this.props.accounts.length}/{this.state.maxAccounts}<div id="buttonAccountCreation" className="input-group-addon edit-button" onClick={this.handleClick} style={ { display: "inline" } }><i id="buttonAccountCreation" className="fa fa-plus fa-fw"></i></div></span>;
 
             const accountContainer = (
@@ -342,19 +383,25 @@ class Profile extends Component {
                             <div className="form-group">
                                 <label htmlFor="email" className="col-sm-2">{PROFILE_EMAIL}</label>
                                 <div className="col-sm-8">
-                                    {emailInput}
+                                    <TextInput name="email" value={this.props.user.email} onSubmit={this.handleSubmit} loading={this.state.loadingEmail}/>
                                 </div>
                             </div>
                             <div className="form-group">
                                 <label htmlFor="firstname" className="col-sm-2">{PROFILE_FIRSTNAME}</label>
                                 <div className="col-sm-8">
-                                    {firstnameInput}
+                                    <TextInput name="firstname" value={this.props.user.firstname} onSubmit={this.handleSubmit} loading={this.state.loadingFirstname}/>
                                 </div>
                             </div>
                             <div className="form-group">
                                 <label htmlFor="lastname" className="col-sm-2">{PROFILE_LASTNAME}</label>
                                 <div className="col-sm-8">
-                                    {lastnameInput}
+                                    <TextInput name="lastname" value={this.props.user.lastname} onSubmit={this.handleSubmit} loading={this.state.loadingLastname}/>
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="language" className="col-sm-2">{PROFILE_LANGUAGE}</label>
+                                <div className="col-sm-8">
+                                    <ListInput name="language" options={Object.values(Languages)} defaultOption={this.props.user.lang} onChange={this.handleLanguageChange} loading={this.state.loadingLanguage} />
                                 </div>
                             </div>
                             {accountContainer}

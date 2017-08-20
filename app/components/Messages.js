@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 class Messages extends Component {
   static propTypes = {
-    messages: PropTypes.shape({ 
+    messages: PropTypes.shape({
       success: PropTypes.arrayOf(PropTypes.shape({
         msg: PropTypes.string.isRequired
       })),

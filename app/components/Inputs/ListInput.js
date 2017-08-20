@@ -1,21 +1,23 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import v4 from "uuid";
+import LoadingCog from "../LoadingCog";
 
 class ListInput extends Component {
     static propTypes = {
         name: PropTypes.string,
         options: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
         defaultOption: PropTypes.string,
+        loading: PropTypes.bool,
         onClick: PropTypes.func,
         onChange: PropTypes.func
     };
 
     static defaultProps = {
         name: "listinput",
+        loading: false,
         onClick: () => {},
-        onChange: () => {},
-        customKeys: false
+        onChange: () => {}
     };
 
     constructor(props)
@@ -26,7 +28,7 @@ class ListInput extends Component {
                 key: v4(),
                 value: option
             })),
-            value: this.props.customKeys ? this.props.defaultOption.value : this.props.defaultOption
+            value: this.props.defaultOption || this.props.options[0]
         };
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -50,7 +52,7 @@ class ListInput extends Component {
 
     render()
     {
-        return (
+        return this.props.loading ? <LoadingCog /> : (
             <select name={this.props.name} className="form-control" value={this.state.value} onClick={this.handleClick} onChange={this.handleChange}>
                 {
                     this.state.options.map(option => (

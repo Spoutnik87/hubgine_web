@@ -33,6 +33,11 @@ const user = (state = {}, action) =>
                 ...state,
                 lastname: action.lastname
             };
+        case ActionTypes.USER_UPDATE_LANGUAGE:
+            return {
+                ...state,
+                lang: action.lang
+            };
         case ActionTypes.USER_DISCONNECT:
             return {};
         default:

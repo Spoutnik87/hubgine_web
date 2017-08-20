@@ -20,66 +20,66 @@ export function addAccount(account)
     };
 }
 
-export function removeAccount(account_id)
+export function removeAccount(accountId)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.ACCOUNT_DELETE,
-            account_id: account_id
+            accountId: accountId
         });
     };
 }
 
-export function updateAccountName(account_id, name)
+export function updateAccountName(accountId, name)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.ACCOUNT_UPDATE_NAME,
-            account_id: account_id,
+            accountId: accountId,
             name: name
         });
     };
 }
 
-export function updateAccountConsumerKey(account_id, consumer_key)
+export function updateAccountConsumerKey(accountId, consumer_key)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.ACCOUNT_UPDATE_CONSUMER_KEY,
-            account_id: account_id,
+            accountId: accountId,
             consumer_key: consumer_key
         });
     };
 }
 
-export function updateAccountConsumerSecret(account_id, consumer_secret)
+export function updateAccountConsumerSecret(accountId, consumer_secret)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.ACCOUNT_UPDATE_CONSUMER_SECRET,
-            account_id: account_id,
+            accountId: accountId,
             consumer_secret: consumer_secret
         });
     };
 }
 
-export function updateAccountAccessToken(account_id, access_token)
+export function updateAccountAccessToken(accountId, access_token)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.ACCOUNT_UPDATE_ACCESS_TOKEN,
-            account_id: account_id,
+            accountId: accountId,
             access_token: access_token
         });
     };
 }
 
-export function updateAccountAccessTokenKey(account_id, access_token_secret)
+export function updateAccountAccessTokenKey(accountId, access_token_secret)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.ACCOUNT_UPDATE_ACCESS_TOKEN_SECRET,
-            account_id: account_id,
+            accountId: accountId,
             access_token_secret: access_token_secret
         });
     };

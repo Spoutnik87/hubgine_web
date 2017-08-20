@@ -1,14 +1,15 @@
 import * as ActionTypes from "../constants/ActionTypes";
 
 export default function messages(state = {}, action) {
-  switch (action.type) {
+  switch (action.type)
+  {
     case ActionTypes.FAILURE_MESSAGE:
       return {
         error: [ { msg: action.message } ]
       };
     case ActionTypes.FAILURE_MESSAGES:
       return {
-        error: action.messages.map((message, index) => ({ msg: message }))
+        error: action.messages.map(message => ({ msg: message }))
       };
     case ActionTypes.SUCCESS_MESSAGE:
       return {
@@ -16,7 +17,7 @@ export default function messages(state = {}, action) {
       };
     case ActionTypes.SUCCESS_MESSAGES:
       return {
-        success: action.messages.map((message, index) => ({ msg: message }))
+        success: action.messages.map(message => ({ msg: message }))
       };
     case ActionTypes.INFO_MESSAGE:
       return {
@@ -24,7 +25,7 @@ export default function messages(state = {}, action) {
       };
     case ActionTypes.INFO_MESSAGES:
       return {
-        info: action.messages.map((message, index) => ({ msg: message }))
+        info: action.messages.map(message => ({ msg: message }))
       };
     case ActionTypes.CLEAR_MESSAGES:
       return {};

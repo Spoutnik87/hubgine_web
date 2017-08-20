@@ -1,16 +1,19 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import LoadingCog from "../LoadingCog";
 
 class TextInput extends Component {
     static propTypes = {
         name: PropTypes.string,
         value: PropTypes.string,
+        loading: PropTypes.bool,
         onSubmit: PropTypes.func
     };
 
     defaultProps = {
         name: "textinput",
         value: "",
+        loading: false,
         onSubmit: () => {}
     };
 
@@ -62,24 +65,31 @@ class TextInput extends Component {
     render()
     {
         let mainDiv;
-        if (this.state.isEditMode)
+        if (this.props.loading)
         {
-            mainDiv = (
-                <div className="input-group">
-                    <input type="text" className="form-control" value={this.state.value} onChange={this.handleChange} autoFocus/>
-                    <span id="buttonTextSubmit" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonTextSubmit" className="fa fa-check fa-fw"></i></span>
-                    <span id="buttonTextCancel" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonTextCancel" className="fa fa-remove fa-fw"></i></span>
-                </div>
-            );
+            mainDiv = <LoadingCog />
         }
         else
         {
-            mainDiv = (
-                <div className="input-group">
-                    <div className="form-control">{this.props.value}</div>
-                    <span id="buttonTextEdit" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonTextEdit" className="fa fa-pencil fa-fw"></i></span>
-                </div>
-            );
+            if (this.state.isEditMode)
+            {
+                mainDiv = (
+                    <div className="input-group">
+                        <input type="text" className="form-control" value={this.state.value} onChange={this.handleChange} autoFocus/>
+                        <span id="buttonTextSubmit" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonTextSubmit" className="fa fa-check fa-fw"></i></span>
+                        <span id="buttonTextCancel" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonTextCancel" className="fa fa-remove fa-fw"></i></span>
+                    </div>
+                );
+            }
+            else
+            {
+                mainDiv = (
+                    <div className="input-group">
+                        <div className="form-control">{this.props.value}</div>
+                        <span id="buttonTextEdit" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonTextEdit" className="fa fa-pencil fa-fw"></i></span>
+                    </div>
+                );
+            }
         }
         return mainDiv;
     }

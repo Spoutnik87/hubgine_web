@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import CampaignTile from "./CampaignTile";
 
 class AccountOverview extends Component {
     static propTypes = {
@@ -17,7 +18,8 @@ class AccountOverview extends Component {
         super(props);
         this.state = {
             isLoaded: false,
-            noCampaign: true
+            noCampaign: true,
+            selectedCampaign: -1
         };
         this.handleClick = this.handleClick.bind(this);
     }
@@ -29,10 +31,21 @@ class AccountOverview extends Component {
 
     render()
     {
-        const noCampaign = this.state.noCampaign ? <div>You don't have campaign yet. Click on manage button to create one.</div> : undefined;
+        const noCampaign = <div>You don't have campaign yet. Click on manage button to create one.</div>;
+
         return (
             <div>
-                {noCampaign}
+                {
+                    this.state.noCampaign ? noCampaign :
+                    this.props.campaigns.map(campaign => (
+                        <CampaignTile campaign={campaign} />
+                    ))
+                }
+                {/*<CampaignTile campaign={{
+                    name: "First campaign",
+                    dateBegin: 0,
+                    dateEnd: 0
+                }} />*/}
             </div>
         );
     }
@@ -40,6 +53,7 @@ class AccountOverview extends Component {
 
 const mapStateToProps = (state) => {
     return {
+        campaigns: state.campaigns,
         lang: state.lang
     };
 };

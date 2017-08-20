@@ -1,13 +1,19 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import { getAccountList } from "../../util/api";
+import { sendFailureMessage, sendFailureMessages, sendSuccessMessage, clearMessages } from "../../actions/messages";
+import { updateAccountList } from "../../actions/accounts";
 import DateInput from "../Inputs/DateInput";
+import ListInput from "../Inputs/ListInput";
 import Messages from "../Messages";
 import ToolTip from "../Tooltip";
+import LoadingCog from "../LoadingCog";
 
 class CampaignForm extends Component {
     static propTypes = {
         lang: PropTypes.shape({
+            CAMPAIGNFORM_GENERIC_ERROR: PropTypes.string.isRequired,
             CAMPAIGNFORM_CREATE_TITLE: PropTypes.string.isRequired,
             CAMPAIGNFORM_EDIT_TITLE: PropTypes.string.isRequired,
             CAMPAIGNFORM_CREATE_BUTTON: PropTypes.string.isRequired,
@@ -15,6 +21,7 @@ class CampaignForm extends Component {
             CAMPAIGNFORM_CANCEL_BUTTON: PropTypes.string.isRequired,
             CAMPAIGNFORM_DELETE_BUTTON: PropTypes.string.isRequired,
             CAMPAIGNFORM_NAME: PropTypes.string.isRequired,
+            CAMPAIGNFORM_ACCOUNT: PropTypes.string.isRequired,
             CAMPAIGNFORM_DATEBEGIN: PropTypes.string.isRequired,
             CAMPAIGNFORM_DATEEND: PropTypes.string.isRequired,
             CAMPAIGNFORM_NAME_TOOLTIP: PropTypes.string.isRequired
@@ -31,6 +38,7 @@ class CampaignForm extends Component {
         messages: PropTypes.object,
         campaign: PropTypes.shape({
             name: PropTypes.string.isRequired,
+            accountId: PropTypes.string.isRequired,
             dateBegin: PropTypes.string.isRequired,
             dateEnd: PropTypes.string.isRequired
         })
@@ -55,18 +63,43 @@ class CampaignForm extends Component {
         super(props);
         this.state = this.props.campaign ? {
             name: this.props.campaign.name,
+            accountId: this.props.campaign.accountId,
             dateBegin: this.props.campaign.dateBegin,
             dateEnd: this.props.campaign.dateEnd,
-            deleteMode: false
+            deleteMode: false,
+            isAccountListLoaded: false
         } : {
             name: "",
+            accountId: "",
             dateBegin: "",
             dateEnd: "",
-            deleteMode: false
+            deleteMode: false,
+            isAccountListLoaded: false
         };
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
+        this.handleAccountChange = this.handleAccountChange.bind(this);
+    }
+
+    componentDidMount()
+    {
+        const {
+            CAMPAIGNFORM_GENERIC_ERROR
+        } = this.props.lang;
+        getAccountList(this.props.user.email, this.props.user.token, (error, result) => {
+            if (!error)
+            {
+                this.props.dispatch(updateAccountList(result.accounts));                
+                this.setState({
+                    isAccountListLoaded: true
+                });
+            }
+            else
+            {
+                this.props.dispatch(sendFailureMessage(CAMPAIGNFORM_GENERIC_ERROR));
+            }
+        });
     }
 
     handleClick(event)
@@ -75,12 +108,14 @@ class CampaignForm extends Component {
             name: this.props.name,
             result: {
                 name: this.state.name,
+                accountId: this.state.accountId,
                 dateBegin: this.state.dateBegin,
                 dateEnd: this.state.dateEnd
             }
         };
         if (this.props.campaign) send.default = {
             name: this.props.campaign.name,
+            accountId: this.props.campaign.accountId,
             dateBegin: this.props.campaign.dateBegin,
             dateEnd: this.props.campaign.dateEnd
         };
@@ -124,6 +159,13 @@ class CampaignForm extends Component {
         });
     }
 
+    handleAccountChange(event)
+    {
+        this.setState({
+           [event.name]: event.value 
+        });
+    }
+
     render()
     {
         const {
@@ -134,6 +176,7 @@ class CampaignForm extends Component {
             CAMPAIGNFORM_CANCEL_BUTTON,
             CAMPAIGNFORM_DELETE_BUTTON,
             CAMPAIGNFORM_NAME,
+            CAMPAIGNFORM_ACCOUNT,
             CAMPAIGNFORM_DATEBEGIN,
             CAMPAIGNFORM_DATEEND,
             CAMPAIGNFORM_NAME_TOOLTIP
@@ -149,40 +192,50 @@ class CampaignForm extends Component {
         return (
             <div>
                 {title}
-                <div className="panel-body form-horizontal">
-                    {messages}
-                    <div className="form-group">
-                        <div className="col-sm-2">
-                            <label>
-                                {CAMPAIGNFORM_NAME}
-                            </label>
-                            <span style={{ float: "right" }}>
-                                <ToolTip>
-                                    {CAMPAIGNFORM_NAME_TOOLTIP}
-                                </ToolTip>
-                            </span>
+                {
+                    this.state.isAccountListLoaded ? 
+                    <div className="panel-body form-horizontal">
+                        {messages}
+                        <div className="form-group">
+                            <div className="col-sm-2">
+                                <label>
+                                    {CAMPAIGNFORM_NAME}
+                                </label>
+                                <span style={{ float: "right" }}>
+                                    <ToolTip>
+                                        {CAMPAIGNFORM_NAME_TOOLTIP}
+                                    </ToolTip>
+                                </span>
+                            </div>
+                            <div className="col-sm-10">
+                                <input type="text" name="name" id="name" className="form-control" value={this.state.name} onChange={this.handleChange} autoFocus value={this.state.name}/>
+                            </div>
                         </div>
-                        <div className="col-sm-10">
-                            <input type="text" name="name" id="name" className="form-control" value={this.state.name} onChange={this.handleChange} autoFocus value={this.state.name}/>
+                        <div className="form-group">
+                            <label htmlFor="account" className="col-sm-2">{CAMPAIGNFORM_ACCOUNT}</label>
+                            <div className="col-sm-10">
+                                <ListInput id="accountId" name="accountId" options={this.props.accounts.map(account => account.name)} defaultOption={this.props.campaign ? this.props.campaign.accountId : undefined} onChange={this.handleAccountChange} />
+                            </div>
                         </div>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="dateBegin" className="col-sm-2">{CAMPAIGNFORM_DATEBEGIN}</label>
-                        <div className="col-sm-10">
-                            <DateInput id="dateBegin" name="dateBegin" onChange={this.handleDateChange} value={this.state.dateBegin}/>
+                        <div className="form-group">
+                            <label htmlFor="dateBegin" className="col-sm-2">{CAMPAIGNFORM_DATEBEGIN}</label>
+                            <div className="col-sm-10">
+                                <DateInput id="dateBegin" name="dateBegin" onChange={this.handleDateChange} value={this.state.dateBegin}/>
+                            </div>
                         </div>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="dateEnd" className="col-sm-2">{CAMPAIGNFORM_DATEEND}</label>
-                        <div className="col-sm-10">
-                            <DateInput id="dateEnd" name="dateEnd" onChange={this.handleDateChange} value={this.state.dateEnd}/>
+                        <div className="form-group">
+                            <label htmlFor="dateEnd" className="col-sm-2">{CAMPAIGNFORM_DATEEND}</label>
+                            <div className="col-sm-10">
+                                <DateInput id="dateEnd" name="dateEnd" onChange={this.handleDateChange} value={this.state.dateEnd}/>
+                            </div>
                         </div>
+                        <div className="form-group">
+                            {deleteMode}
+                        </div>
+                        {this.props.children}
                     </div>
-                    <div className="form-group">
-                        {deleteMode}
-                    </div>
-                    {this.props.children}
-                </div>
+                    : <LoadingCog center />
+                }
             </div>
         );
     }
@@ -190,6 +243,8 @@ class CampaignForm extends Component {
 
 const mapStateToProps = (state) => {
     return {
+        user: state.user,
+        accounts: state.accounts,
         lang: state.lang
     };
 };

@@ -200,8 +200,8 @@ export const getTwitterAccountStats = (email, token, id, callback) => {
     });
 }
 
-export const addCampaign = (email, token, name, date_begin, date_end, callback) => {
-    const data = { email, token, name, date_begin, date_end };
+export const addCampaign = (email, token, name, account, date_begin, date_end, callback) => {
+    const data = { email, token, name, account, date_begin, date_end };
 
     useAPI(method.POST, "campaign", data, (error, result) => {
         callback(error, result);
@@ -216,8 +216,8 @@ export const removeCampaign = (email, token, id, callback) => {
     });
 }
 
-export const updateCampaign = (email, token, id, new_name, new_date_begin, new_date_end, callback) => {
-    const data = { email, token, id, new_name, new_date_begin, new_date_end };
+export const updateCampaign = (email, token, id, new_name, new_account, new_date_begin, new_date_end, callback) => {
+    const data = { email, token, id, new_name, new_account, new_date_begin, new_date_end };
 
     if (!(new_name === null && new_date_begin === null && new_date_end === null))
     {

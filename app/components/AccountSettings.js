@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { isValidCampaignName, isValidCampaignDateBegin, isValidCampaignDateEnd } from "validator";
+import { isValidCampaignName, isUniqueCampaignName, isValidCampaignDateBegin, isValidCampaignDateEnd } from "validator";
 import { sendSuccessMessage, sendFailureMessage, sendFailureMessages } from "../actions/messages";
 import { addCampaign as addCampaignToProps } from "../actions/campaigns";
 import { addCampaign } from "../util/api";
@@ -15,6 +15,8 @@ class AccountSettings extends Component {
         }),
         lang: PropTypes.shape({
             CAMPAIGNFORM_NAME_INCORRECT: PropTypes.string.isRequired,
+            CAMPAIGNFORM_NAME_NOT_UNIQUE: PropTypes.string.isRequired,
+            CAMPAIGNFORM_ACCOUNT_INCORRECT: PropTypes.string.isRequired,
             CAMPAIGNFORM_DATEBEGIN_INCORRECT: PropTypes.string.isRequired,
             CAMPAIGNFORM_DATEEND_INCORRECT: PropTypes.string.isRequired,
             CAMPAIGNFORM_DATES_INCORRECT: PropTypes.string.isRequired,
@@ -61,17 +63,27 @@ class AccountSettings extends Component {
     handleCampaignFormSubmit(event)
     {
         const { CAMPAIGNFORM_NAME_INCORRECT,
+            CAMPAIGNFORM_NAME_NOT_UNIQUE,
+            CAMPAIGNFORM_ACCOUNT_INCORRECT,
             CAMPAIGNFORM_DATEBEGIN_INCORRECT,
             CAMPAIGNFORM_DATEEND_INCORRECT,
             CAMPAIGNFORM_DATES_INCORRECT,
             CAMPAIGNFORM_CREATE_SUCCESS, 
             CAMPAIGNFORM_GENERIC_ERROR
         } = this.props.lang;
-        const { name, dateBegin, dateEnd } = event.result;
+        const { name, accountId, dateBegin, dateEnd } = event.result;
         const messages = [];
         if (!isValidCampaignName(name))
         {
             messages.push(CAMPAIGNFORM_NAME_INCORRECT);
+        }
+        if (!isUniqueCampaignName(name, this.props.campaigns.map(campaign => campaign.name)))
+        {
+            messages.push(CAMPAIGNFORM_NAME_NOT_UNIQUE);
+        }
+        if (!isValidCampaignAccount(accountId, this.props.accounts.map(account => account.name)))
+        {
+            messages.push(CAMPAIGNFORM_ACCOUNT_INCORRECT);
         }
         if (!isValidCampaignDateBegin(dateBegin))
         {
@@ -90,12 +102,13 @@ class AccountSettings extends Component {
             this.setState({
                 loadingCampaignForm: true
             });
-            /*addCampaign(name, dateBegin, dateEnd, (error, result) =>
+            /*addCampaign(name, accountId, dateBegin, dateEnd, (error, result) =>
             {
                 if (!error)
                 {
                     this.props.dispatch(addCampaignToProps({
                         name,
+                        accountId,
                         dateBegin,
                         dateEnd
                     }));
@@ -103,8 +116,7 @@ class AccountSettings extends Component {
                 }
                 else
                 {
-                    messages.push(CAMPAIGNFORM_GENERIC_ERROR);
-                    this.props.dispatch(sendFailureMessages(messages));
+                    this.props.dispatch(sendFailureMessage(CAMPAIGNFORM_GENERIC_ERROR));
                 }
                 this.setState({
                     loadingCampaignForm: false
