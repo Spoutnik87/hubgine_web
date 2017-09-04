@@ -5,7 +5,7 @@ import { updateAccountList } from "../actions/accounts";
 import { sendFailureMessage, clearMessages } from "../actions/messages";
 import * as Ranks from "../constants/Ranks";
 import * as Languages from "../constants/Languages";
-import { getAccountNameList } from "../util/api";
+import { getAccountNameList } from "../net/Requests";
 import LoadingCog from "./LoadingCog";
 import AccountTile from "./AccountTile";
 import AccountOverview from "./AccountOverview";
@@ -23,7 +23,9 @@ class UserDashboard extends Component {
             rank: PropTypes.oneOf(Object.values(Ranks)).isRequired,
             lang: PropTypes.oneOf(Object.values(Languages)).isRequired
         }).isRequired,
-        accounts: PropTypes.array.isRequired
+        accounts: PropTypes.shape({
+            data: PropTypes.array.isRequired
+        }).isRequired
     };
 
     constructor(props)
@@ -38,10 +40,13 @@ class UserDashboard extends Component {
 
     componentDidMount()
     {
-        getAccountNameList(this.props.user.email, this.props.user.token, (error, result) => {
+        getAccountNameList(this.props.user.email, this.props.user.token, this.props.accounts, (error, result) => {
             if (!error)
             {
-                this.props.dispatch(updateAccountList(result.accounts));
+                if (result)
+                {
+                    this.props.dispatch(updateAccountList(result.accounts));
+                }
             }
             else
             {
@@ -72,8 +77,8 @@ class UserDashboard extends Component {
     {
         const manageButton = !this.state.editMode ? <button id="manageaccount" type="submit" className="btn btn-primary" onClick={this.handleClick} style={{float: "right" }}><i className="fa fa-wrench"></i> Manage</button>
             : <button id="manageaccount" type="submit" className="btn btn-primary" onClick={this.handleClick} style={{float: "right" }}><i className="fa fa-level-up"></i> Return</button>;
-        const selectedMenu = !this.state.editMode ? <AccountOverview account={this.props.accounts.filter(account => { return decodeURI(this.props.location.hash.substring(1)) === account.name ? true : false; })[0]} />
-            : <AccountSettings account={this.props.accounts.filter(account => { return decodeURI(this.props.location.hash.substring(1)) === account.name ? true : false; })[0]} /> 
+        const selectedMenu = !this.state.editMode ? <AccountOverview account={this.props.accounts.data.filter(account => { return decodeURI(this.props.location.hash.substring(1)) === account.name ? true : false; })[0]} />
+            : <AccountSettings account={this.props.accounts.data.filter(account => { return decodeURI(this.props.location.hash.substring(1)) === account.name ? true : false; })[0]} /> 
         
         return (
             <div className="container">

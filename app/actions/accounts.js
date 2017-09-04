@@ -5,17 +5,33 @@ export function updateAccountList(accounts)
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.ACCOUNT_UPDATE_LIST,
-            accounts: accounts
+            accounts: accounts.map(account => {
+                let newAccount = {
+                    name: account.name
+                };
+                if (account.consumerKey) newAccount.consumerKey = account.consumerKey;
+                if (account.consumerSecret) newAccount.consumerSecret = account.consumerSecret;
+                if (account.accessTokenKey) newAccount.accessTokenKey = account.accessTokenKey;
+                if (account.accessTokenSecret) newAccount.accessTokenSecret = account.accessTokenSecret;
+                return newAccount;
+            })
         });
     };
 }
 
-export function addAccount(account)
+export function addAccount(name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret)
 {
+    let account = {
+        name: name
+    };
+    if (consumerKey) account.consumerKey = consumerKey;
+    if (consumerSecret) account.consumerSecret = consumerSecret;
+    if (accessTokenKey) account.accessTokenKey = accessTokenKey;
+    if (accessTokenSecret) account.accessTokenSecret = accessTokenSecret;
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.ACCOUNT_ADD,
-            account: account
+            ...account
         });
     };
 }
@@ -41,35 +57,49 @@ export function updateAccountName(accountId, name)
     };
 }
 
-export function updateAccountConsumerKey(accountId, consumer_key)
+export function updateAccountKeys(accountId, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret)
+{
+    return (dispatch) => {
+        return dispatch({
+            type: ActionTypes.ACCOUNT_UPDATE_KEYS,
+            accountId: accountId,
+            consumerKey: consumerKey,
+            consumerSecret: consumerSecret,
+            accessTokenKey: accessTokenKey,
+            accessTokenSecret: accessTokenSecret
+        });
+    };
+}
+
+export function updateAccountConsumerKey(accountId, consumerKey)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.ACCOUNT_UPDATE_CONSUMER_KEY,
             accountId: accountId,
-            consumer_key: consumer_key
+            consumerKey: consumerKey
         });
     };
 }
 
-export function updateAccountConsumerSecret(accountId, consumer_secret)
+export function updateAccountConsumerSecret(accountId, consumerSecret)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.ACCOUNT_UPDATE_CONSUMER_SECRET,
             accountId: accountId,
-            consumer_secret: consumer_secret
+            consumerSecret: consumerSecret
         });
     };
 }
 
-export function updateAccountAccessToken(accountId, access_token)
+export function updateAccountAccessToken(accountId, accessTokenKey)
 {
     return (dispatch) => {
         return dispatch({ 
-            type: ActionTypes.ACCOUNT_UPDATE_ACCESS_TOKEN,
+            type: ActionTypes.ACCOUNT_UPDATE_ACCESS_TOKEN_KEY,
             accountId: accountId,
-            access_token: access_token
+            accessTokenKey: accessTokenKey
         });
     };
 }
@@ -80,7 +110,7 @@ export function updateAccountAccessTokenKey(accountId, access_token_secret)
         return dispatch({ 
             type: ActionTypes.ACCOUNT_UPDATE_ACCESS_TOKEN_SECRET,
             accountId: accountId,
-            access_token_secret: access_token_secret
+            accessTokenSecret: accessTokenSecret
         });
     };
 }

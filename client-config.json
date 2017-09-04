@@ -5,5 +5,8 @@
   "api": {
     "host": "http://flavien.cc",
     "port": 8001
+  },
+  "store": {
+    "cache_time": 300
   }
 }

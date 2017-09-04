@@ -34,6 +34,16 @@ export function updateInfos(email, firstname, lastname)
     };
 }
 
+export function updateMaxAccounts(maxAccounts)
+{
+    return (dispatch) => {
+        return dispatch({
+            type: ActionTypes.USER_UPDATE_MAX_ACCOUNTS,
+            maxAccounts: maxAccounts
+        });
+    };
+}
+
 export function updateEmail(email)
 {
     return (dispatch) => {

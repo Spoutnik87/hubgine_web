@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { getAccountList } from "../../util/api";
+import { getAccountList } from "../../net/Requests";
 import { sendFailureMessage, sendFailureMessages, sendSuccessMessage, clearMessages } from "../../actions/messages";
 import { updateAccountList } from "../../actions/accounts";
 import DateInput from "../Inputs/DateInput";
@@ -25,6 +25,13 @@ class CampaignForm extends Component {
             CAMPAIGNFORM_DATEBEGIN: PropTypes.string.isRequired,
             CAMPAIGNFORM_DATEEND: PropTypes.string.isRequired,
             CAMPAIGNFORM_NAME_TOOLTIP: PropTypes.string.isRequired
+        }).isRequired,
+        accounts: PropTypes.shape({
+            data: PropTypes.array.isRequired
+        }).isRequired,
+        user: PropTypes.shape({
+            email: PropTypes.string.isRequired,
+            token: PropTypes.string.isRequired,
         }).isRequired,
         name: PropTypes.string,
         onSubmit: PropTypes.func,
@@ -87,18 +94,21 @@ class CampaignForm extends Component {
         const {
             CAMPAIGNFORM_GENERIC_ERROR
         } = this.props.lang;
-        getAccountList(this.props.user.email, this.props.user.token, (error, result) => {
+        getAccountList(this.props.user.email, this.props.user.token, this.props.accounts, (error, result) => {
             if (!error)
             {
-                this.props.dispatch(updateAccountList(result.accounts));                
-                this.setState({
-                    isAccountListLoaded: true
-                });
+                if (result)
+                {
+                    this.props.dispatch(updateAccountList(result.accounts));   
+                }
             }
             else
             {
                 this.props.dispatch(sendFailureMessage(CAMPAIGNFORM_GENERIC_ERROR));
             }
+            this.setState({
+                isAccountListLoaded: true
+            });
         });
     }
 
@@ -214,7 +224,7 @@ class CampaignForm extends Component {
                         <div className="form-group">
                             <label htmlFor="account" className="col-sm-2">{CAMPAIGNFORM_ACCOUNT}</label>
                             <div className="col-sm-10">
-                                <ListInput id="accountId" name="accountId" options={this.props.accounts.map(account => account.name)} defaultOption={this.props.campaign ? this.props.campaign.accountId : undefined} onChange={this.handleAccountChange} />
+                                <ListInput id="accountId" name="accountId" options={this.props.accounts.data.map(account => account.name)} defaultOption={this.props.campaign ? this.props.campaign.accountId : undefined} onChange={this.handleAccountChange} />
                             </div>
                         </div>
                         <div className="form-group">

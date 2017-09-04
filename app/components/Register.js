@@ -4,7 +4,7 @@ import { withRouter } from "react-router-dom";
 import { withCookies } from "react-cookie";
 import PropTypes from "prop-types";
 import { isValidEmail, isValidPassword, isValidFirstname, isValidLastname } from "validator";
-import { addUser } from "../util/api";
+import { addUser } from "../net/Requests";
 import { connect as connectUser } from "../actions/user";
 import { changeLanguage } from "../actions/lang";
 import { sendFailureMessages, clearMessages } from "../actions/messages";

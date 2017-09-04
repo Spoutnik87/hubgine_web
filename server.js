@@ -52,11 +52,15 @@ app.use((req, res) => {
   const initialState = {
     messages: {},
     user: user,
-    accounts: [],
-    campaigns: [],
-    lang: lang.default(user.lang || Languages.ENGLISH),
+    accounts: {
+      data: []
+    },
+    campaigns: []
   };
-  const store = configureStore(initialState);
+  const store = configureStore({
+    ...initialState,
+    lang: lang.default(user.lang || Languages.ENGLISH)
+  });
   const context = {};
 
   const html = ReactDOM.renderToString(
@@ -74,7 +78,10 @@ app.use((req, res) => {
     {
       res.render("layout", {
         html: html,
-        initialState: store.getState()
+        initialState: {
+          ...store.getState(),
+          lang: {}
+        }
       });
     }
 });

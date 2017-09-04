@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { isValidCampaignName, isUniqueCampaignName, isValidCampaignDateBegin, isValidCampaignDateEnd } from "validator";
 import { sendSuccessMessage, sendFailureMessage, sendFailureMessages } from "../actions/messages";
 import { addCampaign as addCampaignToProps } from "../actions/campaigns";
-import { addCampaign } from "../util/api";
+import { addCampaign } from "../net/Requests";
 import CampaignForm from "./Forms/CampaignForm";
 import TwitterRuleForm from "./Forms/TwitterRuleForm";
 
@@ -81,7 +81,7 @@ class AccountSettings extends Component {
         {
             messages.push(CAMPAIGNFORM_NAME_NOT_UNIQUE);
         }
-        if (!isValidCampaignAccount(accountId, this.props.accounts.map(account => account.name)))
+        if (!isValidCampaignAccount(accountId, this.props.accounts.data.map(account => account.name)))
         {
             messages.push(CAMPAIGNFORM_ACCOUNT_INCORRECT);
         }
@@ -148,6 +148,7 @@ class AccountSettings extends Component {
 
 const mapStateToProps = (state) => {
     return {
+        accounts: state.accounts,
         messages: state.messages,
         campaigns: state.campaigns,
         lang: state.lang

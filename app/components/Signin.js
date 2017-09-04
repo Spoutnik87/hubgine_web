@@ -7,7 +7,7 @@ import { isValidEmail, isValidPassword } from "validator";
 import { connect as connectUser } from "../actions/user";
 import { sendFailureMessages, clearMessages } from "../actions/messages";
 import { changeLanguage } from "../actions/lang";
-import { connect as connectAPI } from "../util/api";
+import { connect as connectAPI } from "../net/Requests";
 import UserSigninForm from "./Forms/UserSigninForm";
 import LoadingCog from "./LoadingCog";
 

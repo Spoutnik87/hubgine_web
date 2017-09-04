@@ -4,9 +4,9 @@ import { withCookies } from "react-cookie";
 import { isValidEmail, isValidFirstname, isValidLastname, isValidLanguage, isValidTwitterAccountName, isUniqueTwitterAccountName, 
     isValidTwitterAccountConsumerKey, isValidTwitterAccountConsumerSecret, isValidTwitterAccountAccessTokenKey, isValidTwitterAccountAccessTokenSecret } from "validator";
 import PropTypes from "prop-types";
-import { getUser, updateUser, getAccountList, getMaxAccounts, addAccount } from "../util/api";
+import { getUser, updateUser, getAccountList, getMaxAccounts, addAccount } from "../net/Requests";
 import { sendFailureMessage, sendFailureMessages, sendSuccessMessage, clearMessages } from "../actions/messages";
-import { updateInfos, updateEmail, updateFirstname, updateLastname, updateLanguage } from "../actions/user";
+import { updateInfos, updateMaxAccounts, updateEmail, updateFirstname, updateLastname, updateLanguage } from "../actions/user";
 import { changeLanguage } from "../actions/lang";
 import { updateAccountList, addAccount as addAccountToProps } from "../actions/accounts";
 import * as Ranks from "../constants/Ranks";
@@ -14,14 +14,16 @@ import * as Languages from "../constants/Languages";
 import Messages from "./Messages";
 import TextInput from "./Inputs/TextInput";
 import ListInput from "./Inputs/ListInput";
-import TwitterAccountEdit from "./TwitterAccountEdit";
+import TwitterAccountList from "./TwitterAccountList";
 import TwitterAccountForm from "./Forms/TwitterAccountForm";
 import LoadingCog from "./LoadingCog";
 
 class Profile extends Component {
     static propTypes = {
         messages: PropTypes.object.isRequired,
-        accounts: PropTypes.array.isRequired,
+        accounts: PropTypes.shape({
+            data: PropTypes.array.isRequired
+        }).isRequired,
         user: PropTypes.shape({
             email: PropTypes.string.isRequired,
             token: PropTypes.string.isRequired,
@@ -66,12 +68,12 @@ class Profile extends Component {
             loadingAccountForm: false,
             isLoaded: false,
             isAccountListLoaded: false,
+            isMaxAccountsLoaded: false,
             isAccountCreationFormDisplayed: false,
             loadingEmail: false,
             loadingFirstname: false,
             loadingLastname: false,
-            loadingLanguage: false,
-            maxAccounts: 0
+            loadingLanguage: false
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleClick = this.handleClick.bind(this);
@@ -83,39 +85,63 @@ class Profile extends Component {
     componentDidMount()
     {
         const { PROFILE_ERRORLOADING_USER, PROFILE_ERRORLOADING_ACCOUNTLIST } = this.props.lang;
-        getUser(this.props.user.email, this.props.user.token, (error, result) => {
+        getUser(this.props.user.email, this.props.user.token, this.props.user, (error, result) => {
             if (!error)
             {
-                this.props.dispatch(updateInfos(result.email, result.firstname, result.lastname));
-                this.setState({
-                    isLoaded: true,
-                    email: result.email,
-                    firstname: result.firstname,
-                    lastname: result.lastname
-                });
+                if (result)
+                {
+                    this.props.dispatch(updateInfos(result.email, result.firstname, result.lastname));
+                    this.setState({
+                        isLoaded: true,
+                        email: result.email,
+                        firstname: result.firstname,
+                        lastname: result.lastname
+                    });
+                }
+                else
+                {
+                    this.setState({
+                        isLoaded: true 
+                    });
+                }
             }
             else
             {
                 this.props.dispatch(sendFailureMessage(PROFILE_ERRORLOADING_USER));
             }
         });
-        getAccountList(this.props.user.email, this.props.user.token, (error, result) => {
+        getAccountList(this.props.user.email, this.props.user.token, this.props.accounts, (error, result) => {
             if (!error)
             {
-                this.props.dispatch(updateAccountList(result.accounts));                
-                this.setState({ isAccountListLoaded: true });
+                if (result)
+                {
+                    this.props.dispatch(updateAccountList(result.accounts/*.map(account => ({
+                        name: account.name,
+                        consumerKey: consumerKey,
+                        consumerSecret: consumerSecret,
+                        accessTokenKey: accessTokenKey,
+                        accessTokenSecret: accessTokenSecret
+                    }))*/));
+                }
             }
             else
             {
                 this.props.dispatch(sendFailureMessage(PROFILE_ERRORLOADING_ACCOUNTLIST));
             }
+            this.setState({
+                isAccountListLoaded: true
+            });
         });
-        getMaxAccounts(this.props.user.email, this.props.user.token, (error, result) => {
+        getMaxAccounts(this.props.user.email, this.props.user.token, this.props.user, (error, result) => {
             if (!error)
             {
+                if (result)
+                {
+                    this.props.dispatch(updateMaxAccounts(result.nbr));
+                }
                 this.setState({
-                    maxAccounts: result.nbr
-                })
+                    isMaxAccountsLoaded: true
+                });
             }
         });
     }
@@ -245,7 +271,7 @@ class Profile extends Component {
         {
             messages.push(TWITTERACCOUNTFORM_NAME_INCORRECT);
         }
-        if (!isUniqueTwitterAccountName(name, this.props.accounts.map(account => account.name)))
+        if (!isUniqueTwitterAccountName(name, this.props.accounts.data.map(account => account.name)))
         {
             messages.push(TWITTERACCOUNTFORM_NAME_NOT_UNIQUE);
         }
@@ -276,7 +302,7 @@ class Profile extends Component {
                 };
                 if (!error)
                 {
-                    this.props.dispatch(addAccountToProps(event.result));
+                    this.props.dispatch(addAccountToProps(event.result.name, event.result.consumerKey, event.result.consumerSecret, event.result.accessTokenKey, event.result.accessTokenSecret));
                     this.props.dispatch(sendSuccessMessage(TWITTERACCOUNTFORM_CREATE_SUCCESS));
                     nextState.isAccountCreationFormDisplayed = false;
                 }
@@ -343,19 +369,20 @@ class Profile extends Component {
         const { PROFILE_TITLE, PROFILE_EMAIL, PROFILE_FIRSTNAME, PROFILE_LASTNAME, PROFILE_LANGUAGE, PROFILE_ACCOUNT_LIST } = this.props.lang;
         if (this.state.isAccountListLoaded)
         {
-            accountList = (
+            /*accountList = (
                 <ul className="list-group">
-                    {this.props.accounts.map(
-                        account => (
-                            <li key={account.uid} className="list-group-item"><TwitterAccountEdit className="list-group-item" uid={account.uid} name={account.name} /></li>
-                        )
+                    {this.props.accounts.data.map(
+                        (account, index) => {
+                            return <li key={account.uid} className="list-group-item"><TwitterAccountEdit className="list-group-item" id={index} account={account} /></li>
+                        }
                     )}
                 </ul>
-            );
+            );*/
+            accountList = <TwitterAccountList />
         }
-        if (this.state.isLoaded && this.state.isAccountListLoaded && this.state.maxAccounts > 0)
+        if (this.state.isLoaded && this.state.isAccountListLoaded && this.state.isMaxAccountsLoaded)
         {            
-            const maxAccountsDisplay = (this.props.accounts.length >= this.state.maxAccounts) ? <span style={ { float: "right" } }>{this.props.accounts.length}/{this.state.maxAccounts}</span> : <span style={ { float: "right" } }>{this.props.accounts.length}/{this.state.maxAccounts}<div id="buttonAccountCreation" className="input-group-addon edit-button" onClick={this.handleClick} style={ { display: "inline" } }><i id="buttonAccountCreation" className="fa fa-plus fa-fw"></i></div></span>;
+            const maxAccountsDisplay = (this.props.accounts.data.length >= this.props.user.maxAccounts) ? <span style={ { float: "right" } }>{this.props.accounts.data.length}/{this.props.user.maxAccounts}</span> : <span style={ { float: "right" } }>{this.props.accounts.data.length}/{this.props.user.maxAccounts}<div id="buttonAccountCreation" className="input-group-addon edit-button" onClick={this.handleClick} style={ { display: "inline" } }><i id="buttonAccountCreation" className="fa fa-plus fa-fw"></i></div></span>;
 
             const accountContainer = (
                 this.state.isAccountCreationFormDisplayed ?

@@ -10,18 +10,9 @@ import * as Languages from "../constants/Languages";
 import LoadingCog from "./LoadingCog";
 import TwitterAccountForm from "./Forms/TwitterAccountForm";
 
-class TwitterAccountEdit extends Component {
+class TwitterAccountList extends Component {
     static propTypes = {
         messages: PropTypes.object.isRequired,
-        id: PropTypes.number.isRequired,
-        account: PropTypes.shape({
-            uid: PropTypes.string.isRequired,
-            name: PropTypes.string.isRequired,
-            consumerKey: PropTypes.string,
-            consumerSecret: PropTypes.string,
-            accessTokenKey: PropTypes.string,
-            accessTokenSecret: PropTypes.string
-        }).isRequired,
         accounts: PropTypes.shape({
             data: PropTypes.array.isRequired
         }).isRequired,
@@ -50,6 +41,11 @@ class TwitterAccountEdit extends Component {
     {
         super(props);
         this.state = {
+            selectedAccount: "",
+            loading: false
+        };
+        /*this.state = {
+            selectedAccount: -1,
             loading: false,
             edit: false,
             name: this.props.account.name,
@@ -57,14 +53,14 @@ class TwitterAccountEdit extends Component {
             consumerSecret: "",
             accessTokenKey: "",
             accessTokenSecret: ""
-        };
+        };*/
         this.handleAccountFormEditionSubmit = this.handleAccountFormEditionSubmit.bind(this);
         this.handleAccountFormEditionCancel = this.handleAccountFormEditionCancel.bind(this);
         this.handleAccountFormEditionDelete = this.handleAccountFormEditionDelete.bind(this);
         this.handleClick = this.handleClick.bind(this);
     }
 
-    componentDidUpdate(prevProps, prevState)
+    /*componentDidUpdate(prevProps, prevState)
     {
         if (!prevState.edit && this.state.edit)
         {
@@ -107,13 +103,16 @@ class TwitterAccountEdit extends Component {
                 this.setState(state);
             });
         }
-    }
+    }*/
 
     handleClick(event)
     {
         this.setState({
-            edit: true
+            selectedAccount: event.target.id
         });
+        /*this.setState({
+            edit: true
+        });*/
     }
 
     handleAccountFormEditionSubmit(event)
@@ -130,6 +129,7 @@ class TwitterAccountEdit extends Component {
          } = this.props.lang;
         const { name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret } = event.result;
         const {
+            uid,
             name: initialName,
             consumerKey: initialConsumerKey,
             consumerSecret: initialConsumerSecret,
@@ -141,7 +141,7 @@ class TwitterAccountEdit extends Component {
         {
             messages.push(TWITTERACCOUNTFORM_NAME_INCORRECT);
         }
-        if (!isUniqueTwitterAccountName(name, this.props.accounts.data.map(account => { if (this.props.account.uid !== account.uid) return account.name; })))
+        if (!isUniqueTwitterAccountName(name, this.props.accounts.data.map(account => { if (uid !== account.uid) return account.name; })))
         {
             messages.push(TWITTERACCOUNTFORM_NAME_NOT_UNIQUE);
         }
@@ -164,7 +164,6 @@ class TwitterAccountEdit extends Component {
         if (messages.length === 0)
         {
             this.setState({
-                edit: false,
                 loading: true
             });
             const newName = name !== initialName ? name : null;
@@ -201,17 +200,17 @@ class TwitterAccountEdit extends Component {
     handleAccountFormEditionCancel(event)
     {
         this.setState({
-            edit: false
+            selectedAccount: ""
         });
     }
 
     handleAccountFormEditionDelete(event)
     {
         const { TWITTERACCOUNTFORM_DELETE_SUCCESS, TWITTERACCOUNTFORM_DELETE_ERROR } = this.props.lang;
-        removeAccount(this.props.user.email, this.props.user.token, this.props.account.name, (error, result) => {
+        removeAccount(this.props.user.email, this.props.user.token, event.default.name, (error, result) => {
             if (!error)
             {
-                this.props.dispatch(removeAccountFromProps(this.props.account.name));
+                this.props.dispatch(removeAccountFromProps(event.default.name));
                 this.props.dispatch(sendSuccessMessage(TWITTERACCOUNTFORM_DELETE_SUCCESS));
             }
             else
@@ -219,11 +218,33 @@ class TwitterAccountEdit extends Component {
                 this.props.dispatch(sendFailureMessage(TWITTERACCOUNTFORM_DELETE_ERROR));
             }
         });
-    }    
+    }
 
     render()
     {
+        /*<TwitterAccountEdit className="list-group-item" id={index} account={account} />*/
         return (
+            <ul className="list-group">
+                {this.props.accounts.data.map(
+                    account => (
+                        <li key={account.uid} className="list-group-item">
+                            {
+                                account.name === this.state.selectedAccount ? 
+                                (
+                                    <TwitterAccountForm onSubmit={this.handleAccountFormEditionSubmit} cancel onCancel={this.handleAccountFormEditionCancel} edit delete onDelete={this.handleAccountFormEditionDelete} account={account} loading={this.state.loading} />
+                                ) : (
+                                    <div className="input-group">
+                                        <div className="form-control">{account.name}</div>
+                                        <span id={account.name} className="input-group-addon edit-button" onClick={this.handleClick}><i id={account.name} className="fa fa-pencil fa-fw"></i></span>
+                                    </div>
+                                )
+                            }
+                        </li>
+                    )
+                )}
+            </ul>
+        );
+        /*return (
             this.state.edit ?
                 !this.state.loading ?
                 <TwitterAccountForm onSubmit={this.handleAccountFormEditionSubmit} cancel onCancel={this.handleAccountFormEditionCancel} edit delete onDelete={this.handleAccountFormEditionDelete} account={{
@@ -243,7 +264,7 @@ class TwitterAccountEdit extends Component {
                 </div>
                 :
                 <LoadingCog/>
-        );
+        );*/
     }
 }
 
@@ -256,4 +277,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(TwitterAccountEdit);
+export default connect(mapStateToProps)(TwitterAccountList);
