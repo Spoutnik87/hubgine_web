@@ -7,28 +7,25 @@ const user = (state = {}, action) =>
     switch (action.type)
     {
         case ActionTypes.USER_CONNECT:
-            state = addMetadata(state, RequestTypes.USER_BASIC);
-            return {
+            return addMetadata({
                 ...state,
                 token: action.token,
                 email: action.email,
                 rank: action.rank,
                 lang: action.lang
-            };
+            }, RequestTypes.USER_BASIC);
         case ActionTypes.USER_UPDATE_INFOS:
-            state = addMetadata(state, RequestTypes.USER_NAME);
-            return {
+            return addMetadata({
                 ...state,
                 email: action.email,
                 firstname: action.firstname,
                 lastname: action.lastname
-            };
+            }, RequestTypes.USER_NAME);
         case ActionTypes.USER_UPDATE_MAX_ACCOUNTS:
-            state = addMetadata(state, RequestTypes.USER_MAX_ACCOUNTS);
-            return {
+            return addMetadata({
                 ...state,
                 maxAccounts: action.maxAccounts
-            };
+            }, RequestTypes.USER_MAX_ACCOUNTS);
         case ActionTypes.USER_UPDATE_EMAIL:
             return {
                 ...state,

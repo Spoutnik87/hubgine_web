@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { isValidTwitterAccountName, isUniqueTwitterAccountName, isValidTwitterAccountConsumerKey, isValidTwitterAccountConsumerSecret, isValidTwitterAccountAccessTokenKey, isValidTwitterAccountAccessTokenSecret } from "validator";
 import { getTwitterAccountKeys, updateAccount, removeAccount } from "../net/Requests";
 import { sendFailureMessage, sendFailureMessages, sendSuccessMessage } from "../actions/messages";
-import { removeAccount as removeAccountFromProps, updateAccountKeys } from "../actions/accounts";
+import { removeAccount as removeAccountFromProps, updateAccountKeys, updateAccount as updateAccountToProps } from "../actions/accounts";
 import * as Ranks from "../constants/Ranks";
 import * as Languages from "../constants/Languages";
 import LoadingCog from "./LoadingCog";
@@ -44,75 +44,17 @@ class TwitterAccountList extends Component {
             selectedAccount: "",
             loading: false
         };
-        /*this.state = {
-            selectedAccount: -1,
-            loading: false,
-            edit: false,
-            name: this.props.account.name,
-            consumerKey: "",
-            consumerSecret: "",
-            accessTokenKey: "",
-            accessTokenSecret: ""
-        };*/
         this.handleAccountFormEditionSubmit = this.handleAccountFormEditionSubmit.bind(this);
         this.handleAccountFormEditionCancel = this.handleAccountFormEditionCancel.bind(this);
         this.handleAccountFormEditionDelete = this.handleAccountFormEditionDelete.bind(this);
         this.handleClick = this.handleClick.bind(this);
     }
 
-    /*componentDidUpdate(prevProps, prevState)
-    {
-        if (!prevState.edit && this.state.edit)
-        {
-            this.setState({
-                loading: true
-            });
-            getTwitterAccountKeys(this.props.user.email, this.props.user.token, this.state.name, this.props.account, (error, result) => {
-                let state = {
-                    loading: false
-                };
-                if (!error)
-                {
-                    if (result)
-                    {
-                        state = {
-                            ...state,
-                            consumerKey: result.consumer_key,
-                            consumerSecret: result.consumer_secret,
-                            accessTokenKey: result.access_token_key,
-                            accessTokenSecret: result.access_token_secret
-                        };
-                        this.props.dispatch(updateAccountKeys(this.props.id, result.consumer_key, result.consumer_secret, result.access_token_key, result.access_token_secret));
-                    }
-                    else
-                    {
-                        state = {
-                            ...state,
-                            consumerKey: this.props.account.consumerKey,
-                            consumerSecret: this.props.account.consumerSecret,
-                            accessTokenKey: this.props.account.accessTokenKey,
-                            accessTokenSecret: this.props.account.accessTokenSecret
-                        };
-                    }
-                }
-                else
-                {
-                    const { TWITTERACCOUNTFORM_GENERIC_ERROR } = this.props.lang;
-                    this.props.dispatch(sendFailureMessage(TWITTERACCOUNTFORM_GENERIC_ERROR));
-                }
-                this.setState(state);
-            });
-        }
-    }*/
-
     handleClick(event)
     {
         this.setState({
             selectedAccount: event.target.id
         });
-        /*this.setState({
-            edit: true
-        });*/
     }
 
     handleAccountFormEditionSubmit(event)
@@ -172,23 +114,19 @@ class TwitterAccountList extends Component {
             const newAccessTokenKey = accessTokenKey !== initialAccessTokenKey ? accessTokenKey : null;
             const newAccessTokenSecret = accessTokenSecret !== initialAccessTokenSecret ? accessTokenSecret : null;
             updateAccount(this.props.user.email, this.props.user.token, initialName, newName, newConsumerKey, newConsumerSecret, newAccessTokenKey, newAccessTokenSecret, (error, result) => {
-                const state = {
-                    loading: false
-                };
                 if (!error)
                 {
-                    state.name = name;
-                    state.consumerKey = "";
-                    state.consumerSecret = "";
-                    state.accessTokenKey = "";
-                    state.accessTokenSecret = "";
+                    this.props.dispatch(updateAccountToProps(initialName, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret));
                     this.props.dispatch(sendSuccessMessage(TWITTERACCOUNTFORM_EDIT_SUCCESS));
                 }
                 else
                 {
                     this.props.dispatch(sendFailureMessage(TWITTERACCOUNTFORM_EDIT_ERROR));
                 }
-                this.setState(state);
+                this.setState({
+                    loading: false,
+                    selectedAccount: ""
+                });
             });
         }
         else
@@ -222,7 +160,6 @@ class TwitterAccountList extends Component {
 
     render()
     {
-        /*<TwitterAccountEdit className="list-group-item" id={index} account={account} />*/
         return (
             <ul className="list-group">
                 {this.props.accounts.data.map(
@@ -244,27 +181,6 @@ class TwitterAccountList extends Component {
                 )}
             </ul>
         );
-        /*return (
-            this.state.edit ?
-                !this.state.loading ?
-                <TwitterAccountForm onSubmit={this.handleAccountFormEditionSubmit} cancel onCancel={this.handleAccountFormEditionCancel} edit delete onDelete={this.handleAccountFormEditionDelete} account={{
-                    name: this.state.name,
-                    consumerKey: this.state.consumerKey,
-                    consumerSecret: this.state.consumerSecret,
-                    accessTokenKey: this.state.accessTokenKey,
-                    accessTokenSecret: this.state.accessTokenSecret
-                 }} />
-                :
-                <LoadingCog/>
-            :
-                !this.state.loading ? 
-                <div className="input-group">
-                    <div className="form-control">{this.state.name}</div>
-                    <span id="buttonEditMode" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonEditMode" className="fa fa-pencil fa-fw"></i></span>
-                </div>
-                :
-                <LoadingCog/>
-        );*/
     }
 }
 

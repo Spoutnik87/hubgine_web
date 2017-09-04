@@ -10,6 +10,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 exports.updateAccountList = updateAccountList;
 exports.addAccount = addAccount;
 exports.removeAccount = removeAccount;
+exports.updateAccount = updateAccount;
 exports.updateAccountName = updateAccountName;
 exports.updateAccountKeys = updateAccountKeys;
 exports.updateAccountConsumerKey = updateAccountConsumerKey;
@@ -61,6 +62,20 @@ function removeAccount(accountId) {
         return dispatch({
             type: ActionTypes.ACCOUNT_DELETE,
             accountId: accountId
+        });
+    };
+}
+
+function updateAccount(accountId, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret) {
+    return function (dispatch) {
+        return dispatch({
+            type: ActionTypes.ACCOUNT_UPDATE,
+            accountId: accountId,
+            name: name,
+            consumerKey: consumerKey,
+            consumerSecret: consumerSecret,
+            accessTokenKey: accessTokenKey,
+            accessTokenSecret: accessTokenSecret
         });
     };
 }
@@ -1820,23 +1835,6 @@ var TwitterAccountForm = function (_Component) {
             accessTokenKey: "",
             accessTokenSecret: ""
         };
-        /*this.state = this.props.account ? {
-            isAccountLoaded: true,
-            name: this.props.account.name,
-            consumerKey: this.props.account.consumerKey,
-            consumerSecret: this.props.account.consumerSecret,
-            accessTokenKey: this.props.account.accessTokenKey,
-            accessTokenSecret: this.props.account.accessTokenSecret,
-            deleteMode: false
-        } : {
-            isAccountLoaded: false,
-            name: "",
-            consumerKey: "",
-            consumerSecret: "",
-            accessTokenKey: "",
-            accessTokenSecret: "",
-            deleteMode: false
-        };*/
         _this.handleChange = _this.handleChange.bind(_this);
         _this.handleClick = _this.handleClick.bind(_this);
         return _this;
@@ -4642,13 +4640,15 @@ var Profile = function (_Component) {
             (0, _Requests.getAccountList)(this.props.user.email, this.props.user.token, this.props.accounts, function (error, result) {
                 if (!error) {
                     if (result) {
-                        _this2.props.dispatch((0, _accounts.updateAccountList)(result.accounts /*.map(account => ({
-                                                                                               name: account.name,
-                                                                                               consumerKey: consumerKey,
-                                                                                               consumerSecret: consumerSecret,
-                                                                                               accessTokenKey: accessTokenKey,
-                                                                                               accessTokenSecret: accessTokenSecret
-                                                                                               }))*/));
+                        _this2.props.dispatch((0, _accounts.updateAccountList)(result.accounts.map(function (account) {
+                            return {
+                                name: account.name,
+                                consumerKey: account.consumer_key,
+                                consumerSecret: account.consumer_secret,
+                                accessTokenKey: account.access_token_key,
+                                accessTokenSecret: account.access_token_secret
+                            };
+                        })));
                     }
                 } else {
                     _this2.props.dispatch((0, _messages.sendFailureMessage)(PROFILE_ERRORLOADING_ACCOUNTLIST));
@@ -4867,7 +4867,6 @@ var Profile = function (_Component) {
         key: "render",
         value: function render() {
             var panel = void 0;
-            var accountList = void 0;
             var _props$lang5 = this.props.lang,
                 PROFILE_TITLE = _props$lang5.PROFILE_TITLE,
                 PROFILE_EMAIL = _props$lang5.PROFILE_EMAIL,
@@ -4876,18 +4875,6 @@ var Profile = function (_Component) {
                 PROFILE_LANGUAGE = _props$lang5.PROFILE_LANGUAGE,
                 PROFILE_ACCOUNT_LIST = _props$lang5.PROFILE_ACCOUNT_LIST;
 
-            if (this.state.isAccountListLoaded) {
-                /*accountList = (
-                    <ul className="list-group">
-                        {this.props.accounts.data.map(
-                            (account, index) => {
-                                return <li key={account.uid} className="list-group-item"><TwitterAccountEdit className="list-group-item" id={index} account={account} /></li>
-                            }
-                        )}
-                    </ul>
-                );*/
-                accountList = _react2.default.createElement(_TwitterAccountList2.default, null);
-            }
             if (this.state.isLoaded && this.state.isAccountListLoaded && this.state.isMaxAccountsLoaded) {
                 var maxAccountsDisplay = this.props.accounts.data.length >= this.props.user.maxAccounts ? _react2.default.createElement(
                     "span",
@@ -4929,7 +4916,7 @@ var Profile = function (_Component) {
                     _react2.default.createElement(
                         "div",
                         { className: "panel-body" },
-                        accountList
+                        this.state.isAccountListLoaded ? _react2.default.createElement(_TwitterAccountList2.default, null) : undefined
                     )
                 );
                 panel = _react2.default.createElement(
@@ -5620,16 +5607,6 @@ var TwitterAccountList = function (_Component) {
             selectedAccount: "",
             loading: false
         };
-        /*this.state = {
-            selectedAccount: -1,
-            loading: false,
-            edit: false,
-            name: this.props.account.name,
-            consumerKey: "",
-            consumerSecret: "",
-            accessTokenKey: "",
-            accessTokenSecret: ""
-        };*/
         _this.handleAccountFormEditionSubmit = _this.handleAccountFormEditionSubmit.bind(_this);
         _this.handleAccountFormEditionCancel = _this.handleAccountFormEditionCancel.bind(_this);
         _this.handleAccountFormEditionDelete = _this.handleAccountFormEditionDelete.bind(_this);
@@ -5637,60 +5614,12 @@ var TwitterAccountList = function (_Component) {
         return _this;
     }
 
-    /*componentDidUpdate(prevProps, prevState)
-    {
-        if (!prevState.edit && this.state.edit)
-        {
-            this.setState({
-                loading: true
-            });
-            getTwitterAccountKeys(this.props.user.email, this.props.user.token, this.state.name, this.props.account, (error, result) => {
-                let state = {
-                    loading: false
-                };
-                if (!error)
-                {
-                    if (result)
-                    {
-                        state = {
-                            ...state,
-                            consumerKey: result.consumer_key,
-                            consumerSecret: result.consumer_secret,
-                            accessTokenKey: result.access_token_key,
-                            accessTokenSecret: result.access_token_secret
-                        };
-                        this.props.dispatch(updateAccountKeys(this.props.id, result.consumer_key, result.consumer_secret, result.access_token_key, result.access_token_secret));
-                    }
-                    else
-                    {
-                        state = {
-                            ...state,
-                            consumerKey: this.props.account.consumerKey,
-                            consumerSecret: this.props.account.consumerSecret,
-                            accessTokenKey: this.props.account.accessTokenKey,
-                            accessTokenSecret: this.props.account.accessTokenSecret
-                        };
-                    }
-                }
-                else
-                {
-                    const { TWITTERACCOUNTFORM_GENERIC_ERROR } = this.props.lang;
-                    this.props.dispatch(sendFailureMessage(TWITTERACCOUNTFORM_GENERIC_ERROR));
-                }
-                this.setState(state);
-            });
-        }
-    }*/
-
     _createClass(TwitterAccountList, [{
         key: "handleClick",
         value: function handleClick(event) {
             this.setState({
                 selectedAccount: event.target.id
             });
-            /*this.setState({
-                edit: true
-            });*/
         }
     }, {
         key: "handleAccountFormEditionSubmit",
@@ -5751,20 +5680,16 @@ var TwitterAccountList = function (_Component) {
                 var newAccessTokenKey = accessTokenKey !== initialAccessTokenKey ? accessTokenKey : null;
                 var newAccessTokenSecret = accessTokenSecret !== initialAccessTokenSecret ? accessTokenSecret : null;
                 (0, _Requests.updateAccount)(this.props.user.email, this.props.user.token, initialName, newName, newConsumerKey, newConsumerSecret, newAccessTokenKey, newAccessTokenSecret, function (error, result) {
-                    var state = {
-                        loading: false
-                    };
                     if (!error) {
-                        state.name = name;
-                        state.consumerKey = "";
-                        state.consumerSecret = "";
-                        state.accessTokenKey = "";
-                        state.accessTokenSecret = "";
+                        _this2.props.dispatch((0, _accounts.updateAccount)(initialName, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret));
                         _this2.props.dispatch((0, _messages.sendSuccessMessage)(TWITTERACCOUNTFORM_EDIT_SUCCESS));
                     } else {
                         _this2.props.dispatch((0, _messages.sendFailureMessage)(TWITTERACCOUNTFORM_EDIT_ERROR));
                     }
-                    _this2.setState(state);
+                    _this2.setState({
+                        loading: false,
+                        selectedAccount: ""
+                    });
                 });
             } else {
                 this.props.dispatch((0, _messages.sendFailureMessages)(messages));
@@ -5800,7 +5725,6 @@ var TwitterAccountList = function (_Component) {
         value: function render() {
             var _this4 = this;
 
-            /*<TwitterAccountEdit className="list-group-item" id={index} account={account} />*/
             return _react2.default.createElement(
                 "ul",
                 { className: "list-group" },
@@ -5825,27 +5749,6 @@ var TwitterAccountList = function (_Component) {
                     );
                 })
             );
-            /*return (
-                this.state.edit ?
-                    !this.state.loading ?
-                    <TwitterAccountForm onSubmit={this.handleAccountFormEditionSubmit} cancel onCancel={this.handleAccountFormEditionCancel} edit delete onDelete={this.handleAccountFormEditionDelete} account={{
-                        name: this.state.name,
-                        consumerKey: this.state.consumerKey,
-                        consumerSecret: this.state.consumerSecret,
-                        accessTokenKey: this.state.accessTokenKey,
-                        accessTokenSecret: this.state.accessTokenSecret
-                     }} />
-                    :
-                    <LoadingCog/>
-                :
-                    !this.state.loading ? 
-                    <div className="input-group">
-                        <div className="form-control">{this.state.name}</div>
-                        <span id="buttonEditMode" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonEditMode" className="fa fa-pencil fa-fw"></i></span>
-                    </div>
-                    :
-                    <LoadingCog/>
-            );*/
         }
     }]);
 
@@ -6366,6 +6269,7 @@ var LANG_UPDATE = exports.LANG_UPDATE = "LANG_UPDATE";
 var ACCOUNT_UPDATE_LIST = exports.ACCOUNT_UPDATE_LIST = "ACCOUNT_UPDATE_LIST";
 var ACCOUNT_ADD = exports.ACCOUNT_ADD = "ACCOUNT_ADD";
 var ACCOUNT_DELETE = exports.ACCOUNT_DELETE = "ACCOUNT_DELETE";
+var ACCOUNT_UPDATE = exports.ACCOUNT_UPDATE = "ACCOUNT_UPDATE";
 var ACCOUNT_UPDATE_KEYS = exports.ACCOUNT_UPDATE_KEYS = "ACCOUNT_UPDATE_KEYS";
 var ACCOUNT_UPDATE_NAME = exports.ACCOUNT_UPDATE_NAME = "ACCOUNT_UPDATE_NAME";
 var ACCOUNT_UPDATE_CONSUMER_KEY = exports.ACCOUNT_UPDATE_CONSUMER_KEY = "ACCOUNT_UPDATE_CONSUMER_KEY";
@@ -7140,6 +7044,7 @@ var accounts = function accounts() {
     var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var action = arguments[1];
 
+    var id = 0;
     switch (action.type) {
         case ActionTypes.ACCOUNT_UPDATE_LIST:
             (0, _Metadata.addMetadata)(state, RequestTypes.ACCOUNT_LIST_NAME);
@@ -7166,8 +7071,18 @@ var accounts = function accounts() {
                 return account.name !== action.accountId ? true : false;
             });
             return state;
+        case ActionTypes.ACCOUNT_UPDATE:
+            id = (0, _lodash.findIndex)(state.data, { name: action.accountId });
+            state.data[id] = (0, _Metadata.addMetadata)((0, _Metadata.addMetadata)(_extends({}, state.data[id], {
+                name: action.name,
+                consumerKey: action.consumerKey,
+                consumerSecret: action.consumerSecret,
+                accessTokenKey: action.accessTokenKey,
+                accessTokenSecret: action.accessTokenSecret
+            }), RequestTypes.ACCOUNT_NAME), RequestTypes.ACCOUNT_KEYS);
+            return state;
         case ActionTypes.ACCOUNT_UPDATE_KEYS:
-            var id = (0, _lodash.findIndex)(state.data, {
+            id = (0, _lodash.findIndex)(state.data, {
                 name: action.accountId
             });
             state.data[id] = (0, _Metadata.addMetadata)(_extends({}, state.data[id], {
@@ -7408,25 +7323,22 @@ var user = function user() {
 
     switch (action.type) {
         case ActionTypes.USER_CONNECT:
-            state = (0, _Metadata.addMetadata)(state, RequestTypes.USER_BASIC);
-            return _extends({}, state, {
+            return (0, _Metadata.addMetadata)(_extends({}, state, {
                 token: action.token,
                 email: action.email,
                 rank: action.rank,
                 lang: action.lang
-            });
+            }), RequestTypes.USER_BASIC);
         case ActionTypes.USER_UPDATE_INFOS:
-            state = (0, _Metadata.addMetadata)(state, RequestTypes.USER_NAME);
-            return _extends({}, state, {
+            return (0, _Metadata.addMetadata)(_extends({}, state, {
                 email: action.email,
                 firstname: action.firstname,
                 lastname: action.lastname
-            });
+            }), RequestTypes.USER_NAME);
         case ActionTypes.USER_UPDATE_MAX_ACCOUNTS:
-            state = (0, _Metadata.addMetadata)(state, RequestTypes.USER_MAX_ACCOUNTS);
-            return _extends({}, state, {
+            return (0, _Metadata.addMetadata)(_extends({}, state, {
                 maxAccounts: action.maxAccounts
-            });
+            }), RequestTypes.USER_MAX_ACCOUNTS);
         case ActionTypes.USER_UPDATE_EMAIL:
             return _extends({}, state, {
                 email: action.email

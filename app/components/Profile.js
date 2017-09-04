@@ -115,13 +115,13 @@ class Profile extends Component {
             {
                 if (result)
                 {
-                    this.props.dispatch(updateAccountList(result.accounts/*.map(account => ({
+                    this.props.dispatch(updateAccountList(result.accounts.map(account => ({
                         name: account.name,
-                        consumerKey: consumerKey,
-                        consumerSecret: consumerSecret,
-                        accessTokenKey: accessTokenKey,
-                        accessTokenSecret: accessTokenSecret
-                    }))*/));
+                        consumerKey: account.consumer_key,
+                        consumerSecret: account.consumer_secret,
+                        accessTokenKey: account.access_token_key,
+                        accessTokenSecret: account.access_token_secret
+                    }))));
                 }
             }
             else
@@ -365,21 +365,7 @@ class Profile extends Component {
     render()
     {
         let panel;
-        let accountList;
         const { PROFILE_TITLE, PROFILE_EMAIL, PROFILE_FIRSTNAME, PROFILE_LASTNAME, PROFILE_LANGUAGE, PROFILE_ACCOUNT_LIST } = this.props.lang;
-        if (this.state.isAccountListLoaded)
-        {
-            /*accountList = (
-                <ul className="list-group">
-                    {this.props.accounts.data.map(
-                        (account, index) => {
-                            return <li key={account.uid} className="list-group-item"><TwitterAccountEdit className="list-group-item" id={index} account={account} /></li>
-                        }
-                    )}
-                </ul>
-            );*/
-            accountList = <TwitterAccountList />
-        }
         if (this.state.isLoaded && this.state.isAccountListLoaded && this.state.isMaxAccountsLoaded)
         {            
             const maxAccountsDisplay = (this.props.accounts.data.length >= this.props.user.maxAccounts) ? <span style={ { float: "right" } }>{this.props.accounts.data.length}/{this.props.user.maxAccounts}</span> : <span style={ { float: "right" } }>{this.props.accounts.data.length}/{this.props.user.maxAccounts}<div id="buttonAccountCreation" className="input-group-addon edit-button" onClick={this.handleClick} style={ { display: "inline" } }><i id="buttonAccountCreation" className="fa fa-plus fa-fw"></i></div></span>;
@@ -395,7 +381,7 @@ class Profile extends Component {
                         </div>
                     </div>
                     <div className="panel-body">
-                        {accountList}
+                        {this.state.isAccountListLoaded ? <TwitterAccountList /> : undefined}
                     </div>
                 </span>
             );

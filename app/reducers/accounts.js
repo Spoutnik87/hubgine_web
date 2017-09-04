@@ -6,6 +6,7 @@ import { addMetadata } from "../util/Metadata";
 
 const accounts = (state = {}, action) =>
 {
+    let id = 0;
     switch (action.type)
     {
         case ActionTypes.ACCOUNT_UPDATE_LIST:
@@ -37,8 +38,19 @@ const accounts = (state = {}, action) =>
                 return account.name !== action.accountId ? true : false;
             });
             return state;
+        case ActionTypes.ACCOUNT_UPDATE:
+            id = findIndex(state.data, { name: action.accountId });
+            state.data[id] = addMetadata(addMetadata({
+                ...state.data[id],
+                name: action.name,
+                consumerKey: action.consumerKey,
+                consumerSecret: action.consumerSecret,
+                accessTokenKey: action.accessTokenKey,
+                accessTokenSecret: action.accessTokenSecret
+            }, RequestTypes.ACCOUNT_NAME), RequestTypes.ACCOUNT_KEYS);
+            return state;
         case ActionTypes.ACCOUNT_UPDATE_KEYS:
-            const id = findIndex(state.data, {
+            id = findIndex(state.data, {
                 name: action.accountId
             });
             state.data[id] = addMetadata({

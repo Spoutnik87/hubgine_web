@@ -75,23 +75,6 @@ class TwitterAccountForm extends Component {
             accessTokenKey: "",
             accessTokenSecret: ""
         };
-        /*this.state = this.props.account ? {
-            isAccountLoaded: true,
-            name: this.props.account.name,
-            consumerKey: this.props.account.consumerKey,
-            consumerSecret: this.props.account.consumerSecret,
-            accessTokenKey: this.props.account.accessTokenKey,
-            accessTokenSecret: this.props.account.accessTokenSecret,
-            deleteMode: false
-        } : {
-            isAccountLoaded: false,
-            name: "",
-            consumerKey: "",
-            consumerSecret: "",
-            accessTokenKey: "",
-            accessTokenSecret: "",
-            deleteMode: false
-        };*/
         this.handleChange = this.handleChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
     }

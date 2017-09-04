@@ -46,6 +46,21 @@ export function removeAccount(accountId)
     };
 }
 
+export function updateAccount(accountId, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret)
+{
+    return (dispatch) => {
+        return dispatch({
+            type: ActionTypes.ACCOUNT_UPDATE,
+            accountId: accountId,
+            name: name,
+            consumerKey: consumerKey,
+            consumerSecret: consumerSecret,
+            accessTokenKey: accessTokenKey,
+            accessTokenSecret: accessTokenSecret
+        });
+    };
+}
+
 export function updateAccountName(accountId, name)
 {
     return (dispatch) => {
