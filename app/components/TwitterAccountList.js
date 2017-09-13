@@ -145,6 +145,9 @@ class TwitterAccountList extends Component {
     handleAccountFormEditionDelete(event)
     {
         const { TWITTERACCOUNTFORM_DELETE_SUCCESS, TWITTERACCOUNTFORM_DELETE_ERROR } = this.props.lang;
+        this.setState({
+            loading: true
+        });
         removeAccount(this.props.user.email, this.props.user.token, event.default.name, (error, result) => {
             if (!error)
             {
@@ -155,6 +158,9 @@ class TwitterAccountList extends Component {
             {
                 this.props.dispatch(sendFailureMessage(TWITTERACCOUNTFORM_DELETE_ERROR));
             }
+            this.setState({
+                loading: false
+            });
         });
     }
 

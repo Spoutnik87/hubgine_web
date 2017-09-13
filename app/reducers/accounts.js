@@ -10,9 +10,8 @@ const accounts = (state = {}, action) =>
     switch (action.type)
     {
         case ActionTypes.ACCOUNT_UPDATE_LIST:
-            addMetadata(state, RequestTypes.ACCOUNT_LIST_NAME);
             return {
-                ...state,
+                ...addMetadata(state, RequestTypes.ACCOUNT_LIST_NAME),
                 data: action.accounts.map(account => {
                     account.uid = v4();
                     if (account.consumerKey && account.consumerSecret && account.accessTokenKey && account.accessTokenSecret)
@@ -23,10 +22,18 @@ const accounts = (state = {}, action) =>
                 })
         };
         case ActionTypes.ACCOUNT_ADD:
-            let account = addMetadata(action.account, RequestTypes.ACCOUNT_NAME);
-            if (consumerKey && consumerSecret && accessTokenKey && accessTokenSecret)
+            let account = addMetadata({
+                name: action.name
+            }, RequestTypes.ACCOUNT_NAME);
+            if (action.consumerKey && action.consumerSecret && action.accessTokenKey && action.accessTokenSecret)
             {
-                account = addMetadata(account, RequestTypes.ACCOUNT_KEYS);
+                account = addMetadata({
+                    ...account,
+                    consumerKey: action.consumerKey,
+                    consumerSecret: action.consumerSecret,
+                    accessTokenKey: action.accessTokenKey,
+                    accessTokenSecret: action.accessTokenSecret
+                }, RequestTypes.ACCOUNT_KEYS);
             }
             state.data.push({
                 ...account,

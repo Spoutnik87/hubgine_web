@@ -7,6 +7,7 @@ export default function getLanguage()
         LANG: FRENCH,
         COMPANY_NAME: "Hubgine",
         REACT_DATETIME_LANGUAGE: "fr",
+        GENERIC_ERROR: "Une erreur est survenue.",
         //---HEADER---
         HEADER_SR_ONLY: "Menu",
         HEADER_HOME: "Home",

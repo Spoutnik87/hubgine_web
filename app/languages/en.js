@@ -7,6 +7,7 @@ export default function getLanguage()
         LANG: ENGLISH,
         COMPANY_NAME: "Hubgine",
         REACT_DATETIME_LANGUAGE: "en",
+        GENERIC_ERROR: "An error happened.",
         //---HEADER---
         HEADER_SR_ONLY: "Toggle navigation",
         HEADER_HOME: "Home",

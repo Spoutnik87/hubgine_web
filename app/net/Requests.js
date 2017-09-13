@@ -31,7 +31,6 @@ const request = (method, endpoint, data, callback) => {
         }
     };
     req.open(method, url, true);
-    //req.setRequestHeader("Content-Type", "application/json");
     req.send();
 }
 
@@ -227,8 +226,8 @@ export const getTwitterAccountStats = (email, token, id, callback) => {
     });
 }
 
-export const addCampaign = (email, token, name, account, date_begin, date_end, callback) => {
-    const data = { email, token, name, account, date_begin, date_end };
+export const addCampaign = (email, token, name, account_id, date_begin, date_end, callback) => {
+    const data = { email, token, name, account_id, date_begin, date_end };
 
     request(Methods.POST, Endpoints.CAMPAIGN_CREATE, data, (error, result) => {
         callback(error, result);
@@ -258,8 +257,8 @@ export const updateCampaign = (email, token, id, new_name, new_account, new_date
     }
 }
 
-export const getCampaignList = (email, token, callback) => {
-    const data = { email, token };
+export const getCampaignList = (email, token, account_id, callback) => {
+    const data = { email, token, account_id };
 
     request(Methods.GET, Endpoints.CAMPAIGN_GET_LIST, data, (error, result) => {
         callback(error, result);

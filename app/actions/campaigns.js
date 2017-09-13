@@ -5,60 +5,93 @@ export function updateCampaignList(campaigns)
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.CAMPAIGN_UPDATE_LIST,
-            campaigns: campaigns
+            campaigns
         });
     };
 }
 
-export function addCampaign(campaign)
+export function addCampaign(accountId, name, dateBegin, dateEnd)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.CAMPAIGN_ADD,
-            campaign: campaign
+            accountId,
+            name,
+            dateBegin,
+            dateEnd
         });
     };
 }
 
-export function removeCampaign(campaignId)
+export function removeCampaign(accountId, campaignId)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.CAMPAIGN_DELETE,
-            campaignId: campaignId
+            accountId,
+            campaignId
         });
     };
 }
 
-export function updateCampaignName(campaignId, name)
+export function updateCampaign(accountId, campaignId, name, dateBegin, dateEnd)
+{
+    return (dispatch) => {
+        return dispatch({
+            type: ActionTypes.CAMPAIGN_UPDATE,
+            accountId,
+            campaignId,
+            name,
+            dateBegin,
+            dateEnd
+        });
+    };
+}
+
+export function updateCampaignName(accountId, campaignId, name)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.CAMPAIGN_UPDATE_NAME,
-            campaignId: campaignId,
-            name: name
+            accountId,
+            campaignId,
+            name
         });
     };
 }
 
-export function updateCampaignDateBegin(campaignId, dateBegin)
+export function updateCampaignAccount(accountId, campaignId, newAccountId)
+{
+    return (dispatch) => {
+        return dispatch({ 
+            type: ActionTypes.CAMPAIGN_UPDATE_ACCOUNT,
+            accountId,
+            campaignId,
+            newAccountId
+        });
+    };
+}
+
+export function updateCampaignDateBegin(accountId, campaignId, dateBegin)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.CAMPAIGN_UPDATE_DATEBEGIN,
-            campaignId: campaignId,
-            dateBegin: dateBegin
+            accountId,
+            campaignId,
+            dateBegin
         });
     };
 }
 
-export function updateCampaignDateEnd(campaignId, dateEnd)
+export function updateCampaignDateEnd(accountId, campaignId, dateEnd)
 {
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.CAMPAIGN_UPDATE_DATEEND,
-            campaignId: campaignId,
-            dateEnd: dateEnd
+            accountId,
+            campaignId,
+            dateEnd
         });
     };
 }

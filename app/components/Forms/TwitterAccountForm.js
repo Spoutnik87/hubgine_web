@@ -63,7 +63,7 @@ class TwitterAccountForm extends Component {
     {
         super(props);
         this.state = {
-            isAccountLoaded: false,
+            isAccountLoaded: true,
             deleteMode: false,
             name: this.props.account ? this.props.account.name : "",
             oldConsumerKey: "",
@@ -81,49 +81,55 @@ class TwitterAccountForm extends Component {
 
     componentDidMount()
     {
-        getTwitterAccountKeys(this.props.user.email, this.props.user.token, this.state.name, this.props.account, (error, result) => {
-            let state = {
-                isAccountLoaded: true
-            };
-            if (!error)
-            {
-                if (result)
+        if (this.props.account && this.props.edit)
+        {
+            this.setState({
+                isAccountLoaded: false
+            });
+            getTwitterAccountKeys(this.props.user.email, this.props.user.token, this.state.name, this.props.account, (error, result) => {
+                let state = {
+                    isAccountLoaded: true
+                };
+                if (!error)
                 {
-                    state = {
-                        ...state,
-                        oldConsumerKey: result.consumer_key,
-                        oldConsumerSecret: result.consumer_secret,
-                        oldAccessTokenKey: result.access_token_key,
-                        oldAccessTokenSecret: result.access_token_secret,
-                        consumerKey: result.consumer_key,
-                        consumerSecret: result.consumer_secret,
-                        accessTokenKey: result.access_token_key,
-                        accessTokenSecret: result.access_token_secret
-                    };
-                    this.props.dispatch(updateAccountKeys(this.state.name, result.consumer_key, result.consumer_secret, result.access_token_key, result.access_token_secret));
+                    if (result)
+                    {
+                        state = {
+                            ...state,
+                            oldConsumerKey: result.consumer_key,
+                            oldConsumerSecret: result.consumer_secret,
+                            oldAccessTokenKey: result.access_token_key,
+                            oldAccessTokenSecret: result.access_token_secret,
+                            consumerKey: result.consumer_key,
+                            consumerSecret: result.consumer_secret,
+                            accessTokenKey: result.access_token_key,
+                            accessTokenSecret: result.access_token_secret
+                        };
+                        this.props.dispatch(updateAccountKeys(this.state.name, result.consumer_key, result.consumer_secret, result.access_token_key, result.access_token_secret));
+                    }
+                    else
+                    {
+                        state = {
+                            ...state,
+                            oldConsumerKey: this.props.account.consumerKey,
+                            oldConsumerSecret: this.props.account.consumerSecret,
+                            oldAccessTokenKey: this.props.account.accessTokenKey,
+                            oldAccessTokenSecret: this.props.account.accessTokenSecret,
+                            consumerKey: this.props.account.consumerKey,
+                            consumerSecret: this.props.account.consumerSecret,
+                            accessTokenKey: this.props.account.accessTokenKey,
+                            accessTokenSecret: this.props.account.accessTokenSecret
+                        };
+                    }
                 }
                 else
                 {
-                    state = {
-                        ...state,
-                        oldConsumerKey: this.props.account.consumerKey,
-                        oldConsumerSecret: this.props.account.consumerSecret,
-                        oldAccessTokenKey: this.props.account.accessTokenKey,
-                        oldAccessTokenSecret: this.props.account.accessTokenSecret,
-                        consumerKey: this.props.account.consumerKey,
-                        consumerSecret: this.props.account.consumerSecret,
-                        accessTokenKey: this.props.account.accessTokenKey,
-                        accessTokenSecret: this.props.account.accessTokenSecret
-                    };
+                    const { TWITTERACCOUNTFORM_GENERIC_ERROR } = this.props.lang;
+                    this.props.dispatch(sendFailureMessage(TWITTERACCOUNTFORM_GENERIC_ERROR));
                 }
-            }
-            else
-            {
-                const { TWITTERACCOUNTFORM_GENERIC_ERROR } = this.props.lang;
-                this.props.dispatch(sendFailureMessage(TWITTERACCOUNTFORM_GENERIC_ERROR));
-            }
-            this.setState(state);
-        });
+                this.setState(state);
+            });
+        }
     }
 
     handleChange(event)
@@ -198,7 +204,7 @@ class TwitterAccountForm extends Component {
         const buttonDelete = this.props.delete && !this.props.loading ? <button id="buttonDeleteMode" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERACCOUNTFORM_DELETE_BUTTON}</button> : undefined;
         const buttonCancel = this.props.cancel && !this.props.loading ? <button id="buttonCancel" className="btn btn-default" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</button> : undefined;
         const title = this.props.title ? <div className="panel-heading"><h3 className="panel-title">{this.props.edit ? TWITTERACCOUNTFORM_EDIT_TITLE : TWITTERACCOUNTFORM_CREATE_TITLE}</h3></div> : undefined;
-        const deleteMode = this.state.deleteMode ? <div className="col-sm-10"><button id="buttonDeleteYes" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERACCOUNTFORM_DELETE_BUTTON}</button>
+        const deleteMode = this.state.deleteMode ? this.props.loading ? <LoadingCog /> : <div className="col-sm-10"><button id="buttonDeleteYes" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERACCOUNTFORM_DELETE_BUTTON}</button>
             <button id="buttonDeleteNo" className="btn btn-default" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</button></div> 
             : <div className="col-sm-10">{buttonSubmit}<div style={{ float: "right" }}>{buttonDelete}{buttonCancel}</div></div>;
         const messages = this.props.messages ? <Messages messages={this.props.messages}/> : undefined;

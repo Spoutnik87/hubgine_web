@@ -41,7 +41,7 @@ app.all("/css/*.scss", (req, res, next) => {
 });
 app.use(express.static(path.join(__dirname, "public"), {
     setHeaders: res => {
-        res.setHeader("Content-Type", mime.lookup(res.req.url));
+        res.setHeader("Content-Type", mime.getType(res.req.url));
     }
 }));
 app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
@@ -55,7 +55,9 @@ app.use((req, res) => {
     accounts: {
       data: []
     },
-    campaigns: []
+    campaigns: {
+      data: []
+    }
   };
   const store = configureStore({
     ...initialState,

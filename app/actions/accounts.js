@@ -21,17 +21,14 @@ export function updateAccountList(accounts)
 
 export function addAccount(name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret)
 {
-    let account = {
-        name: name
-    };
-    if (consumerKey) account.consumerKey = consumerKey;
-    if (consumerSecret) account.consumerSecret = consumerSecret;
-    if (accessTokenKey) account.accessTokenKey = accessTokenKey;
-    if (accessTokenSecret) account.accessTokenSecret = accessTokenSecret;
     return (dispatch) => {
         return dispatch({ 
             type: ActionTypes.ACCOUNT_ADD,
-            ...account
+            name: name,
+            consumerKey: consumerKey,
+            consumerSecret: consumerSecret,
+            accessTokenKey: accessTokenKey,
+            accessTokenSecret: accessTokenSecret
         });
     };
 }
