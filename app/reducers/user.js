@@ -6,7 +6,7 @@ const user = (state = {}, action) =>
 {
     switch (action.type)
     {
-        case ActionTypes.USER_CONNECT:
+        case ActionTypes.USER_SET:
             return addMetadata({
                 ...state,
                 token: action.token,
@@ -14,6 +14,16 @@ const user = (state = {}, action) =>
                 rank: action.rank,
                 lang: action.lang
             }, RequestTypes.USER_BASIC);
+        case ActionTypes.USER_UPDATE:
+            const newState = {};
+            if (action.email) newState.email = action.email;
+            if (action.firstname) newState.firstname = action.firstname;
+            if (action.lastname) newState.lastname = action.lastname;
+            if (action.lang) newState.lang = action.lang;
+            return {
+                ...state,
+                ...newState
+            };
         case ActionTypes.USER_UPDATE_INFOS:
             return addMetadata({
                 ...state,
@@ -26,27 +36,7 @@ const user = (state = {}, action) =>
                 ...state,
                 maxAccounts: action.maxAccounts
             }, RequestTypes.USER_MAX_ACCOUNTS);
-        case ActionTypes.USER_UPDATE_EMAIL:
-            return {
-                ...state,
-                email: action.email
-            };
-        case ActionTypes.USER_UPDATE_FIRSTNAME:
-            return {
-                ...state,
-                firstname: action.firstname
-            };
-        case ActionTypes.USER_UPDATE_LASTNAME:
-            return {
-                ...state,
-                lastname: action.lastname
-            };
-        case ActionTypes.USER_UPDATE_LANGUAGE:
-            return {
-                ...state,
-                lang: action.lang
-            };
-        case ActionTypes.USER_DISCONNECT:
+        case ActionTypes.USER_UNSET:
             return {};
         default:
             return state;

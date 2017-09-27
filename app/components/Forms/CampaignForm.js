@@ -77,7 +77,7 @@ class CampaignForm extends Component {
             isAccountListLoaded: false
         } : {
             name: "",
-            accountId: "",
+            accountId: this.props.accounts.data.length > 0 ? this.props.accounts.data[0].name : "",
             dateBegin: "",
             dateEnd: "",
             deleteMode: false,
@@ -99,7 +99,7 @@ class CampaignForm extends Component {
             {
                 if (result)
                 {
-                    this.props.dispatch(updateAccountList(result.accounts));   
+                    this.props.dispatch(updateAccountList(result.accounts));
                 }
             }
             else
@@ -140,7 +140,7 @@ class CampaignForm extends Component {
         else if (event.target.id === "buttonDeleteMode")
         {
             this.setState({
-               deleteMode: true 
+               deleteMode: true
             });
         }
         else if (event.target.id === "buttonDeleteYes")
@@ -172,7 +172,7 @@ class CampaignForm extends Component {
     handleAccountChange(event)
     {
         this.setState({
-           [event.name]: event.value 
+           [event.name]: event.value
         });
     }
 
@@ -196,14 +196,14 @@ class CampaignForm extends Component {
         const buttonCancel = this.props.cancel && !this.props.loading ? <button id="buttonCancel" className="btn btn-default" onClick={this.handleClick}>{CAMPAIGNFORM_CANCEL_BUTTON}</button> : undefined;
         const title = this.props.title ? <div className="panel-heading"><h3 className="panel-title">{this.props.edit ? CAMPAIGNFORM_EDIT_TITLE : CAMPAIGNFORM_CREATE_TITLE}</h3></div> : undefined;
         const messages = this.props.messages ? <Messages messages={this.props.messages}/> : undefined;
-        const deleteMode = this.state.deleteMode ? <div className="col-sm-12"><button id="buttonDeleteYes" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{CAMPAIGNFORM_DELETE_BUTTON}</button>
-            <button id="buttonDeleteNo" className="btn btn-default" onClick={this.handleClick}>{CAMPAIGNFORM_CANCEL_BUTTON}</button></div> 
+        const deleteMode = this.state.deleteMode ? this.props.loading ? <LoadingCog /> : <div className="col-sm-12"><button id="buttonDeleteYes" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{CAMPAIGNFORM_DELETE_BUTTON}</button>
+            <button id="buttonDeleteNo" className="btn btn-default" onClick={this.handleClick}>{CAMPAIGNFORM_CANCEL_BUTTON}</button></div>
             : <div className="col-sm-12">{buttonSubmit}<div style={{ float: "right" }}>{buttonDelete}{buttonCancel}</div></div>;
         return (
             <div>
                 {title}
                 {
-                    this.state.isAccountListLoaded ? 
+                    this.state.isAccountListLoaded ?
                     <div className="panel-body form-horizontal">
                         {messages}
                         <div className="form-group">

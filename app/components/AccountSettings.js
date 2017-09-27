@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
-import { isValidCampaignName, isUniqueCampaignName, isValidCampaignDateBegin, isValidCampaignDateEnd } from "validator";
+import { isValidCampaignName, isUniqueCampaignName, isValidCampaignAccount, isValidCampaignDateBegin, isValidCampaignDateEnd } from "validator";
 import { sendSuccessMessage, sendFailureMessage, sendFailureMessages } from "../actions/messages";
 import { addCampaign as addCampaignToProps } from "../actions/campaigns";
 import { addCampaign } from "../net/Requests";
@@ -62,7 +63,20 @@ class AccountSettings extends Component {
 
     handleCampaignFormSubmit(event)
     {
-        const { CAMPAIGNFORM_NAME_INCORRECT,
+        const { accountId, name, dateBegin, dateEnd } = event.result;
+        this.setState({
+            loadingCampaignForm: true 
+        });
+        this.props.actions.addCampaign(accountId, name, dateBegin, dateEnd).then(result => {
+            this.setState({
+                loadingCampaignForm: false
+            });
+        }).catch(error => {
+            this.setState({
+                loadingCampaignForm: false
+            });
+        });
+        /*const { CAMPAIGNFORM_NAME_INCORRECT,
             CAMPAIGNFORM_NAME_NOT_UNIQUE,
             CAMPAIGNFORM_ACCOUNT_INCORRECT,
             CAMPAIGNFORM_DATEBEGIN_INCORRECT,
@@ -77,7 +91,7 @@ class AccountSettings extends Component {
         {
             messages.push(CAMPAIGNFORM_NAME_INCORRECT);
         }
-        if (!isUniqueCampaignName(name, this.props.campaigns.map(campaign => campaign.name)))
+        if (!isUniqueCampaignName(name, this.props.campaigns.data.map(campaign => campaign.name)))
         {
             messages.push(CAMPAIGNFORM_NAME_NOT_UNIQUE);
         }
@@ -102,13 +116,12 @@ class AccountSettings extends Component {
             this.setState({
                 loadingCampaignForm: true
             });
-            /*addCampaign(name, accountId, dateBegin, dateEnd, (error, result) =>
-            {
+            addCampaign(this.props.user.email, this.props.user.token, accountId, name, dateBegin, dateEnd, (error, result) => {
                 if (!error)
                 {
                     this.props.dispatch(addCampaignToProps({
-                        name,
                         accountId,
+                        name,
                         dateBegin,
                         dateEnd
                     }));
@@ -121,12 +134,12 @@ class AccountSettings extends Component {
                 this.setState({
                     loadingCampaignForm: false
                 });
-            });*/
+            });
         }
         else
         {
             this.props.dispatch(sendFailureMessages(messages));
-        }
+        }*/
     }
 
     render()
@@ -134,7 +147,7 @@ class AccountSettings extends Component {
         const campaignForm = this.state.campaignForm ? <CampaignForm name="campaignform" onSubmit={this.handleCampaignFormSubmit} cancel onCancel={this.handleCampaignFormCancel} loading={this.state.loadingCampaignForm} messages={this.props.messages}/>
             : <button id="createcampaign" type="submit" className="btn btn-success" onClick={this.handleClick}>Create a campaign</button>;
 
-        const campaignList = this.props.campaigns.map(campaign => (
+        const campaignList = this.props.campaigns.data.map(campaign => (
             <div key={campaign.uid}>{campaign.name}</div>
         ));
         return (
@@ -148,6 +161,7 @@ class AccountSettings extends Component {
 
 const mapStateToProps = (state) => {
     return {
+        user: state.user,
         accounts: state.accounts,
         messages: state.messages,
         campaigns: state.campaigns,
@@ -155,4 +169,12 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(AccountSettings);
+const mapDispatchToProps = (dispatch) => {
+    return {
+        actions: bindActionCreators({
+            addCampaign
+        }, dispatch)
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AccountSettings);

@@ -6,8 +6,8 @@ class CampaignTile extends Component {
     static propTypes = {
         campaign: PropTypes.shape({
             name: PropTypes.string.isRequired,
-            dateBegin: PropTypes.number.isRequired,
-            dateEnd: PropTypes.number.isRequired
+            dateBegin: PropTypes.string.isRequired,
+            dateEnd: PropTypes.string.isRequired
         }).isRequired,
         onClick: PropTypes.func
     };

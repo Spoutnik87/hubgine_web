@@ -12,7 +12,7 @@ class DateInput extends Component {
         value: PropTypes.string
     };
 
-    defaultProps = {
+    static defaultProps = {
         name: "dateinput",
         onChange: () => {}
     };

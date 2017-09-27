@@ -62,7 +62,7 @@ app.use((req, res) => {
   const store = configureStore({
     ...initialState,
     lang: lang.default(user.lang || Languages.ENGLISH)
-  });
+  }, req.universalCookies);
   const context = {};
 
   const html = ReactDOM.renderToString(

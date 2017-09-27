@@ -8,7 +8,7 @@ class NumberInput extends Component {
         onChange: PropTypes.func
     };
 
-    defaultProps = {
+    static defaultProps = {
         name: "switch",
         value: 0,
         onChange: () => {}

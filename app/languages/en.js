@@ -143,6 +143,14 @@ export default function getLanguage()
         TWITTERRULEFORM_DELETE_ERROR: "An error happened during rule deletion.",
         //---ARRAYINPUT---
         ARRAYINPUT_ADD_BUTTON: "Add",
-        ARRAYINPUT_DELETE_BUTTON: "Remove"
+        ARRAYINPUT_DELETE_BUTTON: "Remove",
+        //---USER---
+        USER_EMAIL_INCORRECT: "A valid email is required.",
+        USER_EMAIL_NOT_UNIQUE: "A unique email is required.",
+        USER_PASSWORD_INCORRECT: "Password length must be at least 6 characters.",
+        USER_FIRSTNAME_INCORRECT: "A valid firstname is required.",
+        USER_LASTNAME_INCORRECT: "A valid lastname is required.",
+        USER_LANGUAGE_INCORRECT: "A valid language is required.",
+        USER_EDIT_SUCCESS: "Your profile has been updated."
     }
 }

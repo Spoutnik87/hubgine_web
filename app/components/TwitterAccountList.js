@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
 import { isValidTwitterAccountName, isUniqueTwitterAccountName, isValidTwitterAccountConsumerKey, isValidTwitterAccountConsumerSecret, isValidTwitterAccountAccessTokenKey, isValidTwitterAccountAccessTokenSecret } from "validator";
-import { getTwitterAccountKeys, updateAccount, removeAccount } from "../net/Requests";
+//import { getTwitterAccountKeys, updateAccount, removeAccount } from "../net/Requests";
 import { sendFailureMessage, sendFailureMessages, sendSuccessMessage } from "../actions/messages";
-import { removeAccount as removeAccountFromProps, updateAccountKeys, updateAccount as updateAccountToProps } from "../actions/accounts";
+import { removeAccount, updateAccountKeys, updateAccount } from "../actions/accounts";
 import * as Ranks from "../constants/Ranks";
 import * as Languages from "../constants/Languages";
 import LoadingCog from "./LoadingCog";
@@ -59,7 +60,25 @@ class TwitterAccountList extends Component {
 
     handleAccountFormEditionSubmit(event)
     {
-        const { 
+        const {
+            name,
+            consumerKey,
+            consumerSecret,
+            accessTokenKey,
+            accessTokenSecret
+        } = event.result;
+        this.props.actions.updateAccount(event.default.name, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret).then(result => {
+            this.setState({
+                loading: false,
+                selectedAccount: ""
+            });
+        }).catch(error => {
+            this.setState({
+                loading: false,
+                selectedAccount: ""
+            });
+        });
+        /*const {
             TWITTERACCOUNTFORM_NAME_INCORRECT,
             TWITTERACCOUNTFORM_NAME_NOT_UNIQUE,
             TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT,
@@ -132,7 +151,7 @@ class TwitterAccountList extends Component {
         else
         {
             this.props.dispatch(sendFailureMessages(messages));
-        }
+        }*/
     }
 
     handleAccountFormEditionCancel(event)
@@ -148,7 +167,8 @@ class TwitterAccountList extends Component {
         this.setState({
             loading: true
         });
-        removeAccount(this.props.user.email, this.props.user.token, event.default.name, (error, result) => {
+        this.props.actions.removeAccount(event.default.name);
+        /*removeAccount(this.props.user.email, this.props.user.token, event.default.name, (error, result) => {
             if (!error)
             {
                 this.props.dispatch(removeAccountFromProps(event.default.name));
@@ -161,7 +181,7 @@ class TwitterAccountList extends Component {
             this.setState({
                 loading: false
             });
-        });
+        });*/
     }
 
     render()
@@ -169,10 +189,10 @@ class TwitterAccountList extends Component {
         return (
             <ul className="list-group">
                 {this.props.accounts.data.map(
-                    account => (
-                        <li key={account.uid} className="list-group-item">
+                    account => {
+                        return <li key={account.uid} className="list-group-item">
                             {
-                                account.name === this.state.selectedAccount ? 
+                                account.name === this.state.selectedAccount ?
                                 (
                                     <TwitterAccountForm onSubmit={this.handleAccountFormEditionSubmit} cancel onCancel={this.handleAccountFormEditionCancel} edit delete onDelete={this.handleAccountFormEditionDelete} account={account} loading={this.state.loading} />
                                 ) : (
@@ -183,7 +203,7 @@ class TwitterAccountList extends Component {
                                 )
                             }
                         </li>
-                    )
+                        }
                 )}
             </ul>
         );
@@ -199,4 +219,12 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(TwitterAccountList);
+const mapDispatchToProps = (dispatch) => {
+    return {
+        actions: bindActionCreators({
+            updateAccount, removeAccount
+        }, dispatch)
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TwitterAccountList);

@@ -9,7 +9,7 @@ class Switch extends Component {
         onChange: PropTypes.func
     };
 
-    defaultProps = {
+    static defaultProps = {
         name: "switch",
         onChange: () => {}
     };

@@ -8,10 +8,10 @@ import * as Languages from "../constants/Languages";
 import { getAccountNameList } from "../net/Requests";
 import LoadingCog from "./LoadingCog";
 import AccountTile from "./AccountTile";
-import AccountOverview from "./AccountOverview";
-import AccountSettings from "./AccountSettings";
+import UserOverview from "./UserOverview";
+import UserSettings from "./UserSettings";
 
-class UserDashboard extends Component {
+class UserDashboardOld extends Component {
     static propTypes = {
         messages: PropTypes.object.isRequired,
         lang: PropTypes.shape({
@@ -77,21 +77,28 @@ class UserDashboard extends Component {
     {
         const manageButton = !this.state.editMode ? <button id="manageaccount" type="submit" className="btn btn-primary" onClick={this.handleClick} style={{float: "right" }}><i className="fa fa-wrench"></i> Manage</button>
             : <button id="manageaccount" type="submit" className="btn btn-primary" onClick={this.handleClick} style={{float: "right" }}><i className="fa fa-level-up"></i> Return</button>;
-        const selectedMenu = !this.state.editMode ? <AccountOverview account={this.props.accounts.data.filter(account => { return decodeURI(this.props.location.hash.substring(1)) === account.name ? true : false; })[0]} />
-            : <AccountSettings account={this.props.accounts.data.filter(account => { return decodeURI(this.props.location.hash.substring(1)) === account.name ? true : false; })[0]} /> 
+        const selectedMenu = !this.state.editMode ? <UserOverview /> : <UserSettings />;
         
+        const panelBody = this.state.loading ? (
+            <div className="panel-body">
+                <LoadingCog center/>
+            </div>
+        ) : (
+            <div className="panel-body">
+                <div className="col-sm-12">
+                    {manageButton}
+                </div>
+                {selectedMenu}
+            </div>
+        );
+
         return (
             <div className="container">
                 <div className="panel">
                     <div className="panel-heading">
                         <h3 className="panel-title">DASHBOARD</h3>
                     </div>
-                    <div className="panel-body">
-                        <div className="col-sm-12">
-                            {manageButton}
-                        </div>
-                    {selectedMenu}
-                    </div>
+                    {panelBody}
                 </div>
             </div>
         );
@@ -107,4 +114,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(UserDashboard);
+export default connect(mapStateToProps)(UserDashboardOld);

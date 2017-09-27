@@ -67,6 +67,7 @@ const accounts = (state = {}, action) =>
                 accessTokenKey: action.accessTokenKey,
                 accessTokenSecret: action.accessTokenSecret
             }, RequestTypes.ACCOUNT_KEYS);
+            console.log("dqvvqq");
             return state;
         case ActionTypes.ACCOUNT_UPDATE_NAME:
             state.data[findIndex(state.data, { name: action.accountId })].name = action.name;

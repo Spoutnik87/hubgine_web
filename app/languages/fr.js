@@ -143,6 +143,14 @@ export default function getLanguage()
         TWITTERRULEFORM_DELETE_ERROR: "Une erreur est survenue lors de la suppression de la règle.",
         //---ARRAYINPUT---
         ARRAYINPUT_ADD_BUTTON: "Ajouter",
-        ARRAYINPUT_DELETE_BUTTON: "Supprimer"
+        ARRAYINPUT_DELETE_BUTTON: "Supprimer",
+        //---USER---
+        USER_EMAIL_INCORRECT: "L'adresse mail est incorrecte.",
+        USER_EMAIL_NOT_UNIQUE: "L'adresse mail est déjà utilisée.",
+        USER_PASSWORD_INCORRECT: "Le mot de passe doit avoir une longueur minimale de 6 caractères.",
+        USER_FIRSTNAME_INCORRECT: "Le prénom est invalide.",
+        USER_LASTNAME_INCORRECT: "Le nom est invalide.",
+        USER_LANGUAGE_INCORRECT: "Une langue valide est requise.",
+        USER_EDIT_SUCCESS: "Votre profile a été mis à jour."
     }
 }

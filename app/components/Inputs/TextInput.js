@@ -10,7 +10,7 @@ class TextInput extends Component {
         onSubmit: PropTypes.func
     };
 
-    defaultProps = {
+    static defaultProps = {
         name: "textinput",
         value: "",
         loading: false,
