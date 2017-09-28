@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import LoadingCog from "../LoadingCog";
+import { withLanguage } from "../withLanguage";
 import Messages from "../Messages";
+import LoadingCog from "../LoadingCog";
 
 class UserSigninForm extends Component {
     static propTypes = {
@@ -60,8 +60,8 @@ class UserSigninForm extends Component {
     {
         const { SIGNIN_TITLE, SIGNIN_EMAIL, SIGNIN_PASSWORD, SIGNIN_SUBMIT } = this.props.lang;
         const buttonSubmit = this.props.loading ? <LoadingCog/> : <button type="submit" className="btn btn-success" onClick={this.handleClick}>{SIGNIN_SUBMIT}</button>;
-        const title = this.props.title ? <div className="panel-heading"><h3 className="panel-title">{SIGNIN_TITLE}</h3></div> : undefined;
-        const messages = this.props.messages ? <Messages messages={this.props.messages}/> : undefined;
+        const title = this.props.title && <div className="panel-heading"><h3 className="panel-title">{SIGNIN_TITLE}</h3></div>;
+        const messages = this.props.messages && <Messages messages={this.props.messages}/>;
         return (
             <div>
                 {title}
@@ -91,10 +91,4 @@ class UserSigninForm extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        lang: state.lang
-    };
-};
-
-export default connect(mapStateToProps)(UserSigninForm);
+export default withLanguage(UserSigninForm);

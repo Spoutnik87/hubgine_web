@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { bindActionCreators } from "redux";
+import { withLanguage } from "../withLanguage";
 import { clearMessages } from "../../actions/messages";
 import { connect as signin } from "../../actions/user";
 import UserSigninForm from "../Forms/UserSigninForm";
@@ -67,8 +68,7 @@ class Signin extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        messages: state.messages,
-        lang: state.lang
+        messages: state.messages
     };
 };
 
@@ -81,4 +81,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Signin);
+export default withLanguage(connect(mapStateToProps, mapDispatchToProps)(Signin));

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import { withLanguage } from "../withLanguage";
 import { getAccountList } from "../../net/Requests";
 import { sendFailureMessage, sendFailureMessages, sendSuccessMessage, clearMessages } from "../../actions/messages";
 import { updateAccountList } from "../../actions/accounts";
@@ -26,9 +26,7 @@ class CampaignForm extends Component {
             CAMPAIGNFORM_DATEEND: PropTypes.string.isRequired,
             CAMPAIGNFORM_NAME_TOOLTIP: PropTypes.string.isRequired
         }).isRequired,
-        accounts: PropTypes.shape({
-            data: PropTypes.array.isRequired
-        }).isRequired,
+        accounts: PropTypes.array.isRequired,
         user: PropTypes.shape({
             email: PropTypes.string.isRequired,
             token: PropTypes.string.isRequired,
@@ -62,7 +60,8 @@ class CampaignForm extends Component {
         loading: false,
         edit: false,
         messages: undefined,
-        campaign: undefined
+        campaign: undefined,
+        accounts: undefined
     };
 
     constructor(props)
@@ -77,7 +76,7 @@ class CampaignForm extends Component {
             isAccountListLoaded: false
         } : {
             name: "",
-            accountId: this.props.accounts.data.length > 0 ? this.props.accounts.data[0].name : "",
+            accountId: this.props.accounts.length > 0 ? this.props.accounts[0].name : "",
             dateBegin: "",
             dateEnd: "",
             deleteMode: false,
@@ -89,7 +88,7 @@ class CampaignForm extends Component {
         this.handleAccountChange = this.handleAccountChange.bind(this);
     }
 
-    componentDidMount()
+    /*componentDidMount()
     {
         const {
             CAMPAIGNFORM_GENERIC_ERROR
@@ -110,7 +109,7 @@ class CampaignForm extends Component {
                 isAccountListLoaded: true
             });
         });
-    }
+    }*/
 
     handleClick(event)
     {
@@ -192,10 +191,10 @@ class CampaignForm extends Component {
             CAMPAIGNFORM_NAME_TOOLTIP
         } = this.props.lang;
         const buttonSubmit = this.props.loading ? <LoadingCog/> : this.props.edit ? <button id="buttonSubmit" className="btn btn-primary" onClick={this.handleClick}>{CAMPAIGNFORM_EDIT_BUTTON}</button> : <button id="buttonSubmit" className="btn btn-success" onClick={this.handleClick}>{CAMPAIGNFORM_CREATE_BUTTON}</button>;
-        const buttonDelete = this.props.delete && !this.props.loading ? <button id="buttonDeleteMode" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{CAMPAIGNFORM_DELETE_BUTTON}</button> : undefined;
-        const buttonCancel = this.props.cancel && !this.props.loading ? <button id="buttonCancel" className="btn btn-default" onClick={this.handleClick}>{CAMPAIGNFORM_CANCEL_BUTTON}</button> : undefined;
-        const title = this.props.title ? <div className="panel-heading"><h3 className="panel-title">{this.props.edit ? CAMPAIGNFORM_EDIT_TITLE : CAMPAIGNFORM_CREATE_TITLE}</h3></div> : undefined;
-        const messages = this.props.messages ? <Messages messages={this.props.messages}/> : undefined;
+        const buttonDelete = this.props.delete && !this.props.loading && <button id="buttonDeleteMode" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{CAMPAIGNFORM_DELETE_BUTTON}</button>;
+        const buttonCancel = this.props.cancel && !this.props.loading && <button id="buttonCancel" className="btn btn-default" onClick={this.handleClick}>{CAMPAIGNFORM_CANCEL_BUTTON}</button>;
+        const title = this.props.title && <div className="panel-heading"><h3 className="panel-title">{this.props.edit ? CAMPAIGNFORM_EDIT_TITLE : CAMPAIGNFORM_CREATE_TITLE}</h3></div>;
+        const messages = this.props.messages && <Messages messages={this.props.messages}/>;
         const deleteMode = this.state.deleteMode ? this.props.loading ? <LoadingCog /> : <div className="col-sm-12"><button id="buttonDeleteYes" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{CAMPAIGNFORM_DELETE_BUTTON}</button>
             <button id="buttonDeleteNo" className="btn btn-default" onClick={this.handleClick}>{CAMPAIGNFORM_CANCEL_BUTTON}</button></div>
             : <div className="col-sm-12">{buttonSubmit}<div style={{ float: "right" }}>{buttonDelete}{buttonCancel}</div></div>;
@@ -224,7 +223,7 @@ class CampaignForm extends Component {
                         <div className="form-group">
                             <label htmlFor="account" className="col-sm-2">{CAMPAIGNFORM_ACCOUNT}</label>
                             <div className="col-sm-10">
-                                <ListInput id="accountId" name="accountId" options={this.props.accounts.data.map(account => account.name)} defaultOption={this.props.campaign ? this.props.campaign.accountId : undefined} onChange={this.handleAccountChange} />
+                                <ListInput id="accountId" name="accountId" options={this.props.accounts.map(account => account.name)} defaultOption={this.props.campaign ? this.props.campaign.accountId : undefined} onChange={this.handleAccountChange} />
                             </div>
                         </div>
                         <div className="form-group">
@@ -251,12 +250,4 @@ class CampaignForm extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        user: state.user,
-        accounts: state.accounts,
-        lang: state.lang
-    };
-};
-
-export default connect(mapStateToProps)(CampaignForm);
+export default withLanguage(CampaignForm);

@@ -11,7 +11,7 @@ import Register from "./Containers/Register";
 import ForgotPassword from "./ForgotPassword";
 import UserDashboard from "./Containers/UserDashboard";
 import AdminDashboard from "./AdminDashboard";
-import Disconnect from "./Disconnect";
+import Disconnect from "./Containers/Disconnect";
 import Profile from "./Containers/Profile";
 import NotFound from "./NotFound";
 import NotLoggedInRoute from "./routes/NotLoggedInRoute";

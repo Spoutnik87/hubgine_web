@@ -275,6 +275,7 @@ export function updateUser(email, password, firstname, lastname, lang)
 		}
 		else
 		{
+			dispatch(sendFailureMessages(messages));
 			return Promise.reject(new Error(Errors.ERROR_INVALID_INPUTS));
 		}
 	};

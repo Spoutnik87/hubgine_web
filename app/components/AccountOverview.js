@@ -81,24 +81,6 @@ class AccountOverview extends Component {
                 {campaignList}
             </div>
         );
-        /*const campaignList = this.props.campaigns.data.length > 0 ? (
-            this.props.campaigns.data.map(campaign => (
-                <CampaignTile campaign={campaign} />
-            ))
-        ) : (
-            <div>You don't have campaign yet. Click on manage button to create one.</div>
-        );
-
-        return (
-            <div>
-                {
-                    this.state.noCampaign ? noCampaign :
-                    this.props.campaigns.data.map(campaign => (
-                        <CampaignTile campaign={campaign} />
-                    ))
-                }
-            </div>
-        );*/
     }
 }
 

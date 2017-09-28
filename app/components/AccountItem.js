@@ -19,7 +19,7 @@ class AccountItem extends Component {
     render()
     {
         return (
-            <div id={this.props.account.name} className="form-control" onClick={this.props.onClick}>{this.props.account.name}</div>
+            <div id={this.props.account.name} className="form-control" onClick={this.props.onClick} style={{ cursor: "pointer" }}>{this.props.account.name}</div>
         );
     }
 }

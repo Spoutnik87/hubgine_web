@@ -46,7 +46,6 @@ class UserDashboard extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        lang: state.lang,
         campaigns: state.campaigns,
         messages: state.messages
     };

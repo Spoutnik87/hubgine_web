@@ -1,11 +1,8 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
-import LoadingCog from "../LoadingCog";
+import { withLanguage } from "../withLanguage";
 import Messages from "../Messages";
-import { fetchAccountKeys } from "../../actions/accounts";
-//import { getTwitterAccountKeys } from "../../net/Requests";
+import LoadingCog from "../LoadingCog";
 
 class TwitterAccountForm extends Component {
     static propTypes = {
@@ -22,10 +19,6 @@ class TwitterAccountForm extends Component {
             TWITTERACCOUNTFORM_EDIT_BUTTON: PropTypes.string.isRequired,
             TWITTERACCOUNTFORM_CANCEL_BUTTON: PropTypes.string.isRequired
         }).isRequired,
-        user: PropTypes.shape({
-            email: PropTypes.string.isRequired,
-            token: PropTypes.string.isRequired,
-        }).isRequired,
         name: PropTypes.string,
         onSubmit: PropTypes.func,
         onCancel: PropTypes.func,
@@ -35,7 +28,6 @@ class TwitterAccountForm extends Component {
         title: PropTypes.bool,
         loading: PropTypes.bool,
         edit: PropTypes.bool,
-        messages: PropTypes.object,
         account: PropTypes.shape({
             uid: PropTypes.string.isRequired,
             name: PropTypes.string.isRequired,
@@ -43,7 +35,8 @@ class TwitterAccountForm extends Component {
             consumerSecret: PropTypes.string,
             accessTokenKey: PropTypes.string,
             accessTokenSecret: PropTypes.string
-        })
+        }),
+        messages: PropTypes.object
     };
 
     static defaultProps = {
@@ -56,119 +49,40 @@ class TwitterAccountForm extends Component {
         title: true,
         loading: false,
         edit: false,
-        messages: undefined,
-        account: undefined
+        account: undefined,
+        messages: undefined
     };
 
     constructor(props)
     {
         super(props);
         this.state = {
-            isAccountLoaded: true,
-            deleteMode: false,
-            name: this.props.account ? this.props.account.name : "",
-            oldConsumerKey: "",
-            oldConsumerSecret: "",
-            oldAccessTokenKey: "",
-            oldAccessTokenSecret: "",
-            consumerKey: "",
-            consumerSecret: "",
-            accessTokenKey: "",
-            accessTokenSecret: ""
+            deleteMode: false
         };
+        if (this.props.account)
+        {
+            this.state = {
+                ...this.state,
+                name: this.props.account.name,
+                consumerKey: this.props.account.consumerKey,
+                consumerSecret: this.props.account.consumerSecret,
+                accessTokenKey: this.props.account.accessTokenKey,
+                accessTokenSecret: this.props.account.accessTokenSecret
+            };
+        }
+        else
+        {
+            this.state = {
+                ...this.state,
+                name: "",
+                consumerKey: "",
+                consumerSecret: "",
+                accessTokenKey: "",
+                accessTokenSecret: ""
+            };
+        }
         this.handleChange = this.handleChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
-    }
-
-    componentDidMount()
-    {
-        if (this.props.account && this.props.edit)
-        {
-            this.setState({
-                isAccountLoaded: false
-            });
-            this.props.actions.fetchAccountKeys(this.state.name).then(() => {
-                this.setState({
-                    isAccountLoaded: true,
-                    oldConsumerKey: this.props.account.consumerKey,
-                    oldConsumerSecret: this.props.account.consumerSecret,
-                    oldAccessTokenKey: this.props.account.accessTokenKey,
-                    oldAccessTokenSecret: this.props.account.accessTokenSecret,
-                    consumerKey: this.props.account.consumerKey,
-                    consumerSecret: this.props.account.consumerSecret,
-                    accessTokenKey: this.props.account.accessTokenKey,
-                    accessTokenSecret: this.props.account.accessTokenSecret
-                });
-            });
-            /*this.props.actions.fetchAccountKeys(this.state.name).then(result => {
-                this.setState({
-                    isAccountLoaded: true,
-                    oldConsumerKey: result.consumer_key,
-                    oldConsumerSecret: result.consumer_secret,
-                    oldAccessTokenKey: result.access_token_key,
-                    oldAccessTokenSecret: result.access_token_secret,
-                    consumerKey: result.consumer_key,
-                    consumerSecret: result.consumer_secret,
-                    accessTokenKey: result.access_token_key,
-                    accessTokenSecret: result.access_token_secret
-                });
-            }).catch(error => {
-                this.setState({
-                    isAccountLoaded: true,
-                    oldConsumerKey: this.props.account.consumerKey,
-                    oldConsumerSecret: this.props.account.consumerSecret,
-                    oldAccessTokenKey: this.props.account.accessTokenKey,
-                    oldAccessTokenSecret: this.props.account.accessTokenSecret,
-                    consumerKey: this.props.account.consumerKey,
-                    consumerSecret: this.props.account.consumerSecret,
-                    accessTokenKey: this.props.account.accessTokenKey,
-                    accessTokenSecret: this.props.account.accessTokenSecret
-                });
-            });*/
-            /*getTwitterAccountKeys(this.props.user.email, this.props.user.token, this.state.name, this.props.account, (error, result) => {
-                let state = {
-                    isAccountLoaded: true
-                };
-                if (!error)
-                {
-                    if (result)
-                    {
-                        state = {
-                            ...state,
-                            oldConsumerKey: result.consumer_key,
-                            oldConsumerSecret: result.consumer_secret,
-                            oldAccessTokenKey: result.access_token_key,
-                            oldAccessTokenSecret: result.access_token_secret,
-                            consumerKey: result.consumer_key,
-                            consumerSecret: result.consumer_secret,
-                            accessTokenKey: result.access_token_key,
-                            accessTokenSecret: result.access_token_secret
-                        };
-                        this.props.dispatch(updateAccountKeys(this.state.name, result.consumer_key, result.consumer_secret, result.access_token_key, result.access_token_secret));
-                    }
-                    else
-                    {
-                        state = {
-                            ...state,
-                            oldConsumerKey: this.props.account.consumerKey,
-                            oldConsumerSecret: this.props.account.consumerSecret,
-                            oldAccessTokenKey: this.props.account.accessTokenKey,
-                            oldAccessTokenSecret: this.props.account.accessTokenSecret,
-                            consumerKey: this.props.account.consumerKey,
-                            consumerSecret: this.props.account.consumerSecret,
-                            accessTokenKey: this.props.account.accessTokenKey,
-                            accessTokenSecret: this.props.account.accessTokenSecret
-                        };
-                    }
-                }
-                else
-                {
-                    const { TWITTERACCOUNTFORM_GENERIC_ERROR } = this.props.lang;
-                    this.props.dispatch(sendFailureMessage(TWITTERACCOUNTFORM_GENERIC_ERROR));
-                }
-                this.setState(state);
-            });*/
-        }
     }
 
     handleChange(event)
@@ -193,10 +107,10 @@ class TwitterAccountForm extends Component {
         if (this.props.account) send.default = {
             uid: this.props.account.uid,
             name: this.props.account.name,
-            consumerKey: this.state.oldConsumerKey,
-            consumerSecret: this.state.oldConsumerSecret,
-            accessTokenKey: this.state.oldAccessTokenKey,
-            accessTokenSecret: this.state.oldAccessTokenSecret
+            consumerKey: this.props.account.consumerKey,
+            consumerSecret: this.props.account.consumerSecret,
+            accessTokenKey: this.props.account.accessTokenKey,
+            accessTokenSecret: this.props.account.accessTokenSecret
         };
         if (event.target.id === "buttonSubmit")
         {
@@ -240,14 +154,14 @@ class TwitterAccountForm extends Component {
             TWITTERACCOUNTFORM_ACCESSTOKENSECRET
         } = this.props.lang;
         const buttonSubmit = this.props.loading ? <LoadingCog/> : this.props.edit ? <button id="buttonSubmit" className="btn btn-primary" onClick={this.handleClick}>{TWITTERACCOUNTFORM_EDIT_BUTTON}</button> : <button id="buttonSubmit" className="btn btn-success" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CREATE_BUTTON}</button>;
-        const buttonDelete = this.props.delete && !this.props.loading ? <button id="buttonDeleteMode" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERACCOUNTFORM_DELETE_BUTTON}</button> : undefined;
-        const buttonCancel = this.props.cancel && !this.props.loading ? <button id="buttonCancel" className="btn btn-default" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</button> : undefined;
-        const title = this.props.title ? <div className="panel-heading"><h3 className="panel-title">{this.props.edit ? TWITTERACCOUNTFORM_EDIT_TITLE : TWITTERACCOUNTFORM_CREATE_TITLE}</h3></div> : undefined;
+        const buttonDelete = this.props.delete && !this.props.loading && <button id="buttonDeleteMode" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERACCOUNTFORM_DELETE_BUTTON}</button>;
+        const buttonCancel = this.props.cancel && !this.props.loading && <button id="buttonCancel" className="btn btn-default" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</button>;
+        const title = this.props.title && <div className="panel-heading"><h3 className="panel-title">{this.props.edit ? TWITTERACCOUNTFORM_EDIT_TITLE : TWITTERACCOUNTFORM_CREATE_TITLE}</h3></div>;
+        const messages = this.props.messages && <Messages messages={this.props.messages}/>;
         const deleteMode = this.state.deleteMode ? this.props.loading ? <LoadingCog /> : <div className="col-sm-10"><button id="buttonDeleteYes" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERACCOUNTFORM_DELETE_BUTTON}</button>
             <button id="buttonDeleteNo" className="btn btn-default" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</button></div>
             : <div className="col-sm-10">{buttonSubmit}<div style={{ float: "right" }}>{buttonDelete}{buttonCancel}</div></div>;
-        const messages = this.props.messages ? <Messages messages={this.props.messages}/> : undefined;
-        return !this.state.isAccountLoaded ? <LoadingCog /> : (
+        return (
             <div>
                 {title}
                 <div className="panel-body form-horizontal">
@@ -292,19 +206,4 @@ class TwitterAccountForm extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        lang: state.lang,
-        user: state.user
-    };
-};
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        actions: bindActionCreators({
-            fetchAccountKeys,
-        }, dispatch)
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(TwitterAccountForm);
+export default withLanguage(TwitterAccountForm);

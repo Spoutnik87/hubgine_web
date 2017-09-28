@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
+import { withLanguage } from "../withLanguage";
 import { clearMessages } from "../../actions/messages";
 import { fetchUser, fetchMaxAccounts, updateUser } from "../../actions/user";
 import { changeLanguage } from "../../actions/lang";
@@ -46,7 +47,6 @@ class Profile extends Component {
         this.state = {
             loadingAccountForm: false,
             isLoaded: false,
-            //isAccountListLoaded: false,
             isMaxAccountsLoaded: false,
             isAccountCreationFormDisplayed: false,
             loadingEmail: false,
@@ -72,11 +72,6 @@ class Profile extends Component {
                 lastname: this.props.user.lastname
             });
         });
-        /*this.props.actions.fetchAccountList().then(() => {
-            this.setState({
-                isAccountListLoaded: true
-            });
-        });*/
         this.props.actions.fetchMaxAccounts().then(() => {
             this.setState({
                 isMaxAccountsLoaded: true
@@ -209,22 +204,6 @@ class Profile extends Component {
         if (this.state.isLoaded && this.state.isMaxAccountsLoaded)
         {
             const maxAccountsDisplay = (this.props.accounts.data.length >= this.props.user.maxAccounts) ? <span style={ { float: "right" } }>{this.props.accounts.data.length}/{this.props.user.maxAccounts}</span> : <span style={ { float: "right" } }>{this.props.accounts.data.length}/{this.props.user.maxAccounts}<div id="buttonAccountCreation" className="input-group-addon edit-button" onClick={this.handleClick} style={ { display: "inline" } }><i id="buttonAccountCreation" className="fa fa-plus fa-fw"></i></div></span>;
-
-            /*const accountContainer = (
-                this.state.isAccountCreationFormDisplayed ?
-                <TwitterAccountForm onSubmit={this.handleAccountFormCreationSubmit} cancel onCancel={this.handleAccountFormCreationCancel} loading={this.state.loadingAccountForm}/>
-                :
-                <span>
-                    <div className="panel-heading">
-                        <div className="input-group">
-                            <h3 className="panel-title" style={ { width: "1000px" } }>{PROFILE_ACCOUNT_LIST} {maxAccountsDisplay}</h3>
-                        </div>
-                    </div>
-                    <div className="panel-body">
-                        {this.state.isAccountListLoaded ? <AccountEditList accounts={this.props.accounts.data} /> : undefined}
-                    </div>
-                </span>
-            );*/
             panel = (
                 <div className="panel">
                     <div className="panel-heading">
@@ -298,7 +277,6 @@ const mapStateToProps = (state) => {
     return {
         user: state.user,
         messages: state.messages,
-        lang: state.lang,
         accounts: state.accounts
     };
 };
@@ -312,4 +290,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Profile);
+export default withLanguage(connect(mapStateToProps, mapDispatchToProps)(Profile));

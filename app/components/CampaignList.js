@@ -32,28 +32,6 @@ class CampaignList extends Component {
         this.handleClick = this.handleClick.bind(this);
     }
 
-    componentDidMount()
-    {
-        const { GENERIC_ERROR } = this.props.lang;
-        /*getCampaignList(this.props.user.email, this.props.user.token, this.props.account.name, (error, result) => {
-            if (!error)
-            {
-                if (result)
-                {
-                    this.props.dispatch(updateCampaignList(result.campaigns));
-                }
-            }
-            else
-            {
-                this.props.dispatch(sendFailureMessage(GENERIC_ERROR));
-            }
-            this.setState({
-                loading: true
-            });
-        });*/
-    }
-    
-
     handleClick(event)
     {
 

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import { withLanguage } from "./withLanguage";
 
 class NotFound extends Component {
   static propTypes = {
@@ -21,10 +21,4 @@ class NotFound extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    lang: state.lang
-  };
-};
-
-export default connect(mapStateToProps)(NotFound);
+export default withLanguage(NotFound);

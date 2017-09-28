@@ -135,55 +135,11 @@ export const getTwitterAccount = (email, token, id) => {
     return request(Methods.GET, Endpoints.TWITTERACCOUNT_GET, data);
 };
 
-/*export const getTwitterAccountName = (email, token, id) => {
-    const data = { email, token, id };
-
-    return request(Methods.GET, Endpoints.TWITTERACCOUNT_GET_NAME, data);
-};*/
-
 export const getTwitterAccountKeys = (email, token, id, account) => {
     const data = { email, token, id };
 
     return requestIfNeeded(Methods.GET, Endpoints.TWITTERACCOUNT_GET_KEYS, data, Types.ACCOUNT_KEYS, account);
 };
-
-/*export const getTwitterAccountCampaign = (email, token, id) => {
-    const data = { email, token, id };
-
-    return request(Methods.GET, Endpoints.TWITTERACCOUNT_GET_CAMPAIGNS, data);
-};
-
-export const getTwitterAccountCampaign = (email, token, id, callback) => {
-    const data = { email, token, id };
-
-    request(Methods.GET, Endpoints.TWITTERACCOUNT_GET_CAMPAIGNS, data, (error, result) => {
-        callback(error, result);
-    });
-};
-
-export const getTwitterAccountBlacklist = (email, token, id, callback) => {
-    const data = { email, token, id };
-
-    request(Methods.GET, Endpoints.TWITTERACCOUNT_GET_BLACKLIST, data, (error, result) => {
-        callback(error, result);
-    });
-};
-
-export const getTwitterAccountCache = (email, token, id, callback) => {
-    const data = { email, token, id };
-
-    request(Methods.GET, Endpoints.TWITTERACCOUNT_GET_CACHE, data, (error, result) => {
-        callback(error, result);
-    });
-};
-
-export const getTwitterAccountStats = (email, token, id, callback) => {
-    const data = { email, token, id };
-
-    request(Methods.GET, Endpoints.TWITTERACCOUNT_GET_STATS, data, (error, result) => {
-        callback(error, result);
-    });
-};*/
 
 export const addCampaign = (email, token, account_id, name, date_begin, date_end) => {
     const data = { email, token, account_id, name, date_begin, date_end };

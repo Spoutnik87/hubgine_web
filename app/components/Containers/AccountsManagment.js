@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
+import { withLanguage } from "../withLanguage";
 import { fetchAccountList, addAccount, updateAccount, removeAccount } from "../../actions/accounts";
 import TwitterAccountForm from "../Forms/TwitterAccountForm";
 import AccountItem from "../AccountItem";
@@ -181,7 +182,6 @@ class AccountsManagment extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        lang: state.lang,
         accounts: state.accounts
     };
 };
@@ -194,4 +194,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(AccountsManagment);
+export default withLanguage(connect(mapStateToProps, mapDispatchToProps)(AccountsManagment));

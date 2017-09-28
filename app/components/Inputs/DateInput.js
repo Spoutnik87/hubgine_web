@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
 import Datetime from "react-datetime";
 import moment from "moment";
+import { withLanguage } from "../withLanguage";
 require("moment/locale/fr");
 
 class DateInput extends Component {
@@ -46,10 +46,4 @@ class DateInput extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        lang: state.lang
-    };
-};
-
-export default connect(mapStateToProps)(DateInput);
+export default withLanguage(DateInput);

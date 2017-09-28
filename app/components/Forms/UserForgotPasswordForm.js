@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { withLanguage } from "../withLanguage";
 import Recaptcha from "../Recaptcha";
 import Messages from "../Messages";
 import LoadingCog from "../LoadingCog";
@@ -76,8 +76,8 @@ class UserForgotPasswordForm extends Component {
     {
         const { FORGOTPASSWORD_TITLE, FORGOTPASSWORD_EMAIL, FORGOTPASSWORD_SUBMIT } = this.props.lang;
         const buttonSubmit = this.props.loading ? <LoadingCog/> : <button type="submit" className="btn btn-success" onClick={this.handleClick} disabled={this.state.recaptcha === ""}>{FORGOTPASSWORD_SUBMIT}</button>;
-        const title = this.props.title ? <div className="panel-heading"><h3 className="panel-title">{FORGOTPASSWORD_TITLE}</h3></div> : undefined;
-        const messages = this.props.messages ? <Messages messages={this.props.messages}/> : undefined;
+        const title = this.props.title && <div className="panel-heading"><h3 className="panel-title">{FORGOTPASSWORD_TITLE}</h3></div>;
+        const messages = this.props.messages && <Messages messages={this.props.messages}/>;
         return (
             <div>
                 {title}
@@ -107,10 +107,4 @@ class UserForgotPasswordForm extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        lang: state.lang
-    };
-};
-
-export default connect(mapStateToProps)(UserForgotPasswordForm);
+export default withLanguage(UserForgotPasswordForm);

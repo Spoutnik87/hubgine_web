@@ -11,7 +11,6 @@ const Provider = require("react-redux").Provider;
 const mime = require("mime");
 
 const Router = require("react-router-dom");
-const CookiesProvider = require("react-cookie").CookiesProvider;
 const cookiesMiddleware = require("universal-cookie-express");
 const favicon = require("serve-favicon");
 
@@ -67,10 +66,9 @@ app.use((req, res) => {
 
   const html = ReactDOM.renderToString(
     React.createElement(Provider, { store }, 
-      React.createElement(CookiesProvider, { cookies: req.universalCookies }, 
-        React.createElement(Router.StaticRouter, { location: req.url, context },
-          React.createElement(App)
-    ))));
+      React.createElement(Router.StaticRouter, { location: req.url, context },
+        React.createElement(App)
+    )));
 
     if (context.url)
     {

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import { withLanguage } from "../withLanguage";
 import ListInput from "./ListInput";
 import v4 from "uuid";
 
@@ -137,10 +137,4 @@ class ArrayInput extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        lang: state.lang
-    };
-};
-
-export default connect(mapStateToProps)(ArrayInput);
+export default withLanguage(ArrayInput);

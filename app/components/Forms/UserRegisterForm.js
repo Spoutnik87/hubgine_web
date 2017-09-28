@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { withLanguage } from "../withLanguage";
 import Recaptcha from "../Recaptcha";
 import LoadingCog from "../LoadingCog";
 import Messages from "../Messages";
@@ -101,8 +101,8 @@ class UserRegisterForm extends Component {
     {
         const { REGISTER_SUBMIT, REGISTER_TITLE, REGISTER_FIRSTNAME, REGISTER_LASTNAME, REGISTER_EMAIL, REGISTER_PASSWORD, REGISTER_CONFIRMPASSWORD, REGISTER_USETERMS } = this.props.lang;
         const buttonSubmit = this.props.loading ? <LoadingCog/> : <button type="submit" className="btn btn-success" onClick={this.handleClick} disabled={this.state.recaptcha === ""}>{REGISTER_SUBMIT}</button>;
-        const title = this.props.title ? <div className="panel-heading"><h3 className="panel-title">{REGISTER_TITLE}</h3></div> : undefined;
-        const messages = this.props.messages ? <Messages messages={this.props.messages}/> : undefined;
+        const title = this.props.title && <div className="panel-heading"><h3 className="panel-title">{REGISTER_TITLE}</h3></div>;
+        const messages = this.props.messages && <Messages messages={this.props.messages}/>;
         return (
             <div>
                 {title}
@@ -162,10 +162,4 @@ class UserRegisterForm extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        lang: state.lang
-    };
-};
-
-export default connect(mapStateToProps)(UserRegisterForm);
+export default withLanguage(UserRegisterForm);

@@ -68,8 +68,6 @@ export default function getLanguage()
         FORGOTPASSWORD_TITLE: "Réinitialiser le mot de passe",
         FORGOTPASSWORD_SUBMIT: "Réinitialiser le mot de passe",
         FORGOTPASSWORD_EMAIL: "Email",
-        //---ACCOUNTTILE---
-        ACCOUNTTILE_NAME: "Nom : ",
         //---TWITTERACCOUNTFORM---
         TWITTERACCOUNTFORM_NAME: "Nom",
         TWITTERACCOUNTFORM_CONSUMERKEY: "Consumer key",

@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import Messages from "../Messages";
+import { withLanguage } from "../withLanguage";
 import ArrayInput from "../Inputs/ArrayInput";
 import ListInput from "../Inputs/ListInput";
 import NumberInput from "../Inputs/NumberInput";
 import Switch from "../Inputs/Switch";
+import Messages from "../Messages";
 
 class TwitterRuleForm extends Component {
     static propTypes = {
@@ -31,14 +31,14 @@ class TwitterRuleForm extends Component {
         title: PropTypes.bool,
         loading: PropTypes.bool,
         edit: PropTypes.bool,
-        messages: PropTypes.object,
         rule: PropTypes.shape({
             action: PropTypes.string.isRequired,
             condition: PropTypes.string.isRequired,
             keywords: PropTypes.array.isRequired,
             languages: PropTypes.array.isRequired,
             delay: PropTypes.string.isRequired
-        })
+        }),
+        messages: PropTypes.object
     };
 
     static defaultProps = {
@@ -51,8 +51,8 @@ class TwitterRuleForm extends Component {
         title: true,
         loading: false,
         edit: false,
-        messages: undefined,
-        rule: undefined
+        rule: undefined,
+        messages: undefined
     };
 
     constructor(props)
@@ -138,10 +138,10 @@ class TwitterRuleForm extends Component {
             TWITTERRULEFORM_DELAY
         } = this.props.lang;
         const buttonSubmit = this.props.loading ? <LoadingCog/> : this.props.edit ? <button id="buttonSubmit" className="btn btn-primary" onClick={this.handleClick}>{TWITTERRULEFORM_EDIT_BUTTON}</button> : <button id="buttonSubmit" className="btn btn-success" onClick={this.handleClick}>{TWITTERRULEFORM_CREATE_BUTTON}</button>;
-        const buttonDelete = this.props.delete && !this.props.loading ? <button id="buttonDeleteMode" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERRULEFORM_DELETE_BUTTON}</button> : undefined;
-        const buttonCancel = this.props.cancel && !this.props.loading ? <button id="buttonCancel" className="btn btn-default" onClick={this.handleClick}>{TWITTERRULEFORM_CANCEL_BUTTON}</button> : undefined;
-        const title = this.props.title ? <div className="panel-heading"><h3 className="panel-title">{this.props.edit ? TWITTERRULEFORM_EDIT_TITLE : TWITTERRULEFORM_CREATE_TITLE}</h3></div> : undefined;
-        const messages = this.props.messages ? <Messages messages={this.props.messages}/> : undefined;
+        const buttonDelete = this.props.delete && !this.props.loading && <button id="buttonDeleteMode" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERRULEFORM_DELETE_BUTTON}</button>;
+        const buttonCancel = this.props.cancel && !this.props.loading && <button id="buttonCancel" className="btn btn-default" onClick={this.handleClick}>{TWITTERRULEFORM_CANCEL_BUTTON}</button>;
+        const title = this.props.title && <div className="panel-heading"><h3 className="panel-title">{this.props.edit ? TWITTERRULEFORM_EDIT_TITLE : TWITTERRULEFORM_CREATE_TITLE}</h3></div>;
+        const messages = this.props.messages && <Messages messages={this.props.messages}/>;
         const deleteMode = this.state.deleteMode ? this.props.loading ? <LoadingCog /> : <div className="col-sm-12"><button id="buttonDeleteYes" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERRULEFORM_DELETE_BUTTON}</button>
             <button id="buttonDeleteNo" className="btn btn-default" onClick={this.handleClick}>{TWITTERRULEFORM_CANCEL_BUTTON}</button></div> 
             : <div className="col-sm-12">{buttonSubmit}<div style={{ float: "right" }}>{buttonDelete}{buttonCancel}</div></div>;
@@ -190,10 +190,4 @@ class TwitterRuleForm extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        lang: state.lang
-    };
-};
-
-export default connect(mapStateToProps)(TwitterRuleForm);
+export default withLanguage(TwitterRuleForm);
