@@ -1,9 +1,7 @@
 import React, { Component } from "react";
-import { isValidEmail } from "validator";
-import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { sendFailureMessages, sendSuccessMessages, clearMessages } from "../actions/messages";
 import UserForgotPasswordForm from "./Forms/UserForgotPasswordForm";
+import { withMessages } from "./withMessages";
 
 class ForgotPassword extends Component {
     static propTypes = {
@@ -22,42 +20,9 @@ class ForgotPassword extends Component {
     handleSubmit(event)
     {
         const messages = [];
-        const { email } = event.result;
-        if (!isValidEmail(email))
-        {
-            messages.push("Email is not valid.");
-        }
-        if (messages.length === 0)
-        {
-            this.setState({
-                loading: true
-            });
-            resetPassword(email, (error, result) =>
-            {
-                if (!error)
-                {
-                    messages.push("An email was send.");
-                    this.props.dispatch(sendSuccessMessages(messages));                    
-                }
-                else
-                {
-                    messages.push("An error append during the subscription.");
-                    this.props.dispatch(sendFailureMessages(messages));
-                }
-                this.setState({
-                    loading: false
-                });
-            });
-        }
-        else
-        {
-            this.props.dispatch(sendFailureMessages(messages));
-        }
-    }
-
-    componentWillUnmount()
-    {
-        this.props.dispatch(clearMessages());
+        const {
+            email
+        } = event.result;
     }
     
     render()
@@ -72,10 +37,4 @@ class ForgotPassword extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        messages: state.messages
-    };
-};
-
-export default connect(mapStateToProps)(ForgotPassword);
+export default withMessages(ForgotPassword);

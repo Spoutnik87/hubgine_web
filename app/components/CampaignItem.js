@@ -1,10 +1,12 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import { withLanguage } from "./withLanguage";
 
-class CampaignTile extends Component {
+class CampaignItem extends Component {
     static propTypes = {
         campaign: PropTypes.shape({
+            uid: PropTypes.string.isRequired,
+            accountId: PropTypes.string.isRequired,
             name: PropTypes.string.isRequired,
             dateBegin: PropTypes.string.isRequired,
             dateEnd: PropTypes.string.isRequired
@@ -30,17 +32,11 @@ class CampaignTile extends Component {
     render()
     {
         return (
-            <div id={this.props.campaign.name} className="campaigntile" onClick={this.handleClick}>
+            <div id={this.props.campaign.name} className="campaignitem col-md-4" onClick={this.handleClick}>
                 {this.props.campaign.name}
             </div>
         );
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        lang: state.lang
-    };
-};
-
-export default connect(mapStateToProps)(CampaignTile);
+export default withLanguage(CampaignItem);

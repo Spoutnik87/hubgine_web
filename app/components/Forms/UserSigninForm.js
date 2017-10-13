@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 import { withLanguage } from "../withLanguage";
 import Messages from "../Messages";
 import LoadingCog from "../LoadingCog";
+import Form from "../Form";
+import SuccessButton from "../buttons/SuccessButton";
 
 class UserSigninForm extends Component {
     static propTypes = {
@@ -58,35 +60,36 @@ class UserSigninForm extends Component {
 
     render()
     {
-        const { SIGNIN_TITLE, SIGNIN_EMAIL, SIGNIN_PASSWORD, SIGNIN_SUBMIT } = this.props.lang;
-        const buttonSubmit = this.props.loading ? <LoadingCog/> : <button type="submit" className="btn btn-success" onClick={this.handleClick}>{SIGNIN_SUBMIT}</button>;
-        const title = this.props.title && <div className="panel-heading"><h3 className="panel-title">{SIGNIN_TITLE}</h3></div>;
+        const {
+            SIGNIN_TITLE,
+            SIGNIN_EMAIL,
+            SIGNIN_PASSWORD,
+            SIGNIN_SUBMIT
+        } = this.props.lang;
+        const buttonSubmit = this.props.loading ? <LoadingCog/> : <SuccessButton onClick={this.handleClick}>{SIGNIN_SUBMIT}</SuccessButton>;
         const messages = this.props.messages && <Messages messages={this.props.messages}/>;
         return (
-            <div>
-                {title}
-                <div className="panel-body form-horizontal">
-                    {messages}
-                    <div className="form-group">
-                        <label htmlFor="email" className="col-sm-2">{SIGNIN_EMAIL}</label>
-                        <div className="col-sm-8">
-                            <input type="text" name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
-                        </div>
+            <Form title={this.props.title ? SIGNIN_TITLE : null}>
+                {messages}
+                <div className="form-group">
+                    <label htmlFor="email" className="col-sm-2">{SIGNIN_EMAIL}</label>
+                    <div className="col-sm-8">
+                        <input type="text" name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="password" className="col-sm-2">{SIGNIN_PASSWORD}</label>
-                        <div className="col-sm-8">
-                            <input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange} autoFocus/>
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <div className="col-sm-offset-2 col-sm-8">
-                            {buttonSubmit}
-                        </div>
-                    </div>
-                    {this.props.children}
                 </div>
-            </div>
+                <div className="form-group">
+                    <label htmlFor="password" className="col-sm-2">{SIGNIN_PASSWORD}</label>
+                    <div className="col-sm-8">
+                        <input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange} autoFocus/>
+                    </div>
+                </div>
+                <div className="form-group">
+                    <div className="col-sm-offset-2 col-sm-8">
+                        {buttonSubmit}
+                    </div>
+                </div>
+                {this.props.children}
+            </Form>
         );
     }
 }

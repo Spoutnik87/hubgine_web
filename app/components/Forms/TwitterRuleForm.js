@@ -6,6 +6,10 @@ import ListInput from "../Inputs/ListInput";
 import NumberInput from "../Inputs/NumberInput";
 import Switch from "../Inputs/Switch";
 import Messages from "../Messages";
+import Form from "../Form";
+import SuccessButton from "../buttons/SuccessButton";
+import DangerButton from "../buttons/DangerButton";
+import DefaultButton from "../buttons/DefaultButton";
 
 class TwitterRuleForm extends Component {
     static propTypes = {
@@ -137,55 +141,51 @@ class TwitterRuleForm extends Component {
             TWITTERRULEFORM_LANGUAGES,
             TWITTERRULEFORM_DELAY
         } = this.props.lang;
-        const buttonSubmit = this.props.loading ? <LoadingCog/> : this.props.edit ? <button id="buttonSubmit" className="btn btn-primary" onClick={this.handleClick}>{TWITTERRULEFORM_EDIT_BUTTON}</button> : <button id="buttonSubmit" className="btn btn-success" onClick={this.handleClick}>{TWITTERRULEFORM_CREATE_BUTTON}</button>;
-        const buttonDelete = this.props.delete && !this.props.loading && <button id="buttonDeleteMode" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERRULEFORM_DELETE_BUTTON}</button>;
-        const buttonCancel = this.props.cancel && !this.props.loading && <button id="buttonCancel" className="btn btn-default" onClick={this.handleClick}>{TWITTERRULEFORM_CANCEL_BUTTON}</button>;
-        const title = this.props.title && <div className="panel-heading"><h3 className="panel-title">{this.props.edit ? TWITTERRULEFORM_EDIT_TITLE : TWITTERRULEFORM_CREATE_TITLE}</h3></div>;
+        const buttonSubmit = this.props.loading ? <LoadingCog/> : <SuccessButton id="buttonSubmit" onClick={this.handleClick}>{this.props.edit ? TWITTERRULEFORM_EDIT_BUTTON : TWITTERRULEFORM_CREATE_BUTTON}</SuccessButton>;
+        const buttonDelete = this.props.delete && !this.props.loading && <DangerButton id="buttonDeleteMode" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERRULEFORM_DELETE_BUTTON}</DangerButton>;
+        const buttonCancel = this.props.cancel && !this.props.loading && <DefaultButton id="buttonCancel" onClick={this.handleClick}>{TWITTERRULEFORM_CANCEL_BUTTON}</DefaultButton>;
         const messages = this.props.messages && <Messages messages={this.props.messages}/>;
-        const deleteMode = this.state.deleteMode ? this.props.loading ? <LoadingCog /> : <div className="col-sm-12"><button id="buttonDeleteYes" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERRULEFORM_DELETE_BUTTON}</button>
-            <button id="buttonDeleteNo" className="btn btn-default" onClick={this.handleClick}>{TWITTERRULEFORM_CANCEL_BUTTON}</button></div> 
+        const deleteMode = this.state.deleteMode ? this.props.loading ? <LoadingCog /> : <div className="col-sm-12"><DangerButton id="buttonDeleteYes" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERRULEFORM_DELETE_BUTTON}</DangerButton>
+            <DefaultButton id="buttonDeleteNo" onClick={this.handleClick}>{TWITTERRULEFORM_CANCEL_BUTTON}</DefaultButton></div> 
             : <div className="col-sm-12">{buttonSubmit}<div style={{ float: "right" }}>{buttonDelete}{buttonCancel}</div></div>;
         return (
-            <div>
-                {title}
-                <div className="panel-body form-horizontal">
-                    {messages}
-                    <div className="form-group">
-                        <label className="col-sm-2">{TWITTERRULEFORM_ACTION}</label>
-                        <div className="col-sm-10">
-                            <ListInput name="action" options={["Tweet", "Retweet", "Like"]} onChange={this.handleChange} defaultOption={this.state.action}/>
-                        </div>
+            <Form title={this.props.title ? this.props.edit ? TWITTERRULEFORM_EDIT_TITLE : TWITTERRULEFORM_CREATE_TITLE : null}>
+                {messages}
+                <div className="form-group">
+                    <label className="col-sm-2">{TWITTERRULEFORM_ACTION}</label>
+                    <div className="col-sm-10">
+                        <ListInput name="action" options={["Tweet", "Retweet", "Like"]} onChange={this.handleChange} defaultOption={this.state.action}/>
                     </div>
-                    <div className="form-group">
-                        <label className="col-sm-2">{TWITTERRULEFORM_CONDITION}</label>
-                        <div className="col-sm-10">
-                            <Switch name="condition" options={["AND", "OR"]} onChange={this.handleChange} defaultOption={this.state.condition} />
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label className="col-sm-2">{TWITTERRULEFORM_KEYWORDS}</label>
-                        <div className="col-sm-10">
-                            <ArrayInput name="keywords" onChange={this.handleChange} values={this.state.keywords} unique />
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label className="col-sm-2">{TWITTERRULEFORM_LANGUAGES}</label>
-                        <div className="col-sm-10">
-                            <ArrayInput name="languages" options={["en", "fr"]} onChange={this.handleChange} values={this.state.languages} unique />
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label className="col-sm-2">{TWITTERRULEFORM_DELAY}</label>
-                        <div className="col-sm-10">
-                            <NumberInput name="delay" onChange={this.handleChange} value={parseInt(this.state.delay)} />
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        {deleteMode}
-                    </div>
-                    {this.props.children}
                 </div>
-            </div>
+                <div className="form-group">
+                    <label className="col-sm-2">{TWITTERRULEFORM_CONDITION}</label>
+                    <div className="col-sm-10">
+                        <Switch name="condition" options={["AND", "OR"]} onChange={this.handleChange} defaultOption={this.state.condition} />
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label className="col-sm-2">{TWITTERRULEFORM_KEYWORDS}</label>
+                    <div className="col-sm-10">
+                        <ArrayInput name="keywords" onChange={this.handleChange} values={this.state.keywords} unique />
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label className="col-sm-2">{TWITTERRULEFORM_LANGUAGES}</label>
+                    <div className="col-sm-10">
+                        <ArrayInput name="languages" options={["en", "fr"]} onChange={this.handleChange} values={this.state.languages} unique />
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label className="col-sm-2">{TWITTERRULEFORM_DELAY}</label>
+                    <div className="col-sm-10">
+                        <NumberInput name="delay" onChange={this.handleChange} value={parseInt(this.state.delay)} />
+                    </div>
+                </div>
+                <div className="form-group">
+                    {deleteMode}
+                </div>
+                {this.props.children}
+            </Form>
         );
     }
 }

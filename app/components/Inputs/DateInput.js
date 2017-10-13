@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import Datetime from "react-datetime";
 import moment from "moment";
 import { withLanguage } from "../withLanguage";
-require("moment/locale/fr");
 
 class DateInput extends Component {
     static propTypes = {
@@ -14,7 +13,8 @@ class DateInput extends Component {
 
     static defaultProps = {
         name: "dateinput",
-        onChange: () => {}
+        onChange: () => {},
+        value: null
     };
 
     constructor(props)

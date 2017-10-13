@@ -4,8 +4,22 @@ import PropTypes from "prop-types";
 
 class MemberRoute extends Component {
     static propTypes = {
+        path: PropTypes.string.isRequired,
+        component: PropTypes.func.isRequired,
         isMember: PropTypes.bool.isRequired
     };
+
+    shouldComponentUpdate(nextProps, nextState)
+    {
+        if (nextProps.isMember !== this.props.isMember || nextProps.path !== this.props.path)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
     render()
     {

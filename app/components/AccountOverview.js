@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import CampaignList from "./CampaignList";
-import CampaignTile from "./CampaignTile";
 import LoadingCog from "./LoadingCog";
 import { getCampaignList } from "../net/Requests";
 import { updateCampaignList } from "../actions/campaigns";
@@ -68,7 +67,7 @@ class AccountOverview extends Component {
         const campaignList = !this.state.loading ? (
             this.props.campaigns.data.length > 0 ? (
                 this.props.campaigns.data.map(campaign => (
-                    <CampaignTile key={campaign.uid} campaign={campaign} />
+                    <CampaignItem key={campaign.uid} campaign={campaign} />
                 ))
             ) : (
                 <div>You don't have campaign yet. Click on manage button to create one.</div>

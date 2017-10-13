@@ -6,6 +6,7 @@ import { withLanguage } from "../withLanguage";
 import { fetchAccountList, addAccount, updateAccount, removeAccount } from "../../actions/accounts";
 import TwitterAccountForm from "../Forms/TwitterAccountForm";
 import AccountItem from "../AccountItem";
+import SuccessButton from "../buttons/SuccessButton";
 import LoadingCog from "../LoadingCog";
 
 class AccountsManagment extends Component {
@@ -38,6 +39,18 @@ class AccountsManagment extends Component {
         this.handleAccountEditionSubmit = this.handleAccountEditionSubmit.bind(this);
         this.handleAccountEditionDelete = this.handleAccountEditionDelete.bind(this);
         this.handleAccountEditionCancel = this.handleAccountEditionCancel.bind(this);
+    }
+
+    componentDidMount()
+    {
+        this.setState({
+            loading: true
+        });
+        this.props.actions.fetchAccountList().then(() => {
+            this.setState({
+                loading: false
+            });
+        });
     }
 
     handleClick(event)
@@ -130,18 +143,6 @@ class AccountsManagment extends Component {
         });
     }
 
-    componentDidMount()
-    {
-        this.setState({
-            loading: true
-        });
-        this.props.actions.fetchAccountList().then(() => {
-            this.setState({
-                loading: false
-            });
-        });
-    }
-
     render()
     {
         const {
@@ -162,7 +163,7 @@ class AccountsManagment extends Component {
                     <ul className="list-group">
                         {
                             this.props.accounts.data.map(account => (
-                                <li key={account.uid} className="list-group-item">
+                                <li key={account.uid} className="list-group-item" style={{ border: "none" }}>
                                     {
                                         this.state.selectedAccount === account.name ? (
                                             <TwitterAccountForm onSubmit={this.handleAccountEditionSubmit} cancel onCancel={this.handleAccountEditionCancel} edit delete onDelete={this.handleAccountEditionDelete} account={account} loading={this.state.loadingAccountForm} />
@@ -174,7 +175,7 @@ class AccountsManagment extends Component {
                             ))
                         }
                     </ul>
-                    <button id="buttonSubmit" className="btn btn-success" onClick={this.handleClick}>Add account</button>
+                    <SuccessButton id="buttonSubmit" onClick={this.handleClick}>Add account</SuccessButton>
                 </div>
             ));
     }

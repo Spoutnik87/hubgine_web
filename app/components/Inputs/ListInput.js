@@ -8,6 +8,7 @@ class ListInput extends Component {
         name: PropTypes.string,
         options: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
         defaultOption: PropTypes.string,
+        disabled: PropTypes.bool,
         loading: PropTypes.bool,
         onClick: PropTypes.func,
         onChange: PropTypes.func
@@ -15,6 +16,8 @@ class ListInput extends Component {
 
     static defaultProps = {
         name: "listinput",
+        defaultOption: "Select a value",
+        disabled: false,
         loading: false,
         onClick: () => {},
         onChange: () => {}
@@ -53,7 +56,7 @@ class ListInput extends Component {
     render()
     {
         return this.props.loading ? <LoadingCog /> : (
-            <select name={this.props.name} className="form-control" value={this.state.value} onClick={this.handleClick} onChange={this.handleChange}>
+            <select name={this.props.name} className="form-control listinput" value={this.state.value} onClick={this.handleClick} onChange={this.handleChange} disabled={this.props.disabled}>
                 {
                     this.state.options.map(option => (
                         <option key={option.key} value={option.value}>{option.value}</option>

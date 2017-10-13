@@ -1,10 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { sendFailureMessage } from "../actions/messages";
-import { updateCampaignList } from "../actions/campaigns";
-import { getCampaignList } from "../net/Requests";
-import CampaignTile from "./CampaignTile";
+import { withLanguage } from "./withLanguage";
+import CampaignItem from "./CampaignItem";
 import LoadingCog from "./LoadingCog";
 
 class CampaignList extends Component {
@@ -12,21 +9,24 @@ class CampaignList extends Component {
         account: PropTypes.shape({
             name: PropTypes.string.isRequired
         }).isRequired,
-        campaigns: PropTypes.shape({
-            data: PropTypes.arrayOf(PropTypes.shape({
-                accountId: PropTypes.number.isRequired,
-                name: PropTypes.string.isRequired,
-                dateBegin: PropTypes.number.isRequired,
-                dateEnd: PropTypes.number.isRequired
-            })).isRequired
-        }).isRequired
+        campaigns: PropTypes.arrayOf(PropTypes.shape({
+            uid: PropTypes.string.isRequired,
+            accountId: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired,
+            dateBegin: PropTypes.string.isRequired,
+            dateEnd: PropTypes.string.isRequired
+        })).isRequired,
+        onClick: PropTypes.func
+    };
+
+    static defaultProps = {
+        onClick: () => {}
     };
 
     constructor(props)
     {
         super(props);
         this.state = {
-            loading: false,
             selectedCampaign: ""
         };
         this.handleClick = this.handleClick.bind(this);
@@ -34,31 +34,28 @@ class CampaignList extends Component {
 
     handleClick(event)
     {
-
+        this.props.onClick({
+            account: this.props.account.name,
+            campaign: event.target.id
+        });
     }
 
     render()
     {
-        return this.state.loading ? (
-            <LoadingCog />
-        ) : (
-            <div>
+        return (
+            this.props.campaigns.length > 0 ? (
+                <div>
                 {
-                    this.props.campaigns.data.map(campaign => (
-                        <CampaignTile campaign={campaign} onClick={this.handleClick} />
+                    this.props.campaigns.map(campaign => (
+                        <CampaignItem key={campaign.uid} id={campaign.name} onClick={this.handleClick} campaign={campaign} />
                     ))
                 }
-            </div>
+                </div>
+            ) : (
+                <div>There is no campaign yet.</div>
+            )
         );
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        user: state.user,
-        campaigns: state.campaigns,
-        lang: state.lang
-    };
-};
-
-export default connect(mapStateToProps)(CampaignList);
+export default withLanguage(CampaignList);

@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import CampaignTile from "./CampaignTile";
 
 class CampaignContainer extends Component {
     static propTypes = {
@@ -36,9 +35,9 @@ class CampaignContainer extends Component {
         return (
             <div>
                 {
-                    this.props.campaigns.map(campaign => (
+                    /*this.props.campaigns.map(campaign => (
                         <CampaignTile campaign={campaign} onClick={this.handleClick} />
-                    ))
+                    ))*/
                 }
             </div>
         );

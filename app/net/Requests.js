@@ -171,3 +171,9 @@ export const getCampaignList = (email, token, account_id, campaigns) => {
 
     return requestIfNeeded(Methods.GET, Endpoints.CAMPAIGN_GET_LIST, data, Types.CAMPAIGN_LIST, campaigns);
 };
+
+export const getCampaign = (email, token, account_id, campaign_id, campaign) => {
+    const data = { email, token, account_id, campaign_id };
+
+    return requestIfNeeded(Methods.GET, Endpoints.CAMPAIGN_GET, data, Types.CAMPAIGN_FULL, campaign);
+};

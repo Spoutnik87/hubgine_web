@@ -3,6 +3,10 @@ import PropTypes from "prop-types";
 import { withLanguage } from "../withLanguage";
 import Messages from "../Messages";
 import LoadingCog from "../LoadingCog";
+import Form from "../Form";
+import SuccessButton from "../buttons/SuccessButton";
+import DangerButton from "../buttons/DangerButton";
+import DefaultButton from "../buttons/DefaultButton";
 
 class TwitterAccountForm extends Component {
     static propTypes = {
@@ -153,55 +157,51 @@ class TwitterAccountForm extends Component {
             TWITTERACCOUNTFORM_ACCESSTOKENKEY,
             TWITTERACCOUNTFORM_ACCESSTOKENSECRET
         } = this.props.lang;
-        const buttonSubmit = this.props.loading ? <LoadingCog/> : this.props.edit ? <button id="buttonSubmit" className="btn btn-primary" onClick={this.handleClick}>{TWITTERACCOUNTFORM_EDIT_BUTTON}</button> : <button id="buttonSubmit" className="btn btn-success" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CREATE_BUTTON}</button>;
-        const buttonDelete = this.props.delete && !this.props.loading && <button id="buttonDeleteMode" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERACCOUNTFORM_DELETE_BUTTON}</button>;
-        const buttonCancel = this.props.cancel && !this.props.loading && <button id="buttonCancel" className="btn btn-default" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</button>;
-        const title = this.props.title && <div className="panel-heading"><h3 className="panel-title">{this.props.edit ? TWITTERACCOUNTFORM_EDIT_TITLE : TWITTERACCOUNTFORM_CREATE_TITLE}</h3></div>;
+        const buttonSubmit = this.props.loading ? <LoadingCog/> : <SuccessButton id="buttonSubmit" onClick={this.handleClick}>{this.props.edit ? TWITTERACCOUNTFORM_EDIT_BUTTON : TWITTERACCOUNTFORM_CREATE_BUTTON}</SuccessButton>;
+        const buttonDelete = this.props.delete && !this.props.loading && <DangerButton id="buttonDeleteMode" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERACCOUNTFORM_DELETE_BUTTON}</DangerButton>;
+        const buttonCancel = this.props.cancel && !this.props.loading && <DefaultButton id="buttonCancel" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</DefaultButton>;
         const messages = this.props.messages && <Messages messages={this.props.messages}/>;
-        const deleteMode = this.state.deleteMode ? this.props.loading ? <LoadingCog /> : <div className="col-sm-10"><button id="buttonDeleteYes" className="btn btn-danger" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERACCOUNTFORM_DELETE_BUTTON}</button>
-            <button id="buttonDeleteNo" className="btn btn-default" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</button></div>
+        const deleteMode = this.state.deleteMode ? this.props.loading ? <LoadingCog /> : <div className="col-sm-10"><DangerButton id="buttonDeleteYes" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERACCOUNTFORM_DELETE_BUTTON}</DangerButton>
+            <DefaultButton id="buttonDeleteNo" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</DefaultButton></div>
             : <div className="col-sm-10">{buttonSubmit}<div style={{ float: "right" }}>{buttonDelete}{buttonCancel}</div></div>;
         return (
-            <div>
-                {title}
-                <div className="panel-body form-horizontal">
-                    {messages}
-                    <div className="form-group">
-                        <label className="col-sm-2">{TWITTERACCOUNTFORM_NAME}</label>
-                        <div className="col-sm-8">
-                            <input type="text" className="form-control" name="name" value={this.state.name} onChange={this.handleChange} autoFocus/>
-                        </div>
+            <Form title={this.props.title ? this.props.edit ? TWITTERACCOUNTFORM_EDIT_TITLE : TWITTERACCOUNTFORM_CREATE_TITLE : null}>
+                {messages}
+                <div className="form-group">
+                    <label className="col-sm-2">{TWITTERACCOUNTFORM_NAME}</label>
+                    <div className="col-sm-8">
+                        <input type="text" className="form-control" name="name" value={this.state.name} onChange={this.handleChange} autoFocus/>
                     </div>
-                    <div className="form-group">
-                        <label className="col-sm-2">{TWITTERACCOUNTFORM_CONSUMERKEY}</label>
-                        <div className="col-sm-8">
-                            <input type="text" className="form-control" name="consumerKey" value={this.state.consumerKey} onChange={this.handleChange} autoFocus/>
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label className="col-sm-2">{TWITTERACCOUNTFORM_CONSUMERSECRET}</label>
-                        <div className="col-sm-8">
-                            <input type="text" className="form-control" name="consumerSecret" value={this.state.consumerSecret} onChange={this.handleChange} autoFocus/>
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label className="col-sm-2">{TWITTERACCOUNTFORM_ACCESSTOKENKEY}</label>
-                        <div className="col-sm-8">
-                            <input type="text" className="form-control" name="accessTokenKey" value={this.state.accessTokenKey} onChange={this.handleChange} autoFocus/>
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label className="col-sm-2">{TWITTERACCOUNTFORM_ACCESSTOKENSECRET}</label>
-                        <div className="col-sm-8">
-                            <input type="text" className="form-control" name="accessTokenSecret" value={this.state.accessTokenSecret} onChange={this.handleChange} autoFocus/>
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        {deleteMode}
-                    </div>
-                    {this.props.children}
                 </div>
-            </div>
+                <div className="form-group">
+                    <label className="col-sm-2">{TWITTERACCOUNTFORM_CONSUMERKEY}</label>
+                    <div className="col-sm-8">
+                        <input type="text" className="form-control" name="consumerKey" value={this.state.consumerKey} onChange={this.handleChange} autoFocus/>
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label className="col-sm-2">{TWITTERACCOUNTFORM_CONSUMERSECRET}</label>
+                    <div className="col-sm-8">
+                        <input type="text" className="form-control" name="consumerSecret" value={this.state.consumerSecret} onChange={this.handleChange} autoFocus/>
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label className="col-sm-2">{TWITTERACCOUNTFORM_ACCESSTOKENKEY}</label>
+                    <div className="col-sm-8">
+                        <input type="text" className="form-control" name="accessTokenKey" value={this.state.accessTokenKey} onChange={this.handleChange} autoFocus/>
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label className="col-sm-2">{TWITTERACCOUNTFORM_ACCESSTOKENSECRET}</label>
+                    <div className="col-sm-8">
+                        <input type="text" className="form-control" name="accessTokenSecret" value={this.state.accessTokenSecret} onChange={this.handleChange} autoFocus/>
+                    </div>
+                </div>
+                <div className="form-group">
+                    {deleteMode}
+                </div>
+                {this.props.children}
+            </Form>
         );
     }
 }

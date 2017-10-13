@@ -2,6 +2,11 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 class ToolTip extends Component {
+    shouldComponentUpdate(nextProps, nextState)
+    {
+        return false;
+    }
+
     render()
     {
         return (

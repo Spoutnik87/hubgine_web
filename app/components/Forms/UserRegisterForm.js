@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { withLanguage } from "../withLanguage";
+import Form from "../Form";
+import SuccessButton from "../buttons/SuccessButton";
 import Recaptcha from "../Recaptcha";
 import LoadingCog from "../LoadingCog";
 import Messages from "../Messages";
@@ -99,65 +101,70 @@ class UserRegisterForm extends Component {
 
     render()
     {
-        const { REGISTER_SUBMIT, REGISTER_TITLE, REGISTER_FIRSTNAME, REGISTER_LASTNAME, REGISTER_EMAIL, REGISTER_PASSWORD, REGISTER_CONFIRMPASSWORD, REGISTER_USETERMS } = this.props.lang;
-        const buttonSubmit = this.props.loading ? <LoadingCog/> : <button type="submit" className="btn btn-success" onClick={this.handleClick} disabled={this.state.recaptcha === ""}>{REGISTER_SUBMIT}</button>;
-        const title = this.props.title && <div className="panel-heading"><h3 className="panel-title">{REGISTER_TITLE}</h3></div>;
+        const {
+            REGISTER_SUBMIT,
+            REGISTER_TITLE,
+            REGISTER_FIRSTNAME,
+            REGISTER_LASTNAME,
+            REGISTER_EMAIL,
+            REGISTER_PASSWORD,
+            REGISTER_CONFIRMPASSWORD,
+            REGISTER_USETERMS
+        } = this.props.lang;
+        const submitButton = this.props.loading ? <LoadingCog/> : <SuccessButton onClick={this.handleClick} disabled={this.state.recaptcha === ""}>{REGISTER_SUBMIT}</SuccessButton>
         const messages = this.props.messages && <Messages messages={this.props.messages}/>;
         return (
-            <div>
-                {title}
-                <div className="panel-body form-horizontal">
-                    {messages}
-                    <div className="form-group">
-                        <label htmlFor="firstname" className="col-sm-2">{REGISTER_FIRSTNAME}</label>
-                        <div className="col-sm-8">
-                            <input type="text" name="firstname" id="firstname" className="form-control" value={this.state.firstname} onChange={this.handleChange} autoFocus/>
-                        </div>
+            <Form title={this.props.title ? REGISTER_TITLE : null}>
+                {messages}
+                <div className="form-group">
+                    <label htmlFor="firstname" className="col-sm-2">{REGISTER_FIRSTNAME}</label>
+                    <div className="col-sm-8">
+                        <input type="text" name="firstname" id="firstname" className="form-control" value={this.state.firstname} onChange={this.handleChange} autoFocus/>
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="lastname" className="col-sm-2">{REGISTER_LASTNAME}</label>
-                        <div className="col-sm-8">
-                            <input type="text" name="lastname" id="lastname" className="form-control" value={this.state.lastname} onChange={this.handleChange} autoFocus/>
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="email" className="col-sm-2">{REGISTER_EMAIL}</label>
-                        <div className="col-sm-8">
-                            <input type="text" name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="password" className="col-sm-2">{REGISTER_PASSWORD}</label>
-                        <div className="col-sm-8">
-                            <input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange} autoFocus/>
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="cpassword" className="col-sm-2">{REGISTER_CONFIRMPASSWORD}</label>
-                        <div className="col-sm-8">
-                            <input type="password" name="cpassword" id="cpassword" className="form-control" value={this.state.cpassword} onChange={this.handleChange} autoFocus/>
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="useterms" className="col-sm-2">{REGISTER_USETERMS}</label>
-                        <div className="col-sm-8">
-                            <Checkbox name="useterms" onChange={this.handleChange} />
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="recaptcha" className="col-sm-2"></label>
-                        <div className="col-sm-8">
-                            <Recaptcha verifyCallback={this.handleRecaptchaVerify} expiredCallback={this.handleRecaptchaExpired} />
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <div className="col-sm-offset-2 col-sm-8">
-                            {buttonSubmit}
-                        </div>
-                    </div>
-                    {this.props.children}
                 </div>
-            </div>
+                <div className="form-group">
+                    <label htmlFor="lastname" className="col-sm-2">{REGISTER_LASTNAME}</label>
+                    <div className="col-sm-8">
+                        <input type="text" name="lastname" id="lastname" className="form-control" value={this.state.lastname} onChange={this.handleChange} autoFocus/>
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="email" className="col-sm-2">{REGISTER_EMAIL}</label>
+                    <div className="col-sm-8">
+                        <input type="text" name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="password" className="col-sm-2">{REGISTER_PASSWORD}</label>
+                    <div className="col-sm-8">
+                        <input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange} autoFocus/>
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="cpassword" className="col-sm-2">{REGISTER_CONFIRMPASSWORD}</label>
+                    <div className="col-sm-8">
+                        <input type="password" name="cpassword" id="cpassword" className="form-control" value={this.state.cpassword} onChange={this.handleChange} autoFocus/>
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="useterms" className="col-sm-2">{REGISTER_USETERMS}</label>
+                    <div className="col-sm-8">
+                        <Checkbox name="useterms" onChange={this.handleChange} />
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="recaptcha" className="col-sm-2"></label>
+                    <div className="col-sm-8">
+                        <Recaptcha verifyCallback={this.handleRecaptchaVerify} expiredCallback={this.handleRecaptchaExpired} />
+                    </div>
+                </div>
+                <div className="form-group">
+                    <div className="col-sm-offset-2 col-sm-8">
+                        {submitButton}
+                    </div>
+                </div>
+                {this.props.children}
+            </Form>
         );
     }
 }

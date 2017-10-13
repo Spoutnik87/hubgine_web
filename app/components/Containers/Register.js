@@ -3,9 +3,10 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
 import { register } from "../../actions/user";
-import { clearMessages } from "../../actions/messages";
 import { ENGLISH } from "../../constants/Languages";
+import { withMessages } from "../withMessages";
 import UserRegisterForm from "../Forms/UserRegisterForm";
+import Container from "../Container";
 import LoadingCog from "../LoadingCog";
 
 class Register extends Component {
@@ -36,36 +37,22 @@ class Register extends Component {
         });
     }
 
-    componentWillUnmount()
-    {
-        this.props.actions.clearMessages();
-    }
-
     render()
     {
         return (
-            <div className="container">
-                <div className="panel">
-                    <UserRegisterForm onSubmit={this.handleSubmit} loading={this.state.loading} messages={this.props.messages} />
-                </div>
-            </div>
+            <Container>
+                <UserRegisterForm onSubmit={this.handleSubmit} loading={this.state.loading} messages={this.props.messages} />
+            </Container>
         );
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        messages: state.messages
-    };
-};
-
 const mapDispatchToProps = (dispatch) => {
     return {
         actions: bindActionCreators({
-            clearMessages,
             register
         }, dispatch)
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Register);
+export default withMessages(connect(null, mapDispatchToProps)(Register));

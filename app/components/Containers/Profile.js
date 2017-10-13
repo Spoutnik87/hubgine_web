@@ -15,6 +15,9 @@ import ListInput from "../Inputs/ListInput";
 import AccountEditList from "../AccountEditList";
 import AccountsManagment from "./AccountsManagment";
 import TwitterAccountForm from "../Forms/TwitterAccountForm";
+import Container from "../Container";
+import Panel from "../Panel";
+import Form from "../Form";
 import LoadingCog from "../LoadingCog";
 
 class Profile extends Component {
@@ -203,73 +206,52 @@ class Profile extends Component {
         } = this.props.lang;
         if (this.state.isLoaded && this.state.isMaxAccountsLoaded)
         {
-            const maxAccountsDisplay = (this.props.accounts.data.length >= this.props.user.maxAccounts) ? <span style={ { float: "right" } }>{this.props.accounts.data.length}/{this.props.user.maxAccounts}</span> : <span style={ { float: "right" } }>{this.props.accounts.data.length}/{this.props.user.maxAccounts}<div id="buttonAccountCreation" className="input-group-addon edit-button" onClick={this.handleClick} style={ { display: "inline" } }><i id="buttonAccountCreation" className="fa fa-plus fa-fw"></i></div></span>;
             panel = (
-                <div className="panel">
-                    <div className="panel-heading">
-                        <h3 className="panel-title">{PROFILE_TITLE}</h3>
-                    </div>
-                    <div className="panel-body">
-                        <Messages messages={this.props.messages}/>
-                        <div className="form-horizontal">
-                            <div className="form-group">
-                                <label htmlFor="email" className="col-sm-2">{PROFILE_EMAIL}</label>
-                                <div className="col-sm-8">
-                                    <TextInput name="email" value={this.props.user.email} onSubmit={this.handleSubmit} loading={this.state.loadingEmail}/>
-                                </div>
+                <Container>
+                    <Form title={PROFILE_TITLE}>
+                        <div className="form-group">
+                            <label htmlFor="email" className="col-sm-2">{PROFILE_EMAIL}</label>
+                            <div className="col-sm-8">
+                                <TextInput name="email" value={this.props.user.email} onSubmit={this.handleSubmit} loading={this.state.loadingEmail}/>
                             </div>
-                            <div className="form-group">
-                                <label htmlFor="firstname" className="col-sm-2">{PROFILE_FIRSTNAME}</label>
-                                <div className="col-sm-8">
-                                    <TextInput name="firstname" value={this.props.user.firstname} onSubmit={this.handleSubmit} loading={this.state.loadingFirstname}/>
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="lastname" className="col-sm-2">{PROFILE_LASTNAME}</label>
-                                <div className="col-sm-8">
-                                    <TextInput name="lastname" value={this.props.user.lastname} onSubmit={this.handleSubmit} loading={this.state.loadingLastname}/>
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="language" className="col-sm-2">{PROFILE_LANGUAGE}</label>
-                                <div className="col-sm-8">
-                                    <ListInput name="language" options={Object.values(Languages)} defaultOption={this.props.user.lang} onChange={this.handleLanguageChange} loading={this.state.loadingLanguage} />
-                                </div>
-                            </div>
-                            <span>
-                                <div className="panel-heading">
-                                    <div className="input-group">
-                                        <h3 className="panel-title" style={ { width: "1000px" } }>{PROFILE_ACCOUNT_LIST} {maxAccountsDisplay}</h3>
-                                    </div>
-                                </div>
-                                <div className="panel-body">
-                                    <AccountsManagment />
-                                </div>
-                            </span>
                         </div>
-                    </div>
-                </div>
+                        <div className="form-group">
+                            <label htmlFor="firstname" className="col-sm-2">{PROFILE_FIRSTNAME}</label>
+                            <div className="col-sm-8">
+                                <TextInput name="firstname" value={this.props.user.firstname} onSubmit={this.handleSubmit} loading={this.state.loadingFirstname}/>
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="lastname" className="col-sm-2">{PROFILE_LASTNAME}</label>
+                            <div className="col-sm-8">
+                                <TextInput name="lastname" value={this.props.user.lastname} onSubmit={this.handleSubmit} loading={this.state.loadingLastname}/>
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="language" className="col-sm-2">{PROFILE_LANGUAGE}</label>
+                            <div className="col-sm-8">
+                                    <ListInput name="language" options={Object.values(Languages)} defaultOption={this.props.user.lang} onChange={this.handleLanguageChange} loading={this.state.loadingLanguage} />
+                            </div>
+                        </div>
+                    </Form>
+                    <Panel title={PROFILE_ACCOUNT_LIST}>
+                        <AccountsManagment />
+                    </Panel>
+                </Container>
             );
         }
         else
         {
             panel = (
-                <div className="panel">
-                    <div className="panel-heading">
-                        <h3 className="panel-title">{PROFILE_TITLE}</h3>
-                    </div>
-                    <div className="panel-body">
+                <Container>
+                    <Panel title={PROFILE_TITLE}>
                         <Messages messages={this.props.messages}/>
                         <LoadingCog center/>
-                    </div>
-                </div>
+                    </Panel>
+                </Container>
             );
         }
-        return (
-            <div className="container">
-                {panel}
-            </div>
-        );
+        return panel;
     }
 }
 

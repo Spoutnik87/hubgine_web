@@ -4,8 +4,22 @@ import PropTypes from "prop-types";
 
 class NotLoggedInRoute extends Component {
     static propTypes = {
+        path: PropTypes.string.isRequired,
+        component: PropTypes.func.isRequired,
         isNotLoggedIn: PropTypes.bool.isRequired
     };
+
+    shouldComponentUpdate(nextProps, nextState)
+    {
+        if (nextProps.isNotLoggedIn !== this.props.isNotLoggedIn || nextProps.path !== this.props.path)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
     render()
     {

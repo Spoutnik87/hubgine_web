@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { bindActionCreators } from "redux";
+import Container from "../Container";
 import { withLanguage } from "../withLanguage";
-import { clearMessages } from "../../actions/messages";
+import { withMessages } from "../withMessages";
 import { connect as signin } from "../../actions/user";
 import UserSigninForm from "../Forms/UserSigninForm";
 import LoadingCog from "../LoadingCog";
@@ -46,39 +47,27 @@ class Signin extends Component {
         });
     }
 
-    componentWillUnmount()
-    {
-        this.props.actions.clearMessages();
-    }
-
     render()
     {
-        const { SIGNIN_FORGOTPASSWORD } = this.props.lang;
+        const {
+            SIGNIN_FORGOTPASSWORD
+        } = this.props.lang;
         return (
-            <div className="container">
-                <div className="panel">
-                    <UserSigninForm onSubmit={this.handleSubmit} loading={this.state.loading} messages={this.props.messages}>
-                        <Link to="/forgot-password">{SIGNIN_FORGOTPASSWORD}</Link>
-                    </UserSigninForm>
-                </div>
-            </div>
+            <Container>
+                <UserSigninForm onSubmit={this.handleSubmit} loading={this.state.loading} messages={this.props.messages}>
+                    <Link to="/forgot-password">{SIGNIN_FORGOTPASSWORD}</Link>
+                </UserSigninForm>
+            </Container>
         );
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        messages: state.messages
-    };
-};
-
 const mapDispatchToProps = (dispatch) => {
     return {
         actions: bindActionCreators({
-            clearMessages,
             signin
         }, dispatch)
     };
 };
 
-export default withLanguage(connect(mapStateToProps, mapDispatchToProps)(Signin));
+export default withMessages(withLanguage(connect(null, mapDispatchToProps)(Signin)));

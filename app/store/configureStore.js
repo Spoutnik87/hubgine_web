@@ -7,15 +7,15 @@ import rootReducer from "../reducers/index";
 
 export default function configureStore(initialState, cookie)
 {
-  const middlewareModules = [thunk, promise, createCookieMiddleware(cookie)];
-  if (process.env.NODE_ENV !== "production")
-  {
-    middlewareModules.push(createLogger());
-  }
-  const store = createStore(
-    rootReducer,
-    initialState,
-    applyMiddleware(...middlewareModules)
-  );
-  return store;
+    const middlewareModules = [thunk, promise, createCookieMiddleware(cookie)];
+    if (process.env.NODE_ENV !== "production")
+    {
+        middlewareModules.push(createLogger());
+    }
+    const store = createStore(
+        rootReducer,
+        initialState,
+        applyMiddleware(...middlewareModules)
+    );
+    return store;
 }

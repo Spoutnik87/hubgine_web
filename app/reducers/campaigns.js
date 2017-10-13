@@ -29,13 +29,28 @@ const campaigns = (state = {}, action) => {
             return state;
         case ActionTypes.CAMPAIGN_UPDATE:
             id = findIndex(state.data, { accountId: action.accountId, name: action.campaignId });
-            state.data[id] = addMetadata({
-                ...state.data[id],
-                accountId: action.accountId,
-                name: action.name,
-                dateBegin: action.dateBegin,
-                dateEnd: action.dateEnd
-            }, RequestTypes.CAMPAIGN_BASIC);
+            if (id === -1) id = 0;
+            if (action.config)
+            {
+                state.data[id] = addMetadata({
+                    ...state.data[id],
+                    accountId: action.accountId,
+                    name: action.name,
+                    dateBegin: action.dateBegin,
+                    dateEnd: action.dateEnd,
+                    config: action.config
+                }, RequestTypes.CAMPAIGN_FULL);
+            }
+            else
+            {
+                state.data[id] = addMetadata({
+                    ...state.data[id],
+                    accountId: action.accountId,
+                    name: action.name,
+                    dateBegin: action.dateBegin,
+                    dateEnd: action.dateEnd
+                }, RequestTypes.CAMPAIGN_BASIC);
+            }
             return state;
         case ActionTypes.CAMPAIGN_DELETE:
             state.data = state.data.filter(campaign => {

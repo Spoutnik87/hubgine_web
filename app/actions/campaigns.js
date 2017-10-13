@@ -3,7 +3,7 @@ import { isValidCampaignName, isUniqueCampaignName, isValidCampaignAccount, isVa
 import * as ActionTypes from "../constants/ActionTypes";
 import * as Errors from "../constants/ErrorTypes";
 import { sendFailureMessage, sendFailureMessages, sendSuccessMessage } from "./messages";
-import { getCampaignList, addCampaign as addCampaignAPI, removeCampaign as removeCampaignAPI, updateCampaign as updateCampaignAPI } from "../net/Requests";
+import { getCampaignList, addCampaign as addCampaignAPI, removeCampaign as removeCampaignAPI, updateCampaign as updateCampaignAPI, getCampaign } from "../net/Requests";
 
 export function fetchCampaignList()
 {
@@ -13,7 +13,41 @@ export function fetchCampaignList()
         return getCampaignList(email, token, null, state.campaigns).then(result => {
             dispatch({
                 type: ActionTypes.CAMPAIGN_UPDATE_LIST,
-                campaigns: result.campaigns
+                campaigns: result.campaigns.map(campaign => ({
+                    accountId: campaign.account_id,
+                    name: campaign.name,
+                    dateBegin: campaign.date_begin,
+                    dateEnd: campaign.date_end
+                }))
+            });
+            return Promise.resolve();
+        }).catch(error => {
+            if (Errors.ERROR_DATA_CACHED)
+            {
+                return Promise.resolve();
+            }
+            else
+            {
+                return Promise.reject(error);
+            }
+        });
+    };
+}
+
+export function fetchCampaign(accountId, campaignId)
+{
+    return (dispatch, getState) => {
+        const state = getState();
+        const { email, token } = state.user;
+        return getCampaign(email, token, accountId, campaignId, state.campaigns.data[findIndex(state.campaigns.data, { accountId: accountId, name: campaignId })]).then(result => {
+            dispatch({
+                type: ActionTypes.CAMPAIGN_UPDATE,
+                accountId: accountId,
+                campaignId: campaignId,
+                name: result.name,
+                dateBegin: result.date_begin,
+                dateEnd: result.date_end,
+                config: result.config
             });
             return Promise.resolve();
         }).catch(error => {
@@ -109,7 +143,7 @@ export function removeCampaign(accountId, campaignId)
                 accountId,
                 campaignId
             });
-            dispatch(sendFailureMessage(CAMPAIGNFORM_DELETE_SUCCESS));
+            dispatch(sendSuccessMessage(CAMPAIGNFORM_DELETE_SUCCESS));
             return Promise.resolve();
         }).catch(error => {
             dispatch(sendFailureMessage(CAMPAIGNFORM_DELETE_ERROR))
@@ -134,11 +168,9 @@ export function updateCampaign(accountId, campaignId, name, dateBegin, dateEnd)
         } = state.lang;
         const {
             uid,
-            accountId: initialAccountId,
-            name: initialName,
             dateBegin: initialDateBegin,
             dateEnd: initialDateEnd
-        } = state.campaigns.data[findIndex(state.campaigns.data, { name: campaignId })];
+        } = state.campaigns.data[findIndex(state.campaigns.data, { accountId: accountId, name: campaignId })];
         const messages = [];
         if (!isValidCampaignName(name))
         {
@@ -166,7 +198,7 @@ export function updateCampaign(accountId, campaignId, name, dateBegin, dateEnd)
         }
         if (messages.length === 0)
         {
-            const newName = name !== initialName ? name : null;
+            const newName = name !== campaignId ? name : null;
             const newDateBegin = dateBegin !== initialDateBegin ? dateBegin : null;
             const newDateEnd = dateEnd !== initialDateEnd ? dateEnd : null;
             const { email, token } = state.user;
