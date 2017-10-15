@@ -14,6 +14,15 @@ Hubgine isomorphic web application.
 - **JavaScript Framework**: react
 - **Build Tool**: npm
 
+## Docker
+```
+docker build -t hubgine-web-app .
+```
+
+```
+docker run -d -p 3000:3000 -v ~/.ssh/id_rsa:/home/1000/.ssh hubgine-web-app
+```
+
 ## Installation
 
 **Clone repository**
