@@ -8,6 +8,7 @@ export default function getLanguage()
         COMPANY_NAME: "Hubgine",
         REACT_DATETIME_LANGUAGE: "en",
         GENERIC_ERROR: "An error happened.",
+        SESSION_EXPIRED: "Your session has expired.",
         //---HEADER---
         HEADER_SR_ONLY: "Toggle navigation",
         HEADER_HOME: "Home",

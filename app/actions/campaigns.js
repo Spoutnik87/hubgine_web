@@ -3,14 +3,15 @@ import { isValidCampaignName, isUniqueCampaignName, isValidCampaignAccount, isVa
 import * as ActionTypes from "../constants/ActionTypes";
 import * as Errors from "../constants/ErrorTypes";
 import { sendFailureMessage, sendFailureMessages, sendSuccessMessage } from "./messages";
+import { disconnect } from "./user";
 import { getCampaignList, addCampaign as addCampaignAPI, removeCampaign as removeCampaignAPI, updateCampaign as updateCampaignAPI, getCampaign } from "../net/Requests";
 
 export function fetchCampaignList()
 {
     return (dispatch, getState) => {
         const state = getState();
-        const { email, token } = state.user;
-        return getCampaignList(email, token, null, state.campaigns).then(result => {
+        const { token } = state.user;
+        return getCampaignList(token, null, state.campaigns).then(result => {
             dispatch({
                 type: ActionTypes.CAMPAIGN_UPDATE_LIST,
                 campaigns: result.campaigns.map(campaign => ({
@@ -22,9 +23,16 @@ export function fetchCampaignList()
             });
             return Promise.resolve();
         }).catch(error => {
-            if (Errors.ERROR_DATA_CACHED)
+            if (error.message === Errors.ERROR_DATA_CACHED)
             {
                 return Promise.resolve();
+            }
+            else if (error.message === Errors.ERROR_INVALID_TOKEN)
+            {
+                const { SESSION_EXPIRED } = state.lang;
+                dispatch(disconnect());
+                dispatch(sendFailureMessage(SESSION_EXPIRED));
+                return Promise.reject(error);
             }
             else
             {
@@ -38,8 +46,8 @@ export function fetchCampaign(accountId, campaignId)
 {
     return (dispatch, getState) => {
         const state = getState();
-        const { email, token } = state.user;
-        return getCampaign(email, token, accountId, campaignId, state.campaigns.data[findIndex(state.campaigns.data, { accountId: accountId, name: campaignId })]).then(result => {
+        const { token } = state.user;
+        return getCampaign(token, accountId, campaignId, state.campaigns.data[findIndex(state.campaigns.data, { accountId: accountId, name: campaignId })]).then(result => {
             dispatch({
                 type: ActionTypes.CAMPAIGN_UPDATE,
                 accountId: accountId,
@@ -51,9 +59,16 @@ export function fetchCampaign(accountId, campaignId)
             });
             return Promise.resolve();
         }).catch(error => {
-            if (Errors.ERROR_DATA_CACHED)
+            if (error.message === Errors.ERROR_DATA_CACHED)
             {
                 return Promise.resolve();
+            }
+            else if (error.message === Errors.ERROR_INVALID_TOKEN)
+            {
+                const { SESSION_EXPIRED } = state.lang;
+                dispatch(disconnect());
+                dispatch(sendFailureMessage(SESSION_EXPIRED));
+                return Promise.reject(error);
             }
             else
             {
@@ -104,8 +119,8 @@ export function addCampaign(accountId, name, dateBegin, dateEnd)
         }
         if (messages.length === 0)
         {
-            const { email, token } = state.user;
-            return addCampaignAPI(email, token, accountId, name, dateBegin, dateEnd).then(result => {
+            const { token } = state.user;
+            return addCampaignAPI(token, accountId, name, dateBegin, dateEnd).then(result => {
                 dispatch({
                     type: ActionTypes.CAMPAIGN_ADD,
                     accountId,
@@ -136,8 +151,8 @@ export function removeCampaign(accountId, campaignId)
             CAMPAIGNFORM_DELETE_SUCCESS,
             CAMPAIGNFORM_DELETE_ERROR
         } = state.lang;
-        const { email, token } = state.user;
-        return removeCampaignAPI(email, token, accountId, campaignId).then(result => {
+        const { token } = state.user;
+        return removeCampaignAPI(token, accountId, campaignId).then(result => {
             dispatch({
                 type: ActionTypes.CAMPAIGN_DELETE,
                 accountId,
@@ -201,8 +216,8 @@ export function updateCampaign(accountId, campaignId, name, dateBegin, dateEnd)
             const newName = name !== campaignId ? name : null;
             const newDateBegin = dateBegin !== initialDateBegin ? dateBegin : null;
             const newDateEnd = dateEnd !== initialDateEnd ? dateEnd : null;
-            const { email, token } = state.user;
-            return updateCampaignAPI(email, token, accountId, campaignId, newName, newDateBegin, newDateEnd).then(result => {
+            const { token } = state.user;
+            return updateCampaignAPI(token, accountId, campaignId, newName, newDateBegin, newDateEnd).then(result => {
                 dispatch({
                     type: ActionTypes.CAMPAIGN_UPDATE,
                     accountId,

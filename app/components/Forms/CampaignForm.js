@@ -28,7 +28,7 @@ class CampaignForm extends Component {
             CAMPAIGNFORM_DATEEND: PropTypes.string.isRequired,
             CAMPAIGNFORM_NAME_TOOLTIP: PropTypes.string.isRequired
         }).isRequired,
-        accounts: PropTypes.array.isRequired,
+        accounts: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
         name: PropTypes.string,
         onSubmit: PropTypes.func,
         cancel: PropTypes.bool,
@@ -72,7 +72,7 @@ class CampaignForm extends Component {
             dateEnd: this.props.campaign.dateEnd,
             deleteMode: false
         } : {
-            accountId: this.props.accounts.length > 0 ? this.props.accounts[0].name : "",
+            accountId: this.props.accounts.length > 0 ? this.props.accounts[0] : "",
             name: "",
             dateBegin: "",
             dateEnd: "",
@@ -191,7 +191,7 @@ class CampaignForm extends Component {
                 <div className="form-group">
                     <label htmlFor="account" className="col-sm-2">{CAMPAIGNFORM_ACCOUNT}</label>
                     <div className="col-sm-10">
-                        <ListInput id="accountId" name="accountId" options={this.props.accounts.map(account => account.name)} defaultOption={this.props.campaign ? this.props.campaign.accountId : undefined} onChange={this.handleAccountChange} disabled={this.props.campaign !== undefined} />
+                        <ListInput id="accountId" name="accountId" options={this.props.accounts} defaultOption={this.props.campaign ? this.props.campaign.accountId : undefined} onChange={this.handleAccountChange} disabled={this.props.campaign !== undefined} />
                     </div>
                 </div>
                 <div className="form-group">

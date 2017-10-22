@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
 import { withLanguage } from "../withLanguage";
 import { clearMessages } from "../../actions/messages";
-import { fetchUser, fetchMaxAccounts, updateUser } from "../../actions/user";
+import { fetchUser, updateUser } from "../../actions/user";
 import { changeLanguage } from "../../actions/lang";
 import { fetchAccountList, addAccount } from "../../actions/accounts";
 import * as Ranks from "../../constants/Ranks";
@@ -50,7 +50,6 @@ class Profile extends Component {
         this.state = {
             loadingAccountForm: false,
             isLoaded: false,
-            isMaxAccountsLoaded: false,
             isAccountCreationFormDisplayed: false,
             loadingEmail: false,
             loadingFirstname: false,
@@ -73,11 +72,6 @@ class Profile extends Component {
                 email: this.props.user.email,
                 firstname: this.props.user.firstname,
                 lastname: this.props.user.lastname
-            });
-        });
-        this.props.actions.fetchMaxAccounts().then(() => {
-            this.setState({
-                isMaxAccountsLoaded: true
             });
         });
     }
@@ -204,7 +198,7 @@ class Profile extends Component {
             PROFILE_LANGUAGE,
             PROFILE_ACCOUNT_LIST
         } = this.props.lang;
-        if (this.state.isLoaded && this.state.isMaxAccountsLoaded)
+        if (this.state.isLoaded)
         {
             panel = (
                 <Container>
@@ -267,7 +261,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         actions: bindActionCreators({
             clearMessages,
-            fetchUser, fetchMaxAccounts, fetchAccountList, addAccount, updateUser
+            fetchUser, fetchAccountList, addAccount, updateUser
         }, dispatch)
     };
 };

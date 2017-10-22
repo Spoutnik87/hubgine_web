@@ -29,13 +29,9 @@ const user = (state = {}, action) =>
                 ...state,
                 email: action.email,
                 firstname: action.firstname,
-                lastname: action.lastname
-            }, RequestTypes.USER_NAME);
-        case ActionTypes.USER_UPDATE_MAX_ACCOUNTS:
-            return addMetadata({
-                ...state,
+                lastname: action.lastname,
                 maxAccounts: action.maxAccounts
-            }, RequestTypes.USER_MAX_ACCOUNTS);
+            }, RequestTypes.USER_FULL);
         case ActionTypes.USER_UNSET:
             return {};
         default:

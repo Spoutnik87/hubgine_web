@@ -57,18 +57,6 @@ const campaigns = (state = {}, action) => {
                 return campaign.accountId !== action.accountId && campaign.name !== action.campaignId ? true : false;
             });
             return state;
-        case ActionTypes.CAMPAIGN_UPDATE_NAME:
-            state.data[findIndex(state.data, { accountId: action.accountId, name: action.campaignId })].name = action.name;
-            return state;
-        case ActionTypes.CAMPAIGN_UPDATE_ACCOUNT:
-            state.data[findIndex(state.data, { accountId: action.accountId, name: action.campaignId })].accountId = action.accountId;
-            return state;
-        case ActionTypes.CAMPAIGN_UPDATE_DATEBEGIN:
-            state.data[findIndex(state.data, { accountId: action.accountId, name: action.campaignId })].dateBegin = action.dateBegin;
-            return state;
-        case ActionTypes.CAMPAIGN_UPDATE_DATEEND:
-            state.data[findIndex(state.data, { accountId: action.accountId, name: action.campaignId })].dateEnd = action.dateEnd;
-            return state;
         default:
             return state;
     }

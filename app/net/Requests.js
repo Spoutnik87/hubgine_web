@@ -23,13 +23,25 @@ const buildURL = (endpoint, serializedData) => {
     return config.host + ":" + config.port + "/" + endpoint + serializedData;
 };
 
-const request = (method, endpoint, data) => {
-    return fetch(buildURL(endpoint, serializeRequest(data)), {
+const request = (method, endpoint, token, data) => {
+    const params = {
         method
-    }).then(response => {
+    };
+    if (token)
+    {
+        params.headers = {
+            "X-API-KEY": token
+        };
+    }
+    return fetch(buildURL(endpoint, serializeRequest(data)), params).then(response => {
         if (response.status === 200)
         {
             return Promise.resolve(response);
+        }
+        //TOKEN INVALID
+        else if (response.status === 401)
+        {
+            return Promise.reject(new Error(Errors.ERROR_INVALID_TOKEN));
         }
         else
         {
@@ -38,10 +50,10 @@ const request = (method, endpoint, data) => {
     }).then(response => response.json());
 };
 
-const requestIfNeeded = (method, endpoint, data, type, entity) => {
+const requestIfNeeded = (method, endpoint, token, data, type, entity) => {
     if (entity === undefined || (entity !== undefined && !isCached(entity, type)))
     {
-        return request(method, endpoint, data);
+        return request(method, endpoint, token, data);
     }
     else
     {
@@ -50,15 +62,9 @@ const requestIfNeeded = (method, endpoint, data, type, entity) => {
 };
 
 export const getUser = (email, password, user) => {
-  const data = { email, password };
+    const data = { email, password };
 
-  return requestIfNeeded(Methods.GET, Endpoints.USER_LOGIN, data, Types.USER_BASIC, user);
-};
-
-export const getMaxAccounts = (email, token, user) => {
-    const data  = { email, token };
-
-    return requestIfNeeded(Methods.GET, Endpoints.USER_GET_MAX_ACCOUNTS, data, Types.USER_MAX_ACCOUNTS, user);
+    return requestIfNeeded(Methods.GET, Endpoints.USER_LOGIN, null, data, Types.USER_BASIC, user);
 };
 
 export const addUser = (email, password, firstname, lastname, lang) => {
@@ -67,16 +73,16 @@ export const addUser = (email, password, firstname, lastname, lang) => {
     return request(Methods.POST, Endpoints.USER_CREATE, data);
 };
 
-export const addAccount = (email, token, name, consumer_key, consumer_secret, access_token_key, access_token_secret) => {
-    const data = { email, token, name, consumer_key, consumer_secret, access_token_key, access_token_secret };
+export const addAccount = (token, name, consumer_key, consumer_secret, access_token_key, access_token_secret) => {
+    const data = { name, consumer_key, consumer_secret, access_token_key, access_token_secret };
 
-    return request(Methods.POST, Endpoints.TWITTERACCOUNT_CREATE, data);
+    return request(Methods.POST, Endpoints.TWITTERACCOUNT_CREATE, token, data);
 };
 
-export const removeAccount = (email, token, id) => {
-    const data = { email, token, id };
+export const removeAccount = (token, id) => {
+    const data = { id };
 
-    return request(Methods.DELETE, Endpoints.TWITTERACCOUNT_DELETE, data);
+    return request(Methods.DELETE, Endpoints.TWITTERACCOUNT_DELETE, token, data);
 };
 
 export const resetPassword = (email) => {
@@ -85,10 +91,8 @@ export const resetPassword = (email) => {
     return request(Methods.DELETE, Endpoints.TWITTERACCOUNT_DELETE, data);
 };
 
-export const getUserInfos = (email, token, user) => {
-    const data = { email, token };
-
-    return requestIfNeeded(Methods.GET, Endpoints.USER_GET, data, Types.USER_NAME, user);
+export const getUserInfos = (token, user) => {
+    return requestIfNeeded(Methods.GET, Endpoints.USER_GET, token, {}, Types.USER_FULL, user);
 };
 
 export const updateUser = (email, token, new_email, new_password, new_firstname, new_lastname, new_lang) => {
@@ -104,12 +108,12 @@ export const updateUser = (email, token, new_email, new_password, new_firstname,
     }
 };
 
-export const updateAccount = (email, token, id, new_name, new_consumer_key, new_consumer_secret, new_access_token_key, new_access_token_secret) => {
-    const data = { email, token, id, new_name, new_consumer_key, new_consumer_secret, new_access_token_key, new_access_token_secret };
+export const updateAccount = (token, id, new_name, new_consumer_key, new_consumer_secret, new_access_token_key, new_access_token_secret) => {
+    const data = { id, new_name, new_consumer_key, new_consumer_secret, new_access_token_key, new_access_token_secret };
 
     if (!(new_name === null && new_consumer_key === null && new_consumer_secret === null && new_access_token_key === null && new_access_token_secret === null))
     {
-        return request(Methods.PUT, Endpoints.TWITTERACCOUNT_UPDATE, data);
+        return request(Methods.PUT, Endpoints.TWITTERACCOUNT_UPDATE, token, data);
     }
     else
     {
@@ -117,48 +121,34 @@ export const updateAccount = (email, token, id, new_name, new_consumer_key, new_
     }
 };
 
-export const getAccountList = (email, token, accounts) => {
-    const data = { email, token };
-
-    return requestIfNeeded(Methods.GET, Endpoints.ACCOUNT_GET_LIST, data, Types.ACCOUNT_LIST_NAME, accounts);
+export const getAccountList = (token, accounts) => {
+    return requestIfNeeded(Methods.GET, Endpoints.ACCOUNT_GET_LIST, token, {}, Types.ACCOUNT_LIST, accounts);
 };
 
-export const getAccountNameList = (email, token, accounts) => {
-    const data = { email, token };
+export const getTwitterAccount = (token, id) => {
+    const data = { id };
 
-    return requestIfNeeded(Methods.GET, Endpoints.ACCOUNT_GET_LIST_NAME, data, Types.ACCOUNT_LIST_NAME, accounts);
+    return request(Methods.GET, Endpoints.TWITTERACCOUNT_GET, token, data);
 };
 
-export const getTwitterAccount = (email, token, id) => {
-    const data = { email, token, id };
+export const addCampaign = (token, account_id, name, date_begin, date_end) => {
+    const data = { account_id, name, date_begin, date_end };
 
-    return request(Methods.GET, Endpoints.TWITTERACCOUNT_GET, data);
+    return request(Methods.POST, Endpoints.CAMPAIGN_CREATE, token, data);
 };
 
-export const getTwitterAccountKeys = (email, token, id, account) => {
-    const data = { email, token, id };
+export const removeCampaign = (token, account_id, campaign_id) => {
+    const data = { account_id, campaign_id };
 
-    return requestIfNeeded(Methods.GET, Endpoints.TWITTERACCOUNT_GET_KEYS, data, Types.ACCOUNT_KEYS, account);
+    return request(Methods.DELETE, Endpoints.CAMPAIGN_DELETE, token, data);
 };
 
-export const addCampaign = (email, token, account_id, name, date_begin, date_end) => {
-    const data = { email, token, account_id, name, date_begin, date_end };
-
-    return request(Methods.POST, Endpoints.CAMPAIGN_CREATE, data);
-};
-
-export const removeCampaign = (email, token, account_id, campaign_id) => {
-    const data = { email, token, account_id, campaign_id };
-
-    return request(Methods.DELETE, Endpoints.CAMPAIGN_DELETE, data);
-};
-
-export const updateCampaign = (email, token, account_id, campaign_id, new_name, new_date_begin, new_date_end) => {
-    const data = { email, token, account_id, campaign_id, new_name, new_date_begin, new_date_end };
+export const updateCampaign = (token, account_id, campaign_id, new_name, new_date_begin, new_date_end) => {
+    const data = { account_id, campaign_id, new_name, new_date_begin, new_date_end };
 
     if (!(new_name === null && new_date_begin === null && new_date_end === null))
     {
-        return request(Methods.PUT, Endpoints.CAMPAIGN_UPDATE, data);
+        return request(Methods.PUT, Endpoints.CAMPAIGN_UPDATE, token, data);
     }
     else
     {
@@ -166,14 +156,14 @@ export const updateCampaign = (email, token, account_id, campaign_id, new_name, 
     }
 };
 
-export const getCampaignList = (email, token, account_id, campaigns) => {
-    const data = { email, token, account_id };
+export const getCampaignList = (token, account_id, campaigns) => {
+    const data = { account_id };
 
-    return requestIfNeeded(Methods.GET, Endpoints.CAMPAIGN_GET_LIST, data, Types.CAMPAIGN_LIST, campaigns);
+    return requestIfNeeded(Methods.GET, Endpoints.CAMPAIGN_GET_LIST, token, data, Types.CAMPAIGN_LIST, campaigns);
 };
 
-export const getCampaign = (email, token, account_id, campaign_id, campaign) => {
-    const data = { email, token, account_id, campaign_id };
+export const getCampaign = (token, account_id, campaign_id, campaign) => {
+    const data = { account_id, campaign_id };
 
-    return requestIfNeeded(Methods.GET, Endpoints.CAMPAIGN_GET, data, Types.CAMPAIGN_FULL, campaign);
+    return requestIfNeeded(Methods.GET, Endpoints.CAMPAIGN_GET, token, data, Types.CAMPAIGN_FULL, campaign);
 };

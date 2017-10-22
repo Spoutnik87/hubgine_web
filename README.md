@@ -20,7 +20,7 @@ docker build -t hubgine-web-app .
 ```
 
 ```
-docker run -d -p 3000:3000 -v ~/.ssh/id_rsa:/home/1000/.ssh hubgine-web-app
+docker run -d -p 3000:3000 -v ~/.ssh:/home/1000/.ssh hubgine-web-app
 ```
 
 ## Installation

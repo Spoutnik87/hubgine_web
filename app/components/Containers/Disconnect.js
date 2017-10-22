@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { removeCookie } from "redux-cookie";
 import { withRouter } from "react-router-dom";
 import { disconnect } from "../../actions/user";
 import LoadingCog from "../LoadingCog";
@@ -15,7 +14,6 @@ class Disconnect extends Component {
     componentWillMount()
     {
         this.props.actions.disconnect();
-        this.props.actions.removeCookie("user");
         this.props.history.push("/");
     }
   
@@ -28,8 +26,7 @@ class Disconnect extends Component {
 const mapDispatchToProps = (dispatch) => {
     return {
         actions: bindActionCreators({
-            disconnect,
-            removeCookie
+            disconnect
         }, dispatch)
     };
 };

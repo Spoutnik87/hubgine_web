@@ -1,4 +1,4 @@
-import { setCookie, getCookie } from "redux-cookie";
+import { setCookie, getCookie, removeCookie } from "redux-cookie";
 import { isValidEmail, isValidPassword, isValidFirstname, isValidLastname, isValidLanguage } from "validator";
 import { getUser, addUser, getMaxAccounts, getUserInfos, updateUser as updateUserAPI } from "../net/Requests";
 import * as ActionTypes from "../constants/ActionTypes";
@@ -120,7 +120,7 @@ export function register(email, password, cpassword, firstname, lastname, lang, 
 				}));
 		      	return Promise.resolve();
 			}).catch(error => {
-				dispatch(sendFailureMessage(getState().lang.REGISTER_ERROR));
+				dispatch(sendFailureMessage(REGISTER_ERROR));
 				return Promise.reject(error);
 			});
 		}
@@ -132,41 +132,18 @@ export function register(email, password, cpassword, firstname, lastname, lang, 
 	};
 }
 
-export function fetchMaxAccounts()
-{
-    return (dispatch, getState) => {
-		const state = getState();
-		const { email, token } = state.user;
-		return getMaxAccounts(email, token, state.user).then(result => {
-			dispatch({
-				type: ActionTypes.USER_UPDATE_MAX_ACCOUNTS,
-				maxAccounts: result.nbr
-			});
-			return Promise.resolve();
-		}).catch(error => {
-			if (error.message === Errors.ERROR_DATA_CACHED)
-			{
-				return Promise.resolve();
-			}
-			else
-			{
-				return Promise.reject(error);
-			}
-		});
-    };
-}
-
 export function fetchUser()
 {
 	return (dispatch, getState) => {
 		const state = getState();
-		const { email, token } = state.user;
-		return getUserInfos(email, token, state.user).then(result => {
+		const { token } = state.user;
+		return getUserInfos(token, state.user).then(result => {
 			dispatch({
 				type: ActionTypes.USER_UPDATE_INFOS,
 				email: result.email,
 				firstname: result.firstname,
-				lastname: result.lastname
+				lastname: result.lastname,
+				maxAccounts: result.max_accounts
 			});
 			return Promise.resolve();
 		}).catch(error => {
@@ -174,6 +151,13 @@ export function fetchUser()
 			{
 				return Promise.resolve();
 			}
+			else if (error.message === Errors.ERROR_INVALID_TOKEN)
+            {
+                const { SESSION_EXPIRED } = state.lang;
+				dispatch(disconnect());
+				dispatch(sendFailureMessage(SESSION_EXPIRED));
+				return Promise.reject(error);
+            }
 			else
 			{
 				return Promise.reject(error);
@@ -188,6 +172,7 @@ export function disconnect()
         dispatch({
             type: ActionTypes.USER_UNSET
 		});
+		dispatch(removeCookie("user"));
 		return Promise.resolve();
     };
 }
@@ -241,7 +226,7 @@ export function updateUser(email, password, firstname, lastname, lang)
 			const newFirstname = firstname !== initialFirstname ? firstname : null;
 			const newLastname = lastname !== initialLastname ? lastname : null;
 			const newLang = lang !== initialLang ? lang : null;
-			return updateUserAPI(state.user.email, state.user.token, newEmail, newPassword, newFirstname, newLastname, newLang).then(result => {
+			return updateUserAPI(state.user.token, newEmail, newPassword, newFirstname, newLastname, newLang).then(result => {
 				dispatch({
 					type: ActionTypes.USER_UPDATE,
 					email,

@@ -37,12 +37,12 @@ class UserDashboard extends Component {
             this.setState({
                 loadingAccountList: false
             });
-        });
+        }).catch(error => {});
         this.props.actions.fetchCampaignList().then(() => {
             this.setState({
                 loadingCampaignList: false
             });
-        });
+        }).catch(error => {});
     }
 
     handleClick(event)
@@ -101,14 +101,17 @@ class UserDashboard extends Component {
                     ) : (
                         <div>
                             {
-                                this.props.accounts.data.length === 0 ? (
+                                this.props.accounts.length === 0 ? (
                                     <div>You don't have accounts yet. Go to Profile page to create one.</div>
                                 ) : this.state.displayCampaignForm ? (
-                                    <CampaignForm name="campaignForm" accounts={this.props.accounts.data} onSubmit={this.handleCampaignCreationSubmit} cancel onCancel={this.handleCampaignCreationCancel} messages={this.props.messages} />
+                                    <CampaignForm name="campaignForm" accounts={this.props.accounts.filter(account => {
+                                        const campaignNumber = this.props.campaigns.filter(campaign => campaign.accountId === account.name).length;
+                                        return campaignNumber < account.maxCampaigns;
+                                    }).map(account => account.name)} onSubmit={this.handleCampaignCreationSubmit} cancel onCancel={this.handleCampaignCreationCancel} messages={this.props.messages} />
                                 ) : (
-                                    this.props.accounts.data.map(account => (
+                                    this.props.accounts.map(account => (
                                         <Panel key={account.uid} title={account.name}>
-                                            <CampaignList account={account} campaigns={filter(this.props.campaigns.data, { accountId: account.name })} onClick={this.handleCampaignSelection} />
+                                            <CampaignList account={account} campaigns={filter(this.props.campaigns, { accountId: account.name })} onClick={this.handleCampaignSelection} />
                                         </Panel>
                                     ))
                                 )
@@ -129,8 +132,8 @@ class UserDashboard extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        accounts: state.accounts,
-        campaigns: state.campaigns
+        accounts: state.accounts.data,
+        campaigns: state.campaigns.data
     };
 };
 

@@ -4,11 +4,11 @@ import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
 import { withRouter, Redirect } from "react-router-dom";
 import { findIndex } from "lodash";
-import { fetchAccountList } from "../../actions/accounts";
-import { fetchCampaign, removeCampaign, updateCampaign } from "../../actions/campaigns";
+import { fetchAccountList, fetchCampaign, removeCampaign, updateCampaign } from "../../actions/accounts";
 import { withLanguage } from "../withLanguage";
 import { withMessages } from "../withMessages";
 import CampaignForm from "../Forms/CampaignForm";
+import RulesOverview from "../RulesOverview";
 import Messages from "../Messages";
 import LoadingCog from "../LoadingCog";
 import Container from "../Container";
@@ -22,8 +22,7 @@ class CampaignOverview extends Component {
                 accountId: PropTypes.string.isRequired,
                 campaignId: PropTypes.string.isRequired
             }).isRequired
-        }).isRequired,
-        campaigns: PropTypes.array.isRequired
+        }).isRequired
     };
 
     constructor(props)
@@ -53,21 +52,15 @@ class CampaignOverview extends Component {
             this.setState({
                 loadingAccountList: false
             });
-        }).catch(error => {
-            this.setState({
-                loadingAccountList: false
-            });
-        });
+        }).catch(error => {});
         this.props.actions.fetchCampaign(accountId, campaignId).then(() => {
+            const accountId = findIndex(this.props.accounts, { name: this.state.accountId });
             this.setState({
                 loadingCampaign: false,
-                campaign: this.props.campaigns[findIndex(this.props.campaigns, { accountId: this.state.accountId, name: this.state.campaignId })]
+                campaign: this.props.accounts[accountId].campaigns[findIndex(this.props.accounts[accountId], { name: this.state.campaignId })]
+                //campaign: this.props.campaigns[findIndex(this.props.campaigns, { accountId: this.state.accountId, name: this.state.campaignId })]
             });
-        }).catch(error => {
-            this.setState({
-                loadingCampaign: false
-            });
-        });
+        }).catch(error => {});
     }
 
     handleClick(event)
@@ -97,7 +90,8 @@ class CampaignOverview extends Component {
                 editCampaign: false,
                 accountId: accountId,
                 campaignId: name,
-                campaign: this.props.campaigns[findIndex(this.props.campaigns, { accountId: accountId, name: name })]
+                campaign: this.props.accounts[accountId].campaigns[findIndex(this.props.accounts[accountId], { name: this.state.campaignId })]
+                //campaign: this.props.campaigns[findIndex(this.props.campaigns, { accountId: accountId, name: name })]
             });
             this.props.history.push(encodeURI("/campaign/" + accountId + "/" + name));
         }).catch(error => {});
@@ -110,10 +104,7 @@ class CampaignOverview extends Component {
             name
         } = event.result;
         this.props.actions.removeCampaign(accountId, name).then(() => {
-            this.setState({
-                editCampaign: false,
-                campaign: null
-            });
+            this.props.history.push("/user-dashboard/");
         });
     }
 
@@ -138,10 +129,11 @@ class CampaignOverview extends Component {
                             <Panel title={<span>{this.state.accountId + " : " + this.state.campaignId}{!this.state.editCampaign && <PrimaryButton id="editCampaign" style={{ float: "right" }} onClick={this.handleClick}>Edit</PrimaryButton>}</span>}>
                             {
                                 this.state.editCampaign ? (
-                                    <CampaignForm onSubmit={this.handleCampaignEditionSubmit} onDelete={this.handleCampaignEditionDelete} onCancel={this.handleCampaignEditionCancel} accounts={this.props.accounts} campaign={this.state.campaign} messages={this.props.messages} edit cancel delete />
+                                    <CampaignForm onSubmit={this.handleCampaignEditionSubmit} onDelete={this.handleCampaignEditionDelete} onCancel={this.handleCampaignEditionCancel} accounts={this.props.accounts.map(account => account.name)} campaign={this.state.campaign} messages={this.props.messages} edit cancel delete />
                                 ) : (
                                     <div>
                                         <Messages messages={this.props.messages} />
+                                        <RulesOverview campaign={this.state.campaign} />
                                     </div>
                                 )
                             }
@@ -161,8 +153,7 @@ class CampaignOverview extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        accounts: state.accounts.data,
-        campaigns: state.campaigns.data
+        accounts: state.accounts.data
     };
 };
 

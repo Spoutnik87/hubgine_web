@@ -13,7 +13,7 @@ class AdminDashboard extends Component {
     {
         return (
             <Container>
-                <Panel title="Reset password">
+                <Panel title="Admin Dashboard">
 
                 </Panel>
             </Container>
@@ -24,8 +24,7 @@ class AdminDashboard extends Component {
 const mapStateToProps = (state) => {
     return {
         messages: state.messages,
-        accounts: state.accounts,
-        campaigns: state.campaigns
+        accounts: state.accounts
     };
 };
 
