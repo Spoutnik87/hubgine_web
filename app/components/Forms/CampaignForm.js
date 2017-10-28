@@ -39,9 +39,9 @@ class CampaignForm extends Component {
         loading: PropTypes.bool,
         edit: PropTypes.bool,
         messages: PropTypes.object,
+        accountId: PropTypes.string,
         campaign: PropTypes.shape({
             name: PropTypes.string.isRequired,
-            accountId: PropTypes.string.isRequired,
             dateBegin: PropTypes.string.isRequired,
             dateEnd: PropTypes.string.isRequired
         })
@@ -66,7 +66,7 @@ class CampaignForm extends Component {
     {
         super(props);
         this.state = this.props.campaign ? {
-            accountId: this.props.campaign.accountId,
+            accountId: this.props.accountId,
             name: this.props.campaign.name,
             dateBegin: this.props.campaign.dateBegin,
             dateEnd: this.props.campaign.dateEnd,
@@ -96,7 +96,7 @@ class CampaignForm extends Component {
             }
         };
         if (this.props.campaign) send.default = {
-            accountId: this.props.campaign.accountId,
+            accountId: this.props.accountId,
             name: this.props.campaign.name,
             dateBegin: this.props.campaign.dateBegin,
             dateEnd: this.props.campaign.dateEnd
@@ -191,7 +191,7 @@ class CampaignForm extends Component {
                 <div className="form-group">
                     <label htmlFor="account" className="col-sm-2">{CAMPAIGNFORM_ACCOUNT}</label>
                     <div className="col-sm-10">
-                        <ListInput id="accountId" name="accountId" options={this.props.accounts} defaultOption={this.props.campaign ? this.props.campaign.accountId : undefined} onChange={this.handleAccountChange} disabled={this.props.campaign !== undefined} />
+                        <ListInput id="accountId" name="accountId" options={this.props.accounts} defaultOption={this.props.campaign ? this.props.accountId : undefined} onChange={this.handleAccountChange} disabled={this.props.campaign !== undefined} />
                     </div>
                 </div>
                 <div className="form-group">

@@ -53,9 +53,6 @@ app.use((req, res) => {
     user: user,
     accounts: {
       data: []
-    },
-    campaigns: {
-      data: []
     }
   };
   const store = configureStore({

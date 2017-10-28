@@ -8,13 +8,16 @@ import { isCached } from "../util/Metadata";
 const serializeRequest = (data) => {
     let serializedData = "";
     let first = true;
-    for (const key in data)
+    for (let key of Object.keys(data))
     {
-        if (data.hasOwnProperty(key) && data[key] !== null)
+        if (data[key] !== null)
         {
             serializedData += ((first ? "?" : "&").toString() + key + "=" + data[key]);
+            if (first)
+            {
+                first = false;
+            }
         }
-        if (first) first = false;
     }
     return serializedData;
 };
@@ -30,6 +33,7 @@ const request = (method, endpoint, token, data) => {
     if (token)
     {
         params.headers = {
+            "Content-Type": "application/json",
             "X-API-KEY": token
         };
     }
@@ -88,19 +92,19 @@ export const removeAccount = (token, id) => {
 export const resetPassword = (email) => {
     const data = { email };
 
-    return request(Methods.DELETE, Endpoints.TWITTERACCOUNT_DELETE, data);
+    return request(Methods.DELETE, Endpoints.TWITTERACCOUNT_DELETE, token, data);
 };
 
 export const getUserInfos = (token, user) => {
     return requestIfNeeded(Methods.GET, Endpoints.USER_GET, token, {}, Types.USER_FULL, user);
 };
 
-export const updateUser = (email, token, new_email, new_password, new_firstname, new_lastname, new_lang) => {
-    const data = { email, token, new_email, new_password, new_firstname, new_lastname, new_lang };
+export const updateUser = (token, new_email, new_password, new_firstname, new_lastname, new_lang) => {
+    const data = { new_email, new_password, new_firstname, new_lastname, new_lang };
 
     if (!(new_email === null && new_password === null && new_firstname === null && new_lastname === null && new_lang === null))
     {
-        return request(Methods.PUT, Endpoints.USER_UPDATE, data);
+        return request(Methods.PUT, Endpoints.USER_UPDATE, token, data);
     }
     else
     {
@@ -154,16 +158,4 @@ export const updateCampaign = (token, account_id, campaign_id, new_name, new_dat
     {
         return Promise.reject(new Error(Errors.ERROR_NO_CHANGES));
     }
-};
-
-export const getCampaignList = (token, account_id, campaigns) => {
-    const data = { account_id };
-
-    return requestIfNeeded(Methods.GET, Endpoints.CAMPAIGN_GET_LIST, token, data, Types.CAMPAIGN_LIST, campaigns);
-};
-
-export const getCampaign = (token, account_id, campaign_id, campaign) => {
-    const data = { account_id, campaign_id };
-
-    return requestIfNeeded(Methods.GET, Endpoints.CAMPAIGN_GET, token, data, Types.CAMPAIGN_FULL, campaign);
 };

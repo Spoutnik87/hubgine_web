@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
-import { withRouter, Redirect } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { findIndex } from "lodash";
-import { fetchAccountList, fetchCampaign, removeCampaign, updateCampaign } from "../../actions/accounts";
+import { fetchAccountList, removeCampaign, updateCampaign } from "../../actions/accounts";
 import { withLanguage } from "../withLanguage";
 import { withMessages } from "../withMessages";
 import CampaignForm from "../Forms/CampaignForm";
@@ -30,7 +30,6 @@ class CampaignOverview extends Component {
         super(props);
         this.state = {
             loadingAccountList: true,
-            loadingCampaign: true,
             editCampaign: false,
             accountId: decodeURI(this.props.match.params.accountId),
             campaignId: decodeURI(this.props.match.params.campaignId),
@@ -49,16 +48,10 @@ class CampaignOverview extends Component {
             campaignId
         } = this.state;
         this.props.actions.fetchAccountList().then(() => {
+            const accountIndex = findIndex(this.props.accounts, { name: this.state.accountId });
             this.setState({
-                loadingAccountList: false
-            });
-        }).catch(error => {});
-        this.props.actions.fetchCampaign(accountId, campaignId).then(() => {
-            const accountId = findIndex(this.props.accounts, { name: this.state.accountId });
-            this.setState({
-                loadingCampaign: false,
-                campaign: this.props.accounts[accountId].campaigns[findIndex(this.props.accounts[accountId], { name: this.state.campaignId })]
-                //campaign: this.props.campaigns[findIndex(this.props.campaigns, { accountId: this.state.accountId, name: this.state.campaignId })]
+                loadingAccountList: false,
+                campaign: this.props.accounts[accountIndex].campaigns[findIndex(this.props.accounts[accountIndex].campaigns, { name: this.state.campaignId })]
             });
         }).catch(error => {});
     }
@@ -86,12 +79,12 @@ class CampaignOverview extends Component {
             name: initialName
         } = event.default;
         this.props.actions.updateCampaign(initialAccountId, initialName, name, dateBegin, dateEnd).then(() => {
+            const accountIndex = findIndex(this.props.accounts, { name: accountId });
             this.setState({
                 editCampaign: false,
                 accountId: accountId,
                 campaignId: name,
-                campaign: this.props.accounts[accountId].campaigns[findIndex(this.props.accounts[accountId], { name: this.state.campaignId })]
-                //campaign: this.props.campaigns[findIndex(this.props.campaigns, { accountId: accountId, name: name })]
+                campaign: this.props.accounts[accountIndex].campaigns[findIndex(this.props.accounts[accountIndex].campaigns, { name: name })]
             });
             this.props.history.push(encodeURI("/campaign/" + accountId + "/" + name));
         }).catch(error => {});
@@ -120,7 +113,7 @@ class CampaignOverview extends Component {
         return (
             <Container>
                 {
-                    this.state.loadingAccountList || this.state.loadingCampaign ? (
+                    this.state.loadingAccountList ? (
                         <Panel title={this.state.accountId + " : " + this.state.campaignId}>
                             <LoadingCog center />
                         </Panel>
@@ -129,7 +122,7 @@ class CampaignOverview extends Component {
                             <Panel title={<span>{this.state.accountId + " : " + this.state.campaignId}{!this.state.editCampaign && <PrimaryButton id="editCampaign" style={{ float: "right" }} onClick={this.handleClick}>Edit</PrimaryButton>}</span>}>
                             {
                                 this.state.editCampaign ? (
-                                    <CampaignForm onSubmit={this.handleCampaignEditionSubmit} onDelete={this.handleCampaignEditionDelete} onCancel={this.handleCampaignEditionCancel} accounts={this.props.accounts.map(account => account.name)} campaign={this.state.campaign} messages={this.props.messages} edit cancel delete />
+                                    <CampaignForm onSubmit={this.handleCampaignEditionSubmit} onDelete={this.handleCampaignEditionDelete} onCancel={this.handleCampaignEditionCancel} accounts={this.props.accounts.map(account => account.name)} accountId={this.state.accountId} campaign={this.state.campaign} messages={this.props.messages} edit cancel delete />
                                 ) : (
                                     <div>
                                         <Messages messages={this.props.messages} />
@@ -161,7 +154,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         actions: bindActionCreators({
             fetchAccountList,
-            fetchCampaign, removeCampaign, updateCampaign
+            removeCampaign, updateCampaign
         }, dispatch)
     };
 };

@@ -3,9 +3,9 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { withRouter } from "react-router-dom";
-import { filter } from "lodash";
+import { findIndex, filter } from "lodash";
 import { fetchAccountList } from "../../actions/accounts";
-import { fetchCampaignList, addCampaign } from "../../actions/campaigns";
+import { addCampaign } from "../../actions/accounts";
 import { withMessages } from "../withMessages";
 import CampaignOverview from "./CampaignOverview";
 import CampaignList from "../CampaignList";
@@ -21,7 +21,6 @@ class UserDashboard extends Component {
         super(props);
         this.state = {
             loadingAccountList: true,
-            loadingCampaignList: true,
             loadingCampaignForm: false,
             displayCampaignForm: false
         };
@@ -36,11 +35,6 @@ class UserDashboard extends Component {
         this.props.actions.fetchAccountList().then(() => {
             this.setState({
                 loadingAccountList: false
-            });
-        }).catch(error => {});
-        this.props.actions.fetchCampaignList().then(() => {
-            this.setState({
-                loadingCampaignList: false
             });
         }).catch(error => {});
     }
@@ -96,7 +90,7 @@ class UserDashboard extends Component {
             <Container>
                 <Panel title="User Dashboard">
                 {
-                    this.state.loadingAccountList || this.state.loadingCampaignList ? (
+                    this.state.loadingAccountList ? (
                         <LoadingCog center />
                     ) : (
                         <div>
@@ -105,13 +99,13 @@ class UserDashboard extends Component {
                                     <div>You don't have accounts yet. Go to Profile page to create one.</div>
                                 ) : this.state.displayCampaignForm ? (
                                     <CampaignForm name="campaignForm" accounts={this.props.accounts.filter(account => {
-                                        const campaignNumber = this.props.campaigns.filter(campaign => campaign.accountId === account.name).length;
+                                        const campaignNumber = this.props.accounts[findIndex(this.props.accounts, { name: account.name })].campaigns.length;
                                         return campaignNumber < account.maxCampaigns;
                                     }).map(account => account.name)} onSubmit={this.handleCampaignCreationSubmit} cancel onCancel={this.handleCampaignCreationCancel} messages={this.props.messages} />
                                 ) : (
                                     this.props.accounts.map(account => (
                                         <Panel key={account.uid} title={account.name}>
-                                            <CampaignList account={account} campaigns={filter(this.props.campaigns, { accountId: account.name })} onClick={this.handleCampaignSelection} />
+                                            <CampaignList account={account} campaigns={this.props.accounts[findIndex(this.props.accounts, { name: account.name })].campaigns} onClick={this.handleCampaignSelection} />
                                         </Panel>
                                     ))
                                 )
@@ -132,8 +126,7 @@ class UserDashboard extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        accounts: state.accounts.data,
-        campaigns: state.campaigns.data
+        accounts: state.accounts.data
     };
 };
 
@@ -141,7 +134,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         actions: bindActionCreators({
             fetchAccountList,
-            fetchCampaignList, addCampaign
+            addCampaign
         }, dispatch)
     };
 };

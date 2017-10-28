@@ -154,7 +154,7 @@ class AccountsManagment extends Component {
             PROFILE_ACCOUNT_LIST
         } = this.props.lang;
         return this.state.loading ? (
-            <LoadingCog />
+            <LoadingCog center />
         ) : (
             this.state.creationFormDisplayed ? (
                 <TwitterAccountForm onSubmit={this.handleAccountCreationSubmit} cancel onCancel={this.handleAccountCreationCancel} loading={this.state.loadingAccountForm}/>

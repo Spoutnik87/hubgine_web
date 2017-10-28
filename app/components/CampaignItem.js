@@ -6,7 +6,6 @@ class CampaignItem extends Component {
     static propTypes = {
         campaign: PropTypes.shape({
             uid: PropTypes.string.isRequired,
-            accountId: PropTypes.string.isRequired,
             name: PropTypes.string.isRequired,
             dateBegin: PropTypes.string.isRequired,
             dateEnd: PropTypes.string.isRequired

@@ -3,18 +3,15 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
 import { withLanguage } from "../withLanguage";
-import { clearMessages } from "../../actions/messages";
+import { withMessages } from "../withMessages";
 import { fetchUser, updateUser } from "../../actions/user";
-import { changeLanguage } from "../../actions/lang";
-import { fetchAccountList, addAccount } from "../../actions/accounts";
+import { addAccount } from "../../actions/accounts";
 import * as Ranks from "../../constants/Ranks";
 import * as Languages from "../../constants/Languages";
 import Messages from "../Messages";
 import TextInput from "../Inputs/TextInput";
 import ListInput from "../Inputs/ListInput";
-import AccountEditList from "../AccountEditList";
 import AccountsManagment from "./AccountsManagment";
-import TwitterAccountForm from "../Forms/TwitterAccountForm";
 import Container from "../Container";
 import Panel from "../Panel";
 import Form from "../Form";
@@ -74,11 +71,6 @@ class Profile extends Component {
                 lastname: this.props.user.lastname
             });
         });
-    }
-
-    componentWillUnmount()
-    {
-        this.props.actions.clearMessages();
     }
 
     handleSubmit(input)
@@ -203,6 +195,7 @@ class Profile extends Component {
             panel = (
                 <Container>
                     <Form title={PROFILE_TITLE}>
+                        <Messages messages={this.props.messages}/>
                         <div className="form-group">
                             <label htmlFor="email" className="col-sm-2">{PROFILE_EMAIL}</label>
                             <div className="col-sm-8">
@@ -252,7 +245,6 @@ class Profile extends Component {
 const mapStateToProps = (state) => {
     return {
         user: state.user,
-        messages: state.messages,
         accounts: state.accounts
     };
 };
@@ -260,10 +252,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         actions: bindActionCreators({
-            clearMessages,
-            fetchUser, fetchAccountList, addAccount, updateUser
+            fetchUser, addAccount, updateUser
         }, dispatch)
     };
 };
 
-export default withLanguage(connect(mapStateToProps, mapDispatchToProps)(Profile));
+export default withMessages(withLanguage(connect(mapStateToProps, mapDispatchToProps)(Profile)));

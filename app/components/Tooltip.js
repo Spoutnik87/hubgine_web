@@ -4,14 +4,14 @@ import PropTypes from "prop-types";
 class ToolTip extends Component {
     shouldComponentUpdate(nextProps, nextState)
     {
-        return false;
+        return this.props.children !== nextProps.children;
     }
 
     render()
     {
         return (
             <div className="component-tooltip">
-                <i className="fa fa-info-circle" style={{ fontSize: "1.5em", lineHeight: "2em" }}></i>
+                <i className="fa fa-info-circle component-tooltipicon"></i>
                 <span className="component-tooltiptext">
                     {this.props.children}
                 </span>

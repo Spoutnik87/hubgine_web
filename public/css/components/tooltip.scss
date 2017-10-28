@@ -1,6 +1,11 @@
 .component-tooltip {
     position: relative;
     display: inline-block;
+    
+    .component-tooltipicon {
+        font-size: 1.5em;
+        line-height: 2em;
+    }
 
     .component-tooltiptext {
         visibility: hidden;

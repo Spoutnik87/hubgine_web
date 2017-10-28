@@ -1,10 +1,10 @@
 import { findIndex } from "lodash";
 import { isValidTwitterAccountName, isUniqueTwitterAccountName, isValidTwitterAccountConsumerKey, isValidTwitterAccountConsumerSecret,
-    isValidTwitterAccountAccessTokenKey, isValidTwitterAccountAccessTokenSecret } from "validator";
+    isValidTwitterAccountAccessTokenKey, isValidTwitterAccountAccessTokenSecret, isValidCampaignName, isUniqueCampaignName, isValidCampaignAccount, isValidCampaignDateBegin, isValidCampaignDateEnd } from "validator";
 import * as ActionTypes from "../constants/ActionTypes";
 import * as Errors from "../constants/ErrorTypes";
 import { getAccountList, updateAccount as updateAccountAPI, addAccount as addAccountAPI, removeAccount as removeAccountAPI, 
-    getCampaignList, addCampaign as addCampaignAPI, removeCampaign as removeCampaignAPI, updateCampaign as updateCampaignAPI, getCampaign } from "../net/Requests";
+    addCampaign as addCampaignAPI, removeCampaign as removeCampaignAPI, updateCampaign as updateCampaignAPI, getCampaign } from "../net/Requests";
 import { sendFailureMessage, sendFailureMessages, sendSuccessMessage } from "./messages";
 import { disconnect } from "./user";
 
@@ -22,7 +22,19 @@ export function fetchAccountList()
                         consumerSecret: account.consumer_secret,
                         accessTokenKey: account.access_token_key,
                         accessTokenSecret: account.access_token_secret,
-                        maxCampaigns: account.max_campaigns
+                        maxCampaigns: account.max_campaigns,
+                        campaigns: account.campaigns.map(campaign => ({
+                            name: campaign.name,
+                            dateBegin: campaign.date_begin,
+                            dateEnd: campaign.date_end,
+                            config: {
+                                delayFollowersUpdate: campaign.config.delay_followers_update,
+                                maxTweetsFollow: campaign.config.max_tweets_follow,
+                                messagesFollow: campaign.config.messages_follow,
+                                undoFollow: campaign.config.undo_follow,
+                                rules: campaign.config.rules
+                            }
+                        }))
                 }))
             });
             return Promise.resolve();
@@ -95,7 +107,8 @@ export function addAccount(name, consumerKey, consumerSecret, accessTokenKey, ac
                     consumerKey: consumerKey,
                     consumerSecret: consumerSecret,
                     accessTokenKey: accessTokenKey,
-                    accessTokenSecret: accessTokenSecret
+                    accessTokenSecret: accessTokenSecret,
+                    maxCampaigns: result.max_campaigns
                 });
                 dispatch(sendSuccessMessage(TWITTERACCOUNTFORM_CREATE_SUCCESS));
                 return Promise.resolve();
@@ -223,79 +236,6 @@ export function removeAccount(accountId)
 }
 
 //CAMPAIGNS
-
-export function fetchCampaignList()
-{
-    return (dispatch, getState) => {
-        const state = getState();
-        const { token } = state.user;
-        return getCampaignList(token, null, state.campaigns).then(result => {
-            dispatch({
-                type: ActionTypes.CAMPAIGN_UPDATE_LIST,
-                campaigns: result.campaigns.map(campaign => ({
-                    accountId: campaign.account_id,
-                    name: campaign.name,
-                    dateBegin: campaign.date_begin,
-                    dateEnd: campaign.date_end
-                }))
-            });
-            return Promise.resolve();
-        }).catch(error => {
-            if (error.message === Errors.ERROR_DATA_CACHED)
-            {
-                return Promise.resolve();
-            }
-            else if (error.message === Errors.ERROR_INVALID_TOKEN)
-            {
-                const { SESSION_EXPIRED } = state.lang;
-                dispatch(disconnect());
-                dispatch(sendFailureMessage(SESSION_EXPIRED));
-                return Promise.reject(error);
-            }
-            else
-            {
-                return Promise.reject(error);
-            }
-        });
-    };
-}
-
-export function fetchCampaign(accountId, campaignId)
-{
-    return (dispatch, getState) => {
-        const state = getState();
-        const { token } = state.user;
-        return getCampaign(token, accountId, campaignId, state.campaigns.data[findIndex(state.campaigns.data, { accountId: accountId, name: campaignId })]).then(result => {
-            dispatch({
-                type: ActionTypes.CAMPAIGN_UPDATE,
-                accountId: accountId,
-                campaignId: campaignId,
-                name: result.name,
-                dateBegin: result.date_begin,
-                dateEnd: result.date_end,
-                config: result.config
-            });
-            return Promise.resolve();
-        }).catch(error => {
-            if (error.message === Errors.ERROR_DATA_CACHED)
-            {
-                return Promise.resolve();
-            }
-            else if (error.message === Errors.ERROR_INVALID_TOKEN)
-            {
-                const { SESSION_EXPIRED } = state.lang;
-                dispatch(disconnect());
-                dispatch(sendFailureMessage(SESSION_EXPIRED));
-                return Promise.reject(error);
-            }
-            else
-            {
-                return Promise.reject(error);
-            }
-        });
-    };
-}
-
 export function addCampaign(accountId, name, dateBegin, dateEnd)
 {
     return (dispatch, getState) => {
@@ -315,7 +255,12 @@ export function addCampaign(accountId, name, dateBegin, dateEnd)
         {
             messages.push(CAMPAIGNFORM_NAME_INCORRECT);
         }
-        if (!isUniqueCampaignName(name, state.campaigns.data.map(campaign => campaign.name)))
+        let names = [];
+        for (let i = 0; i < state.accounts.data.length; i++)
+        {
+            names = names.concat(state.accounts.data[i].campaigns.map(campaign => campaign.name));
+        }
+        if (!isUniqueCampaignName(name, names))
         {
             messages.push(CAMPAIGNFORM_NAME_NOT_UNIQUE);
         }
@@ -344,7 +289,8 @@ export function addCampaign(accountId, name, dateBegin, dateEnd)
                     accountId,
                     name,
                     dateBegin,
-                    dateEnd
+                    dateEnd,
+                    config: {}
                 });
                 dispatch(sendSuccessMessage(CAMPAIGNFORM_CREATE_SUCCESS));
                 return Promise.resolve();
@@ -399,17 +345,23 @@ export function updateCampaign(accountId, campaignId, name, dateBegin, dateEnd)
             CAMPAIGNFORM_EDIT_SUCCESS, 
             CAMPAIGNFORM_EDIT_ERROR
         } = state.lang;
+        const accountIndex = findIndex(state.accounts.data, { name: accountId });
         const {
             uid,
             dateBegin: initialDateBegin,
             dateEnd: initialDateEnd
-        } = state.campaigns.data[findIndex(state.campaigns.data, { accountId: accountId, name: campaignId })];
+        } = state.accounts.data[accountIndex].campaigns[findIndex(state.accounts.data[accountIndex].campaigns, { name: campaignId })];
         const messages = [];
+        let names = [];
+        for (let i = 0; i < state.accounts.data.length; i++)
+        {
+            names = names.concat(state.accounts.data[i].campaigns.filter(campaign => campaign.uid !== uid).map(campaign => campaign.name));
+        }
         if (!isValidCampaignName(name))
         {
             messages.push(CAMPAIGNFORM_NAME_INCORRECT);
         }
-        if (!isUniqueCampaignName(name, state.campaigns.data.map(campaign => { if (uid !== campaign.uid) return campaign.name; })))
+        if (!isUniqueCampaignName(name, names))
         {
             messages.push(CAMPAIGNFORM_NAME_NOT_UNIQUE);
         }
@@ -447,8 +399,15 @@ export function updateCampaign(accountId, campaignId, name, dateBegin, dateEnd)
                 dispatch(sendSuccessMessage(CAMPAIGNFORM_EDIT_SUCCESS));
                 return Promise.resolve();
             }).catch(error => {
-                dispatch(sendFailureMessage(CAMPAIGNFORM_EDIT_ERROR));
-                return Promise.reject(error);
+                if (error.message === Errors.ERROR_NO_CHANGES)
+                {
+                    return Promise.resolve();
+                }
+                else
+                {
+                    dispatch(sendFailureMessage(CAMPAIGNFORM_EDIT_ERROR));
+                    return Promise.reject(error);
+                }
             });
         }
         else

@@ -226,7 +226,7 @@ export function updateUser(email, password, firstname, lastname, lang)
 			const newFirstname = firstname !== initialFirstname ? firstname : null;
 			const newLastname = lastname !== initialLastname ? lastname : null;
 			const newLang = lang !== initialLang ? lang : null;
-			return updateUserAPI(state.user.token, newEmail, newPassword, newFirstname, newLastname, newLang).then(result => {
+			return updateUserAPI(initialToken, newEmail, newPassword, newFirstname, newLastname, newLang).then(result => {
 				dispatch({
 					type: ActionTypes.USER_UPDATE,
 					email,

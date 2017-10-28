@@ -5,15 +5,14 @@ import Panel from "./Panel";
 class RulesOverview extends Component {
     static propTypes = {
         campaign: PropTypes.shape({
-            accountId: PropTypes.string.isRequired,
             name: PropTypes.string.isRequired,
             dateBegin: PropTypes.string.isRequired,
             dateEnd: PropTypes.string.isRequired,
             config: PropTypes.shape({
-                messages_follow: PropTypes.object.isRequired,
-                undo_follow: PropTypes.number.isRequired,
-                max_tweets_follow: PropTypes.number.isRequired,
-                delay_followers_update: PropTypes.number.isRequired,
+                messagesFollow: PropTypes.object.isRequired,
+                undoFollow: PropTypes.number.isRequired,
+                maxTweetsFollow: PropTypes.number.isRequired,
+                delayFollowersUpdate: PropTypes.number.isRequired,
                 rules: PropTypes.array.isRequired
             }).isRequired
         }).isRequired

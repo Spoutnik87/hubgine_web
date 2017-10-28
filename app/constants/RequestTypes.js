@@ -3,8 +3,3 @@ export const USER_BASIC = "ACCOUNT_BASIC";
 export const USER_FULL = "USER_FULL";
 //ACCOUNT
 export const ACCOUNT_LIST = "ACCOUNT_LIST";
-export const ACCOUNT_BASIC = "ACCOUNT_BASIC";
-//CAMPAIGN
-export const CAMPAIGN_LIST = "CAMPAIGN_LIST";
-export const CAMPAIGN_BASIC = "CAMPAIGN_BASIC";
-export const CAMPAIGN_FULL = "CAMPAIGN_FULL";
