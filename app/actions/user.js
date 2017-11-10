@@ -2,7 +2,7 @@ import { setCookie, getCookie, removeCookie } from "redux-cookie";
 import { isValidEmail, isValidPassword, isValidFirstname, isValidLastname, isValidLanguage } from "validator";
 import { getUser, addUser, getMaxAccounts, getUserInfos, updateUser as updateUserAPI } from "../net/Requests";
 import * as ActionTypes from "../constants/ActionTypes";
-import * as Errors from "../constants/ErrorTypes";
+import * as Status from "../constants/RequestStatus";
 import * as Languages from "../constants/Languages";
 import { sendFailureMessage, sendFailureMessages, sendSuccessMessage } from "./messages";
 import { changeLanguage } from "./lang";
@@ -54,7 +54,7 @@ export function connect(email, password)
 		else
 		{
 			dispatch(sendFailureMessages(messages));
-			return Promise.reject(new Error(Errors.ERROR_INVALID_INPUTS));
+			return Promise.reject(new Error(Status.INVALID_INPUTS));
 		}
     };
 }
@@ -127,7 +127,7 @@ export function register(email, password, cpassword, firstname, lastname, lang, 
 		else
 		{
 			dispatch(sendFailureMessages(messages));
-			return Promise.reject(new Error(Errors.ERROR_INVALID_INPUTS));
+			return Promise.reject(new Error(Status.INVALID_INPUTS));
 		}
 	};
 }
@@ -147,11 +147,11 @@ export function fetchUser()
 			});
 			return Promise.resolve();
 		}).catch(error => {
-			if (error.message === Errors.ERROR_DATA_CACHED)
+			if (error.message === Status.DATA_CACHED)
 			{
 				return Promise.resolve();
 			}
-			else if (error.message === Errors.ERROR_INVALID_TOKEN)
+			else if (error.message === Status.UNAUTHORIZED)
             {
                 const { SESSION_EXPIRED } = state.lang;
 				dispatch(disconnect());
@@ -177,13 +177,14 @@ export function disconnect()
     };
 }
 
-export function updateUser(email, password, firstname, lastname, lang)
+export function updateUser(email, password, cpassword, firstname, lastname, lang)
 {
 	return (dispatch, getState) => {
 		const state = getState();
 		const {
 			USER_EMAIL_INCORRECT,
 			USER_PASSWORD_INCORRECT,
+			USER_PASSWORD_NOT_MATCH,
 			USER_FIRSTNAME_INCORRECT,
 			USER_LASTNAME_INCORRECT,
 			USER_LANGUAGE_INCORRECT,
@@ -191,23 +192,27 @@ export function updateUser(email, password, firstname, lastname, lang)
 			USER_EDIT_SUCCESS
 		} = state.lang;
 		const messages = [];
-		if (typeof email === "string" && !isValidEmail(email))
+		if (email != null && !isValidEmail(email))
 		{
 			messages.push(USER_EMAIL_INCORRECT);
 		}
-		if (typeof password === "string" && !isValidPassword(password))
+		if (password != null && !isValidPassword(password))
 		{
 			messages.push(USER_PASSWORD_INCORRECT);
 		}
-		if (typeof firstname === "string" && !isValidFirstname(firstname))
+		if (password !== cpassword)
+		{
+			messages.push(USER_PASSWORD_NOT_MATCH);
+		}
+		if (firstname != null && !isValidFirstname(firstname))
 		{
 			messages.push(USER_FIRSTNAME_INCORRECT);
 		}
-		if (typeof lastname === "string" && !isValidLastname(lastname))
+		if (lastname != null && !isValidLastname(lastname))
 		{
 			messages.push(USER_LASTNAME_INCORRECT);
 		}
-		if (typeof lang === "string" && !isValidLanguage(lang, Object.values(Languages)))
+		if (lang != null && !isValidLanguage(lang, Object.values(Languages)))
 		{
 			messages.push(USER_LANGUAGE_INCORRECT);
 		}
@@ -247,7 +252,7 @@ export function updateUser(email, password, firstname, lastname, lang)
 				dispatch(sendSuccessMessage(USER_EDIT_SUCCESS));
 				return Promise.resolve();
 			}).catch(error => {
-				if (error.message === Errors.ERROR_NO_CHANGES)
+				if (error.message === Status.NO_CHANGES)
 				{
 					return Promise.resolve();
 				}
@@ -261,7 +266,7 @@ export function updateUser(email, password, firstname, lastname, lang)
 		else
 		{
 			dispatch(sendFailureMessages(messages));
-			return Promise.reject(new Error(Errors.ERROR_INVALID_INPUTS));
+			return Promise.reject(new Error(Status.INVALID_INPUTS));
 		}
 	};
 }

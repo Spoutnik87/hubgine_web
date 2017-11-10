@@ -35,6 +35,7 @@ class ArrayInput extends Component {
     {
         super(props);
         this.state = {
+            options: this.props.options,
             value: this.props.options ? this.props.defaultOption || this.props.options[0] : "",
             values: this.props.values.map(element => ({
                 key: v4(),
@@ -57,19 +58,31 @@ class ArrayInput extends Component {
     {
         if (event.target.id === "buttonAdd")
         {
-            const value = this.state.value;
+            const {
+                value
+            } = this.state;
             if (((this.props.condition && this.props.condition(value)) || (!this.props.condition && value.match("^.+$"))) && ((this.props.unique && !this.state.values.map(elem => elem.value).includes(value)) || !this.props.unique))
             {
                 const values = [...this.state.values, {
                     key: v4(),
                     value: value
                 }];
-                this.setState({
+                const state = {
                     values: values
-                });
+                };
+                if (!this.state.options)
+                {
+                    state.value = "";
+                }
+                else
+                {
+                    state.options = this.state.options.filter(option => option !== value);
+                    state.value = state.options.length > 0 ? state.options[0] : "";
+                }
+                this.setState(state);
                 this.props.onChange({
                     name: this.props.name,
-                    values: values
+                    values: values.map(elem => elem.value)
                 });
             }
         }
@@ -78,13 +91,20 @@ class ArrayInput extends Component {
             const values = this.state.values.filter((value, index) => {
                 return this.state.selectedElement !== index.toString();
             });
-            this.setState({
+            const state = {
                 values: values,
-                selectedElement: "input"
-            });
+                selectedElement: "input",
+                options: this.state.options
+            };
+            if (this.state.options && !this.state.options.includes(this.state.values[this.state.selectedElement].value))
+            {
+                state.options.push(this.state.values[this.state.selectedElement].value);
+                state.value = state.options[0];
+            }
+            this.setState(state);
             this.props.onChange({
                 name: this.props.name,
-                values: values
+                values: values.map(elem => elem.value)
             });
         }
         else
@@ -117,8 +137,8 @@ class ArrayInput extends Component {
     render()
     {
         const { ARRAYINPUT_ADD_BUTTON, ARRAYINPUT_DELETE_BUTTON } = this.props.lang;
-        const button = this.state.selectedElement === "input" ? <button id="buttonAdd" type="button" className="btn btn-success col-md-2 col-sm-3 col-xs-4" onClick={this.handleClick} disabled={this.props.limit > 0 ? this.state.values.length >= this.props.limit : false}><i className="fa fa-plus"></i> {ARRAYINPUT_ADD_BUTTON}</button> 
-            : <button id="buttonRemove" type="button" className="btn btn-danger col-md-2 col-sm-3 col-xs-4" onClick={this.handleClick}><i className="fa fa-minus"></i> {ARRAYINPUT_DELETE_BUTTON}</button>;
+        const button = this.state.selectedElement === "input" ? <button id="buttonAdd" type="button" className="btn btn-success col-md-2 col-sm-3 col-xs-4" onClick={this.handleClick} disabled={this.props.limit > 0 ? this.state.values.length >= this.props.limit : false}><i id="buttonAdd" className="fa fa-plus" onClick={this.handleClick}></i> {ARRAYINPUT_ADD_BUTTON}</button> 
+            : <button id="buttonRemove" type="button" className="btn btn-danger col-md-2 col-sm-3 col-xs-4" onClick={this.handleClick}><i id="buttonRemove" className="fa fa-minus" onClick={this.handleClick}></i> {ARRAYINPUT_DELETE_BUTTON}</button>;
         return (
             <div className="input-group" style={{ width: "100%" }}>
                 <div className="array-input-display">{this.state.values.map((element, index) => {
@@ -126,9 +146,11 @@ class ArrayInput extends Component {
                     } onClick={this.handleClick}>{element.value}<br/></div>; })}</div>
                 <div className="col-md-10 col-sm-9 col-xs-8" style={{ paddingLeft: 0 }}>
                     {
-                        this.props.options ? 
-                            <ListInput name="list" options={this.props.options} defaultOption={this.props.defaultOption} onClick={this.handleClick} onChange={this.handleChange} />
-                            : <input type="text" data-element="input" className="form-control" value={this.state.value} onClick={this.handleClick} onChange={this.handleChange} autoFocus/>
+                        this.props.options ? (
+                            <ListInput name="list" options={this.state.options} defaultOption={this.props.defaultOption} onClick={this.handleClick} onChange={this.handleChange} />
+                        ) : (
+                            <input type="text" data-element="input" className="form-control" value={this.state.value} onClick={this.handleClick} onChange={this.handleChange} autoFocus/>
+                        )
                     }
                 </div>
                 {button}

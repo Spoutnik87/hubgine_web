@@ -36,6 +36,25 @@ class ListInput extends Component {
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
     }
+    
+    componentWillReceiveProps(nextProps)
+    {
+        if (nextProps.options != null && this.state.options !== nextProps.options)
+        {
+            this.setState({
+                options: nextProps.options.map(option => ({
+                    key: v4(),
+                    value: option
+                }))
+            });
+        }
+        if (nextProps.value != null && this.state.value !== nextProps.value)
+        {
+            this.setState({
+                value: nextProps.value
+            });
+        }
+    }
 
     handleClick(event)
     {

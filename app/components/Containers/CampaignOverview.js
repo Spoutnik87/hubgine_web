@@ -4,16 +4,20 @@ import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
 import { findIndex } from "lodash";
-import { fetchAccountList, removeCampaign, updateCampaign } from "../../actions/accounts";
+import { fetchAccountList, removeCampaign, updateCampaign, addTwitterRule, updateTwitterRule, removeTwitterRule } from "../../actions/accounts";
 import { withLanguage } from "../withLanguage";
 import { withMessages } from "../withMessages";
 import CampaignForm from "../Forms/CampaignForm";
-import RulesOverview from "../RulesOverview";
+import RulesOverview from "./RulesOverview";
+import RuleList from "../RuleList";
 import Messages from "../Messages";
 import LoadingCog from "../LoadingCog";
 import Container from "../Container";
 import Panel from "../Panel";
 import PrimaryButton from "../buttons/PrimaryButton";
+import SuccessButton from "../buttons/SuccessButton";
+import TwitterRuleForm from "../Forms/TwitterRuleForm";
+
 
 class CampaignOverview extends Component {
     static propTypes = {
@@ -29,13 +33,22 @@ class CampaignOverview extends Component {
     {
         super(props);
         this.state = {
+            creationRuleFormDisplayed: false,
             loadingAccountList: true,
             editCampaign: false,
             accountId: decodeURI(this.props.match.params.accountId),
             campaignId: decodeURI(this.props.match.params.campaignId),
-            campaign: undefined
+            campaign: undefined,
+            selectedRule: "",
+            loading: false
         };
         this.handleClick = this.handleClick.bind(this);
+        this.handleRuleCreationSubmit = this.handleRuleCreationSubmit.bind(this);
+        this.handleRuleCreationCancel = this.handleRuleCreationCancel.bind(this);
+        this.handleRuleEditMode = this.handleRuleEditMode.bind(this);
+        this.handleRuleEditionSubmit = this.handleRuleEditionSubmit.bind(this);
+        this.handleRuleEditionDelete = this.handleRuleEditionDelete.bind(this);
+        this.handleRuleEditionCancel = this.handleRuleEditionCancel.bind(this);
         this.handleCampaignEditionSubmit = this.handleCampaignEditionSubmit.bind(this);
         this.handleCampaignEditionDelete = this.handleCampaignEditionDelete.bind(this);
         this.handleCampaignEditionCancel = this.handleCampaignEditionCancel.bind(this);
@@ -55,6 +68,38 @@ class CampaignOverview extends Component {
             });
         }).catch(error => {});
     }
+    
+    componentWillReceiveProps(nextProps)
+    {
+        const {
+            accountId,
+            campaignId,
+            campaign
+        } = this.state;
+        const accountIndex = findIndex(nextProps.accounts, { name: accountId });
+        const account = nextProps.accounts[accountIndex];
+        const campaignIndex = findIndex(account.campaigns, { name: campaignId });
+        const campaignProps = account.campaigns[campaignIndex];
+        console.log(campaignProps);
+        console.log(campaignProps !== campaign);
+        if (campaignProps != null)
+        {
+            this.setState({
+                campaign: campaignProps
+            });
+        }
+        /*const accountIndex = findIndex(this.props.accounts, { name: accountId });
+        if (this.props.accounts[accountIndex].campaigns !== nextProps.accounts[accountIndex].campaigns)
+        {
+            if (this.props.accounts[accountIndex].campaigns[findIndex(this.props.accounts[accountIndex].campaigns, { name: this.state.campaignId })]
+                    !== nextProps.accounts[accountIndex].campaigns[findIndex(this.props.accounts[accountIndex].campaigns, { name: this.state.campaignId })])
+            const campaign = this.props.accounts[accountIndex].campaigns[findIndex(this.props.accounts[accountIndex].campaigns, { name: this.state.campaignId })];
+            if ()
+            this.setState({
+                campaign
+            });
+        }*/
+    }
 
     handleClick(event)
     {
@@ -64,6 +109,115 @@ class CampaignOverview extends Component {
                 editCampaign: true
             });
         }
+        else if (event.target.id === "createRule")
+        {
+            this.setState({
+                creationRuleFormDisplayed: true
+            });
+        }
+    }
+
+    handleRuleCreationSubmit(event)
+    {
+        const {
+            name,
+            type,
+            track,
+            condition,
+            delay,
+            lang
+        } = event.result;
+        this.setState({
+            loading: true
+        });
+        this.props.actions.addTwitterRule(this.state.accountId, this.state.campaignId, name, type, track, condition, delay, 3, lang).then(() => {
+            this.setState({
+                loading: false,
+                creationRuleFormDisplayed: false
+            });
+        }).catch(error => {
+            this.setState({
+                loading: false
+            });
+        });
+    }
+
+    handleRuleCreationCancel()
+    {
+        this.setState({
+            creationRuleFormDisplayed: false
+        });
+    }
+
+    handleRuleEditMode(event)
+    {
+        this.setState({
+            selectedRule: event.name
+        });
+    }
+
+    handleRuleEditionSubmit(event)
+    {
+        const {
+            accountId,
+            campaignId
+        } = this.state;
+        const {
+            ruleId
+        } = event;
+        const {
+            name,
+            type,
+            track,
+            condition,
+            delay,
+            lang
+        } = event.result;
+        this.setState({
+            loading: true
+        });
+        console.log(accountId + " " + campaignId + " " + ruleId);
+        this.props.actions.updateTwitterRule(accountId, campaignId, ruleId, name, type, track, condition, delay, null, lang).then(() => {
+            this.setState({
+                loading: false,
+                selectedRule: ""
+            });
+        }).catch(error => {
+            this.setState({
+                loading: false
+            });
+        });
+    }
+
+    handleRuleEditionDelete(event)
+    {
+        const {
+            accountId,
+            campaignId
+        } = this.state;
+        const {
+            name
+        } = event.result;
+        this.setState({
+            loading: true
+        });
+        this.props.actions.removeTwitterRule(accountId, campaignId, name).then(() => {
+            this.setState({
+                loading: false,
+                selectedRule: ""
+            });
+        }).catch(() => {
+            this.setState({
+                loading: false
+            });
+        });
+    }
+
+    handleRuleEditionCancel()
+    {
+        this.setState({
+            selectedRule: ""
+        });
     }
 
     handleCampaignEditionSubmit(event)
@@ -126,7 +280,20 @@ class CampaignOverview extends Component {
                                 ) : (
                                     <div>
                                         <Messages messages={this.props.messages} />
-                                        <RulesOverview campaign={this.state.campaign} />
+                                        <Panel title="Rules">
+                                        {
+                                            this.state.creationRuleFormDisplayed ? (
+                                               <TwitterRuleForm onSubmit={this.handleRuleCreationSubmit} cancel onCancel={this.handleRuleCreationCancel} loading={this.state.loading} />
+                                            ) : (
+                                               <RuleList accountId={this.state.accountId} campaignId={this.state.campaignId} rules={this.state.campaign.config.rules} onRuleEditMode={this.handleRuleEditMode} selectedRule={this.state.selectedRule} loading={this.state.loading} onRuleEditionSubmit={this.handleRuleEditionSubmit} onRuleEditionDelete={this.handleRuleEditionDelete} onRuleEditionCancel={this.handleRuleEditionCancel}/>
+                                            )
+                                        }
+                                        </Panel>
+                                        {
+                                            !this.state.creationRuleFormDisplayed && (
+                                                <SuccessButton id="createRule" onClick={this.handleClick}>Add rule</SuccessButton>
+                                            )
+                                        }
                                     </div>
                                 )
                             }
@@ -154,7 +321,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         actions: bindActionCreators({
             fetchAccountList,
-            removeCampaign, updateCampaign
+            removeCampaign, updateCampaign,
+            addTwitterRule, updateTwitterRule, removeTwitterRule
         }, dispatch)
     };
 };

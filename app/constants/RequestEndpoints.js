@@ -11,3 +11,6 @@ export const ACCOUNT_GET_LIST = "account/list";
 export const CAMPAIGN_CREATE = "campaign";
 export const CAMPAIGN_DELETE = "campaign";
 export const CAMPAIGN_UPDATE = "campaign";
+export const TWITTERRULE_CREATE = "rule";
+export const TWITTERRULE_UPDATE = "rule";
+export const TWITTERRULE_DELETE = "rule";

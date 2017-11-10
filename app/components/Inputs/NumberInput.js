@@ -9,7 +9,7 @@ class NumberInput extends Component {
     };
 
     static defaultProps = {
-        name: "switch",
+        name: "numberinput",
         value: 0,
         onChange: () => {}
     };
@@ -18,7 +18,7 @@ class NumberInput extends Component {
     {
         super(props);
         this.state = {
-            value: this.isNumeric(this.props.value.toString()) ? this.props.value.toString() : "0"
+            value: Number.isInteger(this.props.value) ? this.props.value : 0
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
@@ -40,12 +40,13 @@ class NumberInput extends Component {
     {
         if (this.isNumeric(event.target.value))
         {
+            const value = event.target.value === "" ? 0 : parseInt(event.target.value);
             this.setState({
-                value: event.target.value
+                value: value
             });
             this.props.onChange({
                 name: this.props.name,
-                value: event.target.value
+                value: value
             });
         }
     }

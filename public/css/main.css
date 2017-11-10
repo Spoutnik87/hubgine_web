@@ -8354,6 +8354,12 @@ td.rdtYear:hover {
   display: inline;
   cursor: pointer; }
 
+.ruleitem {
+  border: 1px solid #95979d;
+  padding: 10px;
+  display: inline;
+  cursor: pointer; }
+
 .numberinput-button:hover {
   cursor: pointer;
   border: 1px solid #BBB; }

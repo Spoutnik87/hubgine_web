@@ -41,8 +41,8 @@ class Switch extends Component {
                 {
                     this.props.options.map((value, index) => (
                         [
-                            <input type="radio" id={index} name={this.props.name} value={value} onChange={this.handleChange} checked={this.state.selectedOption === value} />,
-                            <label htmlFor={index}>{value}</label>
+                            <input key={"input" + index} type="radio" id={index} name={this.props.name} value={value} onChange={this.handleChange} checked={this.state.selectedOption === value} />,
+                            <label key={"label" + index} htmlFor={index}>{value}</label>
                         ]
                     ))
                 }

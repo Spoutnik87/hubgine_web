@@ -37,11 +37,14 @@ class DateInput extends Component {
 
     render()
     {
+        const {
+            REACT_DATETIME_LANGUAGE
+        } = this.props.lang;
         const valid = (current) => {
             return current.isAfter(this.state.yesterday) && current.isBefore(this.state.nextYear);
         };
         return (
-            <Datetime locale={this.props.lang.REACT_DATETIME_LANGUAGE} isValidDate={valid} onChange={this.handleChange} value={this.props.value ? new Date(parseInt(this.props.value)*1000) : ""}/>
+            <Datetime locale={REACT_DATETIME_LANGUAGE} isValidDate={valid} onChange={this.handleChange} value={this.props.value ? new Date(parseInt(this.props.value)*1000) : ""}/>
         );
     }
 }

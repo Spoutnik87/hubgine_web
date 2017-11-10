@@ -1,6 +1,20 @@
 import { store as config } from "../../client-config.json";
 import { getUnixTimestamp } from "./Date";
 
+/*
+Add additional data to an object, this allows to check if data is already in cache.
+Patern :
+{
+    _metadata: {
+        type: RequestType,
+        date: UnixTimestamp
+    },
+    data : {
+        ...someData
+    }
+}
+*/
+
 export const getMetadata = (state) => {
     return state._metadata ? state._metadata : [];
 };

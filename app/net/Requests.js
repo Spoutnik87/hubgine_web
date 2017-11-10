@@ -2,17 +2,34 @@ import { api as config } from "../../client-config.json";
 import * as Methods from "../constants/RequestMethods";
 import * as Endpoints from "../constants/RequestEndpoints";
 import * as Types from "../constants/RequestTypes";
-import * as Errors from "../constants/ErrorTypes";
+import * as Status from "../constants/RequestStatus";
 import { isCached } from "../util/Metadata";
 
 const serializeRequest = (data) => {
     let serializedData = "";
     let first = true;
-    for (let key of Object.keys(data))
+    for (const key of Object.keys(data))
     {
         if (data[key] !== null)
         {
-            serializedData += ((first ? "?" : "&").toString() + key + "=" + data[key]);
+            let element = "";
+            if (Array.isArray(data[key]))
+            {
+                let secondFirst = true;
+                for (const i of data[key])
+                {
+                    element += ((secondFirst ? "" : ",").toString() + i);
+                    if (secondFirst)
+                    {
+                        secondFirst = false;
+                    }
+                }
+            }
+            else
+            {
+                element = data[key];
+            }
+            serializedData += ((first ? "?" : "&").toString() + key + "=" + encodeURIComponent(element));
             if (first)
             {
                 first = false;
@@ -45,11 +62,11 @@ const request = (method, endpoint, token, data) => {
         //TOKEN INVALID
         else if (response.status === 401)
         {
-            return Promise.reject(new Error(Errors.ERROR_INVALID_TOKEN));
+            return Promise.reject(new Error(Status.UNAUTHORIZED));
         }
         else
         {
-            return Promise.reject(new Error(Errors.REQUEST_ERROR));
+            return Promise.reject(new Error(Status.WRONG_STATUS));
         }
     }).then(response => response.json());
 };
@@ -61,7 +78,7 @@ const requestIfNeeded = (method, endpoint, token, data, type, entity) => {
     }
     else
     {
-        return Promise.reject(new Error(Errors.ERROR_DATA_CACHED));
+        return Promise.reject(new Error(Status.DATA_CACHED));
     }
 };
 
@@ -108,7 +125,7 @@ export const updateUser = (token, new_email, new_password, new_firstname, new_la
     }
     else
     {
-        return Promise.reject(new Error(Errors.ERROR_NO_CHANGES));
+        return Promise.reject(new Error(Status.NO_CHANGES));
     }
 };
 
@@ -121,7 +138,7 @@ export const updateAccount = (token, id, new_name, new_consumer_key, new_consume
     }
     else
     {
-        return Promise.reject(new Error(Errors.ERROR_NO_CHANGES));
+        return Promise.reject(new Error(Status.NO_CHANGES));
     }
 };
 
@@ -156,6 +173,24 @@ export const updateCampaign = (token, account_id, campaign_id, new_name, new_dat
     }
     else
     {
-        return Promise.reject(new Error(Errors.ERROR_NO_CHANGES));
+        return Promise.reject(new Error(Status.NO_CHANGES));
     }
+};
+
+export const addTwitterRule = (token, account_id, campaign_id, name, type, track, condition, delay, undo, lang) => {
+    const data = { account_id, campaign_id, name, type, track, condition, delay, undo, lang };
+
+    return request(Methods.POST, Endpoints.TWITTERRULE_CREATE, token, data);
+};
+
+export const updateTwitterRule = (token, account_id, campaign_id, rule_id, new_name, new_type, new_track, new_condition, new_delay, new_undo, new_lang) => {
+    const data = { account_id, campaign_id, rule_id, new_name, new_type, new_track, new_condition, new_delay, new_undo, new_lang };
+
+    return request(Methods.PUT, Endpoints.TWITTERRULE_UPDATE, token, data);
+};
+
+export const removeTwitterRule = (token, account_id, campaign_id, rule_id) => {
+    const data = { account_id, campaign_id, rule_id };
+
+    return request(Methods.DELETE, Endpoints.TWITTERRULE_DELETE, token, data);
 };

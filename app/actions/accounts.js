@@ -1,10 +1,15 @@
 import { findIndex } from "lodash";
 import { isValidTwitterAccountName, isUniqueTwitterAccountName, isValidTwitterAccountConsumerKey, isValidTwitterAccountConsumerSecret,
-    isValidTwitterAccountAccessTokenKey, isValidTwitterAccountAccessTokenSecret, isValidCampaignName, isUniqueCampaignName, isValidCampaignAccount, isValidCampaignDateBegin, isValidCampaignDateEnd } from "validator";
+    isValidTwitterAccountAccessTokenKey, isValidTwitterAccountAccessTokenSecret, isValidCampaignName, isUniqueCampaignName, isValidCampaignAccount, isValidCampaignDateBegin, isValidCampaignDateEnd,
+    isValidTwitterRuleName, isUniqueTwitterRuleName, isValidTwitterRuleAction, isValidTwitterRuleCondition, isValidTwitterRuleKeyword, isValidTwitterRuleLanguages, isValidTwitterRuleDelay, isValidTwitterRuleUndo } from "validator";
 import * as ActionTypes from "../constants/ActionTypes";
-import * as Errors from "../constants/ErrorTypes";
+import * as Status from "../constants/RequestStatus";
+import * as TwitterRuleTypes from "../constants/TwitterRuleTypes";
+import * as TwitterRuleConditions from "../constants/TwitterRuleConditions";
+import * as TwitterRuleLangs from "../constants/TwitterRuleLangs";
 import { getAccountList, updateAccount as updateAccountAPI, addAccount as addAccountAPI, removeAccount as removeAccountAPI, 
-    addCampaign as addCampaignAPI, removeCampaign as removeCampaignAPI, updateCampaign as updateCampaignAPI, getCampaign } from "../net/Requests";
+    addCampaign as addCampaignAPI, removeCampaign as removeCampaignAPI, updateCampaign as updateCampaignAPI, getCampaign,
+    addTwitterRule as addTwitterRuleAPI, updateTwitterRule as updateTwitterRuleAPI, removeTwitterRule as removeTwitterRuleAPI } from "../net/Requests";
 import { sendFailureMessage, sendFailureMessages, sendSuccessMessage } from "./messages";
 import { disconnect } from "./user";
 
@@ -39,11 +44,11 @@ export function fetchAccountList()
             });
             return Promise.resolve();
         }).catch(error => {
-            if (error.message === Errors.ERROR_DATA_CACHED)
+            if (error.message === Status.DATA_CACHED)
             {
                 return Promise.resolve();
             }
-            else if (error.message === Errors.ERROR_INVALID_TOKEN)
+            else if (error.message === Status.UNAUTHORIZED)
             {
                 const { SESSION_EXPIRED } = state.lang;
                 dispatch(disconnect());
@@ -120,7 +125,7 @@ export function addAccount(name, consumerKey, consumerSecret, accessTokenKey, ac
         else
         {
             dispatch(sendFailureMessages(messages));
-			return Promise.reject(new Error(Errors.ERROR_INVALID_INPUTS));
+			return Promise.reject(new Error(Status.INVALID_INPUTS));
         }
     };
 }
@@ -193,7 +198,7 @@ export function updateAccount(accountId, name, consumerKey, consumerSecret, acce
                 dispatch(sendSuccessMessage(TWITTERACCOUNTFORM_EDIT_SUCCESS));
                 return Promise.resolve();
             }).catch(error => {
-                if (error.message === Errors.ERROR_NO_CHANGES)
+                if (error.message === Status.NO_CHANGES)
                 {
                     return Promise.resolve();
                 }
@@ -207,7 +212,7 @@ export function updateAccount(accountId, name, consumerKey, consumerSecret, acce
         else
         {
             dispatch(sendFailureMessages(messages));
-            return Promise.reject(new Error(Errors.ERROR_INVALID_INPUTS));
+            return Promise.reject(new Error(Status.INVALID_INPUTS));
         }
     };
 }
@@ -302,7 +307,7 @@ export function addCampaign(accountId, name, dateBegin, dateEnd)
         else
         {
             dispatch(sendFailureMessages(messages));
-            return Promise.reject(new Error(Errors.ERROR_INVALID_INPUTS));
+            return Promise.reject(new Error(Status.INVALID_INPUTS));
         }
     };
 }
@@ -399,7 +404,7 @@ export function updateCampaign(accountId, campaignId, name, dateBegin, dateEnd)
                 dispatch(sendSuccessMessage(CAMPAIGNFORM_EDIT_SUCCESS));
                 return Promise.resolve();
             }).catch(error => {
-                if (error.message === Errors.ERROR_NO_CHANGES)
+                if (error.message === Status.NO_CHANGES)
                 {
                     return Promise.resolve();
                 }
@@ -413,7 +418,281 @@ export function updateCampaign(accountId, campaignId, name, dateBegin, dateEnd)
         else
         {
             dispatch(sendFailureMessages(messages));
-            return Promise.reject(new Error(Errors.ERROR_INVALID_INPUTS));
+            return Promise.reject(new Error(Status.INVALID_INPUTS));
         }
+    };
+}
+
+export function addTwitterRule(accountId, campaignId, name, type, track, condition, delay, undo, lang)
+{
+    return (dispatch, getState) => {
+        const state = getState();
+        const {
+            GENERIC_ERROR,
+            TWITTERRULE_NAME_INCORRECT,
+            TWITTERRULE_NAME_NOT_UNIQUE,
+            TWITTERRULE_ACTION_INCORRECT,
+            TWITTERRULE_TRACK_INCORRECT,
+            TWITTERRULE_KEYWORD_INCORRECT,
+            TWITTERRULE_CONDITION_INCORRECT,
+            TWITTERRULE_DELAY_INCORRECT,
+            TWITTERRULE_UNDO_INCORRECT,
+            TWITTERRULE_LANGUAGE_INCORRECT,
+            TWITTERRULE_CREATE_SUCCESS,
+            TWITTERRULE_CREATE_ERROR
+        } = state.lang;
+        const accountIndex = findIndex(state.accounts.data, { name: accountId });
+        if (accountIndex !== -1)
+        {
+            const campaignIndex = findIndex(state.accounts.data[accountIndex].campaigns, { name: campaignId });
+            if (campaignIndex !== -1)
+            {
+                const messages = [];
+                if (!isValidTwitterRuleName(name))
+                {
+                    messages.push(TWITTERRULE_NAME_INCORRECT);
+                }
+                let names = state.accounts.data[accountIndex].campaigns[campaignIndex].config.rules.map(rule => rule.name);
+                if (!isUniqueTwitterRuleName(name, names))
+                {
+                    messages.push(TWITTERRULE_NAME_NOT_UNIQUE);
+                }
+                if (!isValidTwitterRuleAction(type, Object.values(TwitterRuleTypes)))
+                {
+                    messages.push(TWITTERRULE_ACTION_INCORRECT);
+                }
+                if (Array.isArray(track))
+                {
+                    for (const keyword of track)
+                    {
+                        if (!isValidTwitterRuleKeyword(keyword))
+                        {
+                            messages.push(keyword + TWITTERRULE_KEYWORD_INCORRECT);
+                        }
+                    }
+                }
+                else
+                {
+                    messages.push(TWITTERRULE_TRACK_INCORRECT);
+                }
+                if (!isValidTwitterRuleCondition(condition, Object.values(TwitterRuleConditions)))
+                {
+                    messages.push(TWITTERRULE_CONDITION_INCORRECT);
+                }
+                if (!isValidTwitterRuleDelay(delay, 60, 300))
+                {
+                    messages.push(TWITTERRULE_DELAY_INCORRECT);
+                }
+                if (!isValidTwitterRuleUndo(undo, 0, 7))
+                {
+                    messages.push(TWITTERRULE_UNDO_INCORRECT);
+                }
+                if (!isValidTwitterRuleLanguages(lang, Object.values(TwitterRuleLangs)))
+                {
+                    messages.push(TWITTERRULE_LANGUAGE_INCORRECT);
+                }
+                if (messages.length === 0)
+                {
+                    const { token } = state.user;
+                    return addTwitterRuleAPI(token, accountId, campaignId, name, type, track, condition, delay, undo, lang).then(result => {
+                        dispatch({
+                            type: ActionTypes.TWITTERRULE_ADD,
+                            accountId: accountId,
+                            campaignId: campaignId,
+                            name: name,
+                            action: type,
+                            track: track,
+                            condition: condition,
+                            delay: delay,
+                            undo: undo,
+                            lang: lang
+                        });
+                        dispatch(sendSuccessMessage(TWITTERRULE_CREATE_SUCCESS));
+                        return Promise.resolve();
+                    }).catch(error => {
+                        dispatch(sendFailureMessage(GENERIC_ERROR));
+                        return Promise.reject(error);
+                    });
+                }
+                else
+                {
+                    dispatch(sendFailureMessages(messages));
+                    return Promise.reject(new Error(Status.INVALID_INPUTS));
+                }
+            }
+            else
+            {
+                dispatch(sendFailureMessage(GENERIC_ERROR));
+                return Promise.reject(new Error(Status.INVALID_INPUTS));
+            }
+        }
+        else
+        {
+            dispatch(sendFailureMessage(GENERIC_ERROR));
+            return Promise.reject(new Error(Status.INVALID_INPUTS));
+        }
+    };
+}
+
+export function updateTwitterRule(accountId, campaignId, ruleId, name, type, track, condition, delay, undo, lang)
+{
+    return (dispatch, getState) => {
+        const state = getState();
+        const {
+            TWITTERRULE_NAME_INCORRECT,
+            TWITTERRULE_NAME_NOT_UNIQUE,
+            TWITTERRULE_ACTION_INCORRECT,
+            TWITTERRULE_TRACK_INCORRECT,
+            TWITTERRULE_KEYWORD_INCORRECT,
+            TWITTERRULE_CONDITION_INCORRECT,
+            TWITTERRULE_DELAY_INCORRECT,
+            TWITTERRULE_UNDO_INCORRECT,
+            TWITTERRULE_LANGUAGE_INCORRECT,
+            TWITTERRULE_EDIT_SUCCESS,
+            TWITTERRULE_EDIT_ERROR
+        } = state.lang;
+        const accountIndex = findIndex(state.accounts.data, { name: accountId });
+        if (accountIndex !== -1)
+        {
+            const campaignIndex = findIndex(state.accounts.data[accountIndex].campaigns, { name: campaignId });
+            if (campaignIndex !== -1)
+            {
+                const {
+                    uid,
+                    name: initialName,
+                    type: initialType,
+                    track: initialTrack,
+                    condition: initialCondition,
+                    delay: initialDelay,
+                    undo: initialUndo,
+                    lang: initialLang
+                } = state.accounts.data[accountIndex].campaigns[campaignIndex].config.rules[findIndex(state.accounts.data[accountIndex].campaigns[campaignIndex].config.rules, { name: ruleId })];
+                const messages = [];
+                if (name != null && !isValidTwitterRuleName(name))
+                {
+                    messages.push(TWITTERRULE_NAME_INCORRECT);
+                }
+                let names = state.accounts.data[accountIndex].campaigns[campaignIndex].config.rules.map(rule => { if (uid !== rule.uid) return rule.name; });
+                if (name != null && !isUniqueTwitterRuleName(name, names))
+                {
+                    messages.push(TWITTERRULE_NAME_NOT_UNIQUE);
+                }
+                if (type != null && !isValidTwitterRuleAction(type, Object.values(TwitterRuleTypes)))
+                {
+                    messages.push(TWITTERRULE_ACTION_INCORRECT);
+                }
+                if (track != null)
+                {
+                    if (Array.isArray(track))
+                    {
+                        for (const keyword of track)
+                        {
+                            if (!isValidTwitterRuleKeyword(keyword))
+                            {
+                                messages.push(keyword + TWITTERRULE_KEYWORD_INCORRECT);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        messages.push(TWITTERRULE_TRACK_INCORRECT);
+                    }
+                }
+                if (condition != null && !isValidTwitterRuleCondition(condition, Object.values(TwitterRuleConditions)))
+                {
+                    messages.push(TWITTERRULE_CONDITION_INCORRECT);
+                }
+                if (delay != null && !isValidTwitterRuleDelay(delay, 60, 300))
+                {
+                    messages.push(TWITTERRULE_DELAY_INCORRECT);
+                }
+                if (undo != null && !isValidTwitterRuleUndo(undo, 0, 7))
+                {
+                    messages.push(TWITTERRULE_UNDO_INCORRECT);
+                }
+                if (lang != null && !isValidTwitterRuleLanguages(lang, Object.values(TwitterRuleLangs)))
+                {
+                    messages.push(TWITTERRULE_LANGUAGE_INCORRECT);
+                }
+                if (messages.length === 0)
+                {
+                    const newName = name !== initialName ? name : null;
+                    const newType = type !== initialType ? type : null;
+                    const newTrack = track !== initialTrack ? track : null;
+                    const newCondition = condition !== initialCondition ? condition : null;
+                    const newDelay = delay !== initialDelay ? delay : null;
+                    const newUndo = undo !== initialUndo ? undo : null;
+                    const newLang = lang !== initialLang ? lang : null;
+                    const { token } = state.user;
+                    return updateTwitterRuleAPI(token, accountId, campaignId, ruleId, newName, newType, newTrack, newCondition, newDelay, newUndo, newLang).then(result => {
+                        dispatch({
+                            type: ActionTypes.TWITTERRULE_UPDATE,
+                            accountId,
+                            campaignId,
+                            ruleId,
+                            name,
+                            action: type,
+                            track,
+                            condition,
+                            delay,
+                            undo,
+                            lang
+                        });
+                        dispatch(sendSuccessMessage(TWITTERRULE_EDIT_SUCCESS));
+                        return Promise.resolve();
+                    }).catch(error => {
+                        if (error.message === Status.NO_CHANGES)
+                        {
+                            return Promise.resolve();
+                        }
+                        else
+                        {
+                            dispatch(sendFailureMessage(TWITTERRULE_EDIT_ERROR));
+                            return Promise.reject(error);
+                        }
+                    });
+                }
+                else
+                {
+                    dispatch(sendFailureMessages(messages));
+                    return Promise.reject(new Error(Status.INVALID_INPUTS));
+                }
+            }
+            else
+            {
+                dispatch(sendFailureMessage(TWITTERRULE_EDIT_ERROR));
+                return Promise.reject(new Error(Status.INVALID_INPUTS));
+            }
+        }
+        else
+        {
+            dispatch(sendFailureMessage(TWITTERRULE_EDIT_ERROR));
+            return Promise.reject(new Error(Status.INVALID_INPUTS));
+        }
+    };
+}
+
+export function removeTwitterRule(accountId, campaignId, ruleId)
+{
+    return (dispatch, getState) => {
+        const state = getState();
+        const {
+            TWITTERRULE_DELETE_ERROR,
+            TWITTERRULE_DELETE_SUCCESS
+        } = state.lang;
+        const { token } = state.user;
+        return removeTwitterRuleAPI(token, accountId, campaignId, ruleId).then(result => {
+            dispatch({
+                type: ActionTypes.TWITTERRULE_DELETE,
+                accountId: accountId,
+                campaignId: campaignId,
+                ruleId: ruleId
+            });
+            dispatch(sendSuccessMessage(TWITTERRULE_DELETE_SUCCESS));
+            return Promise.resolve();
+        }).catch(error => {
+            dispatch(sendFailureMessage(TWITTERRULE_DELETE_ERROR));
+            return Promise.reject(error);
+        });
     };
 }

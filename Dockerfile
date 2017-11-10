@@ -1,5 +1,5 @@
 FROM debian:stretch
-ARG NODE_MAJOR_VERSION=8
+ARG NODE_MAJOR_VERSION=9
 
 RUN apt-get update && apt-get install -y git ssh-client curl adduser build-essential && \
 	adduser 1000 --force-badname && \
@@ -20,6 +20,6 @@ RUN chown -R 1000 /src
 
 USER 1000
 
-CMD eval $(ssh-agent -s) && ssh-add ~/.ssh/id_rsa && yarn install --production && npm start
+CMD eval $(ssh-agent -s) && ssh-add ~/.ssh/id_rsa && yarn install --production
 
 EXPOSE 3000

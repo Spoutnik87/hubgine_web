@@ -16,6 +16,8 @@ import Container from "../Container";
 import Panel from "../Panel";
 import Form from "../Form";
 import LoadingCog from "../LoadingCog";
+import PrimaryButton from "../buttons/PrimaryButton";
+import DefaultButton from "../buttons/DefaultButton";
 
 class Profile extends Component {
     static propTypes = {
@@ -37,7 +39,12 @@ class Profile extends Component {
             PROFILE_EMAIL: PropTypes.string.isRequired,
             PROFILE_FIRSTNAME: PropTypes.string.isRequired,
             PROFILE_LASTNAME: PropTypes.string.isRequired,
-            PROFILE_LANGUAGE: PropTypes.string.isRequired
+            PROFILE_LANGUAGE: PropTypes.string.isRequired,
+            PROFILE_PASSWORD: PropTypes.string.isRequired,
+            PROFILE_CONFIRMPASSWORD: PropTypes.string.isRequired,
+            PROFILE_EDIT_PASSWORD: PropTypes.string.isRequired,
+            PROFILE_CONFIRMEDIT_PASSWORD: PropTypes.string.isRequired,
+            PROFILE_CANCELEDIT_PASSWORD: PropTypes.string.isRequired
         }).isRequired
     };
 
@@ -48,13 +55,18 @@ class Profile extends Component {
             loadingAccountForm: false,
             isLoaded: false,
             isAccountCreationFormDisplayed: false,
+            isPasswordEditionFormDisplayed: false,
             loadingEmail: false,
             loadingFirstname: false,
             loadingLastname: false,
-            loadingLanguage: false
+            loadingLanguage: false,
+            loadingPassword: false,
+            password: "",
+            cpassword: ""
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleClick = this.handleClick.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         this.handleAccountFormCreationCancel = this.handleAccountFormCreationCancel.bind(this);
         this.handleAccountFormCreationSubmit = this.handleAccountFormCreationSubmit.bind(this);
         this.handleLanguageChange = this.handleLanguageChange.bind(this);
@@ -80,7 +92,7 @@ class Profile extends Component {
             this.setState({
                 loadingEmail: true
             });
-            this.props.actions.updateUser(input.value, null, null, null, null).then(() => {
+            this.props.actions.updateUser(input.value, null, null, null, null, null).then(() => {
                 this.setState({
                     loadingEmail: false
                 });
@@ -95,7 +107,7 @@ class Profile extends Component {
             this.setState({
                 loadingFirstname: true
             });
-            this.props.actions.updateUser(null, null, input.value, null, null).then(() => {
+            this.props.actions.updateUser(null, null, null, input.value, null, null).then(() => {
                 this.setState({
                     loadingFirstname: false
                 });
@@ -110,7 +122,7 @@ class Profile extends Component {
             this.setState({
                 loadingLastname: true
             });
-            this.props.actions.updateUser(null, null, null, input.value, null).then(() => {
+            this.props.actions.updateUser(null, null, null, null, input.value, null).then(() => {
                 this.setState({
                     loadingLastname: false
                 });
@@ -130,6 +142,43 @@ class Profile extends Component {
                 isAccountCreationFormDisplayed: true
             });
         }
+        else if (event.target.id === "buttonPasswordEdition")
+        {
+            this.setState({
+                isPasswordEditionFormDisplayed: true
+            });
+        }
+        else if (event.target.id === "buttonPasswordEditionSubmit")
+        {
+            this.setState({
+                loadingPassword: true
+            });
+            this.props.actions.updateUser(null, this.state.password, this.state.cpassword, null, null, null).then(() => {
+                this.setState({
+                    loadingPassword: false,
+                    isPasswordEditionFormDisplayed: false,
+                    password: "",
+                    cpassword: ""
+                });
+            }).catch(error => {
+                this.setState({
+                    loadingPassword: false
+                });
+            });
+        }
+        else if (event.target.id === "buttonPasswordEditionCancel")
+        {
+            this.setState({
+                isPasswordEditionFormDisplayed: false
+            });
+        }
+    }
+
+    handleChange(event)
+    {
+        this.setState({
+            [event.target.name]: event.target.value
+        });
     }
 
     handleAccountFormCreationSubmit(event)
@@ -168,7 +217,7 @@ class Profile extends Component {
         this.setState({
             loadingLanguage: true
         });
-        this.props.actions.updateUser(null, null, null, null, event.value).then(() => {
+        this.props.actions.updateUser(null, null, null, null, null, event.value).then(() => {
             this.setState({
                 loadingLanguage: false
             });
@@ -188,6 +237,11 @@ class Profile extends Component {
             PROFILE_FIRSTNAME,
             PROFILE_LASTNAME,
             PROFILE_LANGUAGE,
+            PROFILE_PASSWORD,
+            PROFILE_CONFIRMPASSWORD,
+            PROFILE_EDIT_PASSWORD,
+            PROFILE_CONFIRMEDIT_PASSWORD,
+            PROFILE_CANCELEDIT_PASSWORD,
             PROFILE_ACCOUNT_LIST
         } = this.props.lang;
         if (this.state.isLoaded)
@@ -217,9 +271,39 @@ class Profile extends Component {
                         <div className="form-group">
                             <label htmlFor="language" className="col-sm-2">{PROFILE_LANGUAGE}</label>
                             <div className="col-sm-8">
-                                    <ListInput name="language" options={Object.values(Languages)} defaultOption={this.props.user.lang} onChange={this.handleLanguageChange} loading={this.state.loadingLanguage} />
+                                <ListInput name="language" options={Object.values(Languages)} defaultOption={this.props.user.lang} onChange={this.handleLanguageChange} loading={this.state.loadingLanguage} />
                             </div>
                         </div>
+                        {
+                            this.state.loadingPassword ? (
+                                <LoadingCog/>
+                            ) : (
+                                this.state.isPasswordEditionFormDisplayed ? (
+                                    <div>
+                                        <div className="form-group">
+                                            <label htmlFor="password" className="col-sm-2">{PROFILE_PASSWORD}</label>
+                                            <div className="col-sm-8">
+                                                <input type="password" name="password" className="form-control" value={this.state.password} onChange={this.handleChange} autoFocus value={this.state.password}/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="cpassword" className="col-sm-2">{PROFILE_CONFIRMPASSWORD}</label>
+                                            <div className="col-sm-8">
+                                                <input type="password" name="cpassword" className="form-control" value={this.state.cpassword} onChange={this.handleChange} value={this.state.cpassword}/>
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-10">
+                                            <PrimaryButton id="buttonPasswordEditionSubmit" onClick={this.handleClick}>{PROFILE_CONFIRMEDIT_PASSWORD}</PrimaryButton>
+                                            <div style={{ float: "right" }}>
+                                                <DefaultButton id="buttonPasswordEditionCancel" onClick={this.handleClick}>{PROFILE_CANCELEDIT_PASSWORD}</DefaultButton>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <PrimaryButton id="buttonPasswordEdition" onClick={this.handleClick}>{PROFILE_EDIT_PASSWORD}</PrimaryButton>
+                                )
+                            )
+                        }
                     </Form>
                     <Panel title={PROFILE_ACCOUNT_LIST}>
                         <AccountsManagment />
