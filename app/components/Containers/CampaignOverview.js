@@ -8,7 +8,6 @@ import { fetchAccountList, removeCampaign, updateCampaign, addTwitterRule, updat
 import { withLanguage } from "../withLanguage";
 import { withMessages } from "../withMessages";
 import CampaignForm from "../Forms/CampaignForm";
-import RulesOverview from "./RulesOverview";
 import RuleList from "../RuleList";
 import Messages from "../Messages";
 import LoadingCog from "../LoadingCog";
@@ -17,7 +16,6 @@ import Panel from "../Panel";
 import PrimaryButton from "../buttons/PrimaryButton";
 import SuccessButton from "../buttons/SuccessButton";
 import TwitterRuleForm from "../Forms/TwitterRuleForm";
-
 
 class CampaignOverview extends Component {
     static propTypes = {
@@ -67,38 +65,6 @@ class CampaignOverview extends Component {
                 campaign: this.props.accounts[accountIndex].campaigns[findIndex(this.props.accounts[accountIndex].campaigns, { name: this.state.campaignId })]
             });
         }).catch(error => {});
-    }
-    
-    componentWillReceiveProps(nextProps)
-    {
-        const {
-            accountId,
-            campaignId,
-            campaign
-        } = this.state;
-        const accountIndex = findIndex(nextProps.accounts, { name: accountId });
-        const account = nextProps.accounts[accountIndex];
-        const campaignIndex = findIndex(account.campaigns, { name: campaignId });
-        const campaignProps = account.campaigns[campaignIndex];
-        console.log(campaignProps);
-        console.log(campaignProps !== campaign);
-        if (campaignProps != null)
-        {
-            this.setState({
-                campaign: campaignProps
-            });
-        }
-        /*const accountIndex = findIndex(this.props.accounts, { name: accountId });
-        if (this.props.accounts[accountIndex].campaigns !== nextProps.accounts[accountIndex].campaigns)
-        {
-            if (this.props.accounts[accountIndex].campaigns[findIndex(this.props.accounts[accountIndex].campaigns, { name: this.state.campaignId })]
-                    !== nextProps.accounts[accountIndex].campaigns[findIndex(this.props.accounts[accountIndex].campaigns, { name: this.state.campaignId })])
-            const campaign = this.props.accounts[accountIndex].campaigns[findIndex(this.props.accounts[accountIndex].campaigns, { name: this.state.campaignId })];
-            if ()
-            this.setState({
-                campaign
-            });
-        }*/
     }
 
     handleClick(event)
@@ -176,7 +142,6 @@ class CampaignOverview extends Component {
         this.setState({
             loading: true
         });
-        console.log(accountId + " " + campaignId + " " + ruleId);
         this.props.actions.updateTwitterRule(accountId, campaignId, ruleId, name, type, track, condition, delay, null, lang).then(() => {
             this.setState({
                 loading: false,

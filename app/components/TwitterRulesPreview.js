@@ -31,4 +31,4 @@ class TwitterRulesPreview extends Component {
     }
 }
 
-export default RulesOverview;
+export default TwitterRulesPreview;

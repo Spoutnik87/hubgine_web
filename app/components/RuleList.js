@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { withLanguage } from "./withLanguage";
-import Panel from "./Panel";
-import RuleItem from "./Containers/RuleItem";
+import RuleItem from "./RuleItem";
 import LoadingCog from "./LoadingCog";
 import TwitterRuleForm from "./Forms/TwitterRuleForm";
 
@@ -20,7 +19,7 @@ class RuleList extends Component {
             undo: PropTypes.number.isRequired,
             lang: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired
         }).isRequired).isRequired,
-        selectedRule: PropTypes.string.isRequired,
+        selectedRule: PropTypes.string,
         loading: PropTypes.bool,
         onRuleEditMode: PropTypes.func,
         onRuleEditionSubmit: PropTypes.func,
@@ -29,6 +28,8 @@ class RuleList extends Component {
     };
 
     static defaultProps = {
+        selectedRule: "",
+        loading: false,
         onRuleEditMode: () => {},
         onRuleEditionSubmit: () => {},
         onRuleEditionDelete: () => {},

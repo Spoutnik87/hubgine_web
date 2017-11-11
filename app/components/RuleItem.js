@@ -1,12 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { invert } from "lodash";
-import * as TwitterRuleTypes from "../../constants/TwitterRuleTypes";
-import * as TwitterRuleConditions from "../../constants/TwitterRuleConditions";
-import * as TwitterRuleLangs from "../../constants/TwitterRuleLangs";
-import PrimaryButton from "../buttons/PrimaryButton";
-import TwitterRuleForm from "../Forms/TwitterRuleForm";
-import LoadingCog from "../LoadingCog";
+import * as TwitterRuleTypes from "../constants/TwitterRuleTypes";
+import * as TwitterRuleConditions from "../constants/TwitterRuleConditions";
+import * as TwitterRuleLangs from "../constants/TwitterRuleLangs";
+import PrimaryButton from "./buttons/PrimaryButton";
 
 class RuleItem extends Component {
     static propTypes = {
@@ -69,7 +67,7 @@ class RuleItem extends Component {
                 Delay : {delay}<br/>
                 Lang : {lang.map((elem, index) => (
                     <div key={index}>
-                        {elem}
+                        {invert(TwitterRuleLangs)[elem]}
                     </div>
                 ))}
             </div>
