@@ -20,6 +20,6 @@ RUN chown -R 1000 /src
 
 USER 1000
 
-CMD eval $(ssh-agent -s) && ssh-add ~/.ssh/id_rsa && yarn install --production
+CMD eval $(ssh-agent -s) && ssh-add ~/.ssh/id_rsa && yarn install --production && yarn start
 
 EXPOSE 3000
