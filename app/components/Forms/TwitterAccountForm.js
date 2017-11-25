@@ -176,25 +176,25 @@ class TwitterAccountForm extends Component {
                 <div className="form-group">
                     <label className="col-sm-2">{TWITTERACCOUNTFORM_CONSUMERKEY}</label>
                     <div className="col-sm-8">
-                        <input type="text" className="form-control" name="consumerKey" value={this.state.consumerKey} onChange={this.handleChange} autoFocus/>
+                        <input type="text" className="form-control" name="consumerKey" value={this.state.consumerKey} onChange={this.handleChange}/>
                     </div>
                 </div>
                 <div className="form-group">
                     <label className="col-sm-2">{TWITTERACCOUNTFORM_CONSUMERSECRET}</label>
                     <div className="col-sm-8">
-                        <input type="text" className="form-control" name="consumerSecret" value={this.state.consumerSecret} onChange={this.handleChange} autoFocus/>
+                        <input type="text" className="form-control" name="consumerSecret" value={this.state.consumerSecret} onChange={this.handleChange}/>
                     </div>
                 </div>
                 <div className="form-group">
                     <label className="col-sm-2">{TWITTERACCOUNTFORM_ACCESSTOKENKEY}</label>
                     <div className="col-sm-8">
-                        <input type="text" className="form-control" name="accessTokenKey" value={this.state.accessTokenKey} onChange={this.handleChange} autoFocus/>
+                        <input type="text" className="form-control" name="accessTokenKey" value={this.state.accessTokenKey} onChange={this.handleChange}/>
                     </div>
                 </div>
                 <div className="form-group">
                     <label className="col-sm-2">{TWITTERACCOUNTFORM_ACCESSTOKENSECRET}</label>
                     <div className="col-sm-8">
-                        <input type="text" className="form-control" name="accessTokenSecret" value={this.state.accessTokenSecret} onChange={this.handleChange} autoFocus/>
+                        <input type="text" className="form-control" name="accessTokenSecret" value={this.state.accessTokenSecret} onChange={this.handleChange}/>
                     </div>
                 </div>
                 <div className="form-group">

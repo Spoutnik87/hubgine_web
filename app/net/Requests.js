@@ -116,10 +116,10 @@ export const getUserInfos = (token, user) => {
     return requestIfNeeded(Methods.GET, Endpoints.USER_GET, token, {}, Types.USER_FULL, user);
 };
 
-export const updateUser = (token, new_email, new_password, new_firstname, new_lastname, new_lang) => {
-    const data = { new_email, new_password, new_firstname, new_lastname, new_lang };
+export const updateUser = (token, new_email, old_password, new_password, new_firstname, new_lastname, new_lang) => {
+    const data = { new_email, old_password, new_password, new_firstname, new_lastname, new_lang };
 
-    if (!(new_email === null && new_password === null && new_firstname === null && new_lastname === null && new_lang === null))
+    if (!(new_email === null && old_password === null && new_password === null && new_firstname === null && new_lastname === null && new_lang === null))
     {
         return request(Methods.PUT, Endpoints.USER_UPDATE, token, data);
     }

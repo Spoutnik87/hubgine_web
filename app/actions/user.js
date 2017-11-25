@@ -1,4 +1,4 @@
-import { setCookie, getCookie, removeCookie } from "redux-cookie";
+import { setCookie, removeCookie } from "redux-cookie";
 import { isValidEmail, isValidPassword, isValidFirstname, isValidLastname, isValidLanguage } from "validator";
 import { getUser, addUser, getMaxAccounts, getUserInfos, updateUser as updateUserAPI } from "../net/Requests";
 import * as ActionTypes from "../constants/ActionTypes";
@@ -44,7 +44,9 @@ export function connect(email, password)
 	                email: email,
 	                rank: result.rank,
 	                lang: result.lang
-	            }));
+	            }, {
+					path: "/"
+				}));
 	            return Promise.resolve();
 	        }).catch(error => {
 	            dispatch(sendFailureMessage(SIGNIN_CREDENTIALS_INCORRECT));
@@ -113,10 +115,12 @@ export function register(email, password, cpassword, firstname, lastname, lang, 
 					dispatch(changeLanguage(result.lang));
 				}
 				dispatch(setCookie("user", {
-					email,
+					email: email,
 					token: result.token,
 				  	rank: result.rank,
 				  	lang: result.lang
+				}, {
+					path: ""
 				}));
 		      	return Promise.resolve();
 			}).catch(error => {
@@ -172,12 +176,14 @@ export function disconnect()
         dispatch({
             type: ActionTypes.USER_UNSET
 		});
-		dispatch(removeCookie("user"));
+		dispatch(removeCookie("user", {
+			path: ""
+		}));
 		return Promise.resolve();
     };
 }
 
-export function updateUser(email, password, cpassword, firstname, lastname, lang)
+export function updateUser(email, oldpassword, password, cpassword, firstname, lastname, lang)
 {
 	return (dispatch, getState) => {
 		const state = getState();
@@ -195,6 +201,10 @@ export function updateUser(email, password, cpassword, firstname, lastname, lang
 		if (email != null && !isValidEmail(email))
 		{
 			messages.push(USER_EMAIL_INCORRECT);
+		}
+		if (oldpassword != null && !isValidPassword(oldpassword))
+		{
+			messages.push(USER_PASSWORD_INCORRECT);
 		}
 		if (password != null && !isValidPassword(password))
 		{
@@ -227,11 +237,12 @@ export function updateUser(email, password, cpassword, firstname, lastname, lang
 				rank: initialRank
 			} = state.user;
 			const newEmail = email !== initialEmail ? email : null;
+			const oldPassword = oldpassword || null;
 			const newPassword = password || null;
 			const newFirstname = firstname !== initialFirstname ? firstname : null;
 			const newLastname = lastname !== initialLastname ? lastname : null;
 			const newLang = lang !== initialLang ? lang : null;
-			return updateUserAPI(initialToken, newEmail, newPassword, newFirstname, newLastname, newLang).then(result => {
+			return updateUserAPI(initialToken, newEmail, oldPassword, newPassword, newFirstname, newLastname, newLang).then(result => {
 				dispatch({
 					type: ActionTypes.USER_UPDATE,
 					email,
@@ -248,6 +259,8 @@ export function updateUser(email, password, cpassword, firstname, lastname, lang
 					token: initialToken,
 					lang: newLang || initialLang,
 					rank: initialRank
+				}, {
+					path: ""
 				}));
 				dispatch(sendSuccessMessage(USER_EDIT_SUCCESS));
 				return Promise.resolve();

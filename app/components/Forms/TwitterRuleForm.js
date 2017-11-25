@@ -12,6 +12,7 @@ import Form from "../Form";
 import SuccessButton from "../buttons/SuccessButton";
 import DangerButton from "../buttons/DangerButton";
 import DefaultButton from "../buttons/DefaultButton";
+import ToolTip from "../Tooltip";
 import * as TwitterRuleTypes from "../../constants/TwitterRuleTypes";
 import * as TwitterRuleConditions from "../../constants/TwitterRuleConditions";
 import * as TwitterRuleLangs from "../../constants/TwitterRuleLangs";
@@ -29,8 +30,9 @@ class TwitterRuleForm extends Component {
             TWITTERRULEFORM_ACTION: PropTypes.string.isRequired,
             TWITTERRULEFORM_CONDITION: PropTypes.string.isRequired,
             TWITTERRULEFORM_KEYWORDS: PropTypes.string.isRequired,
+            TWITTERRULEFORM_LANGUAGES: PropTypes.string.isRequired,
             TWITTERRULEFORM_DELAY: PropTypes.string.isRequired,
-            TWITTERRULEFORM_LANGUAGES: PropTypes.string.isRequired
+            TWITTERRULEFORM_LANG_TOOLTIP: PropTypes.string.isRequired
         }).isRequired,
         name: PropTypes.string,
         onSubmit: PropTypes.func,
@@ -162,7 +164,8 @@ class TwitterRuleForm extends Component {
             TWITTERRULEFORM_CONDITION,
             TWITTERRULEFORM_KEYWORDS,
             TWITTERRULEFORM_LANGUAGES,
-            TWITTERRULEFORM_DELAY
+            TWITTERRULEFORM_DELAY,
+            TWITTERRULEFORM_LANG_TOOLTIP
         } = this.props.lang;
         const buttonSubmit = this.props.loading ? <LoadingCog/> : <SuccessButton id="buttonSubmit" onClick={this.handleClick}>{this.props.edit ? TWITTERRULEFORM_EDIT_BUTTON : TWITTERRULEFORM_CREATE_BUTTON}</SuccessButton>;
         const buttonDelete = this.props.delete && !this.props.loading && <DangerButton id="buttonDeleteMode" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERRULEFORM_DELETE_BUTTON}</DangerButton>;
@@ -199,7 +202,14 @@ class TwitterRuleForm extends Component {
                     </div>
                 </div>
                 <div className="form-group">
-                    <label className="col-sm-2">{TWITTERRULEFORM_LANGUAGES}</label>
+                    <div className="col-sm-2">
+                        <label>{TWITTERRULEFORM_LANGUAGES}</label>
+                        <span style={{ float: "right" }}>
+                            <ToolTip>
+                                {TWITTERRULEFORM_LANG_TOOLTIP}
+                            </ToolTip>
+                        </span>
+                    </div>
                     <div className="col-sm-10">
                         <ArrayInput name="lang" options={Object.keys(TwitterRuleLangs)} onChange={this.handleChange} values={this.state.lang} unique />
                     </div>

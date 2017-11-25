@@ -80,7 +80,7 @@ class UserSigninForm extends Component {
                 <div className="form-group">
                     <label htmlFor="password" className="col-sm-2">{SIGNIN_PASSWORD}</label>
                     <div className="col-sm-8">
-                        <input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange} autoFocus/>
+                        <input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange}/>
                     </div>
                 </div>
                 <div className="form-group">

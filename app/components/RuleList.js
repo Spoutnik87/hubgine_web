@@ -28,7 +28,7 @@ class RuleList extends Component {
     };
 
     static defaultProps = {
-        selectedRule: "",
+        selectedRule: null,
         loading: false,
         onRuleEditMode: () => {},
         onRuleEditionSubmit: () => {},
@@ -49,15 +49,9 @@ class RuleList extends Component {
                         this.props.rules.map(rule => (
                             <div key={rule.uid}>
                             {
-                                rule.name === selectedRule ? (
-                                    loading ? (
-                                        <LoadingCog center />
-                                    ) : (
-                                        <TwitterRuleForm edit cancel delete rule={rule} onSubmit={this.props.onRuleEditionSubmit} onDelete={this.props.onRuleEditionDelete} onCancel={this.props.onRuleEditionCancel} />
-                                    )
-                                ) : (
-                                    <RuleItem accountId={this.props.accountId} campaignId={this.props.campaignId} rule={rule} onEditMode={this.props.onRuleEditMode} />
-                                )
+                                <RuleItem accountId={this.props.accountId} campaignId={this.props.campaignId} rule={rule} onEditMode={this.props.onRuleEditMode} 
+                                    edit={rule.name === selectedRule} loading={rule.name === selectedRule && loading} onRuleEditionSubmit={this.props.onRuleEditionSubmit} 
+                                        onRuleEditionDelete={this.props.onRuleEditionDelete} onRuleEditionCancel={this.props.onRuleEditionCancel}/>
                             }
                             </div>
                         ))

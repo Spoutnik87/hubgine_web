@@ -40,6 +40,7 @@ class Profile extends Component {
             PROFILE_FIRSTNAME: PropTypes.string.isRequired,
             PROFILE_LASTNAME: PropTypes.string.isRequired,
             PROFILE_LANGUAGE: PropTypes.string.isRequired,
+            PROFILE_OLDPASSWORD: PropTypes.string.isRequired,
             PROFILE_PASSWORD: PropTypes.string.isRequired,
             PROFILE_CONFIRMPASSWORD: PropTypes.string.isRequired,
             PROFILE_EDIT_PASSWORD: PropTypes.string.isRequired,
@@ -61,6 +62,7 @@ class Profile extends Component {
             loadingLastname: false,
             loadingLanguage: false,
             loadingPassword: false,
+            oldpassword: "",
             password: "",
             cpassword: ""
         };
@@ -92,7 +94,7 @@ class Profile extends Component {
             this.setState({
                 loadingEmail: true
             });
-            this.props.actions.updateUser(input.value, null, null, null, null, null).then(() => {
+            this.props.actions.updateUser(input.value, null, null, null, null, null, null).then(() => {
                 this.setState({
                     loadingEmail: false
                 });
@@ -107,7 +109,7 @@ class Profile extends Component {
             this.setState({
                 loadingFirstname: true
             });
-            this.props.actions.updateUser(null, null, null, input.value, null, null).then(() => {
+            this.props.actions.updateUser(null, null, null, null, input.value, null, null).then(() => {
                 this.setState({
                     loadingFirstname: false
                 });
@@ -122,7 +124,7 @@ class Profile extends Component {
             this.setState({
                 loadingLastname: true
             });
-            this.props.actions.updateUser(null, null, null, null, input.value, null).then(() => {
+            this.props.actions.updateUser(null, null, null, null, null, input.value, null).then(() => {
                 this.setState({
                     loadingLastname: false
                 });
@@ -153,10 +155,11 @@ class Profile extends Component {
             this.setState({
                 loadingPassword: true
             });
-            this.props.actions.updateUser(null, this.state.password, this.state.cpassword, null, null, null).then(() => {
+            this.props.actions.updateUser(null, this.state.oldpassword, this.state.password, this.state.cpassword, null, null, null).then(() => {
                 this.setState({
                     loadingPassword: false,
                     isPasswordEditionFormDisplayed: false,
+                    oldpassword: "",
                     password: "",
                     cpassword: ""
                 });
@@ -217,7 +220,7 @@ class Profile extends Component {
         this.setState({
             loadingLanguage: true
         });
-        this.props.actions.updateUser(null, null, null, null, null, event.value).then(() => {
+        this.props.actions.updateUser(null, null, null, null, null, null, event.value).then(() => {
             this.setState({
                 loadingLanguage: false
             });
@@ -237,6 +240,7 @@ class Profile extends Component {
             PROFILE_FIRSTNAME,
             PROFILE_LASTNAME,
             PROFILE_LANGUAGE,
+            PROFILE_OLDPASSWORD,
             PROFILE_PASSWORD,
             PROFILE_CONFIRMPASSWORD,
             PROFILE_EDIT_PASSWORD,
@@ -281,15 +285,21 @@ class Profile extends Component {
                                 this.state.isPasswordEditionFormDisplayed ? (
                                     <div>
                                         <div className="form-group">
+                                            <label htmlFor="oldpassword" className="col-sm-2">{PROFILE_OLDPASSWORD}</label>
+                                            <div className="col-sm-8">
+                                                <input type="password" name="oldpassword" className="form-control" value={this.state.oldpassword} onChange={this.handleChange} autoFocus/>
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
                                             <label htmlFor="password" className="col-sm-2">{PROFILE_PASSWORD}</label>
                                             <div className="col-sm-8">
-                                                <input type="password" name="password" className="form-control" value={this.state.password} onChange={this.handleChange} autoFocus value={this.state.password}/>
+                                                <input type="password" name="password" className="form-control" value={this.state.password} onChange={this.handleChange}/>
                                             </div>
                                         </div>
                                         <div className="form-group">
                                             <label htmlFor="cpassword" className="col-sm-2">{PROFILE_CONFIRMPASSWORD}</label>
                                             <div className="col-sm-8">
-                                                <input type="password" name="cpassword" className="form-control" value={this.state.cpassword} onChange={this.handleChange} value={this.state.cpassword}/>
+                                                <input type="password" name="cpassword" className="form-control" value={this.state.cpassword} onChange={this.handleChange}/>
                                             </div>
                                         </div>
                                         <div className="col-sm-10">

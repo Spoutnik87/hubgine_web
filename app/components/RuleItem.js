@@ -5,6 +5,8 @@ import * as TwitterRuleTypes from "../constants/TwitterRuleTypes";
 import * as TwitterRuleConditions from "../constants/TwitterRuleConditions";
 import * as TwitterRuleLangs from "../constants/TwitterRuleLangs";
 import PrimaryButton from "./buttons/PrimaryButton";
+import TwitterRuleForm from "./Forms/TwitterRuleForm";
+import LoadingCog from "./LoadingCog";
 
 class RuleItem extends Component {
     static propTypes = {
@@ -20,11 +22,21 @@ class RuleItem extends Component {
             undo: PropTypes.number.isRequired,
             lang: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired
         }).isRequired,
-        onEditMode: PropTypes.func
+        onEditMode: PropTypes.func,
+        edit: PropTypes.bool,
+        loading: PropTypes.bool,
+        onRuleEditionSubmit: PropTypes.func,
+        onRuleEditionDelete: PropTypes.func,
+        onRuleEditionCancel: PropTypes.func
     };
 
     static defaultProps = {
         onEditMode: () => {},
+        edit: false,
+        loading: false,
+        onRuleEditionSubmit: () => {},
+        onRuleEditionDelete: () => {},
+        onRuleEditionCancel: () => {}
     };
 
     constructor(props)
@@ -53,23 +65,35 @@ class RuleItem extends Component {
         } = this.props.rule;
         return (
             <div id={name} className="ruleitem col-md-12">
-                <div style={{ float: "right" }} onClick={this.handleClick}>
-                    <PrimaryButton onClick={this.handleEditMode}>Edit this rule</PrimaryButton>
-                </div>
-                Name : {name}<br/>
-                Type : {invert(TwitterRuleTypes)[type]}<br/>
-                Track : {track.map((elem,index) => (
-                    <div key={index}>
-                        {elem}
+            {
+                this.props.edit ? (
+                    this.props.loading ? (
+                        <LoadingCog center/>
+                    ) : (
+                        <TwitterRuleForm edit cancel delete rule={this.props.rule} onSubmit={this.props.onRuleEditionSubmit} onDelete={this.props.onRuleEditionDelete} onCancel={this.props.onRuleEditionCancel} />
+                    )
+                ) : (
+                    <div>
+                        <div style={{ float: "right" }} onClick={this.handleClick}>
+                            <PrimaryButton onClick={this.handleEditMode}>Edit this rule</PrimaryButton>
+                        </div>
+                        Name : {name}<br/>
+                        Type : {invert(TwitterRuleTypes)[type]}<br/>
+                        Track : {track.map((elem,index) => (
+                            <div key={index}>
+                                {elem}
+                            </div>
+                        ))}
+                        Condition : {invert(TwitterRuleConditions)[condition]}<br/>
+                        Delay : {delay}<br/>
+                        Lang : {lang.map((elem, index) => (
+                            <div key={index}>
+                                {invert(TwitterRuleLangs)[elem]}
+                            </div>
+                        ))}
                     </div>
-                ))}
-                Condition : {invert(TwitterRuleConditions)[condition]}<br/>
-                Delay : {delay}<br/>
-                Lang : {lang.map((elem, index) => (
-                    <div key={index}>
-                        {invert(TwitterRuleLangs)[elem]}
-                    </div>
-                ))}
+                )
+            }
             </div>
         )
     }

@@ -125,25 +125,25 @@ class UserRegisterForm extends Component {
                 <div className="form-group">
                     <label htmlFor="lastname" className="col-sm-2">{REGISTER_LASTNAME}</label>
                     <div className="col-sm-8">
-                        <input type="text" name="lastname" id="lastname" className="form-control" value={this.state.lastname} onChange={this.handleChange} autoFocus/>
+                        <input type="text" name="lastname" id="lastname" className="form-control" value={this.state.lastname} onChange={this.handleChange}/>
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="email" className="col-sm-2">{REGISTER_EMAIL}</label>
                     <div className="col-sm-8">
-                        <input type="text" name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
+                        <input type="text" name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange}/>
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="password" className="col-sm-2">{REGISTER_PASSWORD}</label>
                     <div className="col-sm-8">
-                        <input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange} autoFocus/>
+                        <input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange}/>
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="cpassword" className="col-sm-2">{REGISTER_CONFIRMPASSWORD}</label>
                     <div className="col-sm-8">
-                        <input type="password" name="cpassword" id="cpassword" className="form-control" value={this.state.cpassword} onChange={this.handleChange} autoFocus/>
+                        <input type="password" name="cpassword" id="cpassword" className="form-control" value={this.state.cpassword} onChange={this.handleChange}/>
                     </div>
                 </div>
                 <div className="form-group">

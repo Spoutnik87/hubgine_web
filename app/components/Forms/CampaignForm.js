@@ -185,7 +185,7 @@ class CampaignForm extends Component {
                         </span>
                     </div>
                     <div className="col-sm-10">
-                        <input type="text" name="name" id="name" className="form-control" value={this.state.name} onChange={this.handleChange} autoFocus value={this.state.name}/>
+                        <input type="text" name="name" id="name" className="form-control" value={this.state.name} onChange={this.handleChange} autoFocus/>
                     </div>
                 </div>
                 <div className="form-group">

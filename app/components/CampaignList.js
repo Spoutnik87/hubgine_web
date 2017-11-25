@@ -6,6 +6,9 @@ import LoadingCog from "./LoadingCog";
 
 class CampaignList extends Component {
     static propTypes = {
+        lang: PropTypes.shape({
+            CAMPAIGNLIST_NOCAMPAIGN: PropTypes.string.isRequired
+        }).isRequired,
         account: PropTypes.shape({
             name: PropTypes.string.isRequired
         }).isRequired,
@@ -41,6 +44,9 @@ class CampaignList extends Component {
 
     render()
     {
+        const {
+            CAMPAIGNLIST_NOCAMPAIGN
+        } = this.props.lang;
         return (
             this.props.campaigns.length > 0 ? (
                 <div>
@@ -51,7 +57,7 @@ class CampaignList extends Component {
                 }
                 </div>
             ) : (
-                <div>There is no campaign yet.</div>
+                <div>{CAMPAIGNLIST_NOCAMPAIGN}</div>
             )
         );
     }

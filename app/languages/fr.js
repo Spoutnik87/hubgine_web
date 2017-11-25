@@ -54,6 +54,7 @@ export default function getLanguage()
         PROFILE_FIRSTNAME: "Prénom",
         PROFILE_LASTNAME: "Nom",
         PROFILE_LANGUAGE: "Langage préféré",
+        PROFILE_OLDPASSWORD: "Ancien mot de passe",
         PROFILE_PASSWORD: "Mot de passe",
         PROFILE_CONFIRMPASSWORD: "Confirmation du mot de passe",
         PROFILE_EDIT_PASSWORD: "Changer le mot de passe",
@@ -123,6 +124,8 @@ export default function getLanguage()
         CAMPAIGNFORM_EDIT_ERROR: "Une erreur est survenue lors de la mise à jour de la campagne.",
         CAMPAIGNFORM_DELETE_SUCCESS: "Cette campagne a été supprimée avec succès.",
         CAMPAIGNFORM_DELETE_ERROR: "Une erreur est survenue losssssssssssrs de la suppression de la campagne.",
+        //---CAMPAIGNLIST---
+        CAMPAIGNLIST_NOCAMPAIGN: "Il n'y a pas de campagnes actuellement.",
         //---TWITTERRULEFORM---
         TWITTERRULEFORM_CREATE_TITLE: "Créer une règle twitter",
         TWITTERRULEFORM_EDIT_TITLE: "Editer une règle",
@@ -136,6 +139,7 @@ export default function getLanguage()
         TWITTERRULEFORM_KEYWORDS: "Mots-clés",
         TWITTERRULEFORM_LANGUAGES: "Langages",
         TWITTERRULEFORM_DELAY: "Délai",
+        TWITTERRULEFORM_LANG_TOOLTIP: "Si vous ne selectionnez pas de langage, ce filtre sera ignoré, dans le cas contraire les tweets seront filtrés en fonction des langues selectionnées.",
         //---ARRAYINPUT---
         ARRAYINPUT_ADD_BUTTON: "Ajouter",
         ARRAYINPUT_DELETE_BUTTON: "Supprimer",

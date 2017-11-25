@@ -37,7 +37,7 @@ class CampaignOverview extends Component {
             accountId: decodeURI(this.props.match.params.accountId),
             campaignId: decodeURI(this.props.match.params.campaignId),
             campaign: undefined,
-            selectedRule: "",
+            selectedRule: null,
             loading: false
         };
         this.handleClick = this.handleClick.bind(this);
@@ -145,7 +145,7 @@ class CampaignOverview extends Component {
         this.props.actions.updateTwitterRule(accountId, campaignId, ruleId, name, type, track, condition, delay, null, lang).then(() => {
             this.setState({
                 loading: false,
-                selectedRule: ""
+                selectedRule: null
             });
         }).catch(error => {
             this.setState({
@@ -169,7 +169,7 @@ class CampaignOverview extends Component {
         this.props.actions.removeTwitterRule(accountId, campaignId, name).then(() => {
             this.setState({
                 loading: false,
-                selectedRule: ""
+                selectedRule: null
             });
         }).catch(() => {
             this.setState({
@@ -181,7 +181,7 @@ class CampaignOverview extends Component {
     handleRuleEditionCancel()
     {
         this.setState({
-            selectedRule: ""
+            selectedRule: null
         });
     }
 

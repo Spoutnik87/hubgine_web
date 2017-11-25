@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import UserForgotPasswordForm from "./Forms/UserForgotPasswordForm";
 import { withMessages } from "./withMessages";
+import Container from "./Container";
+import Panel from "./Panel";
 
 class ForgotPassword extends Component {
     static propTypes = {
@@ -19,7 +21,6 @@ class ForgotPassword extends Component {
 
     handleSubmit(event)
     {
-        const messages = [];
         const {
             email
         } = event.result;
@@ -28,11 +29,11 @@ class ForgotPassword extends Component {
     render()
     {
         return (
-            <div className="container">
-                <div className="panel">
+            <Container>
+                <Panel>
                     <UserForgotPasswordForm onSubmit={this.handleSubmit} loading={this.state.loading} messages={this.props.messages} />
-                </div>
-            </div>
+                </Panel>
+            </Container>
         );
     }
 }

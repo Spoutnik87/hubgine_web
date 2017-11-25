@@ -1,18 +1,21 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { type } from "os";
 
 class ConditionalInput extends Component {
     static propTypes = {
         name: PropTypes.string,
-        value: PropTypes.number,
-        condition: PropTypes.func.isRequired,
-        onChange: PropTypes.func
+        value: PropTypes.string,
+        condition: PropTypes.oneOfType([PropTypes.func, PropTypes.string]).isRequired,
+        onChange: PropTypes.func,
+        type: PropTypes.string
     };
 
     static defaultProps = {
         name: "conditionalinput",
-        value: 0,
-        onChange: () => {}
+        value: "",
+        onChange: () => {},
+        type: "text"
     };
 
     constructor(props)
@@ -27,13 +30,21 @@ class ConditionalInput extends Component {
 
     handleChange(event)
     {
-        if (this.props.condition(event.target.value))
+        const {
+            name,
+            condition,
+            onChange
+        } = this.props;
+        const {
+            value
+        } = event.target;
+        if ((typeof condition === "function" && condition(value)) || (typeof condition === "string" && value.match(condition)))
         {
             this.setState({
                 value: value
             });
-            this.props.onChange({
-                name: this.props.name,
+            onChange({
+                name: name,
                 value: value
             });
         }
@@ -42,7 +53,7 @@ class ConditionalInput extends Component {
     render()
     {
         return (
-            <input type="text" className="form-control" value={this.state.value} onChange={this.handleChange} autoFocus/>
+            <input type={type} className="form-control" value={this.state.value} onChange={this.handleChange} autoFocus/>
         );
     }
 }
