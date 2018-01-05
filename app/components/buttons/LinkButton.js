@@ -1,8 +1,8 @@
 import React from "react";
 
-const LinkButton = (props) => {
+const LinkButton = ({children, className = "", ...props}) => {
     return (
-        <button className="btn btn-link" {...props}>{props.children}</button>
+        <button type="button" className={"btn btn-link ".concat(className)} {...props}>{children}</button>
     );
 };
 

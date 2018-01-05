@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import Input from "./Input";
 
 class Checkbox extends Component {
     static propTypes = {
@@ -39,7 +40,7 @@ class Checkbox extends Component {
     {
         return (
             <div className="component-checkbox">
-                <input type="checkbox" name={this.props.name} id="checkbox" onChange={this.handleChange} checked={this.state.value} />
+                <Input type="checkbox" name={this.props.name} id="checkbox" onChange={this.handleChange} checked={this.state.value} />
                 <label htmlFor="checkbox"></label>
             </div>
         );

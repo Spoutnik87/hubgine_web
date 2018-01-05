@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import Input from "./Input";
 import LoadingCog from "../LoadingCog";
+import IconButton from "../buttons/IconButton";
 
 class TextInput extends Component {
     static propTypes = {
@@ -31,7 +33,7 @@ class TextInput extends Component {
     handleChange(event)
     {
         this.setState({
-            value: event.target.value
+            value: event.value
         });
     }
 
@@ -75,9 +77,9 @@ class TextInput extends Component {
             {
                 mainDiv = (
                     <div className="input-group">
-                        <input type="text" className="form-control" value={this.state.value} onChange={this.handleChange} autoFocus/>
-                        <span id="buttonTextSubmit" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonTextSubmit" className="fa fa-check fa-fw"></i></span>
-                        <span id="buttonTextCancel" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonTextCancel" className="fa fa-remove fa-fw"></i></span>
+                        <Input className="form-control" value={this.state.value} onChange={this.handleChange} autoFocus />
+                        <IconButton id="buttonTextSubmit" className="input-group-addon edit-button" icon="fa fa-check fa-fw" onClick={this.handleClick} />
+                        <IconButton id="buttonTextCancel" className="input-group-addon edit-button" icon="fa fa-remove fa-fw" onClick={this.handleClick} />        
                     </div>
                 );
             }
@@ -86,7 +88,7 @@ class TextInput extends Component {
                 mainDiv = (
                     <div className="input-group">
                         <div className="form-control">{this.props.value}</div>
-                        <span id="buttonTextEdit" className="input-group-addon edit-button" onClick={this.handleClick}><i id="buttonTextEdit" className="fa fa-pencil fa-fw"></i></span>
+                        <IconButton id="buttonTextEdit" className="input-group-addon edit-button" icon="fa fa-pencil fa-fw" onClick={this.handleClick} />        
                     </div>
                 );
             }

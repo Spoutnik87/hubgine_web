@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import Input from "./Input";
+import IconButton from "../buttons/IconButton";
 
 class NumberInput extends Component {
     static propTypes = {
@@ -38,9 +40,9 @@ class NumberInput extends Component {
 
     handleChange(event)
     {
-        if (this.isNumeric(event.target.value))
+        if (this.isNumeric(event.value))
         {
-            const value = event.target.value === "" ? 0 : parseInt(event.target.value);
+            const value = event.value === "" ? 0 : parseInt(event.value);
             this.setState({
                 value: value
             });
@@ -71,9 +73,9 @@ class NumberInput extends Component {
     {
         return (
             <div className="input-group">
-                <input type="text" className="form-control" value={this.state.value} onChange={this.handleChange} autoFocus/>
-                <span id="buttonDecrement" className="input-group-addon numberinput-button" onClick={this.handleClick}><i id="buttonDecrement" className="fa fa-minus fa-fw"></i></span>
-                <span id="buttonIncrement" className="input-group-addon numberinput-button" onClick={this.handleClick}><i id="buttonIncrement" className="fa fa-plus fa-fw"></i></span>
+                <Input className="form-control" value={this.state.value} onChange={this.handleChange} autoFocus />
+                <IconButton id="buttonDecrement" className="input-group-addon numberinput-button" icon="fa fa-minus fa-fw" onClick={this.handleClick} />
+                <IconButton id="buttonIncrement" className="input-group-addon numberinput-button" icon="fa fa-plus fa-fw" onClick={this.handleClick} />
             </div>
         );
     }

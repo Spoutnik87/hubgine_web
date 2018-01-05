@@ -1,5 +1,5 @@
 import { setCookie, removeCookie } from "redux-cookie";
-import { isValidEmail, isValidPassword, isValidFirstname, isValidLastname, isValidLanguage } from "validator";
+import { isValidEmail, isValidPassword, isValidFirstname, isValidLastname, isValidLanguage, isValidSignupForm, isValidSigninForm } from "validator";
 import { getUser, addUser, getMaxAccounts, getUserInfos, updateUser as updateUserAPI } from "../net/Requests";
 import * as ActionTypes from "../constants/ActionTypes";
 import * as Status from "../constants/RequestStatus";
@@ -16,15 +16,12 @@ export function connect(email, password)
 			SIGNIN_PASSWORD_INCORRECT,
 			SIGNIN_CREDENTIALS_INCORRECT
 		} = getState().lang;
-		const messages = [];
-	    if (!isValidEmail(email))
-	    {
-	        messages.push(SIGNIN_EMAIL_INCORRECT);
-	    }
-	    if (!isValidPassword(password))
-	    {
-	        messages.push(SIGNIN_PASSWORD_INCORRECT);
-	    }
+		let messages = [];
+		const result = isValidSigninForm(email, password, SIGNIN_EMAIL_INCORRECT, SIGNIN_PASSWORD_INCORRECT, true, false);
+		if (Array.isArray(result))
+		{
+			messages = messages.concat(result);
+		}
 		if (messages.length === 0)
 		{
 			return getUser(email, password).then(result => {
@@ -72,30 +69,16 @@ export function register(email, password, cpassword, firstname, lastname, lang, 
             REGISTER_PASSWORD_INCORRECT,
 			REGISTER_PASSWORD_NOT_MATCH,
 			REGISTER_USETERMS_INCORRECT,
+			REGISTER_LANG_INCORRECT,
 			REGISTER_ERROR
 		} = getState().lang;
 		let messages = [];
-		if (!isValidFirstname(firstname))
-        {
-            messages.push(REGISTER_FIRSTNAME_INCORRECT);
-        }
-        if (!isValidLastname(lastname))
-        {
-            messages.push(REGISTER_LASTNAME_INCORRECT);
-        }
-        if (!isValidEmail(email))
-        {
-            messages.push(REGISTER_EMAIL_INCORRECT);
-        }
-        if (!isValidPassword(password))
-        {
-            messages.push(REGISTER_PASSWORD_INCORRECT);
+		const result = isValidSignupForm(email, password, cpassword, firstname, lastname, lang, Object.values(Languages), 
+			REGISTER_EMAIL_INCORRECT, REGISTER_PASSWORD_INCORRECT, REGISTER_PASSWORD_NOT_MATCH, REGISTER_FIRSTNAME_INCORRECT, REGISTER_LASTNAME_INCORRECT, REGISTER_LANG_INCORRECT, true, false);
+		if (Array.isArray(result))
+		{
+			messages = messages.concat(result);
 		}
-		if (!isValidLanguage(lang, Object.values(Languages)))
-        if (password !== cpassword)
-        {
-            messages.push(REGISTER_PASSWORD_NOT_MATCH);
-        }
         if (!useterms)
         {
             messages.push(REGISTER_USETERMS_INCORRECT);
@@ -176,6 +159,9 @@ export function disconnect()
         dispatch({
             type: ActionTypes.USER_UNSET
 		});
+		dispatch({
+			type: ActionTypes.ACCOUNTS_UNSET
+		});
 		dispatch(removeCookie("user", {
 			path: ""
 		}));
@@ -195,7 +181,7 @@ export function updateUser(email, oldpassword, password, cpassword, firstname, l
 			USER_LASTNAME_INCORRECT,
 			USER_LANGUAGE_INCORRECT,
 			GENERIC_ERROR,
-			USER_EDIT_SUCCESS
+			USERPASSWORDFORM_EDIT_ERROR
 		} = state.lang;
 		const messages = [];
 		if (email != null && !isValidEmail(email))
@@ -262,6 +248,9 @@ export function updateUser(email, oldpassword, password, cpassword, firstname, l
 				}, {
 					path: ""
 				}));
+				const {
+					USER_EDIT_SUCCESS
+				} = getState().lang;
 				dispatch(sendSuccessMessage(USER_EDIT_SUCCESS));
 				return Promise.resolve();
 			}).catch(error => {
@@ -271,7 +260,14 @@ export function updateUser(email, oldpassword, password, cpassword, firstname, l
 				}
 				else
 				{
-					dispatch(sendFailureMessage(GENERIC_ERROR));
+					if (password !== null)
+					{
+						dispatch(sendFailureMessage(USERPASSWORDFORM_EDIT_ERROR));
+					}
+					else
+					{
+						dispatch(sendFailureMessage(GENERIC_ERROR));
+					}
 					return Promise.reject(error);
 				}
 			});

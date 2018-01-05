@@ -1,5 +1,5 @@
 import v4 from "uuid";
-import { findIndex } from "lodash";
+import { findIndex, unset } from "lodash";
 import * as ActionTypes from "../constants/ActionTypes";
 import * as RequestTypes from "../constants/RequestTypes";
 import { addMetadata } from "../util/Metadata";
@@ -34,7 +34,6 @@ const accounts = (state = {}, action) =>
         };
         case ActionTypes.ACCOUNT_ADD:
             state.data.push({
-                ...account,
                 uid: v4(),
                 name: action.name,
                 consumerKey: action.consumerKey,
@@ -42,6 +41,7 @@ const accounts = (state = {}, action) =>
                 accessTokenKey: action.accessTokenKey,
                 accessTokenSecret: action.accessTokenSecret,
                 maxCampaigns: action.maxCampaigns,
+                blacklist: action.blacklist,
                 campaigns: []
             });
             return state;
@@ -58,7 +58,8 @@ const accounts = (state = {}, action) =>
                 consumerKey: action.consumerKey,
                 consumerSecret: action.consumerSecret,
                 accessTokenKey: action.accessTokenKey,
-                accessTokenSecret: action.accessTokenSecret
+                accessTokenSecret: action.accessTokenSecret,
+                blacklist: action.blacklist
             };
             return state;
         //CAMPAIGNS
@@ -95,6 +96,7 @@ const accounts = (state = {}, action) =>
                     uid: v4(),
                     name: action.name,
                     type: action.action,
+                    messages: action.messages,
                     track: action.track,
                     condition: action.condition,
                     delay: action.delay,
@@ -109,15 +111,21 @@ const accounts = (state = {}, action) =>
             ruleIndex = findIndex(state.data[accountIndex].campaigns[campaignIndex].config.rules, { name: action.ruleId });
             if (accountIndex !== -1 && campaignIndex !== -1 && ruleIndex !== -1)
             {
-                state.data[accountIndex].campaigns[campaignIndex].config.rules[ruleIndex] = {
+                const rule = {
                     ...state.data[accountIndex].campaigns[campaignIndex].config.rules[ruleIndex],
                     name: action.name,
                     type: action.action,
+                    messages: action.messages,
                     track: action.track,
                     condition: action.condition,
                     delay: action.delay,
                     lang: action.lang
                 };
+                if (action.action != 0)
+                {
+                    unset(rule, "messages");
+                }
+                state.data[accountIndex].campaigns[campaignIndex].config.rules[ruleIndex] = rule;
             }
             return state;
         case ActionTypes.TWITTERRULE_DELETE:
@@ -128,6 +136,10 @@ const accounts = (state = {}, action) =>
                 state.data[accountIndex].campaigns[campaignIndex].config.rules = state.data[accountIndex].campaigns[campaignIndex].config.rules.filter(rule => rule.name !== action.ruleId);
             }
             return state;
+        case ActionTypes.ACCOUNTS_UNSET:
+            return {
+                data: []
+            };
         default:
             return state;
     }

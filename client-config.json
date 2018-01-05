@@ -1,12 +1,12 @@
 {
-  "recaptcha": {
-    "key": "6Le-wvkSAAAAAPBMRTvw0Q4Muexq9bi0DJwx_mJ-"
-  },
-  "api": {
-    "host": "http://127.0.0.1",
-    "port": 8079
-  },
-  "store": {
-    "cache_time": 300
-  }
+    "recaptcha": {
+        "key": "6Le-wvkSAAAAAPBMRTvw0Q4Muexq9bi0DJwx_mJ-"
+    },
+    "api": {
+        "host": "http://127.0.0.1",
+        "port": 8079
+    },
+    "store": {
+        "cache_time": 300
+    }
 }

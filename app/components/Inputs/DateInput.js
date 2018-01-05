@@ -3,18 +3,19 @@ import PropTypes from "prop-types";
 import Datetime from "react-datetime";
 import moment from "moment";
 import { withLanguage } from "../withLanguage";
+require('moment/locale/fr');
 
 class DateInput extends Component {
     static propTypes = {
         name: PropTypes.string,
         onChange: PropTypes.func,
-        value: PropTypes.string
+        value: PropTypes.number
     };
 
     static defaultProps = {
         name: "dateinput",
         onChange: () => {},
-        value: null
+        value: undefined
     };
 
     constructor(props)
@@ -31,7 +32,7 @@ class DateInput extends Component {
     {
         this.props.onChange({
             name: this.props.name,
-            value: moment(datetime).format("X")
+            value: moment(datetime).unix()
         });
     }
 
@@ -44,7 +45,7 @@ class DateInput extends Component {
             return current.isAfter(this.state.yesterday) && current.isBefore(this.state.nextYear);
         };
         return (
-            <Datetime locale={REACT_DATETIME_LANGUAGE} isValidDate={valid} onChange={this.handleChange} value={this.props.value ? new Date(parseInt(this.props.value)*1000) : ""}/>
+            <Datetime locale={REACT_DATETIME_LANGUAGE} isValidDate={valid} onChange={this.handleChange} value={this.props.value ? new Date(this.props.value*1000) : ""}/>
         );
     }
 }

@@ -36,7 +36,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookiesMiddleware());
 app.all("/css/*.scss", (req, res, next) => {
-  res.status(403).end("forbidden");
+    res.status(403).end("forbidden");
 });
 app.use(express.static(path.join(__dirname, "public"), {
     setHeaders: res => {
@@ -47,53 +47,56 @@ app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 // React server rendering
 app.use((req, res) => {
-  const user = req.universalCookies.get("user") || {};
-  const initialState = {
-    messages: {},
-    user: user,
-    accounts: {
-      data: []
-    }
-  };
-  const store = configureStore({
-    ...initialState,
-    lang: lang.default(user.lang || Languages.ENGLISH)
-  }, req.universalCookies);
-  const context = {};
+    const user = req.universalCookies.get("user") || {};
+    const initialState = {
+        messages: {},
+        user: user,
+        accounts: {
+            data: []
+        }
+    };
+    const store = configureStore({
+        ...initialState,
+        lang: lang.default(user.lang || Languages.ENGLISH)
+    }, req.universalCookies);
+    const context = {};
 
-  const html = ReactDOM.renderToString(
-    React.createElement(Provider, { store }, 
-      React.createElement(Router.StaticRouter, { location: req.url, context },
-        React.createElement(App)
-    )));
+    const html = ReactDOM.renderToString(
+        React.createElement(Provider, { store },
+            React.createElement(Router.StaticRouter, { location: req.url, context },
+                React.createElement(App)
+            )
+        )
+    );
 
     if (context.url)
     {
-      res.redirect(302, context.url);
+        res.redirect(302, context.url);
     }
     else
     {
-      res.render("layout", {
-        html: html,
-        initialState: {
-          ...store.getState(),
-          lang: {}
-        }
-      });
+        res.render("layout", {
+            html: html,
+            initialState: {
+                ...store.getState(),
+                user: {},
+                lang: {}
+            }
+        });
     }
 });
 
 // Production error handler
 if (process.env.NODE_ENV === "production")
 {
-  app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.sendStatus(err.status || 500);
-  });
+    app.use((err, req, res, next) => {
+        console.error(err.stack);
+        res.sendStatus(err.status || 500);
+    });
 }
 
 server.listen(app.get("port"), () => {
-  console.log("Express server listening on port " + app.get("port"));
+    console.log("Express server listening on port " + app.get("port"));
 });
 
 module.exports = app;

@@ -1,7 +1,8 @@
-import { findIndex } from "lodash";
+import { findIndex, isEqual } from "lodash";
 import { isValidTwitterAccountName, isUniqueTwitterAccountName, isValidTwitterAccountConsumerKey, isValidTwitterAccountConsumerSecret,
-    isValidTwitterAccountAccessTokenKey, isValidTwitterAccountAccessTokenSecret, isValidCampaignName, isUniqueCampaignName, isValidCampaignAccount, isValidCampaignDateBegin, isValidCampaignDateEnd,
-    isValidTwitterRuleName, isUniqueTwitterRuleName, isValidTwitterRuleAction, isValidTwitterRuleCondition, isValidTwitterRuleKeyword, isValidTwitterRuleLanguages, isValidTwitterRuleDelay, isValidTwitterRuleUndo } from "validator";
+    isValidTwitterAccountAccessTokenKey, isValidTwitterAccountAccessTokenSecret, isValidTwitterAccountBlacklistWord, isValidCampaignName, isUniqueCampaignName, isValidCampaignAccount, isValidCampaignDateBegin, isValidCampaignDateEnd,
+    isValidTwitterRuleName, isUniqueTwitterRuleName, isValidTwitterRuleAction, isValidTwitterRuleMessage, isValidTwitterRuleCondition, isValidTwitterRuleKeyword, isValidTwitterRuleLanguages, isValidTwitterRuleDelay, isValidTwitterRuleUndo, 
+    isValidCampaignForm, isValidTwitterAccountForm, isValidTwitterRuleForm } from "validator";
 import * as ActionTypes from "../constants/ActionTypes";
 import * as Status from "../constants/RequestStatus";
 import * as TwitterRuleTypes from "../constants/TwitterRuleTypes";
@@ -28,6 +29,7 @@ export function fetchAccountList()
                         accessTokenKey: account.access_token_key,
                         accessTokenSecret: account.access_token_secret,
                         maxCampaigns: account.max_campaigns,
+                        blacklist: account.blacklist,
                         campaigns: account.campaigns.map(campaign => ({
                             name: campaign.name,
                             dateBegin: campaign.date_begin,
@@ -63,7 +65,7 @@ export function fetchAccountList()
     };
 }
 
-export function addAccount(name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret)
+export function addAccount(name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist)
 {
     return (dispatch, getState) => {
         const state = getState();
@@ -74,38 +76,23 @@ export function addAccount(name, consumerKey, consumerSecret, accessTokenKey, ac
             TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT,
             TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT,
             TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT,
+            TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT,
+            TWITTERACCOUNTFORM_BLACKLIST_INCORRECT,
             TWITTERACCOUNTFORM_GENERIC_ERROR,
             TWITTERACCOUNTFORM_CREATE_SUCCESS
         } = state.lang;
-        const messages = [];
-        if (!isValidTwitterAccountName(name))
+        let messages = [];
+        const result = isValidTwitterAccountForm(name, state.accounts.data.map(account => account.name), consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist,
+            TWITTERACCOUNTFORM_NAME_INCORRECT, TWITTERACCOUNTFORM_NAME_NOT_UNIQUE, TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT, TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT,
+            TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT, TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT, TWITTERACCOUNTFORM_BLACKLIST_INCORRECT, TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT, true, false);
+        if (Array.isArray(result))
         {
-            messages.push(TWITTERACCOUNTFORM_NAME_INCORRECT);
-        }
-        if (!isUniqueTwitterAccountName(name, state.accounts.data.map(account => account.name)))
-        {
-            messages.push(TWITTERACCOUNTFORM_NAME_NOT_UNIQUE);
-        }
-        if (!isValidTwitterAccountConsumerKey(consumerKey))
-        {
-            messages.push(TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT);
-        }
-        if (!isValidTwitterAccountConsumerSecret(consumerSecret))
-        {
-            messages.push(TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT);
-        }
-        if (!isValidTwitterAccountAccessTokenKey(accessTokenKey))
-        {
-            messages.push(TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT);
-        }
-        if (!isValidTwitterAccountAccessTokenSecret(accessTokenSecret))
-        {
-            messages.push(TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT);
+            messages = messages.concat(result);
         }
         if (messages.length === 0)
         {
             const { token } = state.user;
-            return addAccountAPI(token, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret).then(result => {
+            return addAccountAPI(token, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist).then(result => {
                 dispatch({
                     type: ActionTypes.ACCOUNT_ADD,
                     name: name,
@@ -113,7 +100,8 @@ export function addAccount(name, consumerKey, consumerSecret, accessTokenKey, ac
                     consumerSecret: consumerSecret,
                     accessTokenKey: accessTokenKey,
                     accessTokenSecret: accessTokenSecret,
-                    maxCampaigns: result.max_campaigns
+                    maxCampaigns: result.max_campaigns,
+                    blacklist: blacklist
                 });
                 dispatch(sendSuccessMessage(TWITTERACCOUNTFORM_CREATE_SUCCESS));
                 return Promise.resolve();
@@ -130,7 +118,7 @@ export function addAccount(name, consumerKey, consumerSecret, accessTokenKey, ac
     };
 }
 
-export function updateAccount(accountId, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret)
+export function updateAccount(accountId, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist)
 {
     return (dispatch, getState) => {
         const state = getState();
@@ -141,6 +129,8 @@ export function updateAccount(accountId, name, consumerKey, consumerSecret, acce
             TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT,
             TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT,
             TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT,
+            TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT,
+            TWITTERACCOUNTFORM_BLACKLIST_INCORRECT,
             TWITTERACCOUNTFORM_EDIT_SUCCESS,
             TWITTERACCOUNTFORM_EDIT_ERROR
         } = state.lang;
@@ -150,32 +140,51 @@ export function updateAccount(accountId, name, consumerKey, consumerSecret, acce
             consumerKey: initialConsumerKey,
             consumerSecret: initialConsumerSecret,
             accessTokenKey: initialAccessTokenKey,
-            accessTokenSecret: initialAccessTokenSecret
+            accessTokenSecret: initialAccessTokenSecret,
+            blacklist: initialBlacklist
         } = state.accounts.data[findIndex(state.accounts.data, { name: accountId })];
         const messages = [];
-        if (typeof name === "string" && !isValidTwitterAccountName(name))
+
+        if (name != null && !isValidTwitterAccountName(name))
         {
             messages.push(TWITTERACCOUNTFORM_NAME_INCORRECT);
         }
-        if (typeof name === "string" && !isUniqueTwitterAccountName(name, state.accounts.data.map(account => { if (uid !== account.uid) return account.name; })))
+        if (name != null && !isUniqueTwitterAccountName(name, state.accounts.data.map(account => { if (uid !== account.uid) return account.name; })))
         {
             messages.push(TWITTERACCOUNTFORM_NAME_NOT_UNIQUE);
         }
-        if (typeof consumerKey === "string" && !isValidTwitterAccountConsumerKey(consumerKey))
+        if (consumerKey != null && !isValidTwitterAccountConsumerKey(consumerKey))
         {
             messages.push(TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT);
         }
-        if (typeof consumerSecret === "string" && !isValidTwitterAccountConsumerSecret(consumerSecret))
+        if (consumerSecret != null && !isValidTwitterAccountConsumerSecret(consumerSecret))
         {
             messages.push(TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT);
         }
-        if (typeof accessTokenKey === "string" && !isValidTwitterAccountAccessTokenKey(accessTokenKey))
+        if (accessTokenKey != null && !isValidTwitterAccountAccessTokenKey(accessTokenKey))
         {
             messages.push(TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT);
         }
-        if (typeof accessTokenSecret === "string" && !isValidTwitterAccountAccessTokenSecret(accessTokenSecret))
+        if (accessTokenSecret != null && !isValidTwitterAccountAccessTokenSecret(accessTokenSecret))
         {
             messages.push(TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT);
+        }
+        if (blacklist != null)
+        {
+            if (Array.isArray(blacklist))
+            {
+                for (const word of blacklist)
+                {
+                    if (!isValidTwitterAccountBlacklistWord(word))
+                    {
+                        messages.push(word + TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT);
+                    }
+                }
+            }
+            else
+            {
+                messages.push(TWITTERACCOUNTFORM_BLACKLIST_INCORRECT);
+            }
         }
         if (messages.length === 0)
         {
@@ -184,8 +193,9 @@ export function updateAccount(accountId, name, consumerKey, consumerSecret, acce
             const newConsumerSecret = consumerSecret !== initialConsumerSecret ? consumerSecret : null;
             const newAccessTokenKey = accessTokenKey !== initialAccessTokenKey ? accessTokenKey : null;
             const newAccessTokenSecret = accessTokenSecret !== initialAccessTokenSecret ? accessTokenSecret : null;
+            const newBlacklist = blacklist !== initialBlacklist ? blacklist : null;
             const { token } = state.user;
-            return updateAccountAPI(token, initialName, newName, newConsumerKey, newConsumerSecret, newAccessTokenKey, newAccessTokenSecret).then(result => {
+            return updateAccountAPI(token, initialName, newName, newConsumerKey, newConsumerSecret, newAccessTokenKey, newAccessTokenSecret, newBlacklist).then(result => {
                 dispatch({
                     type: ActionTypes.ACCOUNT_UPDATE,
                     accountId: accountId,
@@ -193,7 +203,8 @@ export function updateAccount(accountId, name, consumerKey, consumerSecret, acce
                     consumerKey: consumerKey,
                     consumerSecret: consumerSecret,
                     accessTokenKey: accessTokenKey,
-                    accessTokenSecret: accessTokenSecret
+                    accessTokenSecret: accessTokenSecret,
+                    blacklist: blacklist
                 });
                 dispatch(sendSuccessMessage(TWITTERACCOUNTFORM_EDIT_SUCCESS));
                 return Promise.resolve();
@@ -255,35 +266,20 @@ export function addCampaign(accountId, name, dateBegin, dateEnd)
             CAMPAIGNFORM_CREATE_SUCCESS, 
             CAMPAIGNFORM_GENERIC_ERROR
         } = state.lang;
-        const messages = [];
-        if (!isValidCampaignName(name))
-        {
-            messages.push(CAMPAIGNFORM_NAME_INCORRECT);
-        }
+        let messages = [];
         let names = [];
-        for (let i = 0; i < state.accounts.data.length; i++)
+        for (const account of state.accounts.data)
         {
-            names = names.concat(state.accounts.data[i].campaigns.map(campaign => campaign.name));
+            for (const campaign of account.campaigns)
+            {
+                names.push(campaign.name);
+            }
         }
-        if (!isUniqueCampaignName(name, names))
+        const result = isValidCampaignForm(name, names, dateBegin, dateEnd, CAMPAIGNFORM_NAME_INCORRECT, CAMPAIGNFORM_NAME_NOT_UNIQUE, 
+            CAMPAIGNFORM_DATEBEGIN_INCORRECT, CAMPAIGNFORM_DATEEND_INCORRECT, CAMPAIGNFORM_DATES_INCORRECT, true, false);
+        if (Array.isArray(result))
         {
-            messages.push(CAMPAIGNFORM_NAME_NOT_UNIQUE);
-        }
-        if (!isValidCampaignAccount(accountId, state.accounts.data.map(account => account.name)))
-        {
-            messages.push(CAMPAIGNFORM_ACCOUNT_INCORRECT);
-        }
-        if (!isValidCampaignDateBegin(dateBegin))
-        {
-            messages.push(CAMPAIGNFORM_DATEBEGIN_INCORRECT);
-        }
-        if (!isValidCampaignDateEnd(dateEnd))
-        {
-            messages.push(CAMPAIGNFORM_DATEEND_INCORRECT);
-        }
-        if (dateBegin >= dateEnd)
-        {
-            messages.push(CAMPAIGNFORM_DATES_INCORRECT);
+            messages = messages.concat(result);
         }
         if (messages.length === 0)
         {
@@ -295,7 +291,9 @@ export function addCampaign(accountId, name, dateBegin, dateEnd)
                     name,
                     dateBegin,
                     dateEnd,
-                    config: {}
+                    config: {
+                        rules: []
+                    }
                 });
                 dispatch(sendSuccessMessage(CAMPAIGNFORM_CREATE_SUCCESS));
                 return Promise.resolve();
@@ -343,7 +341,6 @@ export function updateCampaign(accountId, campaignId, name, dateBegin, dateEnd)
         const {
             CAMPAIGNFORM_NAME_INCORRECT,
             CAMPAIGNFORM_NAME_NOT_UNIQUE,
-            CAMPAIGNFORM_ACCOUNT_INCORRECT,
             CAMPAIGNFORM_DATEBEGIN_INCORRECT,
             CAMPAIGNFORM_DATEEND_INCORRECT,
             CAMPAIGNFORM_DATES_INCORRECT,
@@ -362,27 +359,23 @@ export function updateCampaign(accountId, campaignId, name, dateBegin, dateEnd)
         {
             names = names.concat(state.accounts.data[i].campaigns.filter(campaign => campaign.uid !== uid).map(campaign => campaign.name));
         }
-        if (!isValidCampaignName(name))
+        if (name != null && !isValidCampaignName(name))
         {
             messages.push(CAMPAIGNFORM_NAME_INCORRECT);
         }
-        if (!isUniqueCampaignName(name, names))
+        if (name != null && !isUniqueCampaignName(name, names))
         {
             messages.push(CAMPAIGNFORM_NAME_NOT_UNIQUE);
         }
-        if (!isValidCampaignAccount(accountId, state.accounts.data.map(account => account.name)))
-        {
-            messages.push(CAMPAIGNFORM_ACCOUNT_INCORRECT);
-        }
-        if (!isValidCampaignDateBegin(dateBegin))
+        if (dateBegin != null && !isValidCampaignDateBegin(dateBegin))
         {
             messages.push(CAMPAIGNFORM_DATEBEGIN_INCORRECT);
         }
-        if (!isValidCampaignDateEnd(dateEnd))
+        if (dateEnd != null && !isValidCampaignDateEnd(dateEnd))
         {
             messages.push(CAMPAIGNFORM_DATEEND_INCORRECT);
         }
-        if (dateBegin >= dateEnd)
+        if ((dateBegin != null ? dateBegin : initialDateBegin) >= (dateEnd != null ? dateEnd : initialDateEnd))
         {
             messages.push(CAMPAIGNFORM_DATES_INCORRECT);
         }
@@ -423,7 +416,7 @@ export function updateCampaign(accountId, campaignId, name, dateBegin, dateEnd)
     };
 }
 
-export function addTwitterRule(accountId, campaignId, name, type, track, condition, delay, undo, lang)
+export function addTwitterRule(accountId, campaignId, name, type, tweetMessages, track, condition, delay, undo, lang)
 {
     return (dispatch, getState) => {
         const state = getState();
@@ -432,6 +425,8 @@ export function addTwitterRule(accountId, campaignId, name, type, track, conditi
             TWITTERRULE_NAME_INCORRECT,
             TWITTERRULE_NAME_NOT_UNIQUE,
             TWITTERRULE_ACTION_INCORRECT,
+            TWITTERRULE_MESSAGE_INCORRECT,
+            TWITTERRULE_MESSAGES_INCORRECT,
             TWITTERRULE_TRACK_INCORRECT,
             TWITTERRULE_KEYWORD_INCORRECT,
             TWITTERRULE_CONDITION_INCORRECT,
@@ -447,12 +442,15 @@ export function addTwitterRule(accountId, campaignId, name, type, track, conditi
             const campaignIndex = findIndex(state.accounts.data[accountIndex].campaigns, { name: campaignId });
             if (campaignIndex !== -1)
             {
-                const messages = [];
-                if (!isValidTwitterRuleName(name))
+                let messages = [];
+                const names = state.accounts.data[accountIndex].campaigns[campaignIndex].config.rules.map(rule => rule.name);
+                const result = isValidTwitterRuleForm(name, names, type, Object.values(TwitterRuleTypes), tweetMessages, 10, condition, Object.values(TwitterRuleConditions), track, 10, undo, 0, 7, lang, Object.values(TwitterRuleLangs), 10, delay, 60, 300,
+                    TWITTERRULE_NAME_INCORRECT, TWITTERRULE_NAME_NOT_UNIQUE, TWITTERRULE_ACTION_INCORRECT, TWITTERRULE_MESSAGES_INCORRECT, TWITTERRULE_MESSAGE_INCORRECT, TWITTERRULE_CONDITION_INCORRECT, TWITTERRULE_TRACK_INCORRECT, 
+                    TWITTERRULE_KEYWORD_INCORRECT, TWITTERRULE_UNDO_INCORRECT, TWITTERRULE_LANGUAGE_INCORRECT, TWITTERRULE_DELAY_INCORRECT, true, false);
+                /*if (!isValidTwitterRuleName(name))
                 {
                     messages.push(TWITTERRULE_NAME_INCORRECT);
                 }
-                let names = state.accounts.data[accountIndex].campaigns[campaignIndex].config.rules.map(rule => rule.name);
                 if (!isUniqueTwitterRuleName(name, names))
                 {
                     messages.push(TWITTERRULE_NAME_NOT_UNIQUE);
@@ -460,6 +458,23 @@ export function addTwitterRule(accountId, campaignId, name, type, track, conditi
                 if (!isValidTwitterRuleAction(type, Object.values(TwitterRuleTypes)))
                 {
                     messages.push(TWITTERRULE_ACTION_INCORRECT);
+                }
+                if (type === TwitterRuleTypes.TWEET)
+                {
+                    if (Array.isArray(tweetMessages))
+                    {
+                        for (const message of tweetMessages)
+                        {
+                            if (!isValidTwitterRuleMessage(message))
+                            {
+                                messages.push(message + TWITTERRULE_MESSAGE_INCORRECT);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        messages.push(TWITTERRULE_MESSAGES_INCORRECT);
+                    }
                 }
                 if (Array.isArray(track))
                 {
@@ -490,13 +505,16 @@ export function addTwitterRule(accountId, campaignId, name, type, track, conditi
                 if (!isValidTwitterRuleLanguages(lang, Object.values(TwitterRuleLangs)))
                 {
                     messages.push(TWITTERRULE_LANGUAGE_INCORRECT);
+                }*/
+                if (Array.isArray(result))
+                {
+                    messages = messages.concat(result);
                 }
                 if (messages.length === 0)
                 {
                     const { token } = state.user;
-                    return addTwitterRuleAPI(token, accountId, campaignId, name, type, track, condition, delay, undo, lang).then(result => {
-                        dispatch({
-                            type: ActionTypes.TWITTERRULE_ADD,
+                    return addTwitterRuleAPI(token, accountId, campaignId, name, type, tweetMessages, track, condition, delay, undo, lang).then(result => {
+                        const rule = {
                             accountId: accountId,
                             campaignId: campaignId,
                             name: name,
@@ -506,6 +524,14 @@ export function addTwitterRule(accountId, campaignId, name, type, track, conditi
                             delay: delay,
                             undo: undo,
                             lang: lang
+                        };
+                        if (tweetMessages != null)
+                        {
+                            rule.messages = tweetMessages;
+                        }
+                        dispatch({
+                            ...rule,
+                            type: ActionTypes.TWITTERRULE_ADD
                         });
                         dispatch(sendSuccessMessage(TWITTERRULE_CREATE_SUCCESS));
                         return Promise.resolve();
@@ -534,7 +560,7 @@ export function addTwitterRule(accountId, campaignId, name, type, track, conditi
     };
 }
 
-export function updateTwitterRule(accountId, campaignId, ruleId, name, type, track, condition, delay, undo, lang)
+export function updateTwitterRule(accountId, campaignId, ruleId, name, type, tweetMessages, track, condition, delay, undo, lang)
 {
     return (dispatch, getState) => {
         const state = getState();
@@ -542,6 +568,8 @@ export function updateTwitterRule(accountId, campaignId, ruleId, name, type, tra
             TWITTERRULE_NAME_INCORRECT,
             TWITTERRULE_NAME_NOT_UNIQUE,
             TWITTERRULE_ACTION_INCORRECT,
+            TWITTERRULE_MESSAGE_INCORRECT,
+            TWITTERRULE_MESSAGES_INCORRECT,
             TWITTERRULE_TRACK_INCORRECT,
             TWITTERRULE_KEYWORD_INCORRECT,
             TWITTERRULE_CONDITION_INCORRECT,
@@ -561,6 +589,7 @@ export function updateTwitterRule(accountId, campaignId, ruleId, name, type, tra
                     uid,
                     name: initialName,
                     type: initialType,
+                    messages: initialMessages,
                     track: initialTrack,
                     condition: initialCondition,
                     delay: initialDelay,
@@ -580,6 +609,23 @@ export function updateTwitterRule(accountId, campaignId, ruleId, name, type, tra
                 if (type != null && !isValidTwitterRuleAction(type, Object.values(TwitterRuleTypes)))
                 {
                     messages.push(TWITTERRULE_ACTION_INCORRECT);
+                }
+                if (type === TwitterRuleTypes.TWEET && tweetMessages != null)
+                {
+                    if (Array.isArray(tweetMessages))
+                    {
+                        for (const message of tweetMessages)
+                        {
+                            if (!isValidTwitterRuleMessage(message))
+                            {
+                                messages.push(message + TWITTERRULE_MESSAGE_INCORRECT);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        messages.push(TWITTERRULE_MESSAGES_INCORRECT);
+                    }
                 }
                 if (track != null)
                 {
@@ -618,13 +664,14 @@ export function updateTwitterRule(accountId, campaignId, ruleId, name, type, tra
                 {
                     const newName = name !== initialName ? name : null;
                     const newType = type !== initialType ? type : null;
-                    const newTrack = track !== initialTrack ? track : null;
+                    const newMessages = !isEqual(tweetMessages, initialMessages) ? tweetMessages : null;
+                    const newTrack = !isEqual(track, initialTrack) ? track : null;
                     const newCondition = condition !== initialCondition ? condition : null;
                     const newDelay = delay !== initialDelay ? delay : null;
                     const newUndo = undo !== initialUndo ? undo : null;
-                    const newLang = lang !== initialLang ? lang : null;
+                    const newLang = !isEqual(lang, initialLang) ? lang : null;
                     const { token } = state.user;
-                    return updateTwitterRuleAPI(token, accountId, campaignId, ruleId, newName, newType, newTrack, newCondition, newDelay, newUndo, newLang).then(result => {
+                    return updateTwitterRuleAPI(token, accountId, campaignId, ruleId, newName, newType, newMessages, newTrack, newCondition, newDelay, newUndo, newLang).then(result => {
                         dispatch({
                             type: ActionTypes.TWITTERRULE_UPDATE,
                             accountId,
@@ -632,6 +679,7 @@ export function updateTwitterRule(accountId, campaignId, ruleId, name, type, tra
                             ruleId,
                             name,
                             action: type,
+                            messages: tweetMessages,
                             track,
                             condition,
                             delay,

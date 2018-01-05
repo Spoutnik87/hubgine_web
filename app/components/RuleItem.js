@@ -16,6 +16,7 @@ class RuleItem extends Component {
             uid: PropTypes.string.isRequired,
             name: PropTypes.string.isRequired,
             type: PropTypes.number.isRequired,
+            messages: PropTypes.arrayOf(PropTypes.string.isRequired),
             track: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
             condition: PropTypes.string.isRequired,
             delay: PropTypes.number.isRequired,
@@ -64,7 +65,7 @@ class RuleItem extends Component {
             lang
         } = this.props.rule;
         return (
-            <div id={name} className="ruleitem col-md-12">
+            <div id={name} className="col-md-12">
             {
                 this.props.edit ? (
                     this.props.loading ? (

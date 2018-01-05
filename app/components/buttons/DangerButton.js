@@ -1,8 +1,8 @@
 import React from "react";
 
-const DangerButton = ({ children, ...props}) => {
+const DangerButton = ({children, className = "", ...props}) => {
     return (
-        <button className="btn btn-danger" {...props}>{children}</button>        
+        <button type="button" className={"btn btn-danger ".concat(className)} {...props}>{children}</button>        
     );
 };
 

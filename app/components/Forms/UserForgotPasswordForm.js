@@ -3,7 +3,10 @@ import PropTypes from "prop-types";
 import { withLanguage } from "../withLanguage";
 import Recaptcha from "../Recaptcha";
 import Messages from "../Messages";
+import Input from "../Inputs/Input";
 import LoadingCog from "../LoadingCog";
+import SuccessButton from "../buttons/SuccessButton";
+import Form from "../Form";
 
 class UserForgotPasswordForm extends Component {
     static propTypes = {
@@ -20,7 +23,7 @@ class UserForgotPasswordForm extends Component {
     };
 
     static defaultProps = {
-        name: "forgotpassword",
+        name: "userforgotpassword",
         onSubmit: () => {},
         title: true,
         loading: false,
@@ -68,41 +71,41 @@ class UserForgotPasswordForm extends Component {
     handleChange(event)
     {
         this.setState({
-            [event.target.name]: event.target.value
+            [event.name]: event.value
         });
     }
 
     render()
     {
-        const { FORGOTPASSWORD_TITLE, FORGOTPASSWORD_EMAIL, FORGOTPASSWORD_SUBMIT } = this.props.lang;
-        const buttonSubmit = this.props.loading ? <LoadingCog/> : <button type="submit" className="btn btn-success" onClick={this.handleClick} disabled={this.state.recaptcha === ""}>{FORGOTPASSWORD_SUBMIT}</button>;
-        const title = this.props.title && <div className="panel-heading"><h3 className="panel-title">{FORGOTPASSWORD_TITLE}</h3></div>;
+        const {
+            FORGOTPASSWORD_TITLE,
+            FORGOTPASSWORD_EMAIL,
+            FORGOTPASSWORD_SUBMIT
+        } = this.props.lang;
+        const buttonSubmit = this.props.loading ? <LoadingCog/> : <SuccessButton onClick={this.handleClick} disabled={this.state.recaptcha === ""}>{FORGOTPASSWORD_SUBMIT}</SuccessButton>;
         const messages = this.props.messages && <Messages messages={this.props.messages}/>;
         return (
-            <div>
-                {title}
-                <div className="panel-body form-horizontal">
-                    {messages}
-                    <div className="form-group">
-                        <label htmlFor="email" className="col-sm-2">{FORGOTPASSWORD_EMAIL}</label>
-                        <div className="col-sm-8">
-                            <input type="text" name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
-                        </div>
+            <Form title={this.props.title ? FORGOTPASSWORD_TITLE : null}>
+                {messages}
+                <div className="form-group">
+                    <label htmlFor="email" className="col-sm-2">{FORGOTPASSWORD_EMAIL}</label>
+                    <div className="col-sm-10">
+                        <Input name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
                     </div>
-                    <div className="form-group">
-                        <label className="col-sm-2"></label>
-                        <div className="col-sm-8">
-                            <Recaptcha verifyCallback={this.handleRecaptchaVerify} expiredCallback={this.handleRecaptchaExpired} />
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <div className="col-sm-offset-2 col-sm-8">
-                            {buttonSubmit}
-                        </div>
-                    </div>
-                    {this.props.children}
                 </div>
-            </div>
+                <div className="form-group">
+                    <label className="col-sm-2"></label>
+                    <div className="col-sm-10">
+                        <Recaptcha verifyCallback={this.handleRecaptchaVerify} expiredCallback={this.handleRecaptchaExpired} />
+                    </div>
+                </div>
+                <div className="form-group">
+                    <div className="col-sm-12">
+                        {buttonSubmit}
+                    </div>
+                </div>
+                {this.props.children}
+            </Form>
         );
     }
 }

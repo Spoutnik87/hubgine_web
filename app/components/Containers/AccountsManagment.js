@@ -18,7 +18,8 @@ class AccountsManagment extends Component {
                 consumerKey: PropTypes.string.isRequired,
                 consumerSecret: PropTypes.string.isRequired,
                 accessTokenKey: PropTypes.string.isRequired,
-                accessTokenSecret: PropTypes.string.isRequired
+                accessTokenSecret: PropTypes.string.isRequired,
+                blacklist: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired
             }))
         }).isRequired
     };
@@ -75,12 +76,13 @@ class AccountsManagment extends Component {
             consumerKey,
             consumerSecret,
             accessTokenKey,
-            accessTokenSecret
+            accessTokenSecret,
+            blacklist
         } = event.result;
         this.setState({
             loadingAccountForm: true
         });
-        this.props.actions.addAccount(name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret).then(() => {
+        this.props.actions.addAccount(name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist).then(() => {
             this.setState({
                 loadingAccountForm: false,
                 creationFormDisplayed: false
@@ -106,12 +108,13 @@ class AccountsManagment extends Component {
             consumerKey,
             consumerSecret,
             accessTokenKey,
-            accessTokenSecret
+            accessTokenSecret,
+            blacklist
         } = event.result;
         this.setState({
             loadingAccountForm: true
         });
-        this.props.actions.updateAccount(event.default.name, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret).then(() => {
+        this.props.actions.updateAccount(event.default.name, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist).then(() => {
             this.setState({
                 loadingAccountForm: false,
                 selectedAccount: ""

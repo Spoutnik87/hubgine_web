@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
 import { register } from "../../actions/user";
-import { ENGLISH } from "../../constants/Languages";
 import { withMessages } from "../withMessages";
 import UserRegisterForm from "../Forms/UserRegisterForm";
 import Container from "../Container";
@@ -25,15 +24,24 @@ class Register extends Component {
 
     handleSubmit(event)
     {
-        const { email, password, cpassword, firstname, lastname, useterms, recaptcha } = event.result;
+        const {
+            email,
+            password,
+            cpassword,
+            firstname,
+            lastname,
+            lang,
+            useterms,
+            recaptcha
+        } = event.result;
 
         this.setState({
             loading: true
         });
-        this.props.actions.register(email, password, cpassword, firstname, lastname, ENGLISH, useterms, recaptcha).catch(error => {
-          this.setState({
-            loading: false
-          });
+        this.props.actions.register(email, password, cpassword, firstname, lastname, lang, useterms, recaptcha).catch(error => {
+            this.setState({
+                loading: false
+            });
         });
     }
 

@@ -9,6 +9,7 @@ import NumberInput from "../Inputs/NumberInput";
 import Switch from "../Inputs/Switch";
 import Messages from "../Messages";
 import Form from "../Form";
+import Input from "../Inputs/Input";
 import SuccessButton from "../buttons/SuccessButton";
 import DangerButton from "../buttons/DangerButton";
 import DefaultButton from "../buttons/DefaultButton";
@@ -46,6 +47,7 @@ class TwitterRuleForm extends Component {
         rule: PropTypes.shape({
             name: PropTypes.string.isRequired,
             type: PropTypes.number.isRequired,
+            messages: PropTypes.arrayOf(PropTypes.string.isRequired),
             condition: PropTypes.string.isRequired,
             track: PropTypes.array.isRequired,
             delay: PropTypes.number.isRequired,
@@ -74,6 +76,7 @@ class TwitterRuleForm extends Component {
         this.state = this.props.rule ? {
             name: this.props.rule.name,
             type: invert(TwitterRuleTypes)[this.props.rule.type],
+            messages: this.props.rule.messages,
             condition: invert(TwitterRuleConditions)[this.props.rule.condition],
             track: this.props.rule.track,
             lang: this.props.rule.lang.map(l => invert(TwitterRuleLangs)[l]),
@@ -82,6 +85,7 @@ class TwitterRuleForm extends Component {
         } : {
             name: "",
             type: Object.keys(TwitterRuleTypes)[0],
+            messages: [],
             condition: Object.keys(TwitterRuleConditions)[0],
             track: [],
             lang: [],
@@ -90,7 +94,6 @@ class TwitterRuleForm extends Component {
         };
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.handleNameChange = this.handleNameChange.bind(this);
     }
 
     handleClick(event)
@@ -100,6 +103,7 @@ class TwitterRuleForm extends Component {
             result: {
                 name: this.state.name,
                 type: TwitterRuleTypes[this.state.type],
+                messages: TwitterRuleTypes[this.state.type] === TwitterRuleTypes.TWEET ? this.state.messages : null,
                 track: this.state.track,
                 condition: TwitterRuleConditions[this.state.condition],
                 delay: this.state.delay,
@@ -143,13 +147,6 @@ class TwitterRuleForm extends Component {
         });
     }
 
-    handleNameChange(event)
-    {
-        this.setState({
-            [event.target.name]: event.target.value
-        });
-    }
-
     render()
     {
         const {
@@ -161,6 +158,7 @@ class TwitterRuleForm extends Component {
             TWITTERRULEFORM_DELETE_BUTTON,
             TWITTERRULEFORM_NAME,
             TWITTERRULEFORM_ACTION,
+            TWITTERRULEFORM_MESSAGES,
             TWITTERRULEFORM_CONDITION,
             TWITTERRULEFORM_KEYWORDS,
             TWITTERRULEFORM_LANGUAGES,
@@ -180,7 +178,7 @@ class TwitterRuleForm extends Component {
                 <div className="form-group">
                     <label className="col-sm-2">{TWITTERRULEFORM_NAME}</label>
                     <div className="col-sm-10">
-                        <input type="text" className="form-control" name="name" value={this.state.name} onChange={this.handleNameChange} autoFocus/>
+                        <Input className="form-control" name="name" value={this.state.name} onChange={this.handleChange} autoFocus/>
                     </div>
                 </div>
                 <div className="form-group">
@@ -189,6 +187,16 @@ class TwitterRuleForm extends Component {
                         <ListInput name="type" options={Object.keys(TwitterRuleTypes)} onChange={this.handleChange} defaultOption={this.state.type}/>
                     </div>
                 </div>
+                {
+                    TwitterRuleTypes[this.state.type] === TwitterRuleTypes.TWEET && (
+                        <div className="form-group">
+                            <label className="col-sm-2">{TWITTERRULEFORM_MESSAGES}</label>
+                            <div className="col-sm-10">
+                                <ArrayInput name="messages" onChange={this.handleChange} values={this.state.messages} unique />
+                            </div>
+                        </div>
+                    )
+                }
                 <div className="form-group">
                     <label className="col-sm-2">{TWITTERRULEFORM_CONDITION}</label>
                     <div className="col-sm-10">

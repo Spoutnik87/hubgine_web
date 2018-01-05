@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import Input from "./Input";
 
 class Switch extends Component {
     static propTypes = {
@@ -26,11 +27,11 @@ class Switch extends Component {
     handleChange(event)
     {
         this.setState({
-            selectedOption: event.target.value
+            selectedOption: event.value
         });
         this.props.onChange({
             name: this.props.name,
-            value: event.target.value
+            value: event.value
         });
     }
 
@@ -41,7 +42,7 @@ class Switch extends Component {
                 {
                     this.props.options.map((value, index) => (
                         [
-                            <input key={"input" + index} type="radio" id={index} name={this.props.name} value={value} onChange={this.handleChange} checked={this.state.selectedOption === value} />,
+                            <Input key={"input" + index} type="radio" id={index} name={this.props.name} value={value} onChange={this.handleChange} checked={this.state.selectedOption === value} />,
                             <label key={"label" + index} htmlFor={index}>{value}</label>
                         ]
                     ))

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import moment from "moment";
 import { withLanguage } from "../withLanguage";
 import Form from "../Form";
 import DateInput from "../Inputs/DateInput";
@@ -7,9 +8,9 @@ import ListInput from "../Inputs/ListInput";
 import Messages from "../Messages";
 import ToolTip from "../Tooltip";
 import LoadingCog from "../LoadingCog";
+import Input from "../Inputs/Input";
 import SuccessButton from "../buttons/SuccessButton";
 import DangerButton from "../buttons/DangerButton";
-import PrimaryButton from "../buttons/PrimaryButton";
 import DefaultButton from "../buttons/DefaultButton";
 
 class CampaignForm extends Component {
@@ -42,8 +43,8 @@ class CampaignForm extends Component {
         accountId: PropTypes.string,
         campaign: PropTypes.shape({
             name: PropTypes.string.isRequired,
-            dateBegin: PropTypes.string.isRequired,
-            dateEnd: PropTypes.string.isRequired
+            dateBegin: PropTypes.number.isRequired,
+            dateEnd: PropTypes.number.isRequired
         })
     };
 
@@ -74,14 +75,12 @@ class CampaignForm extends Component {
         } : {
             accountId: this.props.accounts.length > 0 ? this.props.accounts[0] : "",
             name: "",
-            dateBegin: "",
-            dateEnd: "",
+            dateBegin: 0,
+            dateEnd: 0,
             deleteMode: false
         };
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.handleDateChange = this.handleDateChange.bind(this);
-        this.handleAccountChange = this.handleAccountChange.bind(this);
     }
 
     handleClick(event)
@@ -130,21 +129,7 @@ class CampaignForm extends Component {
     handleChange(event)
     {
         this.setState({
-            [event.target.name]: event.target.value
-        });
-    }
-
-    handleDateChange(event)
-    {
-        this.setState({
             [event.name]: event.value
-        });
-    }
-
-    handleAccountChange(event)
-    {
-        this.setState({
-           [event.name]: event.value
         });
     }
 
@@ -163,7 +148,7 @@ class CampaignForm extends Component {
             CAMPAIGNFORM_DATEEND,
             CAMPAIGNFORM_NAME_TOOLTIP
         } = this.props.lang;
-        const buttonSubmit = this.props.loading ? <LoadingCog/> : this.props.edit ? <PrimaryButton id="buttonSubmit" onClick={this.handleClick}>{CAMPAIGNFORM_EDIT_BUTTON}</PrimaryButton> : <SuccessButton id="buttonSubmit" onClick={this.handleClick}>{CAMPAIGNFORM_CREATE_BUTTON}</SuccessButton>;
+        const buttonSubmit = this.props.loading ? <LoadingCog/> : <SuccessButton id="buttonSubmit" onClick={this.handleClick}>{this.props.edit ? CAMPAIGNFORM_EDIT_BUTTON : CAMPAIGNFORM_CREATE_BUTTON}</SuccessButton>;
         const buttonDelete = this.props.delete && !this.props.loading && <DangerButton id="buttonDeleteMode" onClick={this.handleClick} style={{ marginRight: "20px" }}>{CAMPAIGNFORM_DELETE_BUTTON}</DangerButton>;
         const buttonCancel = this.props.cancel && !this.props.loading && <DefaultButton id="buttonCancel" onClick={this.handleClick}>{CAMPAIGNFORM_CANCEL_BUTTON}</DefaultButton>;
         const messages = this.props.messages && <Messages messages={this.props.messages}/>;
@@ -185,25 +170,34 @@ class CampaignForm extends Component {
                         </span>
                     </div>
                     <div className="col-sm-10">
-                        <input type="text" name="name" id="name" className="form-control" value={this.state.name} onChange={this.handleChange} autoFocus/>
+                        <Input name="name" id="name" className="form-control" value={this.state.name} onChange={this.handleChange} autoFocus/>
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="account" className="col-sm-2">{CAMPAIGNFORM_ACCOUNT}</label>
                     <div className="col-sm-10">
-                        <ListInput id="accountId" name="accountId" options={this.props.accounts} defaultOption={this.props.campaign ? this.props.accountId : undefined} onChange={this.handleAccountChange} disabled={this.props.campaign !== undefined} />
+                        <ListInput id="accountId" name="accountId" options={this.props.accounts} defaultOption={this.props.campaign ? this.props.accountId : undefined} onChange={this.handleChange} disabled={this.props.campaign !== undefined} />
                     </div>
                 </div>
                 <div className="form-group">
-                    <label htmlFor="dateBegin" className="col-sm-2">{CAMPAIGNFORM_DATEBEGIN}</label>
+                    <div className="col-sm-2">
+                        <label>
+                            {CAMPAIGNFORM_DATEBEGIN}
+                        </label>
+                        <span style={{ float: "right" }}>
+                            <ToolTip>
+                                {"Your campaign will start at this time. Your current timezone is UTC" + moment().format("Z")}
+                            </ToolTip>
+                        </span>
+                    </div>
                     <div className="col-sm-10">
-                        <DateInput id="dateBegin" name="dateBegin" onChange={this.handleDateChange} value={this.state.dateBegin}/>
+                        <DateInput id="dateBegin" name="dateBegin" onChange={this.handleChange} value={this.state.dateBegin}/>
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="dateEnd" className="col-sm-2">{CAMPAIGNFORM_DATEEND}</label>
                     <div className="col-sm-10">
-                        <DateInput id="dateEnd" name="dateEnd" onChange={this.handleDateChange} value={this.state.dateEnd}/>
+                        <DateInput id="dateEnd" name="dateEnd" onChange={this.handleChange} value={this.state.dateEnd}/>
                     </div>
                 </div>
                 <div className="form-group">

@@ -1,8 +1,8 @@
 import React from "react";
 
-const DefaultButton = (props) => {
+const DefaultButton = ({children, className = "", ...props}) => {
     return (
-        <button className="btn btn-default" {...props}>{props.children}</button>        
+        <button type="button" className={"btn btn-default ".concat(className)} {...props}>{children}</button>        
     );
 };
 

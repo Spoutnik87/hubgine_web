@@ -7,8 +7,8 @@ class CampaignItem extends Component {
         campaign: PropTypes.shape({
             uid: PropTypes.string.isRequired,
             name: PropTypes.string.isRequired,
-            dateBegin: PropTypes.string.isRequired,
-            dateEnd: PropTypes.string.isRequired
+            dateBegin: PropTypes.number.isRequired,
+            dateEnd: PropTypes.number.isRequired
         }).isRequired,
         onClick: PropTypes.func
     };

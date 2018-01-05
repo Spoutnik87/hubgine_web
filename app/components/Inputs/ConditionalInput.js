@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { type } from "os";
+import Input from "./Input";
 
 class ConditionalInput extends Component {
     static propTypes = {
@@ -8,7 +8,8 @@ class ConditionalInput extends Component {
         value: PropTypes.string,
         condition: PropTypes.oneOfType([PropTypes.func, PropTypes.string]).isRequired,
         onChange: PropTypes.func,
-        type: PropTypes.string
+        type: PropTypes.string,
+        className: PropTypes.string
     };
 
     static defaultProps = {
@@ -25,7 +26,6 @@ class ConditionalInput extends Component {
             value: this.props.value
         };
         this.handleChange = this.handleChange.bind(this);
-        this.handleClick = this.handleClick.bind(this);
     }
 
     handleChange(event)
@@ -37,7 +37,7 @@ class ConditionalInput extends Component {
         } = this.props;
         const {
             value
-        } = event.target;
+        } = event;
         if ((typeof condition === "function" && condition(value)) || (typeof condition === "string" && value.match(condition)))
         {
             this.setState({
@@ -53,7 +53,7 @@ class ConditionalInput extends Component {
     render()
     {
         return (
-            <input type={type} className="form-control" value={this.state.value} onChange={this.handleChange} autoFocus/>
+            <Input type={this.props.type} className={this.props.className} value={this.state.value} onChange={this.handleChange} autoFocus />
         );
     }
 }

@@ -36,7 +36,7 @@ class CampaignOverview extends Component {
             editCampaign: false,
             accountId: decodeURI(this.props.match.params.accountId),
             campaignId: decodeURI(this.props.match.params.campaignId),
-            campaign: undefined,
+            campaign: null,
             selectedRule: null,
             loading: false
         };
@@ -59,11 +59,15 @@ class CampaignOverview extends Component {
             campaignId
         } = this.state;
         this.props.actions.fetchAccountList().then(() => {
-            const accountIndex = findIndex(this.props.accounts, { name: this.state.accountId });
-            this.setState({
-                loadingAccountList: false,
-                campaign: this.props.accounts[accountIndex].campaigns[findIndex(this.props.accounts[accountIndex].campaigns, { name: this.state.campaignId })]
-            });
+            const accountIndex = findIndex(this.props.accounts, { name: accountId });
+            const state = {
+                loadingAccountList: false
+            };
+            if (accountIndex !== -1)
+            {
+                state.campaign = this.props.accounts[accountIndex].campaigns[findIndex(this.props.accounts[accountIndex].campaigns, { name: campaignId })];
+            }
+            this.setState(state);
         }).catch(error => {});
     }
 
@@ -88,6 +92,7 @@ class CampaignOverview extends Component {
         const {
             name,
             type,
+            messages,
             track,
             condition,
             delay,
@@ -96,7 +101,7 @@ class CampaignOverview extends Component {
         this.setState({
             loading: true
         });
-        this.props.actions.addTwitterRule(this.state.accountId, this.state.campaignId, name, type, track, condition, delay, 3, lang).then(() => {
+        this.props.actions.addTwitterRule(this.state.accountId, this.state.campaignId, name, type, messages, track, condition, delay, 3, lang).then(() => {
             this.setState({
                 loading: false,
                 creationRuleFormDisplayed: false
@@ -134,6 +139,7 @@ class CampaignOverview extends Component {
         const {
             name,
             type,
+            messages,
             track,
             condition,
             delay,
@@ -142,7 +148,7 @@ class CampaignOverview extends Component {
         this.setState({
             loading: true
         });
-        this.props.actions.updateTwitterRule(accountId, campaignId, ruleId, name, type, track, condition, delay, null, lang).then(() => {
+        this.props.actions.updateTwitterRule(accountId, campaignId, ruleId, name, type, messages, track, condition, delay, null, lang).then(() => {
             this.setState({
                 loading: false,
                 selectedRule: null

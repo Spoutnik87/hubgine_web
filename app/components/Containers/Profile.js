@@ -15,9 +15,9 @@ import AccountsManagment from "./AccountsManagment";
 import Container from "../Container";
 import Panel from "../Panel";
 import Form from "../Form";
+import UserPasswordForm from "../Forms/UserPasswordForm";
 import LoadingCog from "../LoadingCog";
 import PrimaryButton from "../buttons/PrimaryButton";
-import DefaultButton from "../buttons/DefaultButton";
 
 class Profile extends Component {
     static propTypes = {
@@ -40,12 +40,7 @@ class Profile extends Component {
             PROFILE_FIRSTNAME: PropTypes.string.isRequired,
             PROFILE_LASTNAME: PropTypes.string.isRequired,
             PROFILE_LANGUAGE: PropTypes.string.isRequired,
-            PROFILE_OLDPASSWORD: PropTypes.string.isRequired,
-            PROFILE_PASSWORD: PropTypes.string.isRequired,
-            PROFILE_CONFIRMPASSWORD: PropTypes.string.isRequired,
-            PROFILE_EDIT_PASSWORD: PropTypes.string.isRequired,
-            PROFILE_CONFIRMEDIT_PASSWORD: PropTypes.string.isRequired,
-            PROFILE_CANCELEDIT_PASSWORD: PropTypes.string.isRequired
+            PROFILE_EDIT_PASSWORD: PropTypes.string.isRequired
         }).isRequired
     };
 
@@ -61,10 +56,7 @@ class Profile extends Component {
             loadingFirstname: false,
             loadingLastname: false,
             loadingLanguage: false,
-            loadingPassword: false,
-            oldpassword: "",
-            password: "",
-            cpassword: ""
+            loadingPassword: false
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleClick = this.handleClick.bind(this);
@@ -72,6 +64,8 @@ class Profile extends Component {
         this.handleAccountFormCreationCancel = this.handleAccountFormCreationCancel.bind(this);
         this.handleAccountFormCreationSubmit = this.handleAccountFormCreationSubmit.bind(this);
         this.handleLanguageChange = this.handleLanguageChange.bind(this);
+        this.handleUserPasswordEditionSubmit = this.handleUserPasswordEditionSubmit.bind(this);
+        this.handleUserPasswordEditionCancel = this.handleUserPasswordEditionCancel.bind(this);
     }
 
     componentDidMount()
@@ -150,31 +144,6 @@ class Profile extends Component {
                 isPasswordEditionFormDisplayed: true
             });
         }
-        else if (event.target.id === "buttonPasswordEditionSubmit")
-        {
-            this.setState({
-                loadingPassword: true
-            });
-            this.props.actions.updateUser(null, this.state.oldpassword, this.state.password, this.state.cpassword, null, null, null).then(() => {
-                this.setState({
-                    loadingPassword: false,
-                    isPasswordEditionFormDisplayed: false,
-                    oldpassword: "",
-                    password: "",
-                    cpassword: ""
-                });
-            }).catch(error => {
-                this.setState({
-                    loadingPassword: false
-                });
-            });
-        }
-        else if (event.target.id === "buttonPasswordEditionCancel")
-        {
-            this.setState({
-                isPasswordEditionFormDisplayed: false
-            });
-        }
     }
 
     handleChange(event)
@@ -191,12 +160,13 @@ class Profile extends Component {
             consumerKey,
             consumerSecret,
             accessTokenKey,
-            accessTokenSecret
+            accessTokenSecret,
+            blacklist
         } = event.result;
         this.setState({
             loadingAccountForm: true
         });
-        this.props.actions.addAccount(name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret).then(() => {
+        this.props.actions.addAccount(name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist).then(() => {
             this.setState({
                 loadingAccountForm: false,
                 isAccountCreationFormDisplayed: false
@@ -231,6 +201,35 @@ class Profile extends Component {
         });
     }
 
+    handleUserPasswordEditionSubmit(event)
+    {
+        this.setState({
+            loadingPassword: true
+        });
+        const {
+            oldpassword,
+            password,
+            cpassword
+        } = event.result;
+        this.props.actions.updateUser(null, oldpassword, password, cpassword, null, null, null).then(() => {
+            this.setState({
+                loadingPassword: false,
+                isPasswordEditionFormDisplayed: false
+            });
+        }).catch(error => {
+            this.setState({
+                loadingPassword: false
+            });
+        });
+    }
+
+    handleUserPasswordEditionCancel()
+    {
+        this.setState({
+            isPasswordEditionFormDisplayed: false
+        });
+    }
+
     render()
     {
         let panel;
@@ -240,12 +239,7 @@ class Profile extends Component {
             PROFILE_FIRSTNAME,
             PROFILE_LASTNAME,
             PROFILE_LANGUAGE,
-            PROFILE_OLDPASSWORD,
-            PROFILE_PASSWORD,
-            PROFILE_CONFIRMPASSWORD,
             PROFILE_EDIT_PASSWORD,
-            PROFILE_CONFIRMEDIT_PASSWORD,
-            PROFILE_CANCELEDIT_PASSWORD,
             PROFILE_ACCOUNT_LIST
         } = this.props.lang;
         if (this.state.isLoaded)
@@ -283,32 +277,7 @@ class Profile extends Component {
                                 <LoadingCog/>
                             ) : (
                                 this.state.isPasswordEditionFormDisplayed ? (
-                                    <div>
-                                        <div className="form-group">
-                                            <label htmlFor="oldpassword" className="col-sm-2">{PROFILE_OLDPASSWORD}</label>
-                                            <div className="col-sm-8">
-                                                <input type="password" name="oldpassword" className="form-control" value={this.state.oldpassword} onChange={this.handleChange} autoFocus/>
-                                            </div>
-                                        </div>
-                                        <div className="form-group">
-                                            <label htmlFor="password" className="col-sm-2">{PROFILE_PASSWORD}</label>
-                                            <div className="col-sm-8">
-                                                <input type="password" name="password" className="form-control" value={this.state.password} onChange={this.handleChange}/>
-                                            </div>
-                                        </div>
-                                        <div className="form-group">
-                                            <label htmlFor="cpassword" className="col-sm-2">{PROFILE_CONFIRMPASSWORD}</label>
-                                            <div className="col-sm-8">
-                                                <input type="password" name="cpassword" className="form-control" value={this.state.cpassword} onChange={this.handleChange}/>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-10">
-                                            <PrimaryButton id="buttonPasswordEditionSubmit" onClick={this.handleClick}>{PROFILE_CONFIRMEDIT_PASSWORD}</PrimaryButton>
-                                            <div style={{ float: "right" }}>
-                                                <DefaultButton id="buttonPasswordEditionCancel" onClick={this.handleClick}>{PROFILE_CANCELEDIT_PASSWORD}</DefaultButton>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <UserPasswordForm cancel edit title onSubmit={this.handleUserPasswordEditionSubmit} onCancel={this.handleUserPasswordEditionCancel} />
                                 ) : (
                                     <PrimaryButton id="buttonPasswordEdition" onClick={this.handleClick}>{PROFILE_EDIT_PASSWORD}</PrimaryButton>
                                 )

@@ -111,7 +111,7 @@ class UserDashboard extends Component {
                                 )
                             }
                             {
-                                !this.state.displayCampaignForm && (
+                                !this.state.displayCampaignForm && this.props.accounts.length > 0 && (
                                     <SuccessButton id="displayCampaignForm" onClick={this.handleClick}>Add campaign</SuccessButton>
                                 )
                             }

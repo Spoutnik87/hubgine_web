@@ -16,7 +16,6 @@ class ListInput extends Component {
 
     static defaultProps = {
         name: "listinput",
-        defaultOption: "Select a value",
         disabled: false,
         loading: false,
         onClick: () => {},

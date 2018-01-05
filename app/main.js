@@ -11,6 +11,7 @@ import Cookies from "universal-cookie";
 const cookies = new Cookies();
 const store = configureStore({
     ...window.INITIAL_STATE,
+    user: cookies.get("user"),
     lang: getLanguage(window.INITIAL_STATE.user.lang || ENGLISH)
 }, cookies);
 

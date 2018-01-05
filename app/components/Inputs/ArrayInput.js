@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withLanguage } from "../withLanguage";
-import ListInput from "./ListInput";
 import v4 from "uuid";
+import { withLanguage } from "../withLanguage";
+import Input from "./Input";
+import ListInput from "./ListInput";
+import SuccessButton from "../buttons/SuccessButton";
+import DangerButton from "../buttons/DangerButton";
 
 class ArrayInput extends Component {
     static propTypes = {
@@ -51,7 +54,7 @@ class ArrayInput extends Component {
     handleChange(event)
     {
         this.setState({
-            value: event.value || event.target.value
+            value: event.value
         });
     }
 
@@ -113,7 +116,7 @@ class ArrayInput extends Component {
             let element;
             if (element = event.target.getAttribute("data-element"))
             {
-                if (this.state.selectedElement !== element)
+                if (this.state.selectedElement !== element && element !== "input")
                 {
                     this.setState({
                         selectedElement: element
@@ -138,14 +141,14 @@ class ArrayInput extends Component {
     render()
     {
         const { ARRAYINPUT_ADD_BUTTON, ARRAYINPUT_DELETE_BUTTON } = this.props.lang;
-        const button = this.state.selectedElement === null ? <button id="buttonAdd" type="button" className="btn btn-success col-md-2 col-sm-3 col-xs-4" onClick={this.handleClick} disabled={this.props.limit > 0 ? this.state.values.length >= this.props.limit : false}><i id="buttonAdd" className="fa fa-plus" onClick={this.handleClick}></i> {ARRAYINPUT_ADD_BUTTON}</button> 
-            : <button id="buttonRemove" type="button" className="btn btn-danger col-md-2 col-sm-3 col-xs-4" onClick={this.handleClick}><i id="buttonRemove" className="fa fa-minus" onClick={this.handleClick}></i> {ARRAYINPUT_DELETE_BUTTON}</button>;
+        const button = this.state.selectedElement === null ? <SuccessButton id="buttonAdd" className="col-md-2 col-sm-3 col-xs-4" onClick={this.handleClick} disabled={this.props.limit > 0 ? this.state.values.length >= this.props.limit : false}><i id="buttonAdd" className="fa fa-plus"></i> {ARRAYINPUT_ADD_BUTTON}</SuccessButton> 
+            : <DangerButton id="buttonRemove" className="col-md-2 col-sm-3 col-xs-4" onClick={this.handleClick}><i id="buttonRemove" className="fa fa-minus"></i> {ARRAYINPUT_DELETE_BUTTON}</DangerButton>;
         return (
             <div className="input-group" style={{ width: "100%" }}>
-                <div className="array-input-display">
+                <div className="arrayinput-display">
                 {
                     this.state.values.map((element, index) => (
-                        <div key={element.key} data-element={index} className={this.state.selectedElement === index.toString() ? "array-input-display-element no-select array-input-display-element-selected" : "array-input-display-element no-select"} 
+                        <div key={element.key} data-element={index} className={this.state.selectedElement === index.toString() ? "arrayinput-display-element no-select arrayinput-display-element-selected" : "arrayinput-display-element no-select"} 
                             onClick={this.handleClick}>{element.value}<br/></div>
                         )
                     )
@@ -156,7 +159,7 @@ class ArrayInput extends Component {
                         this.props.options ? (
                             <ListInput name="list" options={this.state.options} defaultOption={this.props.defaultOption} onClick={this.handleClick} onChange={this.handleChange} />
                         ) : (
-                            <input type="text" data-element="input" className="form-control" value={this.state.value} onClick={this.handleClick} onChange={this.handleChange} autoFocus/>
+                            <Input data-element="input" className="form-control" value={this.state.value} onClick={this.handleClick} onChange={this.handleChange} />
                         )
                     }
                 </div>

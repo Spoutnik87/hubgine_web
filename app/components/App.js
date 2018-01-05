@@ -13,6 +13,7 @@ import Register from "./Containers/Register";
 import ForgotPassword from "./ForgotPassword";
 import UserDashboard from "./Containers/UserDashboard";
 import AdminDashboard from "./Containers/AdminDashboard";
+import AccountOverview from "./Containers/AccountOverview";
 import CampaignOverview from "./Containers/CampaignOverview";
 import Profile from "./Containers/Profile";
 import NotFound from "./NotFound";
@@ -46,6 +47,7 @@ class App extends Component {
                 <Switch>
                     <Route path="/" exact component={Home} />
                     <LoggedInRoute path="/user-dashboard" component={UserDashboard} isLoggedIn={isLoggedIn} />
+                    <LoggedInRoute path="/account/:accountId" component={AccountOverview} isLoggedIn={isLoggedIn} />
                     <LoggedInRoute path="/campaign/:accountId/:campaignId" component={CampaignOverview} isLoggedIn={isLoggedIn} />
                     <LoggedInRoute path="/profile" component={Profile} isLoggedIn={isLoggedIn} />
                     <AdminRoute path="/admin-dashboard" component={AdminDashboard} isAdmin={isAdmin} />

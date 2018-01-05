@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { withLanguage } from "../withLanguage";
+import Input from "../Inputs/Input";
 import Messages from "../Messages";
 import LoadingCog from "../LoadingCog";
 import Form from "../Form";
@@ -54,7 +55,7 @@ class UserSigninForm extends Component {
     handleChange(event)
     {
         this.setState({
-            [event.target.name]: event.target.value
+            [event.name]: event.value
         });
     }
 
@@ -73,18 +74,18 @@ class UserSigninForm extends Component {
                 {messages}
                 <div className="form-group">
                     <label htmlFor="email" className="col-sm-2">{SIGNIN_EMAIL}</label>
-                    <div className="col-sm-8">
-                        <input type="text" name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
+                    <div className="col-sm-10">
+                        <Input name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="password" className="col-sm-2">{SIGNIN_PASSWORD}</label>
-                    <div className="col-sm-8">
-                        <input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange}/>
+                    <div className="col-sm-10">
+                        <Input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange}/>
                     </div>
                 </div>
                 <div className="form-group">
-                    <div className="col-sm-offset-2 col-sm-8">
+                    <div className="col-sm-offset-2 col-sm-10">
                         {buttonSubmit}
                     </div>
                 </div>
