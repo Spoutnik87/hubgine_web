@@ -24,6 +24,14 @@ class CampaignOverview extends Component {
                 accountId: PropTypes.string.isRequired,
                 campaignId: PropTypes.string.isRequired
             }).isRequired
+        }).isRequired,
+        lang: PropTypes.shape({
+            CAMPAIGNOVERVIEW_NO_CAMPAIGN: PropTypes.string.isRequired,
+            CAMPAIGNOVERVIEW_EDIT_BUTTON: PropTypes.string.isRequired,
+            CAMPAIGNOVERVIEW_RULES_TITLE: PropTypes.string.isRequired,
+            CAMPAIGNOVERVIEW_ADD_RULE_BUTTON: PropTypes.string.isRequired,
+            CAMPAIGNOVERVIEW_TITLE_ACCOUNT: PropTypes.string.isRequired,
+            CAMPAIGNOVERVIEW_TITLE_CAMPAIGN: PropTypes.string.isRequired
         }).isRequired
     };
 
@@ -235,47 +243,53 @@ class CampaignOverview extends Component {
 
     render()
     {
+        const {
+            CAMPAIGNOVERVIEW_NO_CAMPAIGN,
+            CAMPAIGNOVERVIEW_EDIT_BUTTON,
+            CAMPAIGNOVERVIEW_RULES_TITLE,
+            CAMPAIGNOVERVIEW_ADD_RULE_BUTTON,
+            CAMPAIGNOVERVIEW_TITLE_ACCOUNT,
+            CAMPAIGNOVERVIEW_TITLE_CAMPAIGN
+        } = this.props.lang;
         return (
             <Container>
                 {
-                    this.state.loadingAccountList ? (
-                        <Panel title={this.state.accountId + " : " + this.state.campaignId}>
-                            <LoadingCog center />
-                        </Panel>
-                    ) : (
-                        this.state.campaign ? (
-                            <Panel title={<span>{this.state.accountId + " : " + this.state.campaignId}{!this.state.editCampaign && <PrimaryButton id="editCampaign" style={{ float: "right" }} onClick={this.handleClick}>Edit</PrimaryButton>}</span>}>
-                            {
-                                this.state.editCampaign ? (
-                                    <CampaignForm onSubmit={this.handleCampaignEditionSubmit} onDelete={this.handleCampaignEditionDelete} onCancel={this.handleCampaignEditionCancel} accounts={this.props.accounts.map(account => account.name)} accountId={this.state.accountId} campaign={this.state.campaign} messages={this.props.messages} edit cancel delete />
+                    <Panel title={<span>{CAMPAIGNOVERVIEW_TITLE_ACCOUNT + this.state.accountId + " - " + CAMPAIGNOVERVIEW_TITLE_CAMPAIGN + this.state.campaignId}{!this.state.editCampaign && <PrimaryButton id="editCampaign" style={{ float: "right" }} onClick={this.handleClick}>{CAMPAIGNOVERVIEW_EDIT_BUTTON}</PrimaryButton>}</span>}>
+                        {
+                            this.state.loadingAccountList ? (
+                                <LoadingCog center />
+                            ) : (
+                                this.state.campaign ? (
+                                    this.state.editCampaign ? (
+                                        <CampaignForm onSubmit={this.handleCampaignEditionSubmit} onDelete={this.handleCampaignEditionDelete} onCancel={this.handleCampaignEditionCancel} accounts={this.props.accounts.map(account => account.name)} accountId={this.state.accountId} campaign={this.state.campaign} messages={this.props.messages} edit cancel delete />
+                                    ) : (
+                                        <div>
+                                            <Messages messages={this.props.messages} />
+                                            <Panel title={CAMPAIGNOVERVIEW_RULES_TITLE}>
+                                            {
+                                                this.state.creationRuleFormDisplayed ? (
+                                                   <TwitterRuleForm onSubmit={this.handleRuleCreationSubmit} cancel onCancel={this.handleRuleCreationCancel} loading={this.state.loading} />
+                                                ) : (
+                                                   <RuleList accountId={this.state.accountId} campaignId={this.state.campaignId} rules={this.state.campaign.config.rules} onRuleEditMode={this.handleRuleEditMode} selectedRule={this.state.selectedRule} loading={this.state.loading} onRuleEditionSubmit={this.handleRuleEditionSubmit} onRuleEditionDelete={this.handleRuleEditionDelete} onRuleEditionCancel={this.handleRuleEditionCancel}/>
+                                                )
+                                            }
+                                            </Panel>
+                                            {
+                                                !this.state.creationRuleFormDisplayed && (
+                                                    <SuccessButton id="createRule" onClick={this.handleClick}>{CAMPAIGNOVERVIEW_ADD_RULE_BUTTON}</SuccessButton>
+                                                )
+                                            }
+                                        </div>
+                                    )
                                 ) : (
-                                    <div>
+                                    <React.Fragment>
                                         <Messages messages={this.props.messages} />
-                                        <Panel title="Rules">
-                                        {
-                                            this.state.creationRuleFormDisplayed ? (
-                                               <TwitterRuleForm onSubmit={this.handleRuleCreationSubmit} cancel onCancel={this.handleRuleCreationCancel} loading={this.state.loading} />
-                                            ) : (
-                                               <RuleList accountId={this.state.accountId} campaignId={this.state.campaignId} rules={this.state.campaign.config.rules} onRuleEditMode={this.handleRuleEditMode} selectedRule={this.state.selectedRule} loading={this.state.loading} onRuleEditionSubmit={this.handleRuleEditionSubmit} onRuleEditionDelete={this.handleRuleEditionDelete} onRuleEditionCancel={this.handleRuleEditionCancel}/>
-                                            )
-                                        }
-                                        </Panel>
-                                        {
-                                            !this.state.creationRuleFormDisplayed && (
-                                                <SuccessButton id="createRule" onClick={this.handleClick}>Add rule</SuccessButton>
-                                            )
-                                        }
-                                    </div>
+                                        {CAMPAIGNOVERVIEW_NO_CAMPAIGN}
+                                    </React.Fragment>
                                 )
-                            }
-                            </Panel>
-                        ) : (
-                            <Panel title={this.state.accountId + " : " + this.state.campaignId}>
-                                <Messages messages={this.props.messages} />
-                                This campaign doesn't exist.
-                            </Panel>
-                        )
-                    )
+                            )
+                        }
+                    </Panel>
                 }
             </Container>
         );

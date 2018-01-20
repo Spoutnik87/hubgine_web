@@ -19,7 +19,7 @@ export default function getLanguage()
         HEADER_SIGNIN: "Se connecter",
         HEADER_REGISTER: "S'inscrire",
         //---FOOTER---
-        FOOTER_TITLE: "© 2017 Company, Inc. Tous droits résérvés.",
+        FOOTER_TITLE: "© 2018 Company, Inc. Tous droits résérvés.",
         //---NOTFOUND---
         NOTFOUND_TITLE: "Page introuvable",
         //---SIGNIN---
@@ -69,6 +69,26 @@ export default function getLanguage()
         PROFILE_ERROREDITING_LANGUAGE: "La langue selectionné est incorrecte.",
         PROFILE_SUCCESSEDITING_LANGUAGE: "La langue a été éditée avec succès.",
         PROFILE_SUCCESSEDITING_LANGUAGE: "Le mot de passe a été édité avec succès.",
+        //---ACCOUNTSMANAGMENT---
+        ACCOUNTSMANAGMENT_ADD_ACCOUNT: "Ajouter un compte",
+        //---ADMINDASHBOARD---
+        ADMINDASHBOARD_TITLE: "Tableau de bord de l'administrateur",
+        //---USERDASHBOARD---
+        USERDASHBOARD_TITLE: "Votre tableau de bord",
+        USERDASHBOARD_ADD_CAMPAIGN: "Ajouter une campagne",
+        USERDASHBOARD_NO_ACCOUNTS: "Vous n'avez pas de compte actuellement. Vous pouvez en créer à partir de votre page Profile.",
+        //---ACCOUNTOVERVIEW---
+        ACCOUNTOVERVIEW_NO_ACCOUNT: "Ce compte n'existe pas.",
+        ACCOUNTOVERVIEW_EDIT_BUTTON: "Modifier ce compte",
+        ACCOUNTOVERVIEW_CAMPAIGNS_TITLE: "Les campagnes :",
+        ACCOUNTOVERVIEW_BLACKLIST_TITLE: "La liste noire de mots :",
+        //---CAMPAIGNOVERVIEW---
+        CAMPAIGNOVERVIEW_NO_CAMPAIGN: "Cette campagne n'existe pas.",
+        CAMPAIGNOVERVIEW_EDIT_BUTTON: "Modifier cette campagne",
+        CAMPAIGNOVERVIEW_RULES_TITLE: "Les règles :",
+        CAMPAIGNOVERVIEW_ADD_RULE_BUTTON: "Ajouter une règle",
+        CAMPAIGNOVERVIEW_TITLE_ACCOUNT: "Compte : ",
+        CAMPAIGNOVERVIEW_TITLE_CAMPAIGN: "Campagne : ",
         //---USERPASSWORDFORM---
         USERPASSWORDFORM_CREATE_TITLE: "Définir un nouveau mot de passe",
         USERPASSWORDFORM_EDIT_TITLE: "Changer de mot de passe",

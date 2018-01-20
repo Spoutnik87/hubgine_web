@@ -7,6 +7,7 @@ import { findIndex, filter } from "lodash";
 import { fetchAccountList } from "../../actions/accounts";
 import { addCampaign } from "../../actions/accounts";
 import { withMessages } from "../withMessages";
+import { withLanguage } from "../withLanguage";
 import CampaignOverview from "./CampaignOverview";
 import CampaignList from "../CampaignList";
 import CampaignForm from "../Forms/CampaignForm";
@@ -16,6 +17,14 @@ import LoadingCog from "../LoadingCog";
 import SuccessButton from "../buttons/SuccessButton";
 
 class UserDashboard extends Component {
+    static propTypes = {
+        lang: PropTypes.shape({
+            USERDASHBOARD_TITLE: PropTypes.string.isRequired,
+            USERDASHBOARD_ADD_CAMPAIGN: PropTypes.string.isRequired,
+            USERDASHBOARD_NO_ACCOUNTS: PropTypes.string.isRequired
+        }).isRequired
+    };
+
     constructor(props)
     {
         super(props);
@@ -86,9 +95,14 @@ class UserDashboard extends Component {
 
     render()
     {
+        const {
+            USERDASHBOARD_TITLE,
+            USERDASHBOARD_ADD_CAMPAIGN,
+            USERDASHBOARD_NO_ACCOUNTS
+        } = this.props.lang;
         return (
             <Container>
-                <Panel title="User Dashboard">
+                <Panel title={USERDASHBOARD_TITLE}>
                 {
                     this.state.loadingAccountList ? (
                         <LoadingCog center />
@@ -96,7 +110,7 @@ class UserDashboard extends Component {
                         <div>
                             {
                                 this.props.accounts.length === 0 ? (
-                                    <div>You don't have accounts yet. Go to Profile page to create one.</div>
+                                    <div>{USERDASHBOARD_NO_ACCOUNTS}</div>
                                 ) : this.state.displayCampaignForm ? (
                                     <CampaignForm name="campaignForm" accounts={this.props.accounts.filter(account => {
                                         const campaignNumber = this.props.accounts[findIndex(this.props.accounts, { name: account.name })].campaigns.length;
@@ -112,7 +126,7 @@ class UserDashboard extends Component {
                             }
                             {
                                 !this.state.displayCampaignForm && this.props.accounts.length > 0 && (
-                                    <SuccessButton id="displayCampaignForm" onClick={this.handleClick}>Add campaign</SuccessButton>
+                                    <SuccessButton id="displayCampaignForm" onClick={this.handleClick}>{USERDASHBOARD_ADD_CAMPAIGN}</SuccessButton>
                                 )
                             }
                         </div>
@@ -139,4 +153,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default withRouter(withMessages(connect(mapStateToProps, mapDispatchToProps)(UserDashboard)));
+export default withRouter(withMessages(withLanguage(connect(mapStateToProps, mapDispatchToProps)(UserDashboard))));

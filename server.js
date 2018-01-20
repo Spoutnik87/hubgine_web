@@ -26,6 +26,8 @@ const Languages = require("./app/constants/Languages");
 const config = require("./server-config.json");
 
 let app = express();
+const NODE_ENV = process.env.NODE_ENV || "development";
+console.log("Le serveur a été initialisé en mode : " + NODE_ENV);
 let server = require("http").Server(app);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
@@ -87,7 +89,7 @@ app.use((req, res) => {
 });
 
 // Production error handler
-if (process.env.NODE_ENV === "production")
+if (NODE_ENV === "production")
 {
     app.use((err, req, res, next) => {
         console.error(err.stack);
@@ -96,7 +98,7 @@ if (process.env.NODE_ENV === "production")
 }
 
 server.listen(app.get("port"), () => {
-    console.log("Express server listening on port " + app.get("port"));
+    console.log("Le serveur est executé sur le port : " + app.get("port"));
 });
 
 module.exports = app;

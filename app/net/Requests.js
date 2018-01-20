@@ -138,12 +138,6 @@ export const getAccountList = (token, accounts) => {
     return requestIfNeeded(Methods.GET, Endpoints.ACCOUNT_GET_LIST, token, {}, Types.ACCOUNT_LIST, accounts);
 };
 
-export const getTwitterAccount = (token, id) => {
-    const data = { id };
-
-    return request(Methods.GET, Endpoints.TWITTERACCOUNT_GET, token, data);
-};
-
 export const addCampaign = (token, account_id, name, date_begin, date_end) => {
     const data = { account_id, name, date_begin, date_end };
 

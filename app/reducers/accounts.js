@@ -1,4 +1,4 @@
-import v4 from "uuid";
+import v4 from "uuid/v4";
 import { findIndex, unset } from "lodash";
 import * as ActionTypes from "../constants/ActionTypes";
 import * as RequestTypes from "../constants/RequestTypes";

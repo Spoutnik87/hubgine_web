@@ -31,7 +31,7 @@ class CampaignItem extends Component {
     render()
     {
         return (
-            <div id={this.props.campaign.name} className="campaignitem col-md-4" onClick={this.handleClick}>
+            <div id={this.props.campaign.name} className="campaignitem col-md-4 col-sm-6 col-xs-12" onClick={this.handleClick}>
                 {this.props.campaign.name}
             </div>
         );

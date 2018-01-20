@@ -19,7 +19,7 @@ export default function getLanguage()
         HEADER_SIGNIN: "Sign In",
         HEADER_REGISTER: "Register",
         //---FOOTER---
-        FOOTER_TITLE: "© 2017 Company, Inc. All Rights Reserved.",
+        FOOTER_TITLE: "© 2018 Company, Inc. All Rights Reserved.",
         //---NOTFOUND---
         NOTFOUND_TITLE: "Page Not Found",
         //---SIGNIN---
@@ -69,6 +69,26 @@ export default function getLanguage()
         PROFILE_ERROREDITING_LANGUAGE: "Selected language is incorrect.",
         PROFILE_SUCCESSEDITING_LANGUAGE: "You edited your preferred language successfully.",
         PROFILE_SUCCESSEDITING_PASSWORD: "You edited your preferred password successfully.",
+        //---ACCOUNTSMANAGMENT---
+        ACCOUNTSMANAGMENT_ADD_ACCOUNT: "Add account",
+        //---USERDASHBOARD---
+        USERDASHBOARD_TITLE: "Your dashboard",
+        USERDASHBOARD_ADD_CAMPAIGN: "Add campaign",
+        USERDASHBOARD_NO_ACCOUNTS: "You don't have accounts yet. Go to Profile page to create one.",
+        //---ADMINDASHBOARD---
+        ADMINDASHBOARD_TITLE: "Admin dashboard",
+        //---ACCOUNTOVERVIEW---
+        ACCOUNTOVERVIEW_NO_ACCOUNT: "This account doesn't exist.",
+        ACCOUNTOVERVIEW_EDIT_BUTTON: "Edit this account",
+        ACCOUNTOVERVIEW_CAMPAIGNS_TITLE: "Campaigns :",
+        ACCOUNTOVERVIEW_BLACKLIST_TITLE: "Blacklist :",
+        //---CAMPAIGNOVERVIEW---
+        CAMPAIGNOVERVIEW_NO_CAMPAIGN: "This campaign doesn't exist.",
+        CAMPAIGNOVERVIEW_EDIT_BUTTON: "Edit this campaign",
+        CAMPAIGNOVERVIEW_RULES_TITLE: "Rules :",
+        CAMPAIGNOVERVIEW_ADD_RULE_BUTTON: "Add a rule",
+        CAMPAIGNOVERVIEW_TITLE_ACCOUNT: "Account : ",
+        CAMPAIGNOVERVIEW_TITLE_CAMPAIGN: "Campaign : ",
         //---USERPASSWORDFORM---
         USERPASSWORDFORM_CREATE_TITLE: "Set a new password",
         USERPASSWORDFORM_EDIT_TITLE: "Edit your password",

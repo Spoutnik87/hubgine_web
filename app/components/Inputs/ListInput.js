@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import v4 from "uuid";
+import v4 from "uuid/v4";
 import LoadingCog from "../LoadingCog";
 
 class ListInput extends Component {

@@ -21,6 +21,9 @@ class AccountsManagment extends Component {
                 accessTokenSecret: PropTypes.string.isRequired,
                 blacklist: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired
             }))
+        }).isRequired,
+        lang: PropTypes.shape({
+            ACCOUNTSMANAGMENT_ADD_ACCOUNT: PropTypes.string.isRequired
         }).isRequired
     };
 
@@ -149,12 +152,7 @@ class AccountsManagment extends Component {
     render()
     {
         const {
-            PROFILE_TITLE,
-            PROFILE_EMAIL,
-            PROFILE_FIRSTNAME,
-            PROFILE_LASTNAME,
-            PROFILE_LANGUAGE,
-            PROFILE_ACCOUNT_LIST
+            ACCOUNTSMANAGMENT_ADD_ACCOUNT
         } = this.props.lang;
         return this.state.loading ? (
             <LoadingCog center />
@@ -178,7 +176,7 @@ class AccountsManagment extends Component {
                             ))
                         }
                     </ul>
-                    <SuccessButton id="buttonSubmit" onClick={this.handleClick}>Add account</SuccessButton>
+                    <SuccessButton id="buttonSubmit" onClick={this.handleClick}>{ACCOUNTSMANAGMENT_ADD_ACCOUNT}</SuccessButton>
                 </div>
             ));
     }

@@ -103,7 +103,7 @@ export function register(email, password, cpassword, firstname, lastname, lang, 
 				  	rank: result.rank,
 				  	lang: result.lang
 				}, {
-					path: ""
+					path: "/"
 				}));
 		      	return Promise.resolve();
 			}).catch(error => {
@@ -163,7 +163,7 @@ export function disconnect()
 			type: ActionTypes.ACCOUNTS_UNSET
 		});
 		dispatch(removeCookie("user", {
-			path: ""
+			path: "/"
 		}));
 		return Promise.resolve();
     };
@@ -246,7 +246,7 @@ export function updateUser(email, oldpassword, password, cpassword, firstname, l
 					lang: newLang || initialLang,
 					rank: initialRank
 				}, {
-					path: ""
+					path: "/"
 				}));
 				const {
 					USER_EDIT_SUCCESS

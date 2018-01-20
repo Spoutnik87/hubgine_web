@@ -36,7 +36,10 @@ class Signin extends Component {
 
     handleSubmit(event)
     {
-        const { email, password } = event.result;
+        const {
+            email,
+            password
+        } = event.result;
         this.setState({
             loading: true
         });

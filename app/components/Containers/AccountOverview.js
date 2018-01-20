@@ -16,6 +16,7 @@ import Panel from "../Panel";
 import PrimaryButton from "../buttons/PrimaryButton";
 import SuccessButton from "../buttons/SuccessButton";
 import TwitterRuleForm from "../Forms/TwitterRuleForm";
+import WordList from "../WordList";
 
 class AccountOverview extends Component {
     static propTypes = {
@@ -23,6 +24,12 @@ class AccountOverview extends Component {
             params: PropTypes.shape({
                 accountId: PropTypes.string.isRequired
             }).isRequired
+        }).isRequired,
+        lang: PropTypes.shape({
+            ACCOUNTOVERVIEW_NO_ACCOUNT: PropTypes.string.isRequired,
+            ACCOUNTOVERVIEW_EDIT_BUTTON: PropTypes.string.isRequired,
+            ACCOUNTOVERVIEW_CAMPAIGNS_TITLE: PropTypes.string.isRequired,
+            ACCOUNTOVERVIEW_BLACKLIST_TITLE: PropTypes.string.isRequired
         }).isRequired
     };
 
@@ -53,6 +60,12 @@ class AccountOverview extends Component {
     render()
     {
         const {
+            ACCOUNTOVERVIEW_NO_ACCOUNT,
+            ACCOUNTOVERVIEW_EDIT_BUTTON,
+            ACCOUNTOVERVIEW_CAMPAIGNS_TITLE,
+            ACCOUNTOVERVIEW_BLACKLIST_TITLE
+        } = this.props.lang;
+        const {
             editAccount,
             loadingAccountList,
             accountId,
@@ -67,18 +80,18 @@ class AccountOverview extends Component {
                         </Panel>
                     ) : (
                         account ? (
-                            <Panel title={<span>{accountId}{!editAccount && <PrimaryButton id="editCampaign" style={{ float: "right" }} onClick={this.handleClick}>Edit</PrimaryButton>}</span>}>
-                                <Panel title="Campaigns :">
+                            <Panel title={<span>{accountId}{!editAccount && <PrimaryButton id="editCampaign" style={{ float: "right" }} onClick={this.handleClick}>{ACCOUNTOVERVIEW_EDIT_BUTTON}</PrimaryButton>}</span>}>
+                                <Panel title={ACCOUNTOVERVIEW_CAMPAIGNS_TITLE}>
                                     <CampaignList account={account} campaigns={account.campaigns} onClick={this.handleCampaignSelection} />
                                 </Panel>
-                                <Panel title="Blacklist :">
-                                    
+                                <Panel title={ACCOUNTOVERVIEW_BLACKLIST_TITLE}>
+                                    <WordList words={account.blacklist} />
                                 </Panel>
                             </Panel>
                         ) : (
                             <Panel title={accountId}>
                                 <Messages messages={this.props.messages} />
-                                This account doesn't exist.
+                                {ACCOUNTOVERVIEW_NO_ACCOUNT}
                             </Panel>
                         )
                     )
