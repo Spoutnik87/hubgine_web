@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { withMessages } from "../withMessages";
 import { withLanguage } from "../withLanguage";
 import Container from "../Container";
-import Panel from "../Panel";
+import Card from "../Card";
 
 class AdminDashboard extends Component {
     static propTypes = {
@@ -25,9 +25,9 @@ class AdminDashboard extends Component {
         } = this.props.lang;
         return (
             <Container>
-                <Panel title={ADMINDASHBOARD_TITLE}>
+                <Card title={ADMINDASHBOARD_TITLE}>
 
-                </Panel>
+                </Card>
             </Container>
         );
     }

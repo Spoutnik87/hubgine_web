@@ -78,8 +78,8 @@ class TextInput extends Component {
                 mainDiv = (
                     <div className="input-group">
                         <Input className="form-control" value={this.state.value} onChange={this.handleChange} autoFocus />
-                        <IconButton id="buttonTextSubmit" className="input-group-addon edit-button" icon="fa fa-check fa-fw" onClick={this.handleClick} />
-                        <IconButton id="buttonTextCancel" className="input-group-addon edit-button" icon="fa fa-remove fa-fw" onClick={this.handleClick} />        
+                        <IconButton id="buttonTextSubmit" className="input-group-append input-group-text edit-button" icon="fas fa-check" onClick={this.handleClick} />
+                        <IconButton id="buttonTextCancel" className="input-group-append input-group-text edit-button" icon="fas fa-times" onClick={this.handleClick} />        
                     </div>
                 );
             }
@@ -88,7 +88,7 @@ class TextInput extends Component {
                 mainDiv = (
                     <div className="input-group">
                         <div className="form-control">{this.props.value}</div>
-                        <IconButton id="buttonTextEdit" className="input-group-addon edit-button" icon="fa fa-pencil fa-fw" onClick={this.handleClick} />        
+                        <IconButton id="buttonTextEdit" className="input-group-append input-group-text edit-button" icon="fas fa-pencil-alt" onClick={this.handleClick} />        
                     </div>
                 );
             }

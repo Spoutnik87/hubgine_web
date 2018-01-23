@@ -74,8 +74,8 @@ class NumberInput extends Component {
         return (
             <div className="input-group">
                 <Input className="form-control" value={this.state.value} onChange={this.handleChange} autoFocus />
-                <IconButton id="buttonDecrement" className="input-group-addon numberinput-button" icon="fa fa-minus fa-fw" onClick={this.handleClick} />
-                <IconButton id="buttonIncrement" className="input-group-addon numberinput-button" icon="fa fa-plus fa-fw" onClick={this.handleClick} />
+                <IconButton id="buttonDecrement" className="input-group-append input-group-text numberinput-button" icon="fa fa-minus fa-fw" onClick={this.handleClick} />
+                <IconButton id="buttonIncrement" className="input-group-append input-group-text numberinput-button" icon="fa fa-plus fa-fw" onClick={this.handleClick} />
             </div>
         );
     }

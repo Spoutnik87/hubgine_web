@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import Panel from "./Panel";
+import Card from "./Card";
 
 class Form extends Component {
     static propTypes = {
@@ -26,11 +26,11 @@ class Form extends Component {
             children
         } = this.props;
         return (
-            <Panel title={title}>
+            <Card title={title}>
                 <div className="form-horizontal">
                     {children}
                 </div>
-            </Panel>
+            </Card>
         );
     }
 }

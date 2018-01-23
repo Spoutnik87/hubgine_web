@@ -28,7 +28,7 @@ class Footer extends Component {
         } = this.props.lang;
         return (
             <footer>
-                <p>{FOOTER_TITLE}</p>
+                <span>{FOOTER_TITLE}</span>
             </footer>
         );
     }

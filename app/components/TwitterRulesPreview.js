@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import Panel from "./Panel";
+import Card from "./Card";
 
 class TwitterRulesPreview extends Component {
     static propTypes = {
@@ -24,9 +24,9 @@ class TwitterRulesPreview extends Component {
     render()
     {
         return (
-            <Panel title="Rules">
+            <Card title="Rules">
 
-            </Panel>
+            </Card>
         );
     }
 }

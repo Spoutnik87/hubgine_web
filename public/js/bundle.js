@@ -1413,7 +1413,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(App));
 
-},{"../actions/user":4,"../constants/Ranks":60,"./Containers/AccountOverview":10,"./Containers/AdminDashboard":12,"./Containers/CampaignOverview":13,"./Containers/Profile":14,"./Containers/Register":15,"./Containers/Signin":16,"./Containers/UserDashboard":17,"./Footer":18,"./ForgotPassword":19,"./Header":28,"./Home":29,"./NotFound":40,"./routes/AdminRoute":53,"./routes/LoggedInRoute":54,"./routes/NotLoggedInRoute":55,"prop-types":353,"react":427,"react-redux":377,"react-router-dom":397,"redux":483}],7:[function(require,module,exports){
+},{"../actions/user":4,"../constants/Ranks":60,"./Containers/AccountOverview":11,"./Containers/AdminDashboard":13,"./Containers/CampaignOverview":14,"./Containers/Profile":15,"./Containers/Register":16,"./Containers/Signin":17,"./Containers/UserDashboard":18,"./Footer":19,"./ForgotPassword":20,"./Header":29,"./Home":30,"./NotFound":41,"./routes/AdminRoute":53,"./routes/LoggedInRoute":54,"./routes/NotLoggedInRoute":55,"prop-types":353,"react":427,"react-redux":377,"react-router-dom":397,"redux":483}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1587,7 +1587,88 @@ CampaignList.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(CampaignList);
 
-},{"./CampaignItem":7,"./LoadingCog":38,"./withLanguage":56,"prop-types":353,"react":427}],9:[function(require,module,exports){
+},{"./CampaignItem":7,"./LoadingCog":39,"./withLanguage":56,"prop-types":353,"react":427}],9:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require("prop-types");
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Card = function (_Component) {
+    _inherits(Card, _Component);
+
+    function Card() {
+        _classCallCheck(this, Card);
+
+        return _possibleConstructorReturn(this, (Card.__proto__ || Object.getPrototypeOf(Card)).apply(this, arguments));
+    }
+
+    _createClass(Card, [{
+        key: "shouldComponentUpdate",
+        value: function shouldComponentUpdate(nextProps, nextState) {
+            return nextProps.title !== this.props.title || nextProps.children !== this.props.children;
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            var _props = this.props,
+                title = _props.title,
+                children = _props.children;
+
+            var header = this.props.title !== null && _react2.default.createElement(
+                "div",
+                { className: "card-header" },
+                _react2.default.createElement(
+                    "h3",
+                    { className: "card-title" },
+                    title
+                )
+            );
+            return _react2.default.createElement(
+                "div",
+                { className: "card" },
+                header,
+                _react2.default.createElement(
+                    "div",
+                    { className: "card-body" },
+                    children
+                )
+            );
+        }
+    }]);
+
+    return Card;
+}(_react.Component);
+
+Card.propTypes = {
+    title: _propTypes2.default.any,
+    children: _propTypes2.default.any
+};
+Card.defaultProps = {
+    title: null,
+    children: null
+};
+exports.default = Card;
+
+},{"prop-types":353,"react":427}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1654,7 +1735,7 @@ Container.defaultProps = {
 };
 exports.default = Container;
 
-},{"prop-types":353,"react":427}],10:[function(require,module,exports){
+},{"prop-types":353,"react":427}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1705,9 +1786,9 @@ var _Container = require("../Container");
 
 var _Container2 = _interopRequireDefault(_Container);
 
-var _Panel = require("../Panel");
+var _Card = require("../Card");
 
-var _Panel2 = _interopRequireDefault(_Panel);
+var _Card2 = _interopRequireDefault(_Card);
 
 var _PrimaryButton = require("../buttons/PrimaryButton");
 
@@ -1782,11 +1863,11 @@ var AccountOverview = function (_Component) {
                 _Container2.default,
                 null,
                 loadingAccountList ? _react2.default.createElement(
-                    _Panel2.default,
+                    _Card2.default,
                     { title: accountId },
                     _react2.default.createElement(_LoadingCog2.default, { center: true })
                 ) : account ? _react2.default.createElement(
-                    _Panel2.default,
+                    _Card2.default,
                     { title: _react2.default.createElement(
                             "span",
                             null,
@@ -1798,17 +1879,17 @@ var AccountOverview = function (_Component) {
                             )
                         ) },
                     _react2.default.createElement(
-                        _Panel2.default,
+                        _Card2.default,
                         { title: ACCOUNTOVERVIEW_CAMPAIGNS_TITLE },
                         _react2.default.createElement(_CampaignList2.default, { account: account, campaigns: account.campaigns, onClick: this.handleCampaignSelection })
                     ),
                     _react2.default.createElement(
-                        _Panel2.default,
+                        _Card2.default,
                         { title: ACCOUNTOVERVIEW_BLACKLIST_TITLE },
                         _react2.default.createElement(_WordList2.default, { words: account.blacklist })
                     )
                 ) : _react2.default.createElement(
-                    _Panel2.default,
+                    _Card2.default,
                     { title: accountId },
                     _react2.default.createElement(_Messages2.default, { messages: this.props.messages }),
                     ACCOUNTOVERVIEW_NO_ACCOUNT
@@ -1851,7 +1932,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _withMessages.withMessages)((0, _withLanguage.withLanguage)((0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(AccountOverview))));
 
-},{"../../actions/accounts":1,"../CampaignList":8,"../Container":9,"../Forms/TwitterAccountForm":22,"../Forms/TwitterRuleForm":23,"../LoadingCog":38,"../Messages":39,"../Panel":41,"../WordList":47,"../buttons/PrimaryButton":51,"../buttons/SuccessButton":52,"../withLanguage":56,"../withMessages":57,"lodash":326,"prop-types":353,"react":427,"react-redux":377,"react-router-dom":397,"redux":483}],11:[function(require,module,exports){
+},{"../../actions/accounts":1,"../CampaignList":8,"../Card":9,"../Container":10,"../Forms/TwitterAccountForm":23,"../Forms/TwitterRuleForm":24,"../LoadingCog":39,"../Messages":40,"../WordList":47,"../buttons/PrimaryButton":50,"../buttons/SuccessButton":52,"../withLanguage":56,"../withMessages":57,"lodash":326,"prop-types":353,"react":427,"react-redux":377,"react-router-dom":397,"redux":483}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2103,7 +2184,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _withLanguage.withLanguage)((0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(AccountsManagment));
 
-},{"../../actions/accounts":1,"../AccountItem":5,"../Forms/TwitterAccountForm":22,"../LoadingCog":38,"../buttons/SuccessButton":52,"../withLanguage":56,"prop-types":353,"react":427,"react-redux":377,"redux":483}],12:[function(require,module,exports){
+},{"../../actions/accounts":1,"../AccountItem":5,"../Forms/TwitterAccountForm":23,"../LoadingCog":39,"../buttons/SuccessButton":52,"../withLanguage":56,"prop-types":353,"react":427,"react-redux":377,"redux":483}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2130,9 +2211,9 @@ var _Container = require("../Container");
 
 var _Container2 = _interopRequireDefault(_Container);
 
-var _Panel = require("../Panel");
+var _Card = require("../Card");
 
-var _Panel2 = _interopRequireDefault(_Panel);
+var _Card2 = _interopRequireDefault(_Card);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2159,7 +2240,7 @@ var AdminDashboard = function (_Component) {
             return _react2.default.createElement(
                 _Container2.default,
                 null,
-                _react2.default.createElement(_Panel2.default, { title: ADMINDASHBOARD_TITLE })
+                _react2.default.createElement(_Card2.default, { title: ADMINDASHBOARD_TITLE })
             );
         }
     }]);
@@ -2182,7 +2263,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _withMessages.withMessages)((0, _withLanguage.withLanguage)((0, _reactRedux.connect)(mapStateToProps)(AdminDashboard)));
 
-},{"../Container":9,"../Panel":41,"../withLanguage":56,"../withMessages":57,"prop-types":353,"react":427,"react-redux":377}],13:[function(require,module,exports){
+},{"../Card":9,"../Container":10,"../withLanguage":56,"../withMessages":57,"prop-types":353,"react":427,"react-redux":377}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2233,9 +2314,9 @@ var _Container = require("../Container");
 
 var _Container2 = _interopRequireDefault(_Container);
 
-var _Panel = require("../Panel");
+var _Card = require("../Card");
 
-var _Panel2 = _interopRequireDefault(_Panel);
+var _Card2 = _interopRequireDefault(_Card);
 
 var _PrimaryButton = require("../buttons/PrimaryButton");
 
@@ -2486,7 +2567,7 @@ var CampaignOverview = function (_Component) {
                 _Container2.default,
                 null,
                 _react2.default.createElement(
-                    _Panel2.default,
+                    _Card2.default,
                     { title: _react2.default.createElement(
                             "span",
                             null,
@@ -2504,7 +2585,7 @@ var CampaignOverview = function (_Component) {
                         null,
                         _react2.default.createElement(_Messages2.default, { messages: this.props.messages }),
                         _react2.default.createElement(
-                            _Panel2.default,
+                            _Card2.default,
                             { title: CAMPAIGNOVERVIEW_RULES_TITLE },
                             this.state.creationRuleFormDisplayed ? _react2.default.createElement(_TwitterRuleForm2.default, { onSubmit: this.handleRuleCreationSubmit, cancel: true, onCancel: this.handleRuleCreationCancel, loading: this.state.loading }) : _react2.default.createElement(_RuleList2.default, { accountId: this.state.accountId, campaignId: this.state.campaignId, rules: this.state.campaign.config.rules, onRuleEditMode: this.handleRuleEditMode, selectedRule: this.state.selectedRule, loading: this.state.loading, onRuleEditionSubmit: this.handleRuleEditionSubmit, onRuleEditionDelete: this.handleRuleEditionDelete, onRuleEditionCancel: this.handleRuleEditionCancel })
                         ),
@@ -2563,7 +2644,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _withMessages.withMessages)((0, _withLanguage.withLanguage)((0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(CampaignOverview))));
 
-},{"../../actions/accounts":1,"../Container":9,"../Forms/CampaignForm":21,"../Forms/TwitterRuleForm":23,"../LoadingCog":38,"../Messages":39,"../Panel":41,"../RuleList":44,"../buttons/PrimaryButton":51,"../buttons/SuccessButton":52,"../withLanguage":56,"../withMessages":57,"lodash":326,"prop-types":353,"react":427,"react-redux":377,"react-router-dom":397,"redux":483}],14:[function(require,module,exports){
+},{"../../actions/accounts":1,"../Card":9,"../Container":10,"../Forms/CampaignForm":22,"../Forms/TwitterRuleForm":24,"../LoadingCog":39,"../Messages":40,"../RuleList":44,"../buttons/PrimaryButton":50,"../buttons/SuccessButton":52,"../withLanguage":56,"../withMessages":57,"lodash":326,"prop-types":353,"react":427,"react-redux":377,"react-router-dom":397,"redux":483}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2620,9 +2701,9 @@ var _Container = require("../Container");
 
 var _Container2 = _interopRequireDefault(_Container);
 
-var _Panel = require("../Panel");
+var _Card = require("../Card");
 
-var _Panel2 = _interopRequireDefault(_Panel);
+var _Card2 = _interopRequireDefault(_Card);
 
 var _Form = require("../Form");
 
@@ -2850,7 +2931,7 @@ var Profile = function (_Component) {
     }, {
         key: "render",
         value: function render() {
-            var panel = void 0;
+            var card = void 0;
             var _props$lang2 = this.props.lang,
                 PROFILE_TITLE = _props$lang2.PROFILE_TITLE,
                 PROFILE_EMAIL = _props$lang2.PROFILE_EMAIL,
@@ -2861,7 +2942,7 @@ var Profile = function (_Component) {
                 PROFILE_ACCOUNT_LIST = _props$lang2.PROFILE_ACCOUNT_LIST;
 
             if (this.state.isLoaded) {
-                panel = _react2.default.createElement(
+                card = _react2.default.createElement(
                     _Container2.default,
                     null,
                     _react2.default.createElement(
@@ -2931,24 +3012,24 @@ var Profile = function (_Component) {
                         )
                     ),
                     _react2.default.createElement(
-                        _Panel2.default,
+                        _Card2.default,
                         { title: PROFILE_ACCOUNT_LIST },
                         _react2.default.createElement(_AccountsManagment2.default, null)
                     )
                 );
             } else {
-                panel = _react2.default.createElement(
+                card = _react2.default.createElement(
                     _Container2.default,
                     null,
                     _react2.default.createElement(
-                        _Panel2.default,
+                        _Card2.default,
                         { title: PROFILE_TITLE },
                         _react2.default.createElement(_Messages2.default, { messages: this.props.messages }),
                         _react2.default.createElement(_LoadingCog2.default, { center: true })
                     )
                 );
             }
-            return panel;
+            return card;
         }
     }]);
 
@@ -2997,7 +3078,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _withMessages.withMessages)((0, _withLanguage.withLanguage)((0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Profile)));
 
-},{"../../actions/accounts":1,"../../actions/user":4,"../../constants/Languages":59,"../../constants/Ranks":60,"../Container":9,"../Form":20,"../Forms/UserPasswordForm":25,"../Inputs/ListInput":34,"../Inputs/TextInput":37,"../LoadingCog":38,"../Messages":39,"../Panel":41,"../buttons/PrimaryButton":51,"../withLanguage":56,"../withMessages":57,"./AccountsManagment":11,"prop-types":353,"react":427,"react-redux":377,"redux":483}],15:[function(require,module,exports){
+},{"../../actions/accounts":1,"../../actions/user":4,"../../constants/Languages":59,"../../constants/Ranks":60,"../Card":9,"../Container":10,"../Form":21,"../Forms/UserPasswordForm":26,"../Inputs/ListInput":35,"../Inputs/TextInput":38,"../LoadingCog":39,"../Messages":40,"../buttons/PrimaryButton":50,"../withLanguage":56,"../withMessages":57,"./AccountsManagment":12,"prop-types":353,"react":427,"react-redux":377,"redux":483}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3110,7 +3191,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _withMessages.withMessages)((0, _reactRedux.connect)(null, mapDispatchToProps)(Register));
 
-},{"../../actions/user":4,"../Container":9,"../Forms/UserRegisterForm":26,"../LoadingCog":38,"../withMessages":57,"prop-types":353,"react":427,"react-redux":377,"redux":483}],16:[function(require,module,exports){
+},{"../../actions/user":4,"../Container":10,"../Forms/UserRegisterForm":27,"../LoadingCog":39,"../withMessages":57,"prop-types":353,"react":427,"react-redux":377,"redux":483}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3241,7 +3322,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _withMessages.withMessages)((0, _withLanguage.withLanguage)((0, _reactRedux.connect)(null, mapDispatchToProps)(Signin)));
 
-},{"../../actions/user":4,"../Container":9,"../Forms/UserSigninForm":27,"../LoadingCog":38,"../withLanguage":56,"../withMessages":57,"prop-types":353,"react":427,"react-redux":377,"react-router-dom":397,"redux":483}],17:[function(require,module,exports){
+},{"../../actions/user":4,"../Container":10,"../Forms/UserSigninForm":28,"../LoadingCog":39,"../withLanguage":56,"../withMessages":57,"prop-types":353,"react":427,"react-redux":377,"react-router-dom":397,"redux":483}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3288,9 +3369,9 @@ var _Container = require("../Container");
 
 var _Container2 = _interopRequireDefault(_Container);
 
-var _Panel = require("../Panel");
+var _Card = require("../Card");
 
-var _Panel2 = _interopRequireDefault(_Panel);
+var _Card2 = _interopRequireDefault(_Card);
 
 var _LoadingCog = require("../LoadingCog");
 
@@ -3402,7 +3483,7 @@ var UserDashboard = function (_Component) {
                 _Container2.default,
                 null,
                 _react2.default.createElement(
-                    _Panel2.default,
+                    _Card2.default,
                     { title: USERDASHBOARD_TITLE },
                     this.state.loadingAccountList ? _react2.default.createElement(_LoadingCog2.default, { center: true }) : _react2.default.createElement(
                         "div",
@@ -3418,7 +3499,7 @@ var UserDashboard = function (_Component) {
                                 return account.name;
                             }), onSubmit: this.handleCampaignCreationSubmit, cancel: true, onCancel: this.handleCampaignCreationCancel, messages: this.props.messages }) : this.props.accounts.map(function (account) {
                             return _react2.default.createElement(
-                                _Panel2.default,
+                                _Card2.default,
                                 { key: account.uid, title: account.name },
                                 _react2.default.createElement(_CampaignList2.default, { account: account, campaigns: _this4.props.accounts[(0, _lodash.findIndex)(_this4.props.accounts, { name: account.name })].campaigns, onClick: _this4.handleCampaignSelection })
                             );
@@ -3463,7 +3544,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _withMessages.withMessages)((0, _withLanguage.withLanguage)((0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(UserDashboard))));
 
-},{"../../actions/accounts":1,"../CampaignList":8,"../Container":9,"../Forms/CampaignForm":21,"../LoadingCog":38,"../Panel":41,"../buttons/SuccessButton":52,"../withLanguage":56,"../withMessages":57,"./CampaignOverview":13,"lodash":326,"prop-types":353,"react":427,"react-redux":377,"react-router-dom":397,"redux":483}],18:[function(require,module,exports){
+},{"../../actions/accounts":1,"../CampaignList":8,"../Card":9,"../Container":10,"../Forms/CampaignForm":22,"../LoadingCog":39,"../buttons/SuccessButton":52,"../withLanguage":56,"../withMessages":57,"./CampaignOverview":14,"lodash":326,"prop-types":353,"react":427,"react-redux":377,"react-router-dom":397,"redux":483}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3517,7 +3598,7 @@ var Footer = function (_Component) {
                 "footer",
                 null,
                 _react2.default.createElement(
-                    "p",
+                    "span",
                     null,
                     FOOTER_TITLE
                 )
@@ -3535,7 +3616,7 @@ Footer.propTypes = {
 };
 exports.default = (0, _withLanguage.withLanguage)(Footer);
 
-},{"./withLanguage":56,"prop-types":353,"react":427}],19:[function(require,module,exports){
+},{"./withLanguage":56,"prop-types":353,"react":427}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3562,9 +3643,9 @@ var _Container = require("./Container");
 
 var _Container2 = _interopRequireDefault(_Container);
 
-var _Panel = require("./Panel");
+var _Card = require("./Card");
 
-var _Panel2 = _interopRequireDefault(_Panel);
+var _Card2 = _interopRequireDefault(_Card);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3601,7 +3682,7 @@ var ForgotPassword = function (_Component) {
                 _Container2.default,
                 null,
                 _react2.default.createElement(
-                    _Panel2.default,
+                    _Card2.default,
                     null,
                     _react2.default.createElement(_UserForgotPasswordForm2.default, { onSubmit: this.handleSubmit, loading: this.state.loading, messages: this.props.messages })
                 )
@@ -3617,7 +3698,7 @@ ForgotPassword.propTypes = {
 };
 exports.default = (0, _withMessages.withMessages)(ForgotPassword);
 
-},{"./Container":9,"./Forms/UserForgotPasswordForm":24,"./Panel":41,"./withMessages":57,"prop-types":353,"react":427}],20:[function(require,module,exports){
+},{"./Card":9,"./Container":10,"./Forms/UserForgotPasswordForm":25,"./withMessages":57,"prop-types":353,"react":427}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3634,9 +3715,9 @@ var _propTypes = require("prop-types");
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _Panel = require("./Panel");
+var _Card = require("./Card");
 
-var _Panel2 = _interopRequireDefault(_Panel);
+var _Card2 = _interopRequireDefault(_Card);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3668,7 +3749,7 @@ var Form = function (_Component) {
                 children = _props.children;
 
             return _react2.default.createElement(
-                _Panel2.default,
+                _Card2.default,
                 { title: title },
                 _react2.default.createElement(
                     "div",
@@ -3692,7 +3773,7 @@ Form.defaultProps = {
 };
 exports.default = Form;
 
-},{"./Panel":41,"prop-types":353,"react":427}],21:[function(require,module,exports){
+},{"./Card":9,"prop-types":353,"react":427}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3751,9 +3832,9 @@ var _DangerButton = require("../buttons/DangerButton");
 
 var _DangerButton2 = _interopRequireDefault(_DangerButton);
 
-var _DefaultButton = require("../buttons/DefaultButton");
+var _SecondaryButton = require("../buttons/SecondaryButton");
 
-var _DefaultButton2 = _interopRequireDefault(_DefaultButton);
+var _SecondaryButton2 = _interopRequireDefault(_SecondaryButton);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3857,7 +3938,7 @@ var CampaignForm = function (_Component) {
                 CAMPAIGNFORM_DELETE_BUTTON
             );
             var buttonCancel = this.props.cancel && !this.props.loading && _react2.default.createElement(
-                _DefaultButton2.default,
+                _SecondaryButton2.default,
                 { id: "buttonCancel", onClick: this.handleClick },
                 CAMPAIGNFORM_CANCEL_BUTTON
             );
@@ -3871,7 +3952,7 @@ var CampaignForm = function (_Component) {
                     CAMPAIGNFORM_DELETE_BUTTON
                 ),
                 _react2.default.createElement(
-                    _DefaultButton2.default,
+                    _SecondaryButton2.default,
                     { id: "buttonDeleteNo", onClick: this.handleClick },
                     CAMPAIGNFORM_CANCEL_BUTTON
                 )
@@ -4034,7 +4115,7 @@ CampaignForm.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(CampaignForm);
 
-},{"../Form":20,"../Inputs/DateInput":32,"../Inputs/Input":33,"../Inputs/ListInput":34,"../LoadingCog":38,"../Messages":39,"../Tooltip":45,"../buttons/DangerButton":48,"../buttons/DefaultButton":49,"../buttons/SuccessButton":52,"../withLanguage":56,"moment":346,"prop-types":353,"react":427}],22:[function(require,module,exports){
+},{"../Form":21,"../Inputs/DateInput":33,"../Inputs/Input":34,"../Inputs/ListInput":35,"../LoadingCog":39,"../Messages":40,"../Tooltip":45,"../buttons/DangerButton":48,"../buttons/SecondaryButton":51,"../buttons/SuccessButton":52,"../withLanguage":56,"moment":346,"prop-types":353,"react":427}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4083,9 +4164,9 @@ var _DangerButton = require("../buttons/DangerButton");
 
 var _DangerButton2 = _interopRequireDefault(_DangerButton);
 
-var _DefaultButton = require("../buttons/DefaultButton");
+var _SecondaryButton = require("../buttons/SecondaryButton");
 
-var _DefaultButton2 = _interopRequireDefault(_DefaultButton);
+var _SecondaryButton2 = _interopRequireDefault(_SecondaryButton);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4204,7 +4285,7 @@ var TwitterAccountForm = function (_Component) {
                 TWITTERACCOUNTFORM_DELETE_BUTTON
             );
             var buttonCancel = this.props.cancel && !this.props.loading && _react2.default.createElement(
-                _DefaultButton2.default,
+                _SecondaryButton2.default,
                 { id: "buttonCancel", onClick: this.handleClick },
                 TWITTERACCOUNTFORM_CANCEL_BUTTON
             );
@@ -4218,7 +4299,7 @@ var TwitterAccountForm = function (_Component) {
                     TWITTERACCOUNTFORM_DELETE_BUTTON
                 ),
                 _react2.default.createElement(
-                    _DefaultButton2.default,
+                    _SecondaryButton2.default,
                     { id: "buttonDeleteNo", onClick: this.handleClick },
                     TWITTERACCOUNTFORM_CANCEL_BUTTON
                 )
@@ -4384,7 +4465,7 @@ TwitterAccountForm.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(TwitterAccountForm);
 
-},{"../Form":20,"../Inputs/ArrayInput":30,"../Inputs/Input":33,"../LoadingCog":38,"../Messages":39,"../buttons/DangerButton":48,"../buttons/DefaultButton":49,"../buttons/SuccessButton":52,"../withLanguage":56,"prop-types":353,"react":427}],23:[function(require,module,exports){
+},{"../Form":21,"../Inputs/ArrayInput":31,"../Inputs/Input":34,"../LoadingCog":39,"../Messages":40,"../buttons/DangerButton":48,"../buttons/SecondaryButton":51,"../buttons/SuccessButton":52,"../withLanguage":56,"prop-types":353,"react":427}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4445,9 +4526,9 @@ var _DangerButton = require("../buttons/DangerButton");
 
 var _DangerButton2 = _interopRequireDefault(_DangerButton);
 
-var _DefaultButton = require("../buttons/DefaultButton");
+var _SecondaryButton = require("../buttons/SecondaryButton");
 
-var _DefaultButton2 = _interopRequireDefault(_DefaultButton);
+var _SecondaryButton2 = _interopRequireDefault(_SecondaryButton);
 
 var _Tooltip = require("../Tooltip");
 
@@ -4582,7 +4663,7 @@ var TwitterRuleForm = function (_Component) {
                 TWITTERRULEFORM_DELETE_BUTTON
             );
             var buttonCancel = this.props.cancel && !this.props.loading && _react2.default.createElement(
-                _DefaultButton2.default,
+                _SecondaryButton2.default,
                 { id: "buttonCancel", onClick: this.handleClick },
                 TWITTERRULEFORM_CANCEL_BUTTON
             );
@@ -4596,7 +4677,7 @@ var TwitterRuleForm = function (_Component) {
                     TWITTERRULEFORM_DELETE_BUTTON
                 ),
                 _react2.default.createElement(
-                    _DefaultButton2.default,
+                    _SecondaryButton2.default,
                     { id: "buttonDeleteNo", onClick: this.handleClick },
                     TWITTERRULEFORM_CANCEL_BUTTON
                 )
@@ -4790,7 +4871,7 @@ TwitterRuleForm.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(TwitterRuleForm);
 
-},{"../../constants/TwitterRuleConditions":65,"../../constants/TwitterRuleLangs":66,"../../constants/TwitterRuleTypes":67,"../Form":20,"../Inputs/ArrayInput":30,"../Inputs/Input":33,"../Inputs/ListInput":34,"../Inputs/NumberInput":35,"../Inputs/Switch":36,"../LoadingCog":38,"../Messages":39,"../Tooltip":45,"../buttons/DangerButton":48,"../buttons/DefaultButton":49,"../buttons/SuccessButton":52,"../withLanguage":56,"lodash":326,"prop-types":353,"react":427}],24:[function(require,module,exports){
+},{"../../constants/TwitterRuleConditions":65,"../../constants/TwitterRuleLangs":66,"../../constants/TwitterRuleTypes":67,"../Form":21,"../Inputs/ArrayInput":31,"../Inputs/Input":34,"../Inputs/ListInput":35,"../Inputs/NumberInput":36,"../Inputs/Switch":37,"../LoadingCog":39,"../Messages":40,"../Tooltip":45,"../buttons/DangerButton":48,"../buttons/SecondaryButton":51,"../buttons/SuccessButton":52,"../withLanguage":56,"lodash":326,"prop-types":353,"react":427}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4972,7 +5053,7 @@ UserForgotPasswordForm.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(UserForgotPasswordForm);
 
-},{"../Form":20,"../Inputs/Input":33,"../LoadingCog":38,"../Messages":39,"../Recaptcha":42,"../buttons/SuccessButton":52,"../withLanguage":56,"prop-types":353,"react":427}],25:[function(require,module,exports){
+},{"../Form":21,"../Inputs/Input":34,"../LoadingCog":39,"../Messages":40,"../Recaptcha":42,"../buttons/SuccessButton":52,"../withLanguage":56,"prop-types":353,"react":427}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5011,9 +5092,9 @@ var _SuccessButton = require("../buttons/SuccessButton");
 
 var _SuccessButton2 = _interopRequireDefault(_SuccessButton);
 
-var _DefaultButton = require("../buttons/DefaultButton");
+var _SecondaryButton = require("../buttons/SecondaryButton");
 
-var _DefaultButton2 = _interopRequireDefault(_DefaultButton);
+var _SecondaryButton2 = _interopRequireDefault(_SecondaryButton);
 
 var _Form = require("../Form");
 
@@ -5088,7 +5169,7 @@ var UserPasswordForm = function (_Component) {
                 this.props.edit ? USERPASSWORDFORM_EDIT_BUTTON : USERPASSWORDFORM_CREATE_BUTTON
             );
             var buttonCancel = this.props.cancel && !this.props.loading && _react2.default.createElement(
-                _DefaultButton2.default,
+                _SecondaryButton2.default,
                 { id: "buttonCancel", onClick: this.handleClick },
                 USERPASSWORDFORM_CANCEL_BUTTON
             );
@@ -5190,7 +5271,7 @@ UserPasswordForm.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(UserPasswordForm);
 
-},{"../Form":20,"../Inputs/Input":33,"../LoadingCog":38,"../Messages":39,"../Recaptcha":42,"../buttons/DefaultButton":49,"../buttons/SuccessButton":52,"../withLanguage":56,"prop-types":353,"react":427}],26:[function(require,module,exports){
+},{"../Form":21,"../Inputs/Input":34,"../LoadingCog":39,"../Messages":40,"../Recaptcha":42,"../buttons/SecondaryButton":51,"../buttons/SuccessButton":52,"../withLanguage":56,"prop-types":353,"react":427}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5496,7 +5577,7 @@ UserRegisterForm.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(UserRegisterForm);
 
-},{"../../constants/Languages":59,"../Form":20,"../Inputs/Checkbox":31,"../Inputs/Input":33,"../Inputs/ListInput":34,"../LoadingCog":38,"../Messages":39,"../Recaptcha":42,"../buttons/SuccessButton":52,"../withLanguage":56,"lodash":326,"prop-types":353,"react":427}],27:[function(require,module,exports){
+},{"../../constants/Languages":59,"../Form":21,"../Inputs/Checkbox":32,"../Inputs/Input":34,"../Inputs/ListInput":35,"../LoadingCog":39,"../Messages":40,"../Recaptcha":42,"../buttons/SuccessButton":52,"../withLanguage":56,"lodash":326,"prop-types":353,"react":427}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5664,7 +5745,7 @@ UserSigninForm.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(UserSigninForm);
 
-},{"../Form":20,"../Inputs/Input":33,"../LoadingCog":38,"../Messages":39,"../buttons/SuccessButton":52,"../withLanguage":56,"prop-types":353,"react":427}],28:[function(require,module,exports){
+},{"../Form":21,"../Inputs/Input":34,"../LoadingCog":39,"../Messages":40,"../buttons/SuccessButton":52,"../withLanguage":56,"prop-types":353,"react":427}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5737,10 +5818,10 @@ var Header = function (_Component) {
             if (isAdmin) {
                 menu.push(_react2.default.createElement(
                     "li",
-                    null,
+                    { className: "nav-item" },
                     _react2.default.createElement(
                         _reactRouterDom.NavLink,
-                        { to: "/admin-dashboard", activeStyle: active },
+                        { className: "nav-link", to: "/admin-dashboard", activeStyle: active },
                         HEADER_ADMIN_DASHBOARD
                     )
                 ));
@@ -5748,28 +5829,28 @@ var Header = function (_Component) {
             if (isLoggedIn) {
                 menu.push(_react2.default.createElement(
                     "li",
-                    null,
+                    { className: "nav-item" },
                     _react2.default.createElement(
                         _reactRouterDom.NavLink,
-                        { to: "/user-dashboard", activeStyle: active },
+                        { className: "nav-link", to: "/user-dashboard", activeStyle: active },
                         HEADER_USER_DASHBOARD
                     )
                 ));
                 menu.push(_react2.default.createElement(
                     "li",
-                    null,
+                    { className: "nav-item" },
                     _react2.default.createElement(
                         _reactRouterDom.NavLink,
-                        { to: "/profile", activeStyle: active },
+                        { className: "nav-link", to: "/profile", activeStyle: active },
                         HEADER_PROFILE
                     )
                 ));
                 menu.push(_react2.default.createElement(
                     "li",
-                    { onClick: this.props.onDisconnect },
+                    { className: "nav-item", onClick: this.props.onDisconnect },
                     _react2.default.createElement(
                         "a",
-                        { style: { cursor: "pointer" } },
+                        { className: "nav-link", style: { cursor: "pointer" } },
                         HEADER_DISCONNECT
                     )
                 ));
@@ -5779,7 +5860,7 @@ var Header = function (_Component) {
                     null,
                     _react2.default.createElement(
                         _reactRouterDom.NavLink,
-                        { to: "/signin", activeStyle: active },
+                        { className: "nav-link", to: "/signin", activeStyle: active },
                         HEADER_SIGNIN
                     )
                 ));
@@ -5788,50 +5869,39 @@ var Header = function (_Component) {
                     null,
                     _react2.default.createElement(
                         _reactRouterDom.NavLink,
-                        { to: "/register", activeStyle: active },
+                        { className: "nav-link", to: "/register", activeStyle: active },
                         HEADER_REGISTER
                     )
                 ));
             }
             return _react2.default.createElement(
-                "nav",
-                { className: "navbar navbar-default navbar-static-top" },
+                _Container2.default,
+                null,
                 _react2.default.createElement(
-                    _Container2.default,
-                    null,
+                    "nav",
+                    { className: "navbar navbar-expand-md navbar-light" },
                     _react2.default.createElement(
-                        "div",
-                        { className: "navbar-header" },
-                        _react2.default.createElement(
-                            "button",
-                            { type: "button", "data-toggle": "collapse", "data-target": "#navbar", className: "navbar-toggle collapsed" },
-                            _react2.default.createElement(
-                                "span",
-                                { className: "sr-only" },
-                                HEADER_SR_ONLY
-                            ),
-                            _react2.default.createElement("span", { className: "icon-bar" }),
-                            _react2.default.createElement("span", { className: "icon-bar" }),
-                            _react2.default.createElement("span", { className: "icon-bar" })
-                        ),
-                        _react2.default.createElement(
-                            _reactRouterDom.Link,
-                            { to: "/", className: "navbar-brand" },
-                            COMPANY_NAME
-                        )
+                        "button",
+                        { type: "button", "data-toggle": "collapse", "data-target": "#navbar", className: "navbar-toggler collapsed" },
+                        _react2.default.createElement("span", { className: "navbar-toggler-icon" })
+                    ),
+                    _react2.default.createElement(
+                        _reactRouterDom.Link,
+                        { to: "/", className: "navbar-brand" },
+                        COMPANY_NAME
                     ),
                     _react2.default.createElement(
                         "div",
                         { id: "navbar", className: "navbar-collapse collapse" },
                         _react2.default.createElement(
                             "ul",
-                            { className: "nav navbar-nav" },
+                            { className: "navbar-nav" },
                             _react2.default.createElement(
                                 "li",
-                                null,
+                                { className: "nav-item" },
                                 _react2.default.createElement(
                                     _reactRouterDom.NavLink,
-                                    { to: "/", activeStyle: active, exact: true },
+                                    { className: "nav-link", to: "/", activeStyle: active, exact: true },
                                     HEADER_HOME
                                 )
                             ),
@@ -5872,7 +5942,7 @@ Header.defaultProps = {
 };
 exports.default = (0, _reactRouterDom.withRouter)((0, _withLanguage.withLanguage)(Header));
 
-},{"../constants/Ranks":60,"./Container":9,"./withLanguage":56,"prop-types":353,"react":427,"react-redux":377,"react-router-dom":397}],29:[function(require,module,exports){
+},{"../constants/Ranks":60,"./Container":10,"./withLanguage":56,"prop-types":353,"react":427,"react-redux":377,"react-router-dom":397}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5927,10 +5997,10 @@ var Home = function (_Component) {
             { className: "col-sm-4" },
             _react2.default.createElement(
               "div",
-              { className: "panel" },
+              { className: "card" },
               _react2.default.createElement(
                 "div",
-                { className: "panel-body" },
+                { className: "card-body" },
                 _react2.default.createElement(_UserSubscriptionChart2.default, { data: data }),
                 _react2.default.createElement(
                   "h3",
@@ -5944,7 +6014,7 @@ var Home = function (_Component) {
                 ),
                 _react2.default.createElement(
                   "a",
-                  { href: "#", role: "button", className: "btn btn-default" },
+                  { href: "#", role: "button", className: "btn btn-secondary" },
                   "View details"
                 )
               )
@@ -5955,10 +6025,10 @@ var Home = function (_Component) {
             { className: "col-sm-4" },
             _react2.default.createElement(
               "div",
-              { className: "panel" },
+              { className: "card" },
               _react2.default.createElement(
                 "div",
-                { className: "panel-body" },
+                { className: "card-body" },
                 _react2.default.createElement(
                   "h3",
                   null,
@@ -5971,7 +6041,7 @@ var Home = function (_Component) {
                 ),
                 _react2.default.createElement(
                   "a",
-                  { href: "#", role: "button", className: "btn btn-default" },
+                  { href: "#", role: "button", className: "btn btn-secondary" },
                   "View details"
                 )
               )
@@ -5982,10 +6052,10 @@ var Home = function (_Component) {
             { className: "col-sm-4" },
             _react2.default.createElement(
               "div",
-              { className: "panel" },
+              { className: "card" },
               _react2.default.createElement(
                 "div",
-                { className: "panel-body" },
+                { className: "card-body" },
                 _react2.default.createElement(
                   "h3",
                   null,
@@ -5998,7 +6068,7 @@ var Home = function (_Component) {
                 ),
                 _react2.default.createElement(
                   "a",
-                  { href: "#", role: "button", className: "btn btn-default" },
+                  { href: "#", role: "button", className: "btn btn-secondary" },
                   "View details"
                 )
               )
@@ -6025,7 +6095,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(Home);
 
-},{"./UserSubscriptionChart":46,"prop-types":353,"react":427,"react-redux":377}],30:[function(require,module,exports){
+},{"./UserSubscriptionChart":46,"prop-types":353,"react":427,"react-redux":377}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6258,7 +6328,7 @@ ArrayInput.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(ArrayInput);
 
-},{"../buttons/DangerButton":48,"../buttons/SuccessButton":52,"../withLanguage":56,"./Input":33,"./ListInput":34,"prop-types":353,"react":427,"uuid/v4":494}],31:[function(require,module,exports){
+},{"../buttons/DangerButton":48,"../buttons/SuccessButton":52,"../withLanguage":56,"./Input":34,"./ListInput":35,"prop-types":353,"react":427,"uuid/v4":494}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6341,7 +6411,7 @@ Checkbox.defaultProps = {
 };
 exports.default = Checkbox;
 
-},{"./Input":33,"prop-types":353,"react":427}],32:[function(require,module,exports){
+},{"./Input":34,"prop-types":353,"react":427}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6431,7 +6501,7 @@ DateInput.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(DateInput);
 
-},{"../withLanguage":56,"moment":346,"moment/locale/fr":345,"prop-types":353,"react":427,"react-datetime":356}],33:[function(require,module,exports){
+},{"../withLanguage":56,"moment":346,"moment/locale/fr":345,"prop-types":353,"react":427,"react-datetime":356}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6502,7 +6572,7 @@ Input.defaultProps = {
 };
 exports.default = Input;
 
-},{"prop-types":353,"react":427}],34:[function(require,module,exports){
+},{"prop-types":353,"react":427}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6630,7 +6700,7 @@ ListInput.defaultProps = {
 };
 exports.default = ListInput;
 
-},{"../LoadingCog":38,"prop-types":353,"react":427,"uuid/v4":494}],35:[function(require,module,exports){
+},{"../LoadingCog":39,"prop-types":353,"react":427,"uuid/v4":494}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6722,8 +6792,8 @@ var NumberInput = function (_Component) {
                 "div",
                 { className: "input-group" },
                 _react2.default.createElement(_Input2.default, { className: "form-control", value: this.state.value, onChange: this.handleChange, autoFocus: true }),
-                _react2.default.createElement(_IconButton2.default, { id: "buttonDecrement", className: "input-group-addon numberinput-button", icon: "fa fa-minus fa-fw", onClick: this.handleClick }),
-                _react2.default.createElement(_IconButton2.default, { id: "buttonIncrement", className: "input-group-addon numberinput-button", icon: "fa fa-plus fa-fw", onClick: this.handleClick })
+                _react2.default.createElement(_IconButton2.default, { id: "buttonDecrement", className: "input-group-append input-group-text numberinput-button", icon: "fa fa-minus fa-fw", onClick: this.handleClick }),
+                _react2.default.createElement(_IconButton2.default, { id: "buttonIncrement", className: "input-group-append input-group-text numberinput-button", icon: "fa fa-plus fa-fw", onClick: this.handleClick })
             );
         }
     }]);
@@ -6743,7 +6813,7 @@ NumberInput.defaultProps = {
 };
 exports.default = NumberInput;
 
-},{"../buttons/IconButton":50,"./Input":33,"prop-types":353,"react":427}],36:[function(require,module,exports){
+},{"../buttons/IconButton":49,"./Input":34,"prop-types":353,"react":427}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6832,7 +6902,7 @@ Switch.defaultProps = {
 };
 exports.default = Switch;
 
-},{"./Input":33,"prop-types":353,"react":427}],37:[function(require,module,exports){
+},{"./Input":34,"prop-types":353,"react":427}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6927,8 +6997,8 @@ var TextInput = function (_Component) {
                         "div",
                         { className: "input-group" },
                         _react2.default.createElement(_Input2.default, { className: "form-control", value: this.state.value, onChange: this.handleChange, autoFocus: true }),
-                        _react2.default.createElement(_IconButton2.default, { id: "buttonTextSubmit", className: "input-group-addon edit-button", icon: "fa fa-check fa-fw", onClick: this.handleClick }),
-                        _react2.default.createElement(_IconButton2.default, { id: "buttonTextCancel", className: "input-group-addon edit-button", icon: "fa fa-remove fa-fw", onClick: this.handleClick })
+                        _react2.default.createElement(_IconButton2.default, { id: "buttonTextSubmit", className: "input-group-append input-group-text edit-button", icon: "fas fa-check", onClick: this.handleClick }),
+                        _react2.default.createElement(_IconButton2.default, { id: "buttonTextCancel", className: "input-group-append input-group-text edit-button", icon: "fas fa-times", onClick: this.handleClick })
                     );
                 } else {
                     mainDiv = _react2.default.createElement(
@@ -6939,7 +7009,7 @@ var TextInput = function (_Component) {
                             { className: "form-control" },
                             this.props.value
                         ),
-                        _react2.default.createElement(_IconButton2.default, { id: "buttonTextEdit", className: "input-group-addon edit-button", icon: "fa fa-pencil fa-fw", onClick: this.handleClick })
+                        _react2.default.createElement(_IconButton2.default, { id: "buttonTextEdit", className: "input-group-append input-group-text edit-button", icon: "fas fa-pencil-alt", onClick: this.handleClick })
                     );
                 }
             }
@@ -6964,7 +7034,7 @@ TextInput.defaultProps = {
 };
 exports.default = TextInput;
 
-},{"../LoadingCog":38,"../buttons/IconButton":50,"./Input":33,"prop-types":353,"react":427}],38:[function(require,module,exports){
+},{"../LoadingCog":39,"../buttons/IconButton":49,"./Input":34,"prop-types":353,"react":427}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7006,7 +7076,7 @@ var LoadingCog = function (_Component) {
     }, {
         key: "render",
         value: function render() {
-            var cog = _react2.default.createElement("i", { className: "fa fa-cog fa-spin fa-3x fa-fw", style: { color: "#35B729" } });
+            var cog = _react2.default.createElement("i", { className: "fas fa-cog fa-spin fa-3x fa-fw", style: { color: "#35B729" } });
             return this.props.center ? _react2.default.createElement(
                 "div",
                 { className: "center" },
@@ -7026,7 +7096,7 @@ LoadingCog.defaultProps = {
 };
 exports.default = LoadingCog;
 
-},{"prop-types":353,"react":427}],39:[function(require,module,exports){
+},{"prop-types":353,"react":427}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7120,7 +7190,7 @@ Messages.propTypes = {
 };
 exports.default = Messages;
 
-},{"prop-types":353,"react":427}],40:[function(require,module,exports){
+},{"prop-types":353,"react":427}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7197,88 +7267,7 @@ NotFound.propTypes = {
 };
 exports.default = (0, _withLanguage.withLanguage)(NotFound);
 
-},{"./Container":9,"./withLanguage":56,"prop-types":353,"react":427}],41:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = require("react");
-
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = require("prop-types");
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Panel = function (_Component) {
-    _inherits(Panel, _Component);
-
-    function Panel() {
-        _classCallCheck(this, Panel);
-
-        return _possibleConstructorReturn(this, (Panel.__proto__ || Object.getPrototypeOf(Panel)).apply(this, arguments));
-    }
-
-    _createClass(Panel, [{
-        key: "shouldComponentUpdate",
-        value: function shouldComponentUpdate(nextProps, nextState) {
-            return nextProps.title !== this.props.title || nextProps.children !== this.props.children;
-        }
-    }, {
-        key: "render",
-        value: function render() {
-            var _props = this.props,
-                title = _props.title,
-                children = _props.children;
-
-            var panelHeader = this.props.title !== null && _react2.default.createElement(
-                "div",
-                { className: "panel-heading" },
-                _react2.default.createElement(
-                    "h3",
-                    { className: "panel-title" },
-                    title
-                )
-            );
-            return _react2.default.createElement(
-                "div",
-                { className: "panel" },
-                panelHeader,
-                _react2.default.createElement(
-                    "div",
-                    { className: "panel-body" },
-                    children
-                )
-            );
-        }
-    }]);
-
-    return Panel;
-}(_react.Component);
-
-Panel.propTypes = {
-    title: _propTypes2.default.any,
-    children: _propTypes2.default.any
-};
-Panel.defaultProps = {
-    title: null,
-    children: null
-};
-exports.default = Panel;
-
-},{"prop-types":353,"react":427}],42:[function(require,module,exports){
+},{"./Container":10,"./withLanguage":56,"prop-types":353,"react":427}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7511,7 +7500,7 @@ RuleItem.defaultProps = {
 };
 exports.default = RuleItem;
 
-},{"../constants/TwitterRuleConditions":65,"../constants/TwitterRuleLangs":66,"../constants/TwitterRuleTypes":67,"./Forms/TwitterRuleForm":23,"./LoadingCog":38,"./buttons/PrimaryButton":51,"lodash":326,"prop-types":353,"react":427}],44:[function(require,module,exports){
+},{"../constants/TwitterRuleConditions":65,"../constants/TwitterRuleLangs":66,"../constants/TwitterRuleTypes":67,"./Forms/TwitterRuleForm":24,"./LoadingCog":39,"./buttons/PrimaryButton":50,"lodash":326,"prop-types":353,"react":427}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7621,7 +7610,7 @@ RuleList.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(RuleList);
 
-},{"./Forms/TwitterRuleForm":23,"./LoadingCog":38,"./RuleItem":43,"./withLanguage":56,"prop-types":353,"react":427}],45:[function(require,module,exports){
+},{"./Forms/TwitterRuleForm":24,"./LoadingCog":39,"./RuleItem":43,"./withLanguage":56,"prop-types":353,"react":427}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7901,38 +7890,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _react = require("react");
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-var DefaultButton = function DefaultButton(_ref) {
-    var children = _ref.children,
-        _ref$className = _ref.className,
-        className = _ref$className === undefined ? "" : _ref$className,
-        props = _objectWithoutProperties(_ref, ["children", "className"]);
-
-    return _react2.default.createElement(
-        "button",
-        _extends({ type: "button", className: "btn btn-default ".concat(className) }, props),
-        children
-    );
-};
-
-exports.default = DefaultButton;
-
-},{"react":427}],50:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require("react");
@@ -7988,7 +7945,7 @@ IconButton.defaultProps = {
 };
 exports.default = IconButton;
 
-},{"prop-types":353,"react":427}],51:[function(require,module,exports){
+},{"prop-types":353,"react":427}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8019,6 +7976,38 @@ var PrimaryButton = function PrimaryButton(_ref) {
 };
 
 exports.default = PrimaryButton;
+
+},{"react":427}],51:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var SecondaryButton = function SecondaryButton(_ref) {
+    var children = _ref.children,
+        _ref$className = _ref.className,
+        className = _ref$className === undefined ? "" : _ref$className,
+        props = _objectWithoutProperties(_ref, ["children", "className"]);
+
+    return _react2.default.createElement(
+        "button",
+        _extends({ type: "button", className: "btn btn-secondary ".concat(className) }, props),
+        children
+    );
+};
+
+exports.default = SecondaryButton;
 
 },{"react":427}],52:[function(require,module,exports){
 "use strict";

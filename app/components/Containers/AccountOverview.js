@@ -12,7 +12,7 @@ import CampaignList from "../CampaignList";
 import Messages from "../Messages";
 import LoadingCog from "../LoadingCog";
 import Container from "../Container";
-import Panel from "../Panel";
+import Card from "../Card";
 import PrimaryButton from "../buttons/PrimaryButton";
 import SuccessButton from "../buttons/SuccessButton";
 import TwitterRuleForm from "../Forms/TwitterRuleForm";
@@ -75,24 +75,24 @@ class AccountOverview extends Component {
             <Container>
                 {
                     loadingAccountList ? (
-                        <Panel title={accountId}>
+                        <Card title={accountId}>
                             <LoadingCog center />
-                        </Panel>
+                        </Card>
                     ) : (
                         account ? (
-                            <Panel title={<span>{accountId}{!editAccount && <PrimaryButton id="editCampaign" style={{ float: "right" }} onClick={this.handleClick}>{ACCOUNTOVERVIEW_EDIT_BUTTON}</PrimaryButton>}</span>}>
-                                <Panel title={ACCOUNTOVERVIEW_CAMPAIGNS_TITLE}>
+                            <Card title={<span>{accountId}{!editAccount && <PrimaryButton id="editCampaign" style={{ float: "right" }} onClick={this.handleClick}>{ACCOUNTOVERVIEW_EDIT_BUTTON}</PrimaryButton>}</span>}>
+                                <Card title={ACCOUNTOVERVIEW_CAMPAIGNS_TITLE}>
                                     <CampaignList account={account} campaigns={account.campaigns} onClick={this.handleCampaignSelection} />
-                                </Panel>
-                                <Panel title={ACCOUNTOVERVIEW_BLACKLIST_TITLE}>
+                                </Card>
+                                <Card title={ACCOUNTOVERVIEW_BLACKLIST_TITLE}>
                                     <WordList words={account.blacklist} />
-                                </Panel>
-                            </Panel>
+                                </Card>
+                            </Card>
                         ) : (
-                            <Panel title={accountId}>
+                            <Card title={accountId}>
                                 <Messages messages={this.props.messages} />
                                 {ACCOUNTOVERVIEW_NO_ACCOUNT}
-                            </Panel>
+                            </Card>
                         )
                     )
                 }

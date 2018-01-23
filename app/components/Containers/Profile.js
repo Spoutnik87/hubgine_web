@@ -13,7 +13,7 @@ import TextInput from "../Inputs/TextInput";
 import ListInput from "../Inputs/ListInput";
 import AccountsManagment from "./AccountsManagment";
 import Container from "../Container";
-import Panel from "../Panel";
+import Card from "../Card";
 import Form from "../Form";
 import UserPasswordForm from "../Forms/UserPasswordForm";
 import LoadingCog from "../LoadingCog";
@@ -232,7 +232,7 @@ class Profile extends Component {
 
     render()
     {
-        let panel;
+        let card;
         const {
             PROFILE_TITLE,
             PROFILE_EMAIL,
@@ -244,7 +244,7 @@ class Profile extends Component {
         } = this.props.lang;
         if (this.state.isLoaded)
         {
-            panel = (
+            card = (
                 <Container>
                     <Form title={PROFILE_TITLE}>
                         <Messages messages={this.props.messages}/>
@@ -284,24 +284,24 @@ class Profile extends Component {
                             )
                         }
                     </Form>
-                    <Panel title={PROFILE_ACCOUNT_LIST}>
+                    <Card title={PROFILE_ACCOUNT_LIST}>
                         <AccountsManagment />
-                    </Panel>
+                    </Card>
                 </Container>
             );
         }
         else
         {
-            panel = (
+            card = (
                 <Container>
-                    <Panel title={PROFILE_TITLE}>
+                    <Card title={PROFILE_TITLE}>
                         <Messages messages={this.props.messages}/>
                         <LoadingCog center/>
-                    </Panel>
+                    </Card>
                 </Container>
             );
         }
-        return panel;
+        return card;
     }
 }
 

@@ -50,34 +50,29 @@ class Header extends Component {
         const menu = [];
         if (isAdmin)
         {
-            menu.push(<li><NavLink to="/admin-dashboard" activeStyle={active}>{HEADER_ADMIN_DASHBOARD}</NavLink></li>);
+            menu.push(<li className="nav-item"><NavLink className="nav-link" to="/admin-dashboard" activeStyle={active}>{HEADER_ADMIN_DASHBOARD}</NavLink></li>);
         }
         if (isLoggedIn)
         {
-            menu.push(<li><NavLink to="/user-dashboard" activeStyle={active}>{HEADER_USER_DASHBOARD}</NavLink></li>);
-            menu.push(<li><NavLink to="/profile" activeStyle={active}>{HEADER_PROFILE}</NavLink></li>);
-            menu.push(<li onClick={this.props.onDisconnect}><a style={{ cursor: "pointer" }}>{HEADER_DISCONNECT}</a></li>);
+            menu.push(<li className="nav-item"><NavLink className="nav-link" to="/user-dashboard" activeStyle={active}>{HEADER_USER_DASHBOARD}</NavLink></li>);
+            menu.push(<li className="nav-item"><NavLink className="nav-link" to="/profile" activeStyle={active}>{HEADER_PROFILE}</NavLink></li>);
+            menu.push(<li className="nav-item" onClick={this.props.onDisconnect}><a className="nav-link" style={{ cursor: "pointer" }}>{HEADER_DISCONNECT}</a></li>);
         }
         else
         {
-            menu.push(<li><NavLink to="/signin" activeStyle={active}>{HEADER_SIGNIN}</NavLink></li>);
-            menu.push(<li><NavLink to="/register" activeStyle={active}>{HEADER_REGISTER}</NavLink></li>);
+            menu.push(<li><NavLink className="nav-link" to="/signin" activeStyle={active}>{HEADER_SIGNIN}</NavLink></li>);
+            menu.push(<li><NavLink className="nav-link" to="/register" activeStyle={active}>{HEADER_REGISTER}</NavLink></li>);
         }
         return (
-            <nav className="navbar navbar-default navbar-static-top">
-                <Container>
-                    <div className="navbar-header">
-                        <button type="button" data-toggle="collapse" data-target="#navbar" className="navbar-toggle collapsed">
-                            <span className="sr-only">{HEADER_SR_ONLY}</span>
-                            <span className="icon-bar"></span>
-                            <span className="icon-bar"></span>
-                            <span className="icon-bar"></span>
-                        </button>
-                        <Link to="/" className="navbar-brand">{COMPANY_NAME}</Link>
-                    </div>
+            <Container>
+                <nav className="navbar navbar-expand-md navbar-light">
+                    <button type="button" data-toggle="collapse" data-target="#navbar" className="navbar-toggler collapsed">
+                        <span className="navbar-toggler-icon"></span>
+                    </button>
+                    <Link to="/" className="navbar-brand">{COMPANY_NAME}</Link>
                     <div id="navbar" className="navbar-collapse collapse">
-                        <ul className="nav navbar-nav">
-                            <li><NavLink to="/" activeStyle={active} exact>{HEADER_HOME}</NavLink></li>
+                        <ul className="navbar-nav">
+                            <li className="nav-item"><NavLink className="nav-link" to="/" activeStyle={active} exact>{HEADER_HOME}</NavLink></li>
                             {
                                 menu.map((element, index) => (
                                     {...element, key: index}
@@ -85,8 +80,8 @@ class Header extends Component {
                             }
                         </ul>
                     </div>
-                </Container>
-            </nav>
+                </nav>
+            </Container>
         );
     }
 }

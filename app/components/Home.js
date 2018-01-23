@@ -28,36 +28,36 @@ class Home extends Component {
       <div className="container-fluid">
         <div className="row">
           <div className="col-sm-4">
-            <div className="panel">
-              <div className="panel-body">
+            <div className="card">
+              <div className="card-body">
                 <UserSubscriptionChart data={data} />
                 <h3>Heading</h3>
                 <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor
                   mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna
                   mollis euismod. Donec sed odio dui.</p>
-                <a href="#" role="button" className="btn btn-default">View details</a>
+                <a href="#" role="button" className="btn btn-secondary">View details</a>
               </div>
             </div>
           </div>
           <div className="col-sm-4">
-            <div className="panel">
-              <div className="panel-body">
+            <div className="card">
+              <div className="card-body">
                 <h3>Heading</h3>
                 <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor
                   mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna
                   mollis euismod. Donec sed odio dui.</p>
-                <a href="#" role="button" className="btn btn-default">View details</a>
+                <a href="#" role="button" className="btn btn-secondary">View details</a>
               </div>
             </div>
           </div>
           <div className="col-sm-4">
-            <div className="panel">
-              <div className="panel-body">
+            <div className="card">
+              <div className="card-body">
                 <h3>Heading</h3>
                 <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor
                   mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna
                   mollis euismod. Donec sed odio dui.</p>
-                <a href="#" role="button" className="btn btn-default">View details</a>
+                <a href="#" role="button" className="btn btn-secondary">View details</a>
               </div>
             </div>
           </div>

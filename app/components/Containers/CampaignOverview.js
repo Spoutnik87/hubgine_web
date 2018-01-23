@@ -12,7 +12,7 @@ import RuleList from "../RuleList";
 import Messages from "../Messages";
 import LoadingCog from "../LoadingCog";
 import Container from "../Container";
-import Panel from "../Panel";
+import Card from "../Card";
 import PrimaryButton from "../buttons/PrimaryButton";
 import SuccessButton from "../buttons/SuccessButton";
 import TwitterRuleForm from "../Forms/TwitterRuleForm";
@@ -254,7 +254,7 @@ class CampaignOverview extends Component {
         return (
             <Container>
                 {
-                    <Panel title={<span>{CAMPAIGNOVERVIEW_TITLE_ACCOUNT + this.state.accountId + " - " + CAMPAIGNOVERVIEW_TITLE_CAMPAIGN + this.state.campaignId}{!this.state.editCampaign && <PrimaryButton id="editCampaign" style={{ float: "right" }} onClick={this.handleClick}>{CAMPAIGNOVERVIEW_EDIT_BUTTON}</PrimaryButton>}</span>}>
+                    <Card title={<span>{CAMPAIGNOVERVIEW_TITLE_ACCOUNT + this.state.accountId + " - " + CAMPAIGNOVERVIEW_TITLE_CAMPAIGN + this.state.campaignId}{!this.state.editCampaign && <PrimaryButton id="editCampaign" style={{ float: "right" }} onClick={this.handleClick}>{CAMPAIGNOVERVIEW_EDIT_BUTTON}</PrimaryButton>}</span>}>
                         {
                             this.state.loadingAccountList ? (
                                 <LoadingCog center />
@@ -265,7 +265,7 @@ class CampaignOverview extends Component {
                                     ) : (
                                         <div>
                                             <Messages messages={this.props.messages} />
-                                            <Panel title={CAMPAIGNOVERVIEW_RULES_TITLE}>
+                                            <Card title={CAMPAIGNOVERVIEW_RULES_TITLE}>
                                             {
                                                 this.state.creationRuleFormDisplayed ? (
                                                    <TwitterRuleForm onSubmit={this.handleRuleCreationSubmit} cancel onCancel={this.handleRuleCreationCancel} loading={this.state.loading} />
@@ -273,7 +273,7 @@ class CampaignOverview extends Component {
                                                    <RuleList accountId={this.state.accountId} campaignId={this.state.campaignId} rules={this.state.campaign.config.rules} onRuleEditMode={this.handleRuleEditMode} selectedRule={this.state.selectedRule} loading={this.state.loading} onRuleEditionSubmit={this.handleRuleEditionSubmit} onRuleEditionDelete={this.handleRuleEditionDelete} onRuleEditionCancel={this.handleRuleEditionCancel}/>
                                                 )
                                             }
-                                            </Panel>
+                                            </Card>
                                             {
                                                 !this.state.creationRuleFormDisplayed && (
                                                     <SuccessButton id="createRule" onClick={this.handleClick}>{CAMPAIGNOVERVIEW_ADD_RULE_BUTTON}</SuccessButton>
@@ -289,7 +289,7 @@ class CampaignOverview extends Component {
                                 )
                             )
                         }
-                    </Panel>
+                    </Card>
                 }
             </Container>
         );

@@ -12,7 +12,7 @@ import CampaignOverview from "./CampaignOverview";
 import CampaignList from "../CampaignList";
 import CampaignForm from "../Forms/CampaignForm";
 import Container from "../Container";
-import Panel from "../Panel";
+import Card from "../Card";
 import LoadingCog from "../LoadingCog";
 import SuccessButton from "../buttons/SuccessButton";
 
@@ -102,7 +102,7 @@ class UserDashboard extends Component {
         } = this.props.lang;
         return (
             <Container>
-                <Panel title={USERDASHBOARD_TITLE}>
+                <Card title={USERDASHBOARD_TITLE}>
                 {
                     this.state.loadingAccountList ? (
                         <LoadingCog center />
@@ -118,9 +118,9 @@ class UserDashboard extends Component {
                                     }).map(account => account.name)} onSubmit={this.handleCampaignCreationSubmit} cancel onCancel={this.handleCampaignCreationCancel} messages={this.props.messages} />
                                 ) : (
                                     this.props.accounts.map(account => (
-                                        <Panel key={account.uid} title={account.name}>
+                                        <Card key={account.uid} title={account.name}>
                                             <CampaignList account={account} campaigns={this.props.accounts[findIndex(this.props.accounts, { name: account.name })].campaigns} onClick={this.handleCampaignSelection} />
-                                        </Panel>
+                                        </Card>
                                     ))
                                 )
                             }
@@ -132,7 +132,7 @@ class UserDashboard extends Component {
                         </div>
                     )
                 }
-                </Panel>
+                </Card>
             </Container>
         );
     }

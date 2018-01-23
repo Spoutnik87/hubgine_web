@@ -6,7 +6,7 @@ import Messages from "../Messages";
 import Input from "../Inputs/Input";
 import LoadingCog from "../LoadingCog";
 import SuccessButton from "../buttons/SuccessButton";
-import DefaultButton from "../buttons/DefaultButton";
+import SecondaryButton from "../buttons/SecondaryButton";
 import Form from "../Form";
 
 class UserPasswordForm extends Component {
@@ -91,7 +91,7 @@ class UserPasswordForm extends Component {
             USERPASSWORDFORM_CPASSWORD
         } = this.props.lang;
         const buttonSubmit = this.props.loading ? <LoadingCog/> : <SuccessButton id="buttonSubmit" onClick={this.handleClick}>{this.props.edit ? USERPASSWORDFORM_EDIT_BUTTON : USERPASSWORDFORM_CREATE_BUTTON}</SuccessButton>;
-        const buttonCancel = this.props.cancel && !this.props.loading && <DefaultButton id="buttonCancel" onClick={this.handleClick}>{USERPASSWORDFORM_CANCEL_BUTTON}</DefaultButton>;
+        const buttonCancel = this.props.cancel && !this.props.loading && <SecondaryButton id="buttonCancel" onClick={this.handleClick}>{USERPASSWORDFORM_CANCEL_BUTTON}</SecondaryButton>;
         const messages = this.props.messages && <Messages messages={this.props.messages}/>;
         return (
             <Form title={this.props.title ? this.props.edit ? USERPASSWORDFORM_EDIT_TITLE : USERPASSWORDFORM_CREATE_TITLE : null}>

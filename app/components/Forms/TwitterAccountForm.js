@@ -8,7 +8,7 @@ import Input from "../Inputs/Input";
 import Form from "../Form";
 import SuccessButton from "../buttons/SuccessButton";
 import DangerButton from "../buttons/DangerButton";
-import DefaultButton from "../buttons/DefaultButton";
+import SecondaryButton from "../buttons/SecondaryButton";
 
 class TwitterAccountForm extends Component {
     static propTypes = {
@@ -168,10 +168,10 @@ class TwitterAccountForm extends Component {
         } = this.props.lang;
         const buttonSubmit = this.props.loading ? <LoadingCog/> : <SuccessButton id="buttonSubmit" onClick={this.handleClick}>{this.props.edit ? TWITTERACCOUNTFORM_EDIT_BUTTON : TWITTERACCOUNTFORM_CREATE_BUTTON}</SuccessButton>;
         const buttonDelete = this.props.delete && !this.props.loading && <DangerButton id="buttonDeleteMode" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERACCOUNTFORM_DELETE_BUTTON}</DangerButton>;
-        const buttonCancel = this.props.cancel && !this.props.loading && <DefaultButton id="buttonCancel" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</DefaultButton>;
+        const buttonCancel = this.props.cancel && !this.props.loading && <SecondaryButton id="buttonCancel" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</SecondaryButton>;
         const messages = this.props.messages && <Messages messages={this.props.messages}/>;
         const deleteMode = this.state.deleteMode ? this.props.loading ? <LoadingCog /> : <div className="col-sm-12"><DangerButton id="buttonDeleteYes" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERACCOUNTFORM_DELETE_BUTTON}</DangerButton>
-            <DefaultButton id="buttonDeleteNo" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</DefaultButton></div>
+            <SecondaryButton id="buttonDeleteNo" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</SecondaryButton></div>
             : <div className="col-sm-12">{buttonSubmit}<div style={{ float: "right" }}>{buttonDelete}{buttonCancel}</div></div>;
         return (
             <Form title={this.props.title ? this.props.edit ? TWITTERACCOUNTFORM_EDIT_TITLE : TWITTERACCOUNTFORM_CREATE_TITLE : null}>
