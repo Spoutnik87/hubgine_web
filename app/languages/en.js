@@ -75,6 +75,7 @@ export default function getLanguage()
         USERDASHBOARD_TITLE: "Your dashboard",
         USERDASHBOARD_ADD_CAMPAIGN: "Add campaign",
         USERDASHBOARD_NO_ACCOUNTS: "You don't have accounts yet. Go to Profile page to create one.",
+        USERDASHBOARD_DISPLAY_ACCOUNT_BUTTON: "SHOW",
         //---ADMINDASHBOARD---
         ADMINDASHBOARD_TITLE: "Admin dashboard",
         //---ACCOUNTOVERVIEW---
@@ -142,6 +143,7 @@ export default function getLanguage()
         CAMPAIGNFORM_DATEBEGIN: "Date begin",
         CAMPAIGNFORM_DATEEND: "Date end",
         CAMPAIGNFORM_NAME_TOOLTIP: "Special characters are not allowed.",
+        CAMPAIGNFORM_DATEBEGIN_TOOLTIP: "Your campaign will start at this time. Your current timezone is UTC",
         CAMPAIGNFORM_NAME_INCORRECT: "A valid name is required.",
         CAMPAIGNFORM_NAME_NOT_UNIQUE: "This name is already used.",
         CAMPAIGNFORM_ACCOUNT_INCORRECT: "A valid account is required.",
@@ -156,6 +158,8 @@ export default function getLanguage()
         CAMPAIGNFORM_DELETE_ERROR: "An error happened during campaign deletion.",
         //---CAMPAIGNLIST---
         CAMPAIGNLIST_NOCAMPAIGN: "There is no campaign yet.",
+        //---RULEITEM---
+        RULEITEM_EDIT_BUTTON: "Edit this rule",
         //---TWITTERRULEFORM---
         TWITTERRULEFORM_CREATE_TITLE: "Create a twitter rule",
         TWITTERRULEFORM_EDIT_TITLE: "Edit a rule",
@@ -171,6 +175,7 @@ export default function getLanguage()
         TWITTERRULEFORM_LANGUAGES: "Languages",
         TWITTERRULEFORM_DELAY: "Delay",
         TWITTERRULEFORM_LANG_TOOLTIP: "If you don't select a language, this filter will be ignored, else tweets will be filtered by selected languages.",
+        TWITTERRULEFORM_DELAY_TOOLTIP: "Time between processing two tweets. The minimal value is 60 seconds.",
         //---ARRAYINPUT---
         ARRAYINPUT_ADD_BUTTON: "Add",
         ARRAYINPUT_DELETE_BUTTON: "Remove",

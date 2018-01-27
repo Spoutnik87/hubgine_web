@@ -7,9 +7,13 @@ import * as TwitterRuleLangs from "../constants/TwitterRuleLangs";
 import PrimaryButton from "./buttons/PrimaryButton";
 import TwitterRuleForm from "./Forms/TwitterRuleForm";
 import LoadingCog from "./LoadingCog";
+import { withLanguage } from "./withLanguage";
 
 class RuleItem extends Component {
     static propTypes = {
+        lang: PropTypes.shape({
+            RULEITEM_EDIT_BUTTON: PropTypes.string.isRequired
+        }).isRequired,
         accountId: PropTypes.string.isRequired,
         campaignId: PropTypes.string.isRequired,
         rule: PropTypes.shape({
@@ -56,6 +60,9 @@ class RuleItem extends Component {
     render()
     {
         const {
+            RULEITEM_EDIT_BUTTON
+        } = this.props.lang;
+        const {
             name,
             type,
             track,
@@ -76,7 +83,7 @@ class RuleItem extends Component {
                 ) : (
                     <div>
                         <div style={{ float: "right" }} onClick={this.handleClick}>
-                            <PrimaryButton onClick={this.handleEditMode}>Edit this rule</PrimaryButton>
+                            <PrimaryButton onClick={this.handleEditMode}>{RULEITEM_EDIT_BUTTON}</PrimaryButton>
                         </div>
                         Name : {name}<br/>
                         Type : {invert(TwitterRuleTypes)[type]}<br/>
@@ -100,4 +107,4 @@ class RuleItem extends Component {
     }
 }
 
-export default RuleItem;
+export default withLanguage(RuleItem);

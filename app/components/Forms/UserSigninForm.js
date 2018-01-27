@@ -6,6 +6,7 @@ import Messages from "../Messages";
 import LoadingCog from "../LoadingCog";
 import Form from "../Form";
 import SuccessButton from "../buttons/SuccessButton";
+import FormGroup from "../FormGroup";
 
 class UserSigninForm extends Component {
     static propTypes = {
@@ -67,28 +68,28 @@ class UserSigninForm extends Component {
             SIGNIN_PASSWORD,
             SIGNIN_SUBMIT
         } = this.props.lang;
-        const buttonSubmit = this.props.loading ? <LoadingCog/> : <SuccessButton onClick={this.handleClick}>{SIGNIN_SUBMIT}</SuccessButton>;
-        const messages = this.props.messages && <Messages messages={this.props.messages}/>;
+        const { title, messages, loading } = this.props;
+        const { email, password } = this.state;
         return (
-            <Form title={this.props.title ? SIGNIN_TITLE : null}>
-                {messages}
-                <div className="form-group">
-                    <label htmlFor="email" className="col-sm-2">{SIGNIN_EMAIL}</label>
-                    <div className="col-sm-10">
-                        <Input name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
+            <Form title={title ? SIGNIN_TITLE : undefined}>
+                {
+                    messages && (
+                        <Messages messages={messages}/>
+                    )
+                }
+                <Input id="email" name="email" value={email} label={SIGNIN_EMAIL} onChange={this.handleChange} autoFocus/>
+                <Input id="password" type="password" name="password" value={password} label={SIGNIN_PASSWORD} onChange={this.handleChange}/>
+                <FormGroup>
+                    <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-10">
+                    {
+                        loading ? (
+                            <LoadingCog/>
+                        ) : (
+                            <SuccessButton className="form-button" onClick={this.handleClick}>{SIGNIN_SUBMIT}</SuccessButton>
+                        )
+                    }
                     </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="password" className="col-sm-2">{SIGNIN_PASSWORD}</label>
-                    <div className="col-sm-10">
-                        <Input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange}/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <div className="col-sm-offset-2 col-sm-10">
-                        {buttonSubmit}
-                    </div>
-                </div>
+                </FormGroup>
                 {this.props.children}
             </Form>
         );

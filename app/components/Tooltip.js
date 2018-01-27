@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-class ToolTip extends Component {
+class Tooltip extends Component {
     shouldComponentUpdate(nextProps, nextState)
     {
         return this.props.children !== nextProps.children;
@@ -20,4 +20,4 @@ class ToolTip extends Component {
     }
 }
 
-export default ToolTip;
+export default Tooltip;

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
@@ -183,7 +183,7 @@ class CampaignOverview extends Component {
         this.props.actions.removeTwitterRule(accountId, campaignId, name).then(() => {
             this.setState({
                 loading: false,
-                selectedRule: null
+                selectedRule: undefined
             });
         }).catch(() => {
             this.setState({
@@ -195,7 +195,7 @@ class CampaignOverview extends Component {
     handleRuleEditionCancel()
     {
         this.setState({
-            selectedRule: null
+            selectedRule: undefined
         });
     }
 
@@ -251,6 +251,7 @@ class CampaignOverview extends Component {
             CAMPAIGNOVERVIEW_TITLE_ACCOUNT,
             CAMPAIGNOVERVIEW_TITLE_CAMPAIGN
         } = this.props.lang;
+        const { messages } = this.props;
         return (
             <Container>
                 {
@@ -264,7 +265,7 @@ class CampaignOverview extends Component {
                                         <CampaignForm onSubmit={this.handleCampaignEditionSubmit} onDelete={this.handleCampaignEditionDelete} onCancel={this.handleCampaignEditionCancel} accounts={this.props.accounts.map(account => account.name)} accountId={this.state.accountId} campaign={this.state.campaign} messages={this.props.messages} edit cancel delete />
                                     ) : (
                                         <div>
-                                            <Messages messages={this.props.messages} />
+                                            <Messages messages={messages}/>
                                             <Card title={CAMPAIGNOVERVIEW_RULES_TITLE}>
                                             {
                                                 this.state.creationRuleFormDisplayed ? (
@@ -282,10 +283,10 @@ class CampaignOverview extends Component {
                                         </div>
                                     )
                                 ) : (
-                                    <React.Fragment>
-                                        <Messages messages={this.props.messages} />
+                                    <Fragment>
+                                        <Messages messages={messages}/>
                                         {CAMPAIGNOVERVIEW_NO_CAMPAIGN}
-                                    </React.Fragment>
+                                    </Fragment>
                                 )
                             )
                         }

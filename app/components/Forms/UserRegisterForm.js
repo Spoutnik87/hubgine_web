@@ -11,6 +11,7 @@ import Messages from "../Messages";
 import Checkbox from "../Inputs/Checkbox";
 import Input from "../Inputs/Input";
 import ListInput from "../Inputs/ListInput";
+import FormGroup from "../FormGroup";
 
 class UserRegisterForm extends Component {
     static propTypes = {
@@ -110,65 +111,39 @@ class UserRegisterForm extends Component {
             REGISTER_LANGUAGE,
             REGISTER_USETERMS
         } = this.props.lang;
-        const submitButton = this.props.loading ? <LoadingCog/> : <SuccessButton onClick={this.handleClick} disabled={this.state.recaptcha === ""}>{REGISTER_SUBMIT}</SuccessButton>
-        const messages = this.props.messages && <Messages messages={this.props.messages}/>;
+        const { messages, title, loading, children } = this.props;
+        const { firstname, lastname, email, password, cpassword, lang, useterms, recaptcha } = this.state;
         return (
-            <Form title={this.props.title ? REGISTER_TITLE : null}>
-                {messages}
-                <div className="form-group">
-                    <label htmlFor="firstname" className="col-sm-2">{REGISTER_FIRSTNAME}</label>
-                    <div className="col-sm-10">
-                        <Input name="firstname" id="firstname" className="form-control" value={this.state.firstname} onChange={this.handleChange} autoFocus/>
+            <Form title={title ? REGISTER_TITLE : undefined}>
+                {
+                    messages && (
+                        <Messages messages={messages}/>
+                    )
+                }
+                <Input name="firstname" id="firstname" value={firstname} label={REGISTER_FIRSTNAME} onChange={this.handleChange} autoFocus/>
+                <Input name="lastname" id="lastname" value={lastname} label={REGISTER_LASTNAME} onChange={this.handleChange}/>
+                <Input name="email" id="email" value={email} label={REGISTER_EMAIL} onChange={this.handleChange}/>
+                <Input type="password" name="password" id="password" value={password} label={REGISTER_PASSWORD} onChange={this.handleChange}/>
+                <Input type="password" name="cpassword" id="cpassword" value={cpassword} label={REGISTER_CONFIRMPASSWORD} onChange={this.handleChange}/>
+                <ListInput name="lang" id="lang" options={Object.keys(Languages)} defaultOption="ENGLISH" label={REGISTER_LANGUAGE} onChange={this.handleChange}/>
+                <Checkbox id="useterms" name="useterms" label={REGISTER_USETERMS} onChange={this.handleChange}/>
+                <FormGroup>
+                    <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-2">
+                        <Recaptcha verifyCallback={this.handleRecaptchaVerify} expiredCallback={this.handleRecaptchaExpired}/>
                     </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="lastname" className="col-sm-2">{REGISTER_LASTNAME}</label>
-                    <div className="col-sm-10">
-                        <Input name="lastname" id="lastname" className="form-control" value={this.state.lastname} onChange={this.handleChange}/>
+                </FormGroup>
+                <FormGroup>
+                    <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-10">
+                    {
+                        loading ? (
+                            <LoadingCog/>
+                        ) : (
+                            <SuccessButton className="form-button" onClick={this.handleClick} disabled={recaptcha === ""}>{REGISTER_SUBMIT}</SuccessButton>
+                        )
+                    }
                     </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="email" className="col-sm-2">{REGISTER_EMAIL}</label>
-                    <div className="col-sm-10">
-                        <Input name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange}/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="password" className="col-sm-2">{REGISTER_PASSWORD}</label>
-                    <div className="col-sm-10">
-                        <Input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange}/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="cpassword" className="col-sm-2">{REGISTER_CONFIRMPASSWORD}</label>
-                    <div className="col-sm-10">
-                        <Input type="password" name="cpassword" id="cpassword" className="form-control" value={this.state.cpassword} onChange={this.handleChange}/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="lang" className="col-sm-2">{REGISTER_LANGUAGE}</label>
-                    <div className="col-sm-10">
-                        <ListInput name="lang" onChange={this.handleChange} options={Object.keys(Languages)} defaultOption={"ENGLISH"}/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="useterms" className="col-sm-2">{REGISTER_USETERMS}</label>
-                    <div className="col-sm-10">
-                        <Checkbox name="useterms" onChange={this.handleChange} />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="recaptcha" className="col-sm-2"></label>
-                    <div className="col-sm-10">
-                        <Recaptcha verifyCallback={this.handleRecaptchaVerify} expiredCallback={this.handleRecaptchaExpired} />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <div className="col-sm-offset-2 col-sm-10">
-                        {submitButton}
-                    </div>
-                </div>
-                {this.props.children}
+                </FormGroup>
+                {children}
             </Form>
         );
     }

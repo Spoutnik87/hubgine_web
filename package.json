@@ -12,7 +12,7 @@
         "buildproduction:js": "NODE_ENV=production browserify app/main.js -t [ loose-envify --NODE_ENV production ] -t [ babelify --presets [es2015 react] --plugins [transform-object-rest-spread recharts transform-react-remove-prop-types transform-class-properties] ] | uglifyjs -m -c -o public/js/bundle.js",
         "postinstall": "npm run buildproduction",
         "start": "node server.js",
-        "start:production": "pm2 start server.js -i 4",
+        "start:production": "NODE_ENV=production pm2 start server.js",
         "watch": "npm-run-all --parallel watch:*",
         "watch:css": "nodemon -e scss -w public/css -x npm run build:css",
         "watch:js": "watchify app/main.js -t [ babelify --presets [es2015 react] --plugins [transform-object-rest-spread recharts transform-class-properties] ] -v -o public/js/bundle.js"
@@ -41,11 +41,11 @@
         "node-sass": "^4.7.2",
         "nodemon": "^1.14.11",
         "npm-run-all": "^4.1.2",
-        "pm2": "^2.9.1",
+        "pm2": "^2.9.3",
         "prop-types": "^15.6.0",
         "pug": "^2.0.0-rc.4",
         "react": "16.2.0",
-        "react-datetime": "^2.11.1",
+        "react-datetime": "^2.12.0",
         "react-dom": "16.2.0",
         "react-recaptcha": "^2.3.6",
         "react-redux": "5.0.6",
@@ -57,10 +57,10 @@
         "redux-promise": "^0.5.3",
         "redux-thunk": "^2.2.0",
         "serve-favicon": "^2.4.5",
-        "uglify-js": "^3.3.7",
+        "uglify-js": "^3.3.8",
         "universal-cookie-express": "^2.1.2",
         "uuid": "^3.2.1",
-        "validator": "git+ssh://git@bitbucket.org/TWEET-BOT/validator.git#V1.2.3",
-        "watchify": "^3.9.0"
+        "validator": "git+ssh://git@bitbucket.org/TWEET-BOT/validator.git#V1.2.4",
+        "watchify": "^3.10.0"
     }
 }

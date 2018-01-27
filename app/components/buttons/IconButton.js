@@ -18,8 +18,9 @@ class IconButton extends Component {
 
     render()
     {
+        const { id, className, onClick, icon } = this.props;
         return (
-            <span id={this.props.id} className={this.props.className} onClick={this.props.onClick}><i className={this.props.icon} id={this.props.id}></i></span>
+            <span id={id} className={className} onClick={onClick}><i className={icon} id={id}></i></span>
         );
     }
 }

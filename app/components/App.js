@@ -10,7 +10,7 @@ import Footer from "./Footer";
 import Home from "./Home";
 import Signin from "./Containers/Signin";
 import Register from "./Containers/Register";
-import ForgotPassword from "./ForgotPassword";
+import ForgotPassword from "./Containers/ForgotPassword";
 import UserDashboard from "./Containers/UserDashboard";
 import AdminDashboard from "./Containers/AdminDashboard";
 import AccountOverview from "./Containers/AccountOverview";
@@ -45,15 +45,15 @@ class App extends Component {
             <div>
                 <Header user={this.props.user} onDisconnect={this.handleDisconnect}/>
                 <Switch>
-                    <Route path="/" exact component={Home} />
-                    <LoggedInRoute path="/user-dashboard" component={UserDashboard} isLoggedIn={isLoggedIn} />
-                    <LoggedInRoute path="/account/:accountId" component={AccountOverview} isLoggedIn={isLoggedIn} />
-                    <LoggedInRoute path="/campaign/:accountId/:campaignId" component={CampaignOverview} isLoggedIn={isLoggedIn} />
-                    <LoggedInRoute path="/profile" component={Profile} isLoggedIn={isLoggedIn} />
-                    <AdminRoute path="/admin-dashboard" component={AdminDashboard} isAdmin={isAdmin} />
-                    <NotLoggedInRoute path="/signin" component={Signin} isNotLoggedIn={!isLoggedIn} />
-                    <NotLoggedInRoute path="/register" component={Register} isNotLoggedIn={!isLoggedIn} />
-                    <NotLoggedInRoute path="/forgot-password" component={ForgotPassword} isNotLoggedIn={!isLoggedIn} />
+                    <Route path="/" exact component={Home}/>
+                    <LoggedInRoute path="/user-dashboard" component={UserDashboard} isLoggedIn={isLoggedIn}/>
+                    <LoggedInRoute path="/account/:accountId" component={AccountOverview} isLoggedIn={isLoggedIn}/>
+                    <LoggedInRoute path="/campaign/:accountId/:campaignId" component={CampaignOverview} isLoggedIn={isLoggedIn}/>
+                    <LoggedInRoute path="/profile" component={Profile} isLoggedIn={isLoggedIn}/>
+                    <AdminRoute path="/admin-dashboard" component={AdminDashboard} isAdmin={isAdmin}/>
+                    <NotLoggedInRoute path="/signin" component={Signin} isNotLoggedIn={!isLoggedIn}/>
+                    <NotLoggedInRoute path="/register" component={Register} isNotLoggedIn={!isLoggedIn}/>
+                    <NotLoggedInRoute path="/forgot-password" component={ForgotPassword} isNotLoggedIn={!isLoggedIn}/>
                     <Route component={NotFound} />
                 </Switch>
                 <Footer/>

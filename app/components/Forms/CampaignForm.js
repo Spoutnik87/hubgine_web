@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
 import { withLanguage } from "../withLanguage";
@@ -6,12 +6,12 @@ import Form from "../Form";
 import DateInput from "../Inputs/DateInput";
 import ListInput from "../Inputs/ListInput";
 import Messages from "../Messages";
-import ToolTip from "../Tooltip";
 import LoadingCog from "../LoadingCog";
 import Input from "../Inputs/Input";
 import SuccessButton from "../buttons/SuccessButton";
 import DangerButton from "../buttons/DangerButton";
 import SecondaryButton from "../buttons/SecondaryButton";
+import FormGroup from "../FormGroup";
 
 class CampaignForm extends Component {
     static propTypes = {
@@ -27,7 +27,8 @@ class CampaignForm extends Component {
             CAMPAIGNFORM_ACCOUNT: PropTypes.string.isRequired,
             CAMPAIGNFORM_DATEBEGIN: PropTypes.string.isRequired,
             CAMPAIGNFORM_DATEEND: PropTypes.string.isRequired,
-            CAMPAIGNFORM_NAME_TOOLTIP: PropTypes.string.isRequired
+            CAMPAIGNFORM_NAME_TOOLTIP: PropTypes.string.isRequired,
+            CAMPAIGNFORM_DATEBEGIN_TOOLTIP: PropTypes.string.isRequired
         }).isRequired,
         accounts: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
         name: PropTypes.string,
@@ -146,64 +147,69 @@ class CampaignForm extends Component {
             CAMPAIGNFORM_ACCOUNT,
             CAMPAIGNFORM_DATEBEGIN,
             CAMPAIGNFORM_DATEEND,
-            CAMPAIGNFORM_NAME_TOOLTIP
+            CAMPAIGNFORM_NAME_TOOLTIP,
+            CAMPAIGNFORM_DATEBEGIN_TOOLTIP
         } = this.props.lang;
-        const buttonSubmit = this.props.loading ? <LoadingCog/> : <SuccessButton id="buttonSubmit" onClick={this.handleClick}>{this.props.edit ? CAMPAIGNFORM_EDIT_BUTTON : CAMPAIGNFORM_CREATE_BUTTON}</SuccessButton>;
-        const buttonDelete = this.props.delete && !this.props.loading && <DangerButton id="buttonDeleteMode" onClick={this.handleClick} style={{ marginRight: "20px" }}>{CAMPAIGNFORM_DELETE_BUTTON}</DangerButton>;
-        const buttonCancel = this.props.cancel && !this.props.loading && <SecondaryButton id="buttonCancel" onClick={this.handleClick}>{CAMPAIGNFORM_CANCEL_BUTTON}</SecondaryButton>;
-        const messages = this.props.messages && <Messages messages={this.props.messages}/>;
-        const deleteMode = this.state.deleteMode ? this.props.loading ? <LoadingCog /> : <div className="col-sm-12"><DangerButton id="buttonDeleteYes" onClick={this.handleClick} style={{ marginRight: "20px" }}>{CAMPAIGNFORM_DELETE_BUTTON}</DangerButton>
-            <SecondaryButton id="buttonDeleteNo" onClick={this.handleClick}>{CAMPAIGNFORM_CANCEL_BUTTON}</SecondaryButton></div>
-            : <div className="col-sm-12">{buttonSubmit}<div style={{ float: "right" }}>{buttonDelete}{buttonCancel}</div></div>;
+        const { title, edit, children, loading, cancel, messages, delete: hasDeleteButton, accounts, campaign, accountId } = this.props;
+        const { deleteMode, name, dateBegin, dateEnd } = this.state;
         return (
-            <Form title={this.props.title ? this.props.edit ? CAMPAIGNFORM_EDIT_TITLE : CAMPAIGNFORM_CREATE_TITLE : null}>
-                {messages}
-                <div className="form-group">
-                    <div className="col-sm-2">
-                        <label>
-                            {CAMPAIGNFORM_NAME}
-                        </label>
-                        <span style={{ float: "right" }}>
-                            <ToolTip>
-                                {CAMPAIGNFORM_NAME_TOOLTIP}
-                            </ToolTip>
-                        </span>
-                    </div>
-                    <div className="col-sm-10">
-                        <Input name="name" id="name" className="form-control" value={this.state.name} onChange={this.handleChange} autoFocus/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="account" className="col-sm-2">{CAMPAIGNFORM_ACCOUNT}</label>
-                    <div className="col-sm-10">
-                        <ListInput id="accountId" name="accountId" options={this.props.accounts} defaultOption={this.props.campaign ? this.props.accountId : undefined} onChange={this.handleChange} disabled={this.props.campaign !== undefined} />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <div className="col-sm-2">
-                        <label>
-                            {CAMPAIGNFORM_DATEBEGIN}
-                        </label>
-                        <span style={{ float: "right" }}>
-                            <ToolTip>
-                                {"Your campaign will start at this time. Your current timezone is UTC" + moment().format("Z")}
-                            </ToolTip>
-                        </span>
-                    </div>
-                    <div className="col-sm-10">
-                        <DateInput id="dateBegin" name="dateBegin" onChange={this.handleChange} value={this.state.dateBegin}/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="dateEnd" className="col-sm-2">{CAMPAIGNFORM_DATEEND}</label>
-                    <div className="col-sm-10">
-                        <DateInput id="dateEnd" name="dateEnd" onChange={this.handleChange} value={this.state.dateEnd}/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    {deleteMode}
-                </div>
-                {this.props.children}
+            <Form title={title ? edit ? CAMPAIGNFORM_EDIT_TITLE : CAMPAIGNFORM_CREATE_TITLE : null}>
+                {
+                    messages && (
+                        <Messages messages={messages}/>
+                    )
+                }
+                <Input name="name" id="name" value={name} label={CAMPAIGNFORM_NAME} tooltip={CAMPAIGNFORM_NAME_TOOLTIP} onChange={this.handleChange} autoFocus/>
+                <ListInput id="accountId" name="accountId" options={accounts} defaultOption={campaign ? accountId : undefined} label={CAMPAIGNFORM_ACCOUNT} onChange={this.handleChange} disabled={campaign !== undefined} />
+                <DateInput id="dateBegin" name="dateBegin" value={dateBegin} label={CAMPAIGNFORM_DATEBEGIN} tooltip={CAMPAIGNFORM_DATEBEGIN_TOOLTIP + moment().format("Z")} onChange={this.handleChange}/>                
+                <DateInput id="dateEnd" name="dateEnd" label={CAMPAIGNFORM_DATEEND} value={dateEnd} onChange={this.handleChange}/>
+                <FormGroup>
+                {
+                    deleteMode ? (
+                        loading ? (
+                            <LoadingCog/>
+                        ) : (
+                            <Fragment>
+                                <div className="col-xs-12 col-sm-12 col-md-12">
+                                    <DangerButton id="buttonDeleteYes" className="form-button"  onClick={this.handleClick}>{CAMPAIGNFORM_DELETE_BUTTON}</DangerButton>
+                                </div>
+                                <div className="col-xs-12 col-sm-12 col-md-12">
+                                    <SecondaryButton id="buttonDeleteNo" className="form-button" onClick={this.handleClick}>{CAMPAIGNFORM_CANCEL_BUTTON}</SecondaryButton>
+                                </div>
+                            </Fragment>
+                        )
+                    ) : (
+                        <div>
+                        {
+                            loading ? (
+                                <LoadingCog/>
+                            ) : (
+                                <Fragment>
+                                    <div className="col-xs-12 col-sm-12 col-md-12">
+                                        <SuccessButton id="buttonSubmit" className="form-button" onClick={this.handleClick}>{edit ? CAMPAIGNFORM_EDIT_BUTTON : CAMPAIGNFORM_CREATE_BUTTON}</SuccessButton>
+                                    </div>
+                                    {
+                                        hasDeleteButton && (
+                                            <div className="col-xs-12 col-sm-12 col-md-12">
+                                                <DangerButton id="buttonDeleteMode" className="form-button" onClick={this.handleClick}>{CAMPAIGNFORM_DELETE_BUTTON}</DangerButton>
+                                            </div>
+                                        )
+                                    }
+                                    {
+                                        cancel && (
+                                            <div className="col-xs-12 col-sm-12 col-md-12">
+                                                <SecondaryButton id="buttonCancel" className="form-button" onClick={this.handleClick}>{CAMPAIGNFORM_CANCEL_BUTTON}</SecondaryButton>
+                                            </div>
+                                        )
+                                    }
+                                </Fragment>
+                            )
+                        }
+                        </div>
+                    )
+                }
+                </FormGroup>
+                {children}
             </Form>
         );
     }

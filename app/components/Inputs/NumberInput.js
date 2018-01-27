@@ -2,11 +2,18 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Input from "./Input";
 import IconButton from "../buttons/IconButton";
+import InputGroup from "../InputGroup";
+import FormGroup from "../FormGroup";
+import Row from "../Row";
+import Tooltip from "../Tooltip";
 
 class NumberInput extends Component {
     static propTypes = {
         name: PropTypes.string,
         value: PropTypes.number,
+        id: PropTypes.string,
+        label: PropTypes.string,
+        tooltip: PropTypes.string,
         onChange: PropTypes.func
     };
 
@@ -71,12 +78,37 @@ class NumberInput extends Component {
 
     render()
     {
-        return (
-            <div className="input-group">
-                <Input className="form-control" value={this.state.value} onChange={this.handleChange} autoFocus />
+        const { id, label, tooltip } = this.props;
+        const { value } = this.state;
+        const numberInput = (
+            <InputGroup>
+                <Input id={id} value={value} onChange={this.handleChange} autoFocus />
                 <IconButton id="buttonDecrement" className="input-group-append input-group-text numberinput-button" icon="fa fa-minus fa-fw" onClick={this.handleClick} />
                 <IconButton id="buttonIncrement" className="input-group-append input-group-text numberinput-button" icon="fa fa-plus fa-fw" onClick={this.handleClick} />
-            </div>
+            </InputGroup>
+        );
+        return label ? (
+            <FormGroup>
+                <Row>
+                    <label htmlFor={id} className="col-xs-12 col-sm-3 col-md-2">
+                        {label}
+                        {
+                            tooltip && (
+                                <span style={{ float: "right" }}>
+                                    <Tooltip>
+                                        {tooltip}
+                                    </Tooltip>
+                                </span>
+                            )
+                        }
+                    </label>
+                    <div className="col-xs-12 col-sm-9 col-md-10">
+                        {numberInput}
+                    </div>
+                </Row>
+            </FormGroup>
+        ) : (
+            numberInput
         );
     }
 }

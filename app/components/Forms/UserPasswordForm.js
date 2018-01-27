@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { withLanguage } from "../withLanguage";
 import Recaptcha from "../Recaptcha";
@@ -8,6 +8,7 @@ import LoadingCog from "../LoadingCog";
 import SuccessButton from "../buttons/SuccessButton";
 import SecondaryButton from "../buttons/SecondaryButton";
 import Form from "../Form";
+import FormGroup from "../FormGroup";
 
 class UserPasswordForm extends Component {
     static propTypes = {
@@ -90,36 +91,35 @@ class UserPasswordForm extends Component {
             USERPASSWORDFORM_PASSWORD,
             USERPASSWORDFORM_CPASSWORD
         } = this.props.lang;
-        const buttonSubmit = this.props.loading ? <LoadingCog/> : <SuccessButton id="buttonSubmit" onClick={this.handleClick}>{this.props.edit ? USERPASSWORDFORM_EDIT_BUTTON : USERPASSWORDFORM_CREATE_BUTTON}</SuccessButton>;
-        const buttonCancel = this.props.cancel && !this.props.loading && <SecondaryButton id="buttonCancel" onClick={this.handleClick}>{USERPASSWORDFORM_CANCEL_BUTTON}</SecondaryButton>;
-        const messages = this.props.messages && <Messages messages={this.props.messages}/>;
+        const { title, loading, cancel, edit, messages, children } = this.props;
+        const { oldpassword, password, cpassword } = this.state;
         return (
-            <Form title={this.props.title ? this.props.edit ? USERPASSWORDFORM_EDIT_TITLE : USERPASSWORDFORM_CREATE_TITLE : null}>
-                {messages}
-                <div className="form-group">
-                    <label htmlFor="oldpassword" className="col-sm-2">{USERPASSWORDFORM_OLDPASSWORD}</label>
-                    <div className="col-sm-10">
-                        <Input type="password" name="oldpassword" id="oldpassword" className="form-control" value={this.state.oldpassword} onChange={this.handleChange} autoFocus/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="password" className="col-sm-2">{USERPASSWORDFORM_PASSWORD}</label>
-                    <div className="col-sm-10">
-                        <Input type="password" name="password" id="password" className="form-control" value={this.state.password} onChange={this.handleChange}/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="cpassword" className="col-sm-2">{USERPASSWORDFORM_CPASSWORD}</label>
-                    <div className="col-sm-10">
-                        <Input type="password" name="cpassword" id="cpassword" className="form-control" value={this.state.cpassword} onChange={this.handleChange}/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <div className="col-sm-12">
-                        {buttonSubmit}<div style={{ float: "right" }}>{buttonCancel}</div>
-                    </div>
-                </div>
-                {this.props.children}
+            <Form title={title ? edit ? USERPASSWORDFORM_EDIT_TITLE : USERPASSWORDFORM_CREATE_TITLE : undefined}>
+                {
+                    messages && (
+                        <Messages messages={messages}/>
+                    )
+                }
+                <Input type="password" name="oldpassword" id="oldpassword" value={oldpassword} label={USERPASSWORDFORM_OLDPASSWORD} onChange={this.handleChange} autoFocus/>                
+                <Input type="password" name="password" id="password" value={password} label={USERPASSWORDFORM_PASSWORD} onChange={this.handleChange}/>
+                <Input type="password" name="cpassword" id="cpassword" value={cpassword} label={USERPASSWORDFORM_CPASSWORD} onChange={this.handleChange}/>
+                <FormGroup>
+                {
+                    loading ? (
+                        <LoadingCog/>
+                    ) : (
+                        <Fragment>
+                            <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-10">
+                                <SuccessButton id="buttonSubmit" className="form-button" onClick={this.handleClick}>{edit ? USERPASSWORDFORM_EDIT_BUTTON : USERPASSWORDFORM_CREATE_BUTTON}</SuccessButton>
+                            </div>
+                            <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-10">
+                                <SecondaryButton id="buttonCancel" className="form-button" onClick={this.handleClick}>{USERPASSWORDFORM_CANCEL_BUTTON}</SecondaryButton>
+                            </div>
+                        </Fragment>
+                    )
+                }
+                </FormGroup>
+                {children}
             </Form>
         );
     }

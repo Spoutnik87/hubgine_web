@@ -12,11 +12,6 @@ class AdminDashboard extends Component {
             ADMINDASHBOARD_TITLE: PropTypes.string.isRequired
         }).isRequired
     };
-
-    constructor(props)
-    {
-        super(props);
-    }
     
     render()
     {

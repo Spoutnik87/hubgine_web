@@ -7,6 +7,7 @@ import Input from "../Inputs/Input";
 import LoadingCog from "../LoadingCog";
 import SuccessButton from "../buttons/SuccessButton";
 import Form from "../Form";
+import FormGroup from "../FormGroup";
 
 class UserForgotPasswordForm extends Component {
     static propTypes = {
@@ -82,29 +83,33 @@ class UserForgotPasswordForm extends Component {
             FORGOTPASSWORD_EMAIL,
             FORGOTPASSWORD_SUBMIT
         } = this.props.lang;
-        const buttonSubmit = this.props.loading ? <LoadingCog/> : <SuccessButton onClick={this.handleClick} disabled={this.state.recaptcha === ""}>{FORGOTPASSWORD_SUBMIT}</SuccessButton>;
-        const messages = this.props.messages && <Messages messages={this.props.messages}/>;
+        const { loading, title, messages, children } = this.props;
+        const { email, recaptcha } = this.state;
         return (
-            <Form title={this.props.title ? FORGOTPASSWORD_TITLE : null}>
-                {messages}
-                <div className="form-group">
-                    <label htmlFor="email" className="col-sm-2">{FORGOTPASSWORD_EMAIL}</label>
-                    <div className="col-sm-10">
-                        <Input name="email" id="email" className="form-control" value={this.state.email} onChange={this.handleChange} autoFocus/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label className="col-sm-2"></label>
-                    <div className="col-sm-10">
+            <Form title={title ? FORGOTPASSWORD_TITLE : undefined}>
+                {
+                    messages && (
+                        <Messages messages={messages}/>
+                    )
+                }
+                <Input name="email" id="email" value={email} label={FORGOTPASSWORD_EMAIL} onChange={this.handleChange} autoFocus/>
+                <FormGroup>
+                    <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-2">
                         <Recaptcha verifyCallback={this.handleRecaptchaVerify} expiredCallback={this.handleRecaptchaExpired} />
                     </div>
-                </div>
-                <div className="form-group">
-                    <div className="col-sm-12">
-                        {buttonSubmit}
-                    </div>
-                </div>
-                {this.props.children}
+                </FormGroup>
+                <FormGroup>
+                {
+                    loading ? (
+                        <LoadingCog/>
+                    ) : (
+                        <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-10">
+                            <SuccessButton className="form-button" onClick={this.handleClick} disabled={recaptcha === ""}>{FORGOTPASSWORD_SUBMIT}</SuccessButton>
+                        </div>
+                    )
+                }
+                </FormGroup>
+                {children}
             </Form>
         );
     }

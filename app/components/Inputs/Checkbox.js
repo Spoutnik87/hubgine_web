@@ -1,11 +1,17 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Input from "./Input";
+import FormGroup from "../FormGroup";
+import Row from "../Row";
+import Tooltip from "../Tooltip";
 
 class Checkbox extends Component {
     static propTypes = {
         name: PropTypes.string,
         value: PropTypes.bool,
+        label: PropTypes.string,
+        id: PropTypes.string,
+        tooltip: PropTypes.string,
         onChange: PropTypes.func
     };
 
@@ -38,11 +44,36 @@ class Checkbox extends Component {
 
     render()
     {
-        return (
+        const { id, name, label, tooltip } = this.props;
+        const { value } = this.state;
+        const checkbox = (
             <div className="component-checkbox">
-                <Input type="checkbox" name={this.props.name} id="checkbox" onChange={this.handleChange} checked={this.state.value} />
+                <Input type="checkbox" name={name} id="checkbox" onChange={this.handleChange} checked={value} />
                 <label htmlFor="checkbox"></label>
             </div>
+        );
+        return label ? (
+            <FormGroup>
+                <Row>
+                    <label htmlFor={id} className="col-xs-12 col-sm-3 col-md-2">
+                        {label}
+                        {
+                            tooltip && (
+                                <span style={{ float: "right" }}>
+                                    <Tooltip>
+                                        {tooltip}
+                                    </Tooltip>
+                                </span>
+                            )
+                        }
+                    </label>
+                    <div id={id} className="col-xs-12 col-sm-9 col-md-10">
+                        {checkbox}
+                    </div>
+                </Row>
+            </FormGroup>
+        ) : (
+            checkbox
         );
     }
 }

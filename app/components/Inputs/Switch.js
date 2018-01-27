@@ -1,12 +1,18 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import Input from "./Input";
+import FormGroup from "../FormGroup";
+import Row from "../Row";
+import Tooltip from "../Tooltip";
 
 class Switch extends Component {
     static propTypes = {
         name: PropTypes.string,
         options: PropTypes.array.isRequired,
         defaultOption: PropTypes.string,
+        id: PropTypes.string,
+        label: PropTypes.string,
+        tooltip: PropTypes.string,
         onChange: PropTypes.func
     };
 
@@ -37,18 +43,43 @@ class Switch extends Component {
 
     render()
     {
-        return (
+        const { id, label, tooltip, name } = this.props;
+        const { selectedOption } = this.state;
+        const switchInput = (
             <div className="switch">
                 {
                     this.props.options.map((value, index) => (
-                        [
-                            <Input key={"input" + index} type="radio" id={index} name={this.props.name} value={value} onChange={this.handleChange} checked={this.state.selectedOption === value} />,
-                            <label key={"label" + index} htmlFor={index}>{value}</label>
-                        ]
+                        <Fragment key={name + index}>
+                            <Input type="radio" id={index} name={name} value={value} onChange={this.handleChange} checked={selectedOption === value} />
+                            <label htmlFor={index}>{value}</label>
+                        </Fragment>
                     ))
                 }
             </div>
         );
+        return label ? (
+            <FormGroup>
+            <Row>
+                <label htmlFor={id} className="col-xs-12 col-sm-3 col-md-2">
+                    {label}
+                    {
+                        tooltip && (
+                            <span style={{ float: "right" }}>
+                                <Tooltip>
+                                    {tooltip}
+                                </Tooltip>
+                            </span>
+                        )
+                    }
+                </label>
+                <div className="col-xs-12 col-sm-9 col-md-10">
+                    {switchInput}
+                </div>
+            </Row>
+        </FormGroup>
+        ) : (
+            switchInput
+        )
     }
 }
 

@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import v4 from "uuid/v4";
 import LoadingCog from "../LoadingCog";
+import FormGroup from "../FormGroup";
+import Row from "../Row";
+import Tooltip from "../Tooltip";
 
 class ListInput extends Component {
     static propTypes = {
@@ -10,6 +13,9 @@ class ListInput extends Component {
         defaultOption: PropTypes.string,
         disabled: PropTypes.bool,
         loading: PropTypes.bool,
+        label: PropTypes.string,
+        id: PropTypes.string,
+        tooltip: PropTypes.string,
         onClick: PropTypes.func,
         onChange: PropTypes.func
     };
@@ -73,14 +79,41 @@ class ListInput extends Component {
 
     render()
     {
-        return this.props.loading ? <LoadingCog /> : (
-            <select name={this.props.name} className="form-control listinput" value={this.state.value} onClick={this.handleClick} onChange={this.handleChange} disabled={this.props.disabled}>
+        const { id, name, disabled, loading, label, tooltip } = this.props;
+        const { options, value } = this.state;
+        const select = loading ? (
+            <LoadingCog/>
+        ) : (
+            <select id={id} name={name} className="form-control listinput" value={value} onClick={this.handleClick} onChange={this.handleChange} disabled={disabled}>
                 {
-                    this.state.options.map(option => (
+                    options.map(option => (
                         <option key={option.key} value={option.value}>{option.value}</option>
                     ))
                 }
             </select>
+        );
+        return label ? (
+            <FormGroup>
+                <Row>
+                    <label htmlFor={id} className="col-xs-12 col-sm-3 col-md-2">
+                        {label}
+                        {
+                            tooltip && (
+                                <span style={{ float: "right" }}>
+                                    <Tooltip>
+                                        {tooltip}
+                                    </Tooltip>
+                                </span>
+                            )
+                        }
+                    </label>
+                    <div className="col-xs-12 col-sm-9 col-md-10">
+                        {select}
+                    </div>
+                </Row>
+            </FormGroup>
+        ) : (
+            select
         );
     }
 }

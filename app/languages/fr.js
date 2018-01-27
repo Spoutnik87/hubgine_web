@@ -14,7 +14,7 @@ export default function getLanguage()
         HEADER_HOME: "Home",
         HEADER_ADMIN_DASHBOARD: "Tableau de bord de l'admin",
         HEADER_USER_DASHBOARD: "Tableau de bord de l'utilisateur",
-        HEADER_PROFILE: "Profile",
+        HEADER_PROFILE: "Profil",
         HEADER_DISCONNECT: "Se deconnecter",
         HEADER_SIGNIN: "Se connecter",
         HEADER_REGISTER: "S'inscrire",
@@ -50,7 +50,7 @@ export default function getLanguage()
         REGISTER_LANG_INCORRECT: "Vous devez rentrer une langue valide.",
         REGISTER_ERROR: "Une erreur est survenue lors de l'inscription.",
         //---PROFILE---
-        PROFILE_TITLE: "Profile",
+        PROFILE_TITLE: "Profil",
         PROFILE_ACCOUNT_LIST: "Vos comptes",
         PROFILE_EMAIL: "Email",
         PROFILE_FIRSTNAME: "Prénom",
@@ -76,7 +76,8 @@ export default function getLanguage()
         //---USERDASHBOARD---
         USERDASHBOARD_TITLE: "Votre tableau de bord",
         USERDASHBOARD_ADD_CAMPAIGN: "Ajouter une campagne",
-        USERDASHBOARD_NO_ACCOUNTS: "Vous n'avez pas de compte actuellement. Vous pouvez en créer à partir de votre page Profile.",
+        USERDASHBOARD_NO_ACCOUNTS: "Vous n'avez pas de compte actuellement. Vous pouvez en créer à partir de votre page Profil.",
+        USERDASHBOARD_DISPLAY_ACCOUNT_BUTTON: "VOIR",
         //---ACCOUNTOVERVIEW---
         ACCOUNTOVERVIEW_NO_ACCOUNT: "Ce compte n'existe pas.",
         ACCOUNTOVERVIEW_EDIT_BUTTON: "Modifier ce compte",
@@ -142,6 +143,7 @@ export default function getLanguage()
         CAMPAIGNFORM_DATEBEGIN: "Date de début",
         CAMPAIGNFORM_DATEEND: "Date de fin",
         CAMPAIGNFORM_NAME_TOOLTIP: "Les caractères spéciaux ne sont pas autorisés.",
+        CAMPAIGNFORM_DATEBEGIN_TOOLTIP: "La campagne va démarrer a cette heure. Votre fuseau horaire est UTC",
         CAMPAIGNFORM_NAME_INCORRECT: "Un nom valide est requis.",
         CAMPAIGNFORM_NAME_NOT_UNIQUE: "Ce nom est déjà utilisé.",
         CAMPAIGNFORM_ACCOUNT_INCORRECT: "Un compte valide est requis.",
@@ -153,9 +155,11 @@ export default function getLanguage()
         CAMPAIGNFORM_EDIT_SUCCESS: "Cette campagne a été mise à jour.",
         CAMPAIGNFORM_EDIT_ERROR: "Une erreur est survenue lors de la mise à jour de la campagne.",
         CAMPAIGNFORM_DELETE_SUCCESS: "Cette campagne a été supprimée avec succès.",
-        CAMPAIGNFORM_DELETE_ERROR: "Une erreur est survenue losssssssssssrs de la suppression de la campagne.",
+        CAMPAIGNFORM_DELETE_ERROR: "Une erreur est survenue lors de la suppression de la campagne.",
         //---CAMPAIGNLIST---
         CAMPAIGNLIST_NOCAMPAIGN: "Il n'y a pas de campagnes actuellement.",
+        //---RULEITEM---
+        RULEITEM_EDIT_BUTTON: "Editer cette règle",
         //---TWITTERRULEFORM---
         TWITTERRULEFORM_CREATE_TITLE: "Créer une règle twitter",
         TWITTERRULEFORM_EDIT_TITLE: "Editer une règle",
@@ -171,6 +175,7 @@ export default function getLanguage()
         TWITTERRULEFORM_LANGUAGES: "Langages",
         TWITTERRULEFORM_DELAY: "Délai",
         TWITTERRULEFORM_LANG_TOOLTIP: "Si vous ne selectionnez pas de langage, ce filtre sera ignoré, dans le cas contraire les tweets seront filtrés en fonction des langues selectionnées.",
+        TWITTERRULEFORM_DELAY_TOOLTIP: "Temps entre le traitement de deux tweets. Le valeur minimale est de 60 secondes.",
         //---ARRAYINPUT---
         ARRAYINPUT_ADD_BUTTON: "Ajouter",
         ARRAYINPUT_DELETE_BUTTON: "Supprimer",
@@ -182,7 +187,7 @@ export default function getLanguage()
         USER_FIRSTNAME_INCORRECT: "Le prénom est invalide.",
         USER_LASTNAME_INCORRECT: "Le nom est invalide.",
         USER_LANGUAGE_INCORRECT: "Une langue valide est requise.",
-        USER_EDIT_SUCCESS: "Votre profile a été mis à jour.",
+        USER_EDIT_SUCCESS: "Votre profil a été mis à jour.",
         //---TWITTERRULE---
         TWITTERRULE_NAME_INCORRECT: "Un nom valide est requis.",
         TWITTERRULE_NAME_NOT_UNIQUE: "Ce nom est déjà utilisé.",

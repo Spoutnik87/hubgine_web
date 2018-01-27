@@ -55,9 +55,11 @@ class Signin extends Component {
         const {
             SIGNIN_FORGOTPASSWORD
         } = this.props.lang;
+        const { messages } = this.props;
+        const { loading } = this.state;
         return (
             <Container>
-                <UserSigninForm onSubmit={this.handleSubmit} loading={this.state.loading} messages={this.props.messages}>
+                <UserSigninForm onSubmit={this.handleSubmit} loading={loading} messages={messages}>
                     <Link to="/forgot-password">{SIGNIN_FORGOTPASSWORD}</Link>
                 </UserSigninForm>
             </Container>

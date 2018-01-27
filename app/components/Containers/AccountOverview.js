@@ -1,10 +1,10 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
-import { findIndex } from "lodash";
-import { fetchAccountList } from "../../actions/accounts";
+import { findIndex, isEqual } from "lodash";
+import { fetchAccountList, updateAccount, removeAccount } from "../../actions/accounts";
 import { withLanguage } from "../withLanguage";
 import { withMessages } from "../withMessages";
 import TwitterAccountForm from "../Forms/TwitterAccountForm";
@@ -40,8 +40,15 @@ class AccountOverview extends Component {
             editAccount: false,
             loadingAccountList: true,
             accountId: decodeURI(this.props.match.params.accountId),
-            account: null
+            account: undefined,
+            loadingAccountForm: false,
+            editAccount: false
         };
+        this.handleAccountEditionSubmit = this.handleAccountEditionSubmit.bind(this);
+        this.handleAccountEditionDelete = this.handleAccountEditionDelete.bind(this);
+        this.handleAccountEditionCancel = this.handleAccountEditionCancel.bind(this);
+        this.handleCampaignSelection = this.handleCampaignSelection.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     componentDidMount()
@@ -57,6 +64,66 @@ class AccountOverview extends Component {
         }).catch(error => {});
     }
 
+    handleAccountEditionSubmit(event)
+    {
+        const {
+            name,
+            consumerKey,
+            consumerSecret,
+            accessTokenKey,
+            accessTokenSecret,
+            blacklist
+        } = event.result;
+        this.setState({
+            loadingAccountForm: true
+        });
+        this.props.actions.updateAccount(event.default.name, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist).then(() => {}).catch(() => {}).finally(() => {
+            this.setState({
+                loadingAccountForm: false,
+                editAccount: false,
+                accountId: name,
+                account: this.props.accounts[findIndex(this.props.accounts, { name: name })]
+            });
+            this.props.history.push(encodeURI("/account/" + name));
+        });
+    }
+
+    handleAccountEditionDelete(event)
+    {
+        this.setState({
+            loadingAccountForm: true
+        });
+        this.props.actions.removeAccount(event.default.name).then(() => {
+            this.setState({
+                loadingAccountForm: false,
+                account: undefined
+            });
+            this.props.history.push("/user-dashboard/");
+        });
+    }
+
+    handleAccountEditionCancel()
+    {
+        this.setState({
+            editAccount: false
+        });
+    }
+
+    handleCampaignSelection({ account, campaign })
+    {
+        this.props.history.push(encodeURI("/campaign/" + account + "/" + campaign));
+    }
+
+    handleClick(event)
+    {
+        if (event.target.id === "editAccount")
+        {
+            this.setState({
+                editAccount: true
+            });
+        }
+    }
+
     render()
     {
         const {
@@ -65,11 +132,13 @@ class AccountOverview extends Component {
             ACCOUNTOVERVIEW_CAMPAIGNS_TITLE,
             ACCOUNTOVERVIEW_BLACKLIST_TITLE
         } = this.props.lang;
+        const { messages } = this.props;
         const {
             editAccount,
             loadingAccountList,
             accountId,
-            account
+            account,
+            loadingAccountForm
         } = this.state;
         return (
             <Container>
@@ -80,17 +149,25 @@ class AccountOverview extends Component {
                         </Card>
                     ) : (
                         account ? (
-                            <Card title={<span>{accountId}{!editAccount && <PrimaryButton id="editCampaign" style={{ float: "right" }} onClick={this.handleClick}>{ACCOUNTOVERVIEW_EDIT_BUTTON}</PrimaryButton>}</span>}>
-                                <Card title={ACCOUNTOVERVIEW_CAMPAIGNS_TITLE}>
-                                    <CampaignList account={account} campaigns={account.campaigns} onClick={this.handleCampaignSelection} />
-                                </Card>
-                                <Card title={ACCOUNTOVERVIEW_BLACKLIST_TITLE}>
-                                    <WordList words={account.blacklist} />
-                                </Card>
+                            <Card title={<span>{accountId}{!editAccount && <PrimaryButton id="editAccount" style={{ float: "right" }} onClick={this.handleClick}>{ACCOUNTOVERVIEW_EDIT_BUTTON}</PrimaryButton>}</span>}>
+                                {
+                                    editAccount ? (
+                                        <TwitterAccountForm account={account} loading={loadingAccountForm} cancel edit delete onCancel={this.handleAccountEditionCancel} onDelete={this.handleAccountEditionDelete} onSubmit={this.handleAccountEditionSubmit}/>
+                                    ) : (
+                                        <Fragment>
+                                            <Card title={ACCOUNTOVERVIEW_CAMPAIGNS_TITLE}>
+                                                <CampaignList account={account} campaigns={account.campaigns} onClick={this.handleCampaignSelection}/>
+                                            </Card>
+                                            <Card title={ACCOUNTOVERVIEW_BLACKLIST_TITLE}>
+                                                <WordList words={account.blacklist}/>
+                                            </Card>
+                                        </Fragment>
+                                    )
+                                }
                             </Card>
                         ) : (
                             <Card title={accountId}>
-                                <Messages messages={this.props.messages} />
+                                <Messages messages={messages}/>
                                 {ACCOUNTOVERVIEW_NO_ACCOUNT}
                             </Card>
                         )
@@ -110,7 +187,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         actions: bindActionCreators({
-            fetchAccountList
+            fetchAccountList,
+            updateAccount,
+            removeAccount
         }, dispatch)
     };
 };

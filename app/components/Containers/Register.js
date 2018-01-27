@@ -46,9 +46,11 @@ class Register extends Component {
 
     render()
     {
+        const { messages } = this.props;
+        const { loading } = this.state;
         return (
             <Container>
-                <UserRegisterForm onSubmit={this.handleSubmit} loading={this.state.loading} messages={this.props.messages} />
+                <UserRegisterForm onSubmit={this.handleSubmit} loading={loading} messages={messages}/>
             </Container>
         );
     }

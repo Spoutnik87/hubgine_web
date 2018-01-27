@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { withLanguage } from "../withLanguage";
 import ArrayInput from "../Inputs/ArrayInput";
@@ -9,6 +9,7 @@ import Form from "../Form";
 import SuccessButton from "../buttons/SuccessButton";
 import DangerButton from "../buttons/DangerButton";
 import SecondaryButton from "../buttons/SecondaryButton";
+import FormGroup from "../FormGroup";
 
 class TwitterAccountForm extends Component {
     static propTypes = {
@@ -166,56 +167,68 @@ class TwitterAccountForm extends Component {
             TWITTERACCOUNTFORM_ACCESSTOKENSECRET,
             TWITTERACCOUNTFORM_BLACKLIST
         } = this.props.lang;
-        const buttonSubmit = this.props.loading ? <LoadingCog/> : <SuccessButton id="buttonSubmit" onClick={this.handleClick}>{this.props.edit ? TWITTERACCOUNTFORM_EDIT_BUTTON : TWITTERACCOUNTFORM_CREATE_BUTTON}</SuccessButton>;
-        const buttonDelete = this.props.delete && !this.props.loading && <DangerButton id="buttonDeleteMode" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERACCOUNTFORM_DELETE_BUTTON}</DangerButton>;
-        const buttonCancel = this.props.cancel && !this.props.loading && <SecondaryButton id="buttonCancel" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</SecondaryButton>;
-        const messages = this.props.messages && <Messages messages={this.props.messages}/>;
-        const deleteMode = this.state.deleteMode ? this.props.loading ? <LoadingCog /> : <div className="col-sm-12"><DangerButton id="buttonDeleteYes" onClick={this.handleClick} style={{ marginRight: "20px" }}>{TWITTERACCOUNTFORM_DELETE_BUTTON}</DangerButton>
-            <SecondaryButton id="buttonDeleteNo" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</SecondaryButton></div>
-            : <div className="col-sm-12">{buttonSubmit}<div style={{ float: "right" }}>{buttonDelete}{buttonCancel}</div></div>;
+        const { title, edit, children, loading, cancel, messages, delete: hasDeleteButton } = this.props;
+        const { deleteMode, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist } = this.state;
         return (
-            <Form title={this.props.title ? this.props.edit ? TWITTERACCOUNTFORM_EDIT_TITLE : TWITTERACCOUNTFORM_CREATE_TITLE : null}>
-                {messages}
-                <div className="form-group">
-                    <label className="col-sm-2">{TWITTERACCOUNTFORM_NAME}</label>
-                    <div className="col-sm-10">
-                        <Input className="form-control" name="name" value={this.state.name} onChange={this.handleChange} autoFocus/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label className="col-sm-2">{TWITTERACCOUNTFORM_CONSUMERKEY}</label>
-                    <div className="col-sm-10">
-                        <Input className="form-control" name="consumerKey" value={this.state.consumerKey} onChange={this.handleChange}/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label className="col-sm-2">{TWITTERACCOUNTFORM_CONSUMERSECRET}</label>
-                    <div className="col-sm-10">
-                        <Input className="form-control" name="consumerSecret" value={this.state.consumerSecret} onChange={this.handleChange}/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label className="col-sm-2">{TWITTERACCOUNTFORM_ACCESSTOKENKEY}</label>
-                    <div className="col-sm-10">
-                        <Input className="form-control" name="accessTokenKey" value={this.state.accessTokenKey} onChange={this.handleChange}/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label className="col-sm-2">{TWITTERACCOUNTFORM_ACCESSTOKENSECRET}</label>
-                    <div className="col-sm-10">
-                        <Input className="form-control" name="accessTokenSecret" value={this.state.accessTokenSecret} onChange={this.handleChange}/>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label className="col-sm-2">{TWITTERACCOUNTFORM_BLACKLIST}</label>
-                    <div className="col-sm-10">
-                        <ArrayInput name="blacklist" onChange={this.handleChange} values={this.state.blacklist} unique />
-                    </div>
-                </div>
-                <div className="form-group">
-                    {deleteMode}
-                </div>
-                {this.props.children}
+            <Form title={title ? edit ? TWITTERACCOUNTFORM_EDIT_TITLE : TWITTERACCOUNTFORM_CREATE_TITLE : null}>
+                {
+                    messages && (
+                        <Messages messages={messages}/>
+                    )
+                }
+                <Input id="name" name="name" value={name} label={TWITTERACCOUNTFORM_NAME} onChange={this.handleChange} autoFocus/>                
+                <Input id="consumerKey" name="consumerKey" value={consumerKey} label={TWITTERACCOUNTFORM_CONSUMERKEY} onChange={this.handleChange}/>
+                <Input id="consumerSecret" name="consumerSecret" value={consumerSecret} label={TWITTERACCOUNTFORM_CONSUMERSECRET} onChange={this.handleChange}/>
+                <Input id="accessTokenKey" name="accessTokenKey" value={accessTokenKey} label={TWITTERACCOUNTFORM_ACCESSTOKENKEY} onChange={this.handleChange}/>
+                <Input id="accessTokenSecret" name="accessTokenSecret" value={accessTokenSecret} label={TWITTERACCOUNTFORM_ACCESSTOKENSECRET} onChange={this.handleChange}/>
+                <ArrayInput id="blacklist" name="blacklist" label={TWITTERACCOUNTFORM_BLACKLIST} onChange={this.handleChange} values={blacklist} unique />
+                <FormGroup>
+                {
+                    deleteMode ? (
+                        loading ? (
+                            <LoadingCog/>
+                        ) : (
+                            <Fragment>
+                                <div className="col-xs-12 col-sm-12 col-md-12">
+                                    <DangerButton id="buttonDeleteYes" className="form-button"  onClick={this.handleClick}>{TWITTERACCOUNTFORM_DELETE_BUTTON}</DangerButton>
+                                </div>
+                                <div className="col-xs-12 col-sm-12 col-md-12">
+                                    <SecondaryButton id="buttonDeleteNo" className="form-button" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</SecondaryButton>
+                                </div>
+                            </Fragment>
+                        )
+                    ) : (
+                        <div>
+                        {
+                            loading ? (
+                                <LoadingCog/>
+                            ) : (
+                                <Fragment>
+                                    <div className="col-xs-12 col-sm-12 col-md-12">
+                                        <SuccessButton id="buttonSubmit" className="form-button" onClick={this.handleClick}>{edit ? TWITTERACCOUNTFORM_EDIT_BUTTON : TWITTERACCOUNTFORM_CREATE_BUTTON}</SuccessButton>
+                                    </div>
+                                    {
+                                        hasDeleteButton && (
+                                            <div className="col-xs-12 col-sm-12 col-md-12">
+                                                <DangerButton id="buttonDeleteMode" className="form-button" onClick={this.handleClick}>{TWITTERACCOUNTFORM_DELETE_BUTTON}</DangerButton>
+                                            </div>
+                                        )
+                                    }
+                                    {
+                                        cancel && (
+                                            <div className="col-xs-12 col-sm-12 col-md-12">
+                                                <SecondaryButton id="buttonCancel" className="form-button" onClick={this.handleClick}>{TWITTERACCOUNTFORM_CANCEL_BUTTON}</SecondaryButton>
+                                            </div>
+                                        )
+                                    }
+                                </Fragment>
+                            )
+                        }
+                        </div>
+                    )
+                }
+                </FormGroup>
+                {children}
             </Form>
         );
     }

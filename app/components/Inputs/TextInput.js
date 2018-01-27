@@ -3,12 +3,19 @@ import PropTypes from "prop-types";
 import Input from "./Input";
 import LoadingCog from "../LoadingCog";
 import IconButton from "../buttons/IconButton";
+import InputGroup from "../InputGroup";
+import FormGroup from "../FormGroup";
+import Row from "../Row";
+import Tooltip from "../Tooltip";
 
 class TextInput extends Component {
     static propTypes = {
         name: PropTypes.string,
         value: PropTypes.string,
         loading: PropTypes.bool,
+        id: PropTypes.string,
+        label: PropTypes.string,
+        tooltip: PropTypes.string,
         onSubmit: PropTypes.func
     };
 
@@ -66,34 +73,47 @@ class TextInput extends Component {
 
     render()
     {
-        let mainDiv;
-        if (this.props.loading)
-        {
-            mainDiv = <LoadingCog />
-        }
-        else
-        {
-            if (this.state.isEditMode)
-            {
-                mainDiv = (
-                    <div className="input-group">
-                        <Input className="form-control" value={this.state.value} onChange={this.handleChange} autoFocus />
-                        <IconButton id="buttonTextSubmit" className="input-group-append input-group-text edit-button" icon="fas fa-check" onClick={this.handleClick} />
-                        <IconButton id="buttonTextCancel" className="input-group-append input-group-text edit-button" icon="fas fa-times" onClick={this.handleClick} />        
+        const { loading, id, label, tooltip } = this.props;
+        const { isEditMode, value } = this.state;
+        let textInput = loading ? (
+            <LoadingCog />
+        ) : (
+            isEditMode ? (
+                <InputGroup>
+                    <Input value={value} onChange={this.handleChange} autoFocus />
+                    <IconButton id="buttonTextSubmit" className="input-group-append input-group-text edit-button" icon="fas fa-check" onClick={this.handleClick} />
+                    <IconButton id="buttonTextCancel" className="input-group-append input-group-text edit-button" icon="fas fa-times" onClick={this.handleClick} />        
+                </InputGroup>
+            ) : (
+                <InputGroup>
+                    <div className="form-control">{value}</div>
+                    <IconButton id="buttonTextEdit" className="input-group-append input-group-text edit-button" icon="fas fa-pencil-alt" onClick={this.handleClick} />        
+                </InputGroup>
+            )
+        )
+        return label ? (
+            <FormGroup>
+                <Row>
+                    <label htmlFor={id} className="col-xs-12 col-sm-3 col-md-2">
+                        {label}
+                        {
+                            tooltip && (
+                                <span style={{ float: "right" }}>
+                                    <Tooltip>
+                                        {tooltip}
+                                    </Tooltip>
+                                </span>
+                            )
+                        }
+                    </label>
+                    <div className="col-xs-12 col-sm-9 col-md-10">
+                        {textInput}
                     </div>
-                );
-            }
-            else
-            {
-                mainDiv = (
-                    <div className="input-group">
-                        <div className="form-control">{this.props.value}</div>
-                        <IconButton id="buttonTextEdit" className="input-group-append input-group-text edit-button" icon="fas fa-pencil-alt" onClick={this.handleClick} />        
-                    </div>
-                );
-            }
-        }
-        return mainDiv;
+                </Row>
+            </FormGroup>
+        ) : (
+            textInput
+        );
     }
 }
 

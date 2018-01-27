@@ -3,13 +3,19 @@ import PropTypes from "prop-types";
 import Datetime from "react-datetime";
 import moment from "moment";
 import { withLanguage } from "../withLanguage";
+import FormGroup from "../FormGroup";
+import Row from "../Row";
+import Tooltip from "../Tooltip";
 require('moment/locale/fr');
 
 class DateInput extends Component {
     static propTypes = {
         name: PropTypes.string,
         onChange: PropTypes.func,
-        value: PropTypes.number
+        value: PropTypes.number,
+        id: PropTypes.string,
+        tooltip: PropTypes.string,
+        label: PropTypes.string
     };
 
     static defaultProps = {
@@ -41,11 +47,34 @@ class DateInput extends Component {
         const {
             REACT_DATETIME_LANGUAGE
         } = this.props.lang;
+        const { id, label, value, tooltip } = this.props;
+        const { yesterday, nextYear } = this.state;
         const valid = (current) => {
-            return current.isAfter(this.state.yesterday) && current.isBefore(this.state.nextYear);
+            return current.isAfter(yesterday) && current.isBefore(nextYear);
         };
-        return (
-            <Datetime locale={REACT_DATETIME_LANGUAGE} isValidDate={valid} onChange={this.handleChange} value={this.props.value ? new Date(this.props.value*1000) : ""}/>
+        const dateInput = <Datetime locale={REACT_DATETIME_LANGUAGE} isValidDate={valid} onChange={this.handleChange} value={value ? new Date(value*1000) : ""}/>;
+        return label ? (
+            <FormGroup>
+                <Row>
+                    <label htmlFor={id} className="col-xs-12 col-sm-3 col-md-2">
+                        {label}
+                        {
+                            tooltip && (
+                                <span style={{ float: "right" }}>
+                                    <Tooltip>
+                                        {tooltip}
+                                    </Tooltip>
+                                </span>
+                            )
+                        }
+                    </label>
+                    <div className="col-xs-12 col-sm-9 col-md-10">
+                        {dateInput}
+                    </div>
+                </Row>
+            </FormGroup>
+        ) : (
+            dateInput
         );
     }
 }

@@ -154,31 +154,34 @@ class AccountsManagment extends Component {
         const {
             ACCOUNTSMANAGMENT_ADD_ACCOUNT
         } = this.props.lang;
-        return this.state.loading ? (
-            <LoadingCog center />
+        const { accounts } = this.props;
+        const { loading, creationFormDisplayed, selectedAccount, loadingAccountForm } = this.state;
+        return loading ? (
+            <LoadingCog center/>
         ) : (
-            this.state.creationFormDisplayed ? (
-                <TwitterAccountForm onSubmit={this.handleAccountCreationSubmit} cancel onCancel={this.handleAccountCreationCancel} loading={this.state.loadingAccountForm}/>
+            creationFormDisplayed ? (
+                <TwitterAccountForm cancel loading={loadingAccountForm} onCancel={this.handleAccountCreationCancel} onSubmit={this.handleAccountCreationSubmit}/>
             ) : (
                 <div>
                     <ul className="list-group">
                         {
-                            this.props.accounts.data.map(account => (
+                            accounts.data.map(account => (
                                 <li key={account.uid} className="list-group-item" style={{ border: "none" }}>
-                                    {
-                                        this.state.selectedAccount === account.name ? (
-                                            <TwitterAccountForm onSubmit={this.handleAccountEditionSubmit} cancel onCancel={this.handleAccountEditionCancel} edit delete onDelete={this.handleAccountEditionDelete} account={account} loading={this.state.loadingAccountForm} />
-                                        ) : (
-                                            <AccountItem account={account} onClick={this.handleAccountChange} />
-                                        )
-                                    }
+                                {
+                                    selectedAccount === account.name ? (
+                                        <TwitterAccountForm account={account} loading={loadingAccountForm} cancel edit delete onCancel={this.handleAccountEditionCancel} onDelete={this.handleAccountEditionDelete} onSubmit={this.handleAccountEditionSubmit}/>
+                                    ) : (
+                                        <AccountItem account={account} onClick={this.handleAccountChange}/>
+                                    )
+                                }
                                 </li>
                             ))
                         }
                     </ul>
-                    <SuccessButton id="buttonSubmit" onClick={this.handleClick}>{ACCOUNTSMANAGMENT_ADD_ACCOUNT}</SuccessButton>
+                    <SuccessButton id="buttonSubmit" className="form-button" onClick={this.handleClick}>{ACCOUNTSMANAGMENT_ADD_ACCOUNT}</SuccessButton>
                 </div>
-            ));
+            )
+        );
     }
 }
 

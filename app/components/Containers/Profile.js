@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
@@ -48,7 +48,6 @@ class Profile extends Component {
     {
         super(props);
         this.state = {
-            loadingAccountForm: false,
             isLoaded: false,
             isAccountCreationFormDisplayed: false,
             isPasswordEditionFormDisplayed: false,
@@ -61,8 +60,6 @@ class Profile extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.handleAccountFormCreationCancel = this.handleAccountFormCreationCancel.bind(this);
-        this.handleAccountFormCreationSubmit = this.handleAccountFormCreationSubmit.bind(this);
         this.handleLanguageChange = this.handleLanguageChange.bind(this);
         this.handleUserPasswordEditionSubmit = this.handleUserPasswordEditionSubmit.bind(this);
         this.handleUserPasswordEditionCancel = this.handleUserPasswordEditionCancel.bind(this);
@@ -153,38 +150,6 @@ class Profile extends Component {
         });
     }
 
-    handleAccountFormCreationSubmit(event)
-    {
-        const {
-            name,
-            consumerKey,
-            consumerSecret,
-            accessTokenKey,
-            accessTokenSecret,
-            blacklist
-        } = event.result;
-        this.setState({
-            loadingAccountForm: true
-        });
-        this.props.actions.addAccount(name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist).then(() => {
-            this.setState({
-                loadingAccountForm: false,
-                isAccountCreationFormDisplayed: false
-            });
-        }).catch(error => {
-            this.setState({
-                loadingAccountForm: false
-            });
-        });
-    }
-
-    handleAccountFormCreationCancel()
-    {
-        this.setState({
-            isAccountCreationFormDisplayed: false
-        });
-    }
-
     handleLanguageChange(event)
     {
         this.setState({
@@ -232,7 +197,6 @@ class Profile extends Component {
 
     render()
     {
-        let card;
         const {
             PROFILE_TITLE,
             PROFILE_EMAIL,
@@ -242,66 +206,46 @@ class Profile extends Component {
             PROFILE_EDIT_PASSWORD,
             PROFILE_ACCOUNT_LIST
         } = this.props.lang;
-        if (this.state.isLoaded)
-        {
-            card = (
-                <Container>
-                    <Form title={PROFILE_TITLE}>
-                        <Messages messages={this.props.messages}/>
-                        <div className="form-group">
-                            <label htmlFor="email" className="col-sm-2">{PROFILE_EMAIL}</label>
-                            <div className="col-sm-8">
-                                <TextInput name="email" value={this.props.user.email} onSubmit={this.handleSubmit} loading={this.state.loadingEmail}/>
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="firstname" className="col-sm-2">{PROFILE_FIRSTNAME}</label>
-                            <div className="col-sm-8">
-                                <TextInput name="firstname" value={this.props.user.firstname} onSubmit={this.handleSubmit} loading={this.state.loadingFirstname}/>
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="lastname" className="col-sm-2">{PROFILE_LASTNAME}</label>
-                            <div className="col-sm-8">
-                                <TextInput name="lastname" value={this.props.user.lastname} onSubmit={this.handleSubmit} loading={this.state.loadingLastname}/>
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="language" className="col-sm-2">{PROFILE_LANGUAGE}</label>
-                            <div className="col-sm-8">
-                                <ListInput name="language" options={Object.values(Languages)} defaultOption={this.props.user.lang} onChange={this.handleLanguageChange} loading={this.state.loadingLanguage} />
-                            </div>
-                        </div>
-                        {
-                            this.state.loadingPassword ? (
-                                <LoadingCog/>
-                            ) : (
-                                this.state.isPasswordEditionFormDisplayed ? (
-                                    <UserPasswordForm cancel edit title onSubmit={this.handleUserPasswordEditionSubmit} onCancel={this.handleUserPasswordEditionCancel} />
+        const { messages, user } = this.props;
+        const { isLoaded, loadingPassword, isPasswordEditionFormDisplayed, loadingEmail, loadingFirstname, loadingLastname, loadingLanguage } = this.state;
+        return (
+            <Container>
+            {
+                isLoaded ? (
+                    <Fragment>
+                        <Form title={PROFILE_TITLE}>
+                            <Messages messages={messages}/>
+                            <TextInput name="email" value={user.email} id="email" label={PROFILE_EMAIL} onSubmit={this.handleSubmit} loading={loadingEmail}/>
+                            <TextInput name="firstname" value={user.firstname} id="firstname" label={PROFILE_FIRSTNAME} onSubmit={this.handleSubmit} loading={loadingFirstname}/>
+                            <TextInput name="lastname" value={user.lastname} id="lastname" label={PROFILE_LASTNAME} onSubmit={this.handleSubmit} loading={loadingLastname}/>
+                            <ListInput name="language" id="language" label={PROFILE_LANGUAGE} options={Object.values(Languages)} defaultOption={user.lang} loading={loadingLanguage} onChange={this.handleLanguageChange}/>
+                            {
+                                loadingPassword ? (
+                                    <LoadingCog/>
                                 ) : (
-                                    <PrimaryButton id="buttonPasswordEdition" onClick={this.handleClick}>{PROFILE_EDIT_PASSWORD}</PrimaryButton>
+                                    isPasswordEditionFormDisplayed ? (
+                                        <UserPasswordForm cancel edit title onSubmit={this.handleUserPasswordEditionSubmit} onCancel={this.handleUserPasswordEditionCancel}/>
+                                    ) : (
+                                        <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-10">
+                                            <PrimaryButton id="buttonPasswordEdition" style={{ width: "100%" }} onClick={this.handleClick}>{PROFILE_EDIT_PASSWORD}</PrimaryButton>
+                                        </div>
+                                    )
                                 )
-                            )
-                        }
-                    </Form>
-                    <Card title={PROFILE_ACCOUNT_LIST}>
-                        <AccountsManagment />
-                    </Card>
-                </Container>
-            );
-        }
-        else
-        {
-            card = (
-                <Container>
+                            }
+                        </Form>
+                        <Card title={PROFILE_ACCOUNT_LIST}>
+                            <AccountsManagment />
+                        </Card>
+                    </Fragment>
+                ) : (
                     <Card title={PROFILE_TITLE}>
-                        <Messages messages={this.props.messages}/>
+                        <Messages messages={messages}/>
                         <LoadingCog center/>
                     </Card>
-                </Container>
-            );
-        }
-        return card;
+                )
+            }
+            </Container>
+        );
     }
 }
 

@@ -1,12 +1,18 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Input from "./Input";
+import FormGroup from "../FormGroup";
+import Row from "../Row";
+import Tooltip from "../Tooltip";
 
 class ConditionalInput extends Component {
     static propTypes = {
         name: PropTypes.string,
         value: PropTypes.string,
         condition: PropTypes.oneOfType([PropTypes.func, PropTypes.string]).isRequired,
+        id: PropTypes.string,
+        label: PropTypes.string,
+        tooltip: PropTypes.string,
         onChange: PropTypes.func,
         type: PropTypes.string,
         className: PropTypes.string
@@ -52,8 +58,31 @@ class ConditionalInput extends Component {
 
     render()
     {
-        return (
-            <Input type={this.props.type} className={this.props.className} value={this.state.value} onChange={this.handleChange} autoFocus />
+        const { label, tooltip, ...props } = this.props;
+        const { value } = this.state;
+        const conditionalInput = <Input {...props} value={value} onChange={this.handleChange} autoFocus />;
+        return label ? (
+            <FormGroup>
+                <Row>
+                    <label htmlFor={id} className="col-xs-12 col-sm-3 col-md-2">
+                        {label}
+                        {
+                            tooltip && (
+                                <span style={{ float: "right" }}>
+                                    <Tooltip>
+                                        {tooltip}
+                                    </Tooltip>
+                                </span>
+                            )
+                        }
+                    </label>
+                    <div className="col-xs-12 col-sm-9 col-md-10">
+                        {conditionalInput}
+                    </div>
+                </Row>
+            </FormGroup>
+        ) : (
+            conditionalInput
         );
     }
 }

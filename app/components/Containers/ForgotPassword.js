@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import UserForgotPasswordForm from "./Forms/UserForgotPasswordForm";
-import { withMessages } from "./withMessages";
-import Container from "./Container";
-import Card from "./Card";
+import UserForgotPasswordForm from "../Forms/UserForgotPasswordForm";
+import { withMessages } from "../withMessages";
+import Container from "../Container";
+import Card from "../Card";
 
 class ForgotPassword extends Component {
     static propTypes = {
@@ -28,10 +28,12 @@ class ForgotPassword extends Component {
     
     render()
     {
+        const { messages } = this.props;
+        const { loading } = this.state;
         return (
             <Container>
                 <Card>
-                    <UserForgotPasswordForm onSubmit={this.handleSubmit} loading={this.state.loading} messages={this.props.messages} />
+                    <UserForgotPasswordForm onSubmit={this.handleSubmit} loading={loading} messages={messages}/>
                 </Card>
             </Container>
         );

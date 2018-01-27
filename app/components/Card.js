@@ -23,14 +23,15 @@ class Card extends Component {
             title,
             children
         } = this.props;
-        const header = this.props.title !== null && (
-            <div className="card-header">
-                <h3 className="card-title">{title}</h3>
-            </div>
-        );
         return (
             <div className="card">
-                {header}
+                {
+                    title && (
+                        <div className="card-header">
+                            <h3 className="card-title">{title}</h3>
+                        </div>
+                    )
+                }
                 <div className="card-body">
                     {children}
                 </div>

@@ -6,6 +6,10 @@ import Input from "./Input";
 import ListInput from "./ListInput";
 import SuccessButton from "../buttons/SuccessButton";
 import DangerButton from "../buttons/DangerButton";
+import FormGroup from "../FormGroup";
+import Row from "../Row";
+import InputGroup from "../InputGroup";
+import Tooltip from "../Tooltip";
 
 class ArrayInput extends Component {
     static propTypes = {
@@ -17,6 +21,9 @@ class ArrayInput extends Component {
         values: PropTypes.array,
         options: PropTypes.array,
         defaultOption: PropTypes.string,
+        id: PropTypes.string,
+        label: PropTypes.string,
+        tooltip: PropTypes.string,
         onChange: PropTypes.func,
         condition: PropTypes.func,
         limit: PropTypes.number,
@@ -45,7 +52,7 @@ class ArrayInput extends Component {
                 key: v4(),
                 value: element
             })),
-            selectedElement: null
+            selectedElement: undefined
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
@@ -97,7 +104,7 @@ class ArrayInput extends Component {
             });
             const state = {
                 values: values,
-                selectedElement: null,
+                selectedElement: undefined,
                 options: this.state.options
             };
             if (this.state.options && !this.state.options.includes(this.state.values[this.state.selectedElement].value))
@@ -122,17 +129,17 @@ class ArrayInput extends Component {
                         selectedElement: element
                     });
                 }
-                else if (this.state.selectedElement !== null)
+                else if (this.state.selectedElement != null)
                 {
                     this.setState({
-                        selectedElement: null
+                        selectedElement: undefined
                     });
                 }
             }
-            else if (event.target.name === "list" && this.state.selectedElement !== null)
+            else if (event.target.name === "list" && this.state.selectedElement != null)
             {
                 this.setState({
-                    selectedElement: null
+                    selectedElement: undefined
                 });
             }
         }
@@ -140,31 +147,63 @@ class ArrayInput extends Component {
 
     render()
     {
-        const { ARRAYINPUT_ADD_BUTTON, ARRAYINPUT_DELETE_BUTTON } = this.props.lang;
-        const button = this.state.selectedElement === null ? <SuccessButton id="buttonAdd" className="col-md-2 col-sm-3 col-xs-4" onClick={this.handleClick} disabled={this.props.limit > 0 ? this.state.values.length >= this.props.limit : false}><i id="buttonAdd" className="fa fa-plus"></i> {ARRAYINPUT_ADD_BUTTON}</SuccessButton> 
-            : <DangerButton id="buttonRemove" className="col-md-2 col-sm-3 col-xs-4" onClick={this.handleClick}><i id="buttonRemove" className="fa fa-minus"></i> {ARRAYINPUT_DELETE_BUTTON}</DangerButton>;
-        return (
-            <div className="input-group" style={{ width: "100%" }}>
+        const {
+            ARRAYINPUT_ADD_BUTTON,
+            ARRAYINPUT_DELETE_BUTTON
+        } = this.props.lang;
+        const { limit, id, label, tooltip } = this.props;
+        const { selectedElement, value, values, defaultOption, options } = this.state;
+        const arrayInput = (
+            <InputGroup syle={{ width: "100%" }}>
                 <div className="arrayinput-display">
                 {
-                    this.state.values.map((element, index) => (
-                        <div key={element.key} data-element={index} className={this.state.selectedElement === index.toString() ? "arrayinput-display-element no-select arrayinput-display-element-selected" : "arrayinput-display-element no-select"} 
+                    values.map((element, index) => (
+                        <div key={element.key} data-element={index} className={selectedElement === index.toString() ? "arrayinput-display-element no-select arrayinput-display-element-selected" : "arrayinput-display-element no-select"} 
                             onClick={this.handleClick}>{element.value}<br/></div>
                         )
                     )
                 }
                 </div>
-                <div className="col-md-10 col-sm-9 col-xs-8" style={{ paddingLeft: 0 }}>
+                <div className="col-xs-12 col-sm-12 col-md-8" style={{ padding: "0" }}>
                     {
-                        this.props.options ? (
-                            <ListInput name="list" options={this.state.options} defaultOption={this.props.defaultOption} onClick={this.handleClick} onChange={this.handleChange} />
+                        options ? (
+                            <ListInput name="list" options={options} defaultOption={defaultOption} onClick={this.handleClick} onChange={this.handleChange} />
                         ) : (
-                            <Input data-element="input" className="form-control" value={this.state.value} onClick={this.handleClick} onChange={this.handleChange} />
+                            <Input data-element="input" value={value} onClick={this.handleClick} onChange={this.handleChange} />
                         )
                     }
                 </div>
-                {button}
-            </div>
+                {
+                    selectedElement == null ? (
+                        <SuccessButton id="buttonAdd" className="col-xs-12 col-sm-12 offset-md-1 col-md-3" onClick={this.handleClick} disabled={limit > 0 ? values.length >= limit : false}><i id="buttonAdd" className="fa fa-plus"></i> {ARRAYINPUT_ADD_BUTTON}</SuccessButton>
+                    ) : (
+                        <DangerButton id="buttonRemove" className="col-xs-12 col-sm-12 offset-md-1 col-md-3" onClick={this.handleClick}><i id="buttonRemove" className="fa fa-minus"></i> {ARRAYINPUT_DELETE_BUTTON}</DangerButton>
+                    )
+                }
+            </InputGroup>
+        );
+        return label ? (
+            <FormGroup>
+                <Row>
+                    <label htmlFor={id} className="col-xs-12 col-sm-3 col-md-2">
+                        {label}
+                        {
+                            tooltip && (
+                                <span style={{ float: "right" }}>
+                                    <Tooltip>
+                                        {tooltip}
+                                    </Tooltip>
+                                </span>
+                            )
+                        }
+                    </label>
+                    <div className="col-xs-12 col-sm-9 col-md-10">
+                        {arrayInput}
+                    </div>
+                </Row>
+            </FormGroup>
+        ) : (
+            arrayInput
         );
     }
 }

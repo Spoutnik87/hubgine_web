@@ -15,13 +15,15 @@ import Container from "../Container";
 import Card from "../Card";
 import LoadingCog from "../LoadingCog";
 import SuccessButton from "../buttons/SuccessButton";
+import InfoButton from "../buttons/InfoButton";
 
 class UserDashboard extends Component {
     static propTypes = {
         lang: PropTypes.shape({
             USERDASHBOARD_TITLE: PropTypes.string.isRequired,
             USERDASHBOARD_ADD_CAMPAIGN: PropTypes.string.isRequired,
-            USERDASHBOARD_NO_ACCOUNTS: PropTypes.string.isRequired
+            USERDASHBOARD_NO_ACCOUNTS: PropTypes.string.isRequired,
+            USERDASHBOARD_DISPLAY_ACCOUNT_BUTTON: PropTypes.string.isRequired
         }).isRequired
     };
 
@@ -55,6 +57,10 @@ class UserDashboard extends Component {
             this.setState({
                 displayCampaignForm: true
             });
+        }
+        else (event.target.id === "displayAccount")
+        {
+            this.props.history.push(encodeURI("/account/" + event.target.getAttribute("data-element")));
         }
     }
 
@@ -90,7 +96,7 @@ class UserDashboard extends Component {
 
     handleCampaignSelection({ account, campaign })
     {
-        this.props.history.push("/campaign/" + account + "/" + campaign);
+        this.props.history.push(encodeURI("/campaign/" + account + "/" + campaign));
     }
 
     render()
@@ -98,34 +104,37 @@ class UserDashboard extends Component {
         const {
             USERDASHBOARD_TITLE,
             USERDASHBOARD_ADD_CAMPAIGN,
-            USERDASHBOARD_NO_ACCOUNTS
+            USERDASHBOARD_NO_ACCOUNTS,
+            USERDASHBOARD_DISPLAY_ACCOUNT_BUTTON
         } = this.props.lang;
+        const { messages, accounts } = this.props;
+        const { loadingCampaignForm, loadingAccountList, displayCampaignForm } = this.state;
         return (
             <Container>
                 <Card title={USERDASHBOARD_TITLE}>
                 {
-                    this.state.loadingAccountList ? (
-                        <LoadingCog center />
+                    loadingAccountList ? (
+                        <LoadingCog center/>
                     ) : (
                         <div>
                             {
-                                this.props.accounts.length === 0 ? (
+                                accounts.length === 0 ? (
                                     <div>{USERDASHBOARD_NO_ACCOUNTS}</div>
-                                ) : this.state.displayCampaignForm ? (
-                                    <CampaignForm name="campaignForm" accounts={this.props.accounts.filter(account => {
-                                        const campaignNumber = this.props.accounts[findIndex(this.props.accounts, { name: account.name })].campaigns.length;
+                                ) : displayCampaignForm ? (
+                                    <CampaignForm name="campaignForm" accounts={accounts.filter(account => {
+                                        const campaignNumber = accounts[findIndex(accounts, { name: account.name })].campaigns.length;
                                         return campaignNumber < account.maxCampaigns;
-                                    }).map(account => account.name)} onSubmit={this.handleCampaignCreationSubmit} cancel onCancel={this.handleCampaignCreationCancel} messages={this.props.messages} />
+                                    }).map(account => account.name)} loading={loadingCampaignForm} cancel messages={messages} onCancel={this.handleCampaignCreationCancel} onSubmit={this.handleCampaignCreationSubmit}/>
                                 ) : (
-                                    this.props.accounts.map(account => (
-                                        <Card key={account.uid} title={account.name}>
-                                            <CampaignList account={account} campaigns={this.props.accounts[findIndex(this.props.accounts, { name: account.name })].campaigns} onClick={this.handleCampaignSelection} />
+                                    accounts.map(account => (
+                                        <Card key={account.uid} title={<span>{account.name}<span style={{ float: "right" }}><InfoButton id="displayAccount" data-element={account.name} onClick={this.handleClick}>{USERDASHBOARD_DISPLAY_ACCOUNT_BUTTON}</InfoButton></span></span>}>
+                                            <CampaignList account={account} campaigns={accounts[findIndex(accounts, { name: account.name })].campaigns} onClick={this.handleCampaignSelection}/>
                                         </Card>
                                     ))
                                 )
                             }
                             {
-                                !this.state.displayCampaignForm && this.props.accounts.length > 0 && (
+                                !displayCampaignForm && accounts.length > 0 && (
                                     <SuccessButton id="displayCampaignForm" onClick={this.handleClick}>{USERDASHBOARD_ADD_CAMPAIGN}</SuccessButton>
                                 )
                             }
