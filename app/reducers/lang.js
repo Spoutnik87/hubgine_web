@@ -1,6 +1,12 @@
 import * as ActionTypes from "../constants/ActionTypes";
 import getLanguage from "../languages/lang";
 
+/**
+ * Lang reducer.
+ * @param {Object<any>} state Language store state.
+ * @param {string} action ActionType.
+ */
+
 const lang = (state = {}, action) =>
 {
     switch (action.type)

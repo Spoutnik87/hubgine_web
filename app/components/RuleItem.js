@@ -71,14 +71,15 @@ class RuleItem extends Component {
             undo,
             lang
         } = this.props.rule;
+        const { edit, loading } = this.props;
         return (
             <div id={name} className="col-md-12">
             {
-                this.props.edit ? (
-                    this.props.loading ? (
+                edit ? (
+                    loading ? (
                         <LoadingCog center/>
                     ) : (
-                        <TwitterRuleForm edit cancel delete rule={this.props.rule} onSubmit={this.props.onRuleEditionSubmit} onDelete={this.props.onRuleEditionDelete} onCancel={this.props.onRuleEditionCancel} />
+                        <TwitterRuleForm edit cancel delete rule={this.props.rule} onSubmit={this.props.onRuleEditionSubmit} onDelete={this.props.onRuleEditionDelete} onCancel={this.props.onRuleEditionCancel}/>
                     )
                 ) : (
                     <div>

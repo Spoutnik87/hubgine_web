@@ -4,7 +4,8 @@ import PropTypes from "prop-types";
 class Container extends Component {
     static propTypes = {
         children: PropTypes.any,
-        center: PropTypes.bool
+        center: PropTypes.bool,
+        fluid: PropTypes.bool
     };
 
     static defaultProps = {
@@ -21,10 +22,11 @@ class Container extends Component {
     {
         const {
             children,
-            center
+            center,
+            fluid
         } = this.props;
         return (
-            <div className={"container" + (center ? " text-center" : "")}>
+            <div className={"container" + (fluid ? "-fluid " : " ") + (center ? " text-center" : "")}>
                 {children}
             </div>
         );

@@ -4,6 +4,11 @@ import * as ActionTypes from "../constants/ActionTypes";
 import * as RequestTypes from "../constants/RequestTypes";
 import { addMetadata } from "../util/Metadata";
 
+/**
+ * Accounts reducer.
+ * @param {Object<any>} state Accounts store state.
+ * @param {string} action ActionType.
+ */
 const accounts = (state = {}, action) =>
 {
     let accountIndex = 0;

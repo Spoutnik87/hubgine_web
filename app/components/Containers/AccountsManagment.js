@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
@@ -162,7 +162,7 @@ class AccountsManagment extends Component {
             creationFormDisplayed ? (
                 <TwitterAccountForm cancel loading={loadingAccountForm} onCancel={this.handleAccountCreationCancel} onSubmit={this.handleAccountCreationSubmit}/>
             ) : (
-                <div>
+                <Fragment>
                     <ul className="list-group">
                         {
                             accounts.data.map(account => (
@@ -179,7 +179,7 @@ class AccountsManagment extends Component {
                         }
                     </ul>
                     <SuccessButton id="buttonSubmit" className="form-button" onClick={this.handleClick}>{ACCOUNTSMANAGMENT_ADD_ACCOUNT}</SuccessButton>
-                </div>
+                </Fragment>
             )
         );
     }

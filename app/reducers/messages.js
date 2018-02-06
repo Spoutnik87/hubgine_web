@@ -1,5 +1,10 @@
 import * as ActionTypes from "../constants/ActionTypes";
 
+/**
+ * Messages reducer.
+ * @param {Object<any>} state Messages store state.
+ * @param {string} action ActionType.
+ */
 export default function messages(state = {}, action)
 {
     switch (action.type)

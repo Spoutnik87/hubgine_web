@@ -17,6 +17,8 @@ import PrimaryButton from "../buttons/PrimaryButton";
 import SuccessButton from "../buttons/SuccessButton";
 import TwitterRuleForm from "../Forms/TwitterRuleForm";
 import WordList from "../WordList";
+import TextInput from "../Inputs/TextInput"
+import Text from "../Text";
 
 class AccountOverview extends Component {
     static propTypes = {
@@ -155,6 +157,15 @@ class AccountOverview extends Component {
                                         <TwitterAccountForm account={account} loading={loadingAccountForm} cancel edit delete onCancel={this.handleAccountEditionCancel} onDelete={this.handleAccountEditionDelete} onSubmit={this.handleAccountEditionSubmit}/>
                                     ) : (
                                         <Fragment>
+                                            <Card title="Informations">
+                                                <TextInput name="name" value={account.name} label="Name"/>
+                                                <TextInput name="consumerKey" value={account.consumerSecret} label="Consumer Key"/>
+                                                <TextInput name="consumerSecret" value={account.consumerSecret} label="Consumer Secret"/>
+                                                <TextInput name="accessTokenSecret" value={account.accessTokenKey} label="Access Token Key"/>
+                                                <TextInput name="accessTokenSecret" value={account.accessTokenSecret} label="Access Token Secret"/>
+                                                <Text name="maxCampaigns" value={account.maxCampaigns} label="Max campaigns"/>
+                                                <WordList words={account.blacklist}/>
+                                            </Card>
                                             <Card title={ACCOUNTOVERVIEW_CAMPAIGNS_TITLE}>
                                                 <CampaignList account={account} campaigns={account.campaigns} onClick={this.handleCampaignSelection}/>
                                             </Card>

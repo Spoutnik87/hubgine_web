@@ -23,17 +23,18 @@ class Messages extends Component {
 
     render()
     {
-        return this.props.messages.success ? (
+        const { messages } = this.props;
+        return messages.success ? (
             <div role="alert" className="alert alert-success">
-                {this.props.messages.success.map((message, index) => <div key={index}>{message.msg}</div>)}
+                {messages.success.map((message, index) => <div key={index}>{message.msg}</div>)}
             </div>
-        ) : this.props.messages.error ? (
+        ) : messages.error ? (
             <div role="alert" className="alert alert-danger">
-                {this.props.messages.error.map((message, index) => <div key={index}>{message.msg}</div>)}
+                {messages.error.map((message, index) => <div key={index}>{message.msg}</div>)}
             </div>
-        ) : this.props.messages.info ? (
+        ) : messages.info ? (
             <div role="alert" className="alert alert-info">
-                {this.props.messages.info.map((message, index) => <div key={index}>{message.msg}</div>)}
+                {messages.info.map((message, index) => <div key={index}>{message.msg}</div>)}
             </div>
         ) : null;
     }

@@ -12,7 +12,9 @@ class Checkbox extends Component {
         label: PropTypes.string,
         id: PropTypes.string,
         tooltip: PropTypes.string,
-        onChange: PropTypes.func
+        onChange: PropTypes.func,
+        autoFocus: PropTypes.bool,
+        disabled: PropTypes.bool
     };
 
     static defaultProps = {
@@ -44,11 +46,11 @@ class Checkbox extends Component {
 
     render()
     {
-        const { id, name, label, tooltip } = this.props;
+        const { id, name, label, tooltip, autoFocus, disabled } = this.props;
         const { value } = this.state;
         const checkbox = (
             <div className="component-checkbox">
-                <Input type="checkbox" name={name} id="checkbox" onChange={this.handleChange} checked={value} />
+                <Input type="checkbox" name={name} id="checkbox" onChange={this.handleChange} checked={value} autoFocus={autoFocus} disabled={disabled}/>
                 <label htmlFor="checkbox"></label>
             </div>
         );

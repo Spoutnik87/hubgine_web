@@ -16,6 +16,8 @@ import Card from "../Card";
 import PrimaryButton from "../buttons/PrimaryButton";
 import SuccessButton from "../buttons/SuccessButton";
 import TwitterRuleForm from "../Forms/TwitterRuleForm";
+import TextInput from "../Inputs/TextInput";
+import DateInput from "../Inputs/DateInput";
 
 class CampaignOverview extends Component {
     static propTypes = {
@@ -251,47 +253,51 @@ class CampaignOverview extends Component {
             CAMPAIGNOVERVIEW_TITLE_ACCOUNT,
             CAMPAIGNOVERVIEW_TITLE_CAMPAIGN
         } = this.props.lang;
-        const { messages } = this.props;
+        const { messages, accounts } = this.props;
+        const { loadingAccountList, accountId, campaignId, editCampaign, loading, campaign, creationRuleFormDisplayed, selectedRule } = this.state;
         return (
             <Container>
+                <Card title={<span>{CAMPAIGNOVERVIEW_TITLE_ACCOUNT + accountId + " - " + CAMPAIGNOVERVIEW_TITLE_CAMPAIGN + campaignId}{!editCampaign && <PrimaryButton id="editCampaign" style={{ float: "right" }} onClick={this.handleClick}>{CAMPAIGNOVERVIEW_EDIT_BUTTON}</PrimaryButton>}</span>}>
                 {
-                    <Card title={<span>{CAMPAIGNOVERVIEW_TITLE_ACCOUNT + this.state.accountId + " - " + CAMPAIGNOVERVIEW_TITLE_CAMPAIGN + this.state.campaignId}{!this.state.editCampaign && <PrimaryButton id="editCampaign" style={{ float: "right" }} onClick={this.handleClick}>{CAMPAIGNOVERVIEW_EDIT_BUTTON}</PrimaryButton>}</span>}>
-                        {
-                            this.state.loadingAccountList ? (
-                                <LoadingCog center />
+                    loadingAccountList ? (
+                        <LoadingCog center/>
+                    ) : (
+                        campaign ? (
+                            editCampaign ? (
+                                <CampaignForm accounts={this.props.accounts.map(account => account.name)} accountId={accountId} campaign={campaign} messages={this.props.messages} edit cancel delete onCancel={this.handleCampaignEditionCancel} onDelete={this.handleCampaignEditionDelete} onSubmit={this.handleCampaignEditionSubmit}/>
                             ) : (
-                                this.state.campaign ? (
-                                    this.state.editCampaign ? (
-                                        <CampaignForm onSubmit={this.handleCampaignEditionSubmit} onDelete={this.handleCampaignEditionDelete} onCancel={this.handleCampaignEditionCancel} accounts={this.props.accounts.map(account => account.name)} accountId={this.state.accountId} campaign={this.state.campaign} messages={this.props.messages} edit cancel delete />
-                                    ) : (
-                                        <div>
-                                            <Messages messages={messages}/>
-                                            <Card title={CAMPAIGNOVERVIEW_RULES_TITLE}>
-                                            {
-                                                this.state.creationRuleFormDisplayed ? (
-                                                   <TwitterRuleForm onSubmit={this.handleRuleCreationSubmit} cancel onCancel={this.handleRuleCreationCancel} loading={this.state.loading} />
-                                                ) : (
-                                                   <RuleList accountId={this.state.accountId} campaignId={this.state.campaignId} rules={this.state.campaign.config.rules} onRuleEditMode={this.handleRuleEditMode} selectedRule={this.state.selectedRule} loading={this.state.loading} onRuleEditionSubmit={this.handleRuleEditionSubmit} onRuleEditionDelete={this.handleRuleEditionDelete} onRuleEditionCancel={this.handleRuleEditionCancel}/>
-                                                )
-                                            }
-                                            </Card>
-                                            {
-                                                !this.state.creationRuleFormDisplayed && (
-                                                    <SuccessButton id="createRule" onClick={this.handleClick}>{CAMPAIGNOVERVIEW_ADD_RULE_BUTTON}</SuccessButton>
-                                                )
-                                            }
-                                        </div>
-                                    )
-                                ) : (
-                                    <Fragment>
-                                        <Messages messages={messages}/>
-                                        {CAMPAIGNOVERVIEW_NO_CAMPAIGN}
-                                    </Fragment>
-                                )
+                                <Fragment>
+                                    <Messages messages={messages}/>
+                                    <Card title={CAMPAIGNOVERVIEW_RULES_TITLE}>
+                                    {
+                                        creationRuleFormDisplayed ? (
+                                            <TwitterRuleForm cancel loading={loading} onCancel={this.handleRuleCreationCancel} onSubmit={this.handleRuleCreationSubmit}/>
+                                        ) : (
+                                            <Fragment>
+                                                <TextInput name="name" value={campaign.name} label="Name"/>
+                                                <DateInput name="dateBegin" value={campaign.dateBegin} label="Date begin"/>
+                                                <DateInput name="dateEnd" value={campaign.dateBegin} label="Date end" disabled/>
+                                                <RuleList accountId={accountId} campaignId={campaignId} rules={campaign.config.rules} onRuleEditMode={this.handleRuleEditMode} selectedRule={selectedRule} loading={loading} onRuleEditionSubmit={this.handleRuleEditionSubmit} onRuleEditionDelete={this.handleRuleEditionDelete} onRuleEditionCancel={this.handleRuleEditionCancel}/>
+                                            </Fragment>
+                                        )
+                                    }
+                                    </Card>
+                                    {
+                                        !creationRuleFormDisplayed && (
+                                            <SuccessButton id="createRule" onClick={this.handleClick}>{CAMPAIGNOVERVIEW_ADD_RULE_BUTTON}</SuccessButton>
+                                        )
+                                    }
+                                </Fragment>
                             )
-                        }
-                    </Card>
+                        ) : (
+                            <Fragment>
+                                <Messages messages={messages}/>
+                                {CAMPAIGNOVERVIEW_NO_CAMPAIGN}
+                            </Fragment>
+                        )
+                    )
                 }
+                </Card>
             </Container>
         );
     }

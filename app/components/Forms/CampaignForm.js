@@ -153,7 +153,7 @@ class CampaignForm extends Component {
         const { title, edit, children, loading, cancel, messages, delete: hasDeleteButton, accounts, campaign, accountId } = this.props;
         const { deleteMode, name, dateBegin, dateEnd } = this.state;
         return (
-            <Form title={title ? edit ? CAMPAIGNFORM_EDIT_TITLE : CAMPAIGNFORM_CREATE_TITLE : null}>
+            <Form title={title ? edit ? CAMPAIGNFORM_EDIT_TITLE : CAMPAIGNFORM_CREATE_TITLE : undefined}>
                 {
                     messages && (
                         <Messages messages={messages}/>

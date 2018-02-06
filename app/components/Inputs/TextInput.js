@@ -16,7 +16,9 @@ class TextInput extends Component {
         id: PropTypes.string,
         label: PropTypes.string,
         tooltip: PropTypes.string,
-        onSubmit: PropTypes.func
+        onSubmit: PropTypes.func,
+        autoFocus: PropTypes.bool,
+        disabled: PropTypes.bool
     };
 
     static defaultProps = {
@@ -73,14 +75,14 @@ class TextInput extends Component {
 
     render()
     {
-        const { loading, id, label, tooltip } = this.props;
+        const { loading, id, label, tooltip, autoFocus, disabled } = this.props;
         const { isEditMode, value } = this.state;
         let textInput = loading ? (
             <LoadingCog />
         ) : (
             isEditMode ? (
                 <InputGroup>
-                    <Input value={value} onChange={this.handleChange} autoFocus />
+                    <Input value={value} onChange={this.handleChange} autoFocus={autoFocus} disabled={disabled}/>
                     <IconButton id="buttonTextSubmit" className="input-group-append input-group-text edit-button" icon="fas fa-check" onClick={this.handleClick} />
                     <IconButton id="buttonTextCancel" className="input-group-append input-group-text edit-button" icon="fas fa-times" onClick={this.handleClick} />        
                 </InputGroup>

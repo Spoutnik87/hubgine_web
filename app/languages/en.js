@@ -1,7 +1,11 @@
 import { ENGLISH } from "../constants/Languages";
 
-export default function getLanguage()
-{
+/**
+ * Return english locale.
+ * @public
+ * @returns {Object<string,string>}
+ */
+const getLanguage = () => {
     return {
         //---MAIN VALUES---
         LANG: ENGLISH,
@@ -92,7 +96,7 @@ export default function getLanguage()
         CAMPAIGNOVERVIEW_TITLE_CAMPAIGN: "Campaign : ",
         //---USERPASSWORDFORM---
         USERPASSWORDFORM_CREATE_TITLE: "Set a new password",
-        USERPASSWORDFORM_EDIT_TITLE: "Edit your password",
+        USERPASSWORDFORM_EDIT_TITLE: "Edit password",
         USERPASSWORDFORM_CREATE_BUTTON: "Confirm",
         USERPASSWORDFORM_EDIT_BUTTON: "Edit",
         USERPASSWORDFORM_CANCEL_BUTTON: "Cancel",
@@ -158,6 +162,8 @@ export default function getLanguage()
         CAMPAIGNFORM_DELETE_ERROR: "An error happened during campaign deletion.",
         //---CAMPAIGNLIST---
         CAMPAIGNLIST_NOCAMPAIGN: "There is no campaign yet.",
+        //---RULELIST---
+        RULELIST_NO_RULES: "There is no rule yet.",
         //---RULEITEM---
         RULEITEM_EDIT_BUTTON: "Edit this rule",
         //---TWITTERRULEFORM---
@@ -208,3 +214,5 @@ export default function getLanguage()
         TWITTERRULE_DELETE_SUCCESS: "This rule was deleted successfully."
     }
 }
+
+export default getLanguage;

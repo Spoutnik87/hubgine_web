@@ -2,6 +2,12 @@ import * as ActionTypes from "../constants/ActionTypes";
 import * as RequestTypes from "../constants/RequestTypes";
 import { addMetadata } from "../util/Metadata";
 
+/**
+ * User reducer.
+ * @public
+ * @param {Object<any>} state Object state.
+ * @param {string} action ActionType
+ */
 const user = (state = {}, action) =>
 {
     switch (action.type)

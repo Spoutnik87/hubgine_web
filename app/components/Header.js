@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { withRouter, Link, NavLink } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -33,8 +33,7 @@ class Header extends Component {
 
     render()
     {
-        const active = { borderBottomColor: "#3f51b5" };
-        const isLoggedIn = this.props.user.token !== undefined;
+        const isLoggedIn = this.props.user.token != null;
         const isAdmin = this.props.user.rank === Ranks.ADMIN;
         const {
             HEADER_SR_ONLY,
@@ -47,22 +46,6 @@ class Header extends Component {
             COMPANY_NAME,
             HEADER_HOME
         } = this.props.lang;
-        const menu = [];
-        if (isAdmin)
-        {
-            menu.push(<li className="nav-item"><NavLink className="nav-link" to="/admin-dashboard" activeStyle={active}>{HEADER_ADMIN_DASHBOARD}</NavLink></li>);
-        }
-        if (isLoggedIn)
-        {
-            menu.push(<li className="nav-item"><NavLink className="nav-link" to="/user-dashboard" activeStyle={active}>{HEADER_USER_DASHBOARD}</NavLink></li>);
-            menu.push(<li className="nav-item"><NavLink className="nav-link" to="/profile" activeStyle={active}>{HEADER_PROFILE}</NavLink></li>);
-            menu.push(<li className="nav-item" onClick={this.props.onDisconnect}><a className="nav-link" style={{ cursor: "pointer" }}>{HEADER_DISCONNECT}</a></li>);
-        }
-        else
-        {
-            menu.push(<li><NavLink className="nav-link" to="/signin" activeStyle={active}>{HEADER_SIGNIN}</NavLink></li>);
-            menu.push(<li><NavLink className="nav-link" to="/register" activeStyle={active}>{HEADER_REGISTER}</NavLink></li>);
-        }
         return (
             <Container>
                 <nav className="navbar navbar-expand-md navbar-light">
@@ -72,11 +55,25 @@ class Header extends Component {
                     <Link to="/" className="navbar-brand">{COMPANY_NAME}</Link>
                     <div id="navbar" className="navbar-collapse collapse">
                         <ul className="navbar-nav">
-                            <li className="nav-item"><NavLink className="nav-link" to="/" activeStyle={active} exact>{HEADER_HOME}</NavLink></li>
+                            <li className="nav-item"><NavLink className="nav-link" to="/" exact>{HEADER_HOME}</NavLink></li>
                             {
-                                menu.map((element, index) => (
-                                    {...element, key: index}
-                                ))
+                                isAdmin && (
+                                    <li className="nav-item"><NavLink className="nav-link" to="/admin-dashboard">{HEADER_ADMIN_DASHBOARD}</NavLink></li>
+                                )
+                            }
+                            {
+                                isLoggedIn ? (
+                                    <Fragment>
+                                        <li className="nav-item"><NavLink className="nav-link" to="/user-dashboard">{HEADER_USER_DASHBOARD}</NavLink></li>
+                                        <li className="nav-item"><NavLink className="nav-link" to="/profile">{HEADER_PROFILE}</NavLink></li>
+                                        <li className="nav-item" onClick={this.props.onDisconnect}><a className="nav-link" style={{ cursor: "pointer" }}>{HEADER_DISCONNECT}</a></li>
+                                    </Fragment>
+                                ) : (
+                                    <Fragment>
+                                        <li><NavLink className="nav-link" to="/signin">{HEADER_SIGNIN}</NavLink></li>
+                                        <li><NavLink className="nav-link" to="/register">{HEADER_REGISTER}</NavLink></li>                                                            
+                                    </Fragment>
+                                )
                             }
                         </ul>
                     </div>

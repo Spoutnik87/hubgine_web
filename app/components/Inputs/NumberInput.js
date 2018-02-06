@@ -14,7 +14,9 @@ class NumberInput extends Component {
         id: PropTypes.string,
         label: PropTypes.string,
         tooltip: PropTypes.string,
-        onChange: PropTypes.func
+        onChange: PropTypes.func,
+        autoFocus: PropTypes.bool,
+        disabled: PropTypes.bool
     };
 
     static defaultProps = {
@@ -78,11 +80,11 @@ class NumberInput extends Component {
 
     render()
     {
-        const { id, label, tooltip } = this.props;
+        const { id, label, tooltip, autoFocus, disabled } = this.props;
         const { value } = this.state;
         const numberInput = (
             <InputGroup>
-                <Input id={id} value={value} onChange={this.handleChange} autoFocus />
+                <Input id={id} value={value} onChange={this.handleChange} autoFocus={autoFocus} disabled={disabled}/>
                 <IconButton id="buttonDecrement" className="input-group-append input-group-text numberinput-button" icon="fa fa-minus fa-fw" onClick={this.handleClick} />
                 <IconButton id="buttonIncrement" className="input-group-append input-group-text numberinput-button" icon="fa fa-plus fa-fw" onClick={this.handleClick} />
             </InputGroup>

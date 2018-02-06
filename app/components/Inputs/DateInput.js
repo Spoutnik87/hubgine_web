@@ -15,7 +15,8 @@ class DateInput extends Component {
         value: PropTypes.number,
         id: PropTypes.string,
         tooltip: PropTypes.string,
-        label: PropTypes.string
+        label: PropTypes.string,
+        disabled: PropTypes.bool
     };
 
     static defaultProps = {
@@ -47,12 +48,12 @@ class DateInput extends Component {
         const {
             REACT_DATETIME_LANGUAGE
         } = this.props.lang;
-        const { id, label, value, tooltip } = this.props;
+        const { id, label, value, tooltip, disabled } = this.props;
         const { yesterday, nextYear } = this.state;
         const valid = (current) => {
             return current.isAfter(yesterday) && current.isBefore(nextYear);
         };
-        const dateInput = <Datetime locale={REACT_DATETIME_LANGUAGE} isValidDate={valid} onChange={this.handleChange} value={value ? new Date(value*1000) : ""}/>;
+        const dateInput = <Datetime locale={REACT_DATETIME_LANGUAGE} isValidDate={valid} onChange={this.handleChange} value={value ? new Date(value*1000) : ""} disabled={disabled}/>;
         return label ? (
             <FormGroup>
                 <Row>

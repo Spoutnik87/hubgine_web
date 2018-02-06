@@ -5,6 +5,12 @@ import { createCookieMiddleware } from "redux-cookie";
 import { createLogger } from "redux-logger";
 import rootReducer from "../reducers/index";
 
+/**
+ * Configure default store.
+ * @public
+ * @param {Object<any>} initialState Initial state.
+ * @param {Object<any>} cookie Cookie.
+ */
 export default function configureStore(initialState, cookie)
 {
     const middlewareModules = [thunk, promise, createCookieMiddleware(cookie)];

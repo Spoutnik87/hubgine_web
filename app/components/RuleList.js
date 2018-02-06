@@ -7,6 +7,9 @@ import TwitterRuleForm from "./Forms/TwitterRuleForm";
 
 class RuleList extends Component {
     static propTypes = {
+        lang: PropTypes.shape({
+            RULELIST_NO_RULES: PropTypes.string.isRequired
+        }).isRequired,
         accountId: PropTypes.string.isRequired,
         campaignId: PropTypes.string.isRequired,
         rules: PropTypes.arrayOf(PropTypes.shape({
@@ -28,7 +31,7 @@ class RuleList extends Component {
     };
 
     static defaultProps = {
-        selectedRule: null,
+        selectedRule: undefined,
         loading: false,
         onRuleEditMode: () => {},
         onRuleEditionSubmit: () => {},
@@ -39,26 +42,36 @@ class RuleList extends Component {
     render()
     {
         const {
+            RULELIST_NO_RULES
+        } = this.props.lang;
+        const {
+            rules,
+            accountId,
+            campaignId,
             selectedRule,
-            loading
+            loading,
+            onRuleEditMode,
+            onRuleEditionCancel,
+            onRuleEditionDelete,
+            onRuleEditionSubmit
         } = this.props;
         return (
-            this.props.rules.length > 0 ? (
+            rules.length > 0 ? (
                 <div>
-                    {
-                        this.props.rules.map(rule => (
-                            <div key={rule.uid}>
-                            {
-                                <RuleItem accountId={this.props.accountId} campaignId={this.props.campaignId} rule={rule} onEditMode={this.props.onRuleEditMode} 
-                                    edit={rule.name === selectedRule} loading={rule.name === selectedRule && loading} onRuleEditionSubmit={this.props.onRuleEditionSubmit} 
-                                        onRuleEditionDelete={this.props.onRuleEditionDelete} onRuleEditionCancel={this.props.onRuleEditionCancel}/>
-                            }
-                            </div>
-                        ))
-                    }
+                {
+                    rules.map(rule => (
+                        <div key={rule.uid}>
+                        {
+                            <RuleItem accountId={accountId} campaignId={campaignId} rule={rule} onEditMode={onRuleEditMode} 
+                                edit={rule.name === selectedRule} loading={rule.name === selectedRule && loading} onRuleEditionSubmit={onRuleEditionSubmit} 
+                                    onRuleEditionDelete={onRuleEditionDelete} onRuleEditionCancel={onRuleEditionCancel}/>
+                        }
+                        </div>
+                    ))
+                }
                 </div>
             ) : (
-                <div>There is no rule yet.</div>
+                <div>{RULELIST_NO_RULES}</div>
             )
         );
     }

@@ -4,19 +4,9 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.removeTwitterRule = exports.updateTwitterRule = exports.addTwitterRule = exports.removeCampaign = exports.updateCampaign = exports.addCampaign = exports.removeAccount = exports.updateAccount = exports.addAccount = exports.fetchAccountList = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-exports.fetchAccountList = fetchAccountList;
-exports.addAccount = addAccount;
-exports.updateAccount = updateAccount;
-exports.removeAccount = removeAccount;
-exports.addCampaign = addCampaign;
-exports.removeCampaign = removeCampaign;
-exports.updateCampaign = updateCampaign;
-exports.addTwitterRule = addTwitterRule;
-exports.updateTwitterRule = updateTwitterRule;
-exports.removeTwitterRule = removeTwitterRule;
 
 var _lodash = require("lodash");
 
@@ -50,769 +40,874 @@ var _user = require("./user");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function fetchAccountList() {
+/**
+ * Fetch account list and add this list to store.
+ * @public
+ * @returns {Promise<void>}
+ */
+var fetchAccountList = function fetchAccountList() {
     return function (dispatch, getState) {
-        var state = getState();
-        var token = state.user.token;
-
-        return (0, _Requests.getAccountList)(token, state.accounts).then(function (result) {
-            dispatch({
-                type: ActionTypes.ACCOUNT_UPDATE_LIST,
-                accounts: result.accounts.map(function (account) {
-                    return {
-                        name: account.name,
-                        consumerKey: account.consumer_key,
-                        consumerSecret: account.consumer_secret,
-                        accessTokenKey: account.access_token_key,
-                        accessTokenSecret: account.access_token_secret,
-                        maxCampaigns: account.max_campaigns,
-                        blacklist: account.blacklist,
-                        campaigns: account.campaigns.map(function (campaign) {
-                            return {
-                                name: campaign.name,
-                                dateBegin: campaign.date_begin,
-                                dateEnd: campaign.date_end,
-                                config: {
-                                    delayFollowersUpdate: campaign.config.delay_followers_update,
-                                    maxTweetsFollow: campaign.config.max_tweets_follow,
-                                    messagesFollow: campaign.config.messages_follow,
-                                    undoFollow: campaign.config.undo_follow,
-                                    rules: campaign.config.rules
-                                }
-                            };
-                        })
-                    };
-                })
-            });
-            return Promise.resolve();
-        }).catch(function (error) {
-            if (error.message === Status.DATA_CACHED) {
-                return Promise.resolve();
-            } else if (error.message === Status.UNAUTHORIZED) {
-                var SESSION_EXPIRED = state.lang.SESSION_EXPIRED;
-
-                dispatch((0, _user.disconnect)());
-                dispatch((0, _messages.sendFailureMessage)(SESSION_EXPIRED));
-                return Promise.reject(error);
-            } else {
-                return Promise.reject(error);
-            }
-        });
-    };
-}
-
-function addAccount(name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist) {
-    return function (dispatch, getState) {
-        var state = getState();
-        var _state$lang = state.lang,
-            TWITTERACCOUNTFORM_NAME_INCORRECT = _state$lang.TWITTERACCOUNTFORM_NAME_INCORRECT,
-            TWITTERACCOUNTFORM_NAME_NOT_UNIQUE = _state$lang.TWITTERACCOUNTFORM_NAME_NOT_UNIQUE,
-            TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT = _state$lang.TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT,
-            TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT = _state$lang.TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT,
-            TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT = _state$lang.TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT,
-            TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT = _state$lang.TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT,
-            TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT = _state$lang.TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT,
-            TWITTERACCOUNTFORM_BLACKLIST_INCORRECT = _state$lang.TWITTERACCOUNTFORM_BLACKLIST_INCORRECT,
-            TWITTERACCOUNTFORM_GENERIC_ERROR = _state$lang.TWITTERACCOUNTFORM_GENERIC_ERROR,
-            TWITTERACCOUNTFORM_CREATE_SUCCESS = _state$lang.TWITTERACCOUNTFORM_CREATE_SUCCESS;
-
-        var messages = [];
-        var result = (0, _validator.isValidTwitterAccountForm)(name, state.accounts.data.map(function (account) {
-            return account.name;
-        }), consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist, TWITTERACCOUNTFORM_NAME_INCORRECT, TWITTERACCOUNTFORM_NAME_NOT_UNIQUE, TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT, TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT, TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT, TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT, TWITTERACCOUNTFORM_BLACKLIST_INCORRECT, TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT, true, false);
-        if (Array.isArray(result)) {
-            messages = messages.concat(result);
-        }
-        if (messages.length === 0) {
+        return new Promise(function (resolve, reject) {
+            var state = getState();
             var token = state.user.token;
 
-            return (0, _Requests.addAccount)(token, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist).then(function (result) {
+            (0, _Requests.getAccountList)(token, state.accounts).then(function (result) {
                 dispatch({
-                    type: ActionTypes.ACCOUNT_ADD,
-                    name: name,
-                    consumerKey: consumerKey,
-                    consumerSecret: consumerSecret,
-                    accessTokenKey: accessTokenKey,
-                    accessTokenSecret: accessTokenSecret,
-                    maxCampaigns: result.max_campaigns,
-                    blacklist: blacklist
+                    type: ActionTypes.ACCOUNT_UPDATE_LIST,
+                    accounts: result.accounts.map(function (account) {
+                        return {
+                            name: account.name,
+                            consumerKey: account.consumer_key,
+                            consumerSecret: account.consumer_secret,
+                            accessTokenKey: account.access_token_key,
+                            accessTokenSecret: account.access_token_secret,
+                            maxCampaigns: account.max_campaigns,
+                            blacklist: account.blacklist,
+                            campaigns: account.campaigns.map(function (campaign) {
+                                return {
+                                    name: campaign.name,
+                                    dateBegin: campaign.date_begin,
+                                    dateEnd: campaign.date_end,
+                                    config: {
+                                        delayFollowersUpdate: campaign.config.delay_followers_update,
+                                        maxTweetsFollow: campaign.config.max_tweets_follow,
+                                        messagesFollow: campaign.config.messages_follow,
+                                        undoFollow: campaign.config.undo_follow,
+                                        rules: campaign.config.rules
+                                    }
+                                };
+                            })
+                        };
+                    })
                 });
-                dispatch((0, _messages.sendSuccessMessage)(TWITTERACCOUNTFORM_CREATE_SUCCESS));
-                return Promise.resolve();
+                resolve();
             }).catch(function (error) {
-                dispatch((0, _messages.sendFailureMessage)(TWITTERACCOUNTFORM_GENERIC_ERROR));
-                return Promise.reject(error);
-            });
-        } else {
-            dispatch((0, _messages.sendFailureMessages)(messages));
-            return Promise.reject(new Error(Status.INVALID_INPUTS));
-        }
-    };
-}
+                if (error.message === Status.DATA_CACHED) {
+                    resolve();
+                } else if (error.message === Status.UNAUTHORIZED) {
+                    var SESSION_EXPIRED = state.lang.SESSION_EXPIRED;
 
-function updateAccount(accountId, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist) {
-    return function (dispatch, getState) {
-        var state = getState();
-        var _state$lang2 = state.lang,
-            TWITTERACCOUNTFORM_NAME_INCORRECT = _state$lang2.TWITTERACCOUNTFORM_NAME_INCORRECT,
-            TWITTERACCOUNTFORM_NAME_NOT_UNIQUE = _state$lang2.TWITTERACCOUNTFORM_NAME_NOT_UNIQUE,
-            TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT = _state$lang2.TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT,
-            TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT = _state$lang2.TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT,
-            TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT = _state$lang2.TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT,
-            TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT = _state$lang2.TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT,
-            TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT = _state$lang2.TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT,
-            TWITTERACCOUNTFORM_BLACKLIST_INCORRECT = _state$lang2.TWITTERACCOUNTFORM_BLACKLIST_INCORRECT,
-            TWITTERACCOUNTFORM_EDIT_SUCCESS = _state$lang2.TWITTERACCOUNTFORM_EDIT_SUCCESS,
-            TWITTERACCOUNTFORM_EDIT_ERROR = _state$lang2.TWITTERACCOUNTFORM_EDIT_ERROR;
-        var _state$accounts$data$ = state.accounts.data[(0, _lodash.findIndex)(state.accounts.data, { name: accountId })],
-            uid = _state$accounts$data$.uid,
-            initialName = _state$accounts$data$.name,
-            initialConsumerKey = _state$accounts$data$.consumerKey,
-            initialConsumerSecret = _state$accounts$data$.consumerSecret,
-            initialAccessTokenKey = _state$accounts$data$.accessTokenKey,
-            initialAccessTokenSecret = _state$accounts$data$.accessTokenSecret,
-            initialBlacklist = _state$accounts$data$.blacklist;
-
-        var messages = [];
-
-        if (name != null && !(0, _validator.isValidTwitterAccountName)(name)) {
-            messages.push(TWITTERACCOUNTFORM_NAME_INCORRECT);
-        }
-        if (name != null && !(0, _validator.isUniqueTwitterAccountName)(name, state.accounts.data.map(function (account) {
-            if (uid !== account.uid) return account.name;
-        }))) {
-            messages.push(TWITTERACCOUNTFORM_NAME_NOT_UNIQUE);
-        }
-        if (consumerKey != null && !(0, _validator.isValidTwitterAccountConsumerKey)(consumerKey)) {
-            messages.push(TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT);
-        }
-        if (consumerSecret != null && !(0, _validator.isValidTwitterAccountConsumerSecret)(consumerSecret)) {
-            messages.push(TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT);
-        }
-        if (accessTokenKey != null && !(0, _validator.isValidTwitterAccountAccessTokenKey)(accessTokenKey)) {
-            messages.push(TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT);
-        }
-        if (accessTokenSecret != null && !(0, _validator.isValidTwitterAccountAccessTokenSecret)(accessTokenSecret)) {
-            messages.push(TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT);
-        }
-        if (blacklist != null) {
-            if (Array.isArray(blacklist)) {
-                var _iteratorNormalCompletion = true;
-                var _didIteratorError = false;
-                var _iteratorError = undefined;
-
-                try {
-                    for (var _iterator = blacklist[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                        var word = _step.value;
-
-                        if (!(0, _validator.isValidTwitterAccountBlacklistWord)(word)) {
-                            messages.push(word + TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT);
-                        }
-                    }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
-                } finally {
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return) {
-                            _iterator.return();
-                        }
-                    } finally {
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
-                    }
-                }
-            } else {
-                messages.push(TWITTERACCOUNTFORM_BLACKLIST_INCORRECT);
-            }
-        }
-        if (messages.length === 0) {
-            var newName = name !== initialName ? name : null;
-            var newConsumerKey = consumerKey !== initialConsumerKey ? consumerKey : null;
-            var newConsumerSecret = consumerSecret !== initialConsumerSecret ? consumerSecret : null;
-            var newAccessTokenKey = accessTokenKey !== initialAccessTokenKey ? accessTokenKey : null;
-            var newAccessTokenSecret = accessTokenSecret !== initialAccessTokenSecret ? accessTokenSecret : null;
-            var newBlacklist = blacklist !== initialBlacklist ? blacklist : null;
-            var token = state.user.token;
-
-            return (0, _Requests.updateAccount)(token, initialName, newName, newConsumerKey, newConsumerSecret, newAccessTokenKey, newAccessTokenSecret, newBlacklist).then(function (result) {
-                dispatch({
-                    type: ActionTypes.ACCOUNT_UPDATE,
-                    accountId: accountId,
-                    name: name,
-                    consumerKey: consumerKey,
-                    consumerSecret: consumerSecret,
-                    accessTokenKey: accessTokenKey,
-                    accessTokenSecret: accessTokenSecret,
-                    blacklist: blacklist
-                });
-                dispatch((0, _messages.sendSuccessMessage)(TWITTERACCOUNTFORM_EDIT_SUCCESS));
-                return Promise.resolve();
-            }).catch(function (error) {
-                if (error.message === Status.NO_CHANGES) {
-                    return Promise.resolve();
+                    dispatch((0, _user.disconnect)());
+                    dispatch((0, _messages.sendFailureMessage)(SESSION_EXPIRED));
+                    reject(error);
                 } else {
-                    dispatch((0, _messages.sendFailureMessage)(TWITTERACCOUNTFORM_EDIT_ERROR));
-                    return Promise.reject(error);
+                    reject(error);
                 }
             });
-        } else {
-            dispatch((0, _messages.sendFailureMessages)(messages));
-            return Promise.reject(new Error(Status.INVALID_INPUTS));
-        }
-    };
-}
-
-function removeAccount(accountId) {
-    return function (dispatch, getState) {
-        var state = getState();
-        var token = state.user.token;
-        var _state$lang3 = state.lang,
-            TWITTERACCOUNTFORM_DELETE_SUCCESS = _state$lang3.TWITTERACCOUNTFORM_DELETE_SUCCESS,
-            TWITTERACCOUNTFORM_DELETE_ERROR = _state$lang3.TWITTERACCOUNTFORM_DELETE_ERROR;
-
-        return (0, _Requests.removeAccount)(token, accountId).then(function (result) {
-            dispatch({
-                type: ActionTypes.ACCOUNT_DELETE,
-                accountId: accountId
-            });
-            dispatch((0, _messages.sendSuccessMessage)(TWITTERACCOUNTFORM_DELETE_SUCCESS));
-            return Promise.resolve();
-        }).catch(function (error) {
-            dispatch((0, _messages.sendSuccessMessage)(TWITTERACCOUNTFORM_DELETE_ERROR));
-            return Promise.reject(error);
         });
     };
-}
+};
 
-//CAMPAIGNS
-function addCampaign(accountId, name, dateBegin, dateEnd) {
+/**
+ * Add account to database and store.
+ * @public
+ * @param {string} name Account's name.
+ * @param {string} consumerKey Account's consumer key.
+ * @param {string} consumerSecret Account's consumer secret.
+ * @param {string} accessTokenKey Account's access token key.
+ * @param {string} accessTokenSecret Account's access token secret.
+ * @param {Array<string>} blacklist Account's blacklist.
+ * @returns {Promise<void>}
+ */
+var addAccount = function addAccount(name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist) {
     return function (dispatch, getState) {
-        var state = getState();
-        var _state$lang4 = state.lang,
-            CAMPAIGNFORM_NAME_INCORRECT = _state$lang4.CAMPAIGNFORM_NAME_INCORRECT,
-            CAMPAIGNFORM_NAME_NOT_UNIQUE = _state$lang4.CAMPAIGNFORM_NAME_NOT_UNIQUE,
-            CAMPAIGNFORM_ACCOUNT_INCORRECT = _state$lang4.CAMPAIGNFORM_ACCOUNT_INCORRECT,
-            CAMPAIGNFORM_DATEBEGIN_INCORRECT = _state$lang4.CAMPAIGNFORM_DATEBEGIN_INCORRECT,
-            CAMPAIGNFORM_DATEEND_INCORRECT = _state$lang4.CAMPAIGNFORM_DATEEND_INCORRECT,
-            CAMPAIGNFORM_DATES_INCORRECT = _state$lang4.CAMPAIGNFORM_DATES_INCORRECT,
-            CAMPAIGNFORM_CREATE_SUCCESS = _state$lang4.CAMPAIGNFORM_CREATE_SUCCESS,
-            CAMPAIGNFORM_GENERIC_ERROR = _state$lang4.CAMPAIGNFORM_GENERIC_ERROR;
+        return new Promise(function (resolve, reject) {
+            var state = getState();
+            var _state$lang = state.lang,
+                TWITTERACCOUNTFORM_NAME_INCORRECT = _state$lang.TWITTERACCOUNTFORM_NAME_INCORRECT,
+                TWITTERACCOUNTFORM_NAME_NOT_UNIQUE = _state$lang.TWITTERACCOUNTFORM_NAME_NOT_UNIQUE,
+                TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT = _state$lang.TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT,
+                TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT = _state$lang.TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT,
+                TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT = _state$lang.TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT,
+                TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT = _state$lang.TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT,
+                TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT = _state$lang.TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT,
+                TWITTERACCOUNTFORM_BLACKLIST_INCORRECT = _state$lang.TWITTERACCOUNTFORM_BLACKLIST_INCORRECT,
+                TWITTERACCOUNTFORM_GENERIC_ERROR = _state$lang.TWITTERACCOUNTFORM_GENERIC_ERROR,
+                TWITTERACCOUNTFORM_CREATE_SUCCESS = _state$lang.TWITTERACCOUNTFORM_CREATE_SUCCESS;
 
-        var messages = [];
-        var names = [];
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
+            var messages = [];
+            var result = (0, _validator.isValidTwitterAccountForm)(name, state.accounts.data.map(function (account) {
+                return account.name;
+            }), consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist, TWITTERACCOUNTFORM_NAME_INCORRECT, TWITTERACCOUNTFORM_NAME_NOT_UNIQUE, TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT, TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT, TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT, TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT, TWITTERACCOUNTFORM_BLACKLIST_INCORRECT, TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT, true, false);
+            if (Array.isArray(result)) {
+                messages = messages.concat(result);
+            }
+            if (messages.length === 0) {
+                var token = state.user.token;
 
-        try {
-            for (var _iterator2 = state.accounts.data[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                var account = _step2.value;
-                var _iteratorNormalCompletion3 = true;
-                var _didIteratorError3 = false;
-                var _iteratorError3 = undefined;
+                (0, _Requests.addAccount)(token, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist).then(function (result) {
+                    dispatch({
+                        type: ActionTypes.ACCOUNT_ADD,
+                        name: name,
+                        consumerKey: consumerKey,
+                        consumerSecret: consumerSecret,
+                        accessTokenKey: accessTokenKey,
+                        accessTokenSecret: accessTokenSecret,
+                        maxCampaigns: result.max_campaigns,
+                        blacklist: blacklist
+                    });
+                    dispatch((0, _messages.sendSuccessMessage)(TWITTERACCOUNTFORM_CREATE_SUCCESS));
+                    resolve();
+                }).catch(function (error) {
+                    dispatch((0, _messages.sendFailureMessage)(TWITTERACCOUNTFORM_GENERIC_ERROR));
+                    reject(error);
+                });
+            } else {
+                dispatch((0, _messages.sendFailureMessages)(messages));
+                reject(new Error(Status.INVALID_INPUTS));
+            }
+        });
+    };
+};
 
-                try {
-                    for (var _iterator3 = account.campaigns[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                        var campaign = _step3.value;
+/**
+ * Update account => send request to database and update store.
+ * @public
+ * @param {string} accountId Account's name.
+ * @param {string} name Account's new name.
+ * @param {string} consumerKey Account's new consumer key.
+ * @param {string} consumerSecret Account's new consumer secret.
+ * @param {string} accessTokenKey Account's new access token key.
+ * @param {string} accessTokenSecret Account's new access token secret.
+ * @param {Array<string>} blacklist Account's new blacklist.
+ * @returns {Promise<void>}
+ */
+var updateAccount = function updateAccount(accountId, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist) {
+    return function (dispatch, getState) {
+        return new Promise(function (resolve, reject) {
+            var state = getState();
+            var _state$lang2 = state.lang,
+                TWITTERACCOUNTFORM_NAME_INCORRECT = _state$lang2.TWITTERACCOUNTFORM_NAME_INCORRECT,
+                TWITTERACCOUNTFORM_NAME_NOT_UNIQUE = _state$lang2.TWITTERACCOUNTFORM_NAME_NOT_UNIQUE,
+                TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT = _state$lang2.TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT,
+                TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT = _state$lang2.TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT,
+                TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT = _state$lang2.TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT,
+                TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT = _state$lang2.TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT,
+                TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT = _state$lang2.TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT,
+                TWITTERACCOUNTFORM_BLACKLIST_INCORRECT = _state$lang2.TWITTERACCOUNTFORM_BLACKLIST_INCORRECT,
+                TWITTERACCOUNTFORM_EDIT_SUCCESS = _state$lang2.TWITTERACCOUNTFORM_EDIT_SUCCESS,
+                TWITTERACCOUNTFORM_EDIT_ERROR = _state$lang2.TWITTERACCOUNTFORM_EDIT_ERROR;
+            var _state$accounts$data$ = state.accounts.data[(0, _lodash.findIndex)(state.accounts.data, { name: accountId })],
+                uid = _state$accounts$data$.uid,
+                initialName = _state$accounts$data$.name,
+                initialConsumerKey = _state$accounts$data$.consumerKey,
+                initialConsumerSecret = _state$accounts$data$.consumerSecret,
+                initialAccessTokenKey = _state$accounts$data$.accessTokenKey,
+                initialAccessTokenSecret = _state$accounts$data$.accessTokenSecret,
+                initialBlacklist = _state$accounts$data$.blacklist;
 
-                        names.push(campaign.name);
-                    }
-                } catch (err) {
-                    _didIteratorError3 = true;
-                    _iteratorError3 = err;
-                } finally {
+            var messages = [];
+
+            if (name != null && !(0, _validator.isValidTwitterAccountName)(name)) {
+                messages.push(TWITTERACCOUNTFORM_NAME_INCORRECT);
+            }
+            if (name != null && !(0, _validator.isUniqueTwitterAccountName)(name, state.accounts.data.map(function (account) {
+                if (uid !== account.uid) return account.name;
+            }))) {
+                messages.push(TWITTERACCOUNTFORM_NAME_NOT_UNIQUE);
+            }
+            if (consumerKey != null && !(0, _validator.isValidTwitterAccountConsumerKey)(consumerKey)) {
+                messages.push(TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT);
+            }
+            if (consumerSecret != null && !(0, _validator.isValidTwitterAccountConsumerSecret)(consumerSecret)) {
+                messages.push(TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT);
+            }
+            if (accessTokenKey != null && !(0, _validator.isValidTwitterAccountAccessTokenKey)(accessTokenKey)) {
+                messages.push(TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT);
+            }
+            if (accessTokenSecret != null && !(0, _validator.isValidTwitterAccountAccessTokenSecret)(accessTokenSecret)) {
+                messages.push(TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT);
+            }
+            if (blacklist != null) {
+                if (Array.isArray(blacklist)) {
+                    var _iteratorNormalCompletion = true;
+                    var _didIteratorError = false;
+                    var _iteratorError = undefined;
+
                     try {
-                        if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                            _iterator3.return();
+                        for (var _iterator = blacklist[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                            var word = _step.value;
+
+                            if (!(0, _validator.isValidTwitterAccountBlacklistWord)(word)) {
+                                messages.push(word + TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT);
+                            }
                         }
+                    } catch (err) {
+                        _didIteratorError = true;
+                        _iteratorError = err;
                     } finally {
-                        if (_didIteratorError3) {
-                            throw _iteratorError3;
-                        }
-                    }
-                }
-            }
-        } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
-        } finally {
-            try {
-                if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                    _iterator2.return();
-                }
-            } finally {
-                if (_didIteratorError2) {
-                    throw _iteratorError2;
-                }
-            }
-        }
-
-        var result = (0, _validator.isValidCampaignForm)(name, names, dateBegin, dateEnd, CAMPAIGNFORM_NAME_INCORRECT, CAMPAIGNFORM_NAME_NOT_UNIQUE, CAMPAIGNFORM_DATEBEGIN_INCORRECT, CAMPAIGNFORM_DATEEND_INCORRECT, CAMPAIGNFORM_DATES_INCORRECT, true, false);
-        if (Array.isArray(result)) {
-            messages = messages.concat(result);
-        }
-        if (messages.length === 0) {
-            var token = state.user.token;
-
-            return (0, _Requests.addCampaign)(token, accountId, name, dateBegin, dateEnd).then(function (result) {
-                dispatch({
-                    type: ActionTypes.CAMPAIGN_ADD,
-                    accountId: accountId,
-                    name: name,
-                    dateBegin: dateBegin,
-                    dateEnd: dateEnd,
-                    config: {
-                        rules: []
-                    }
-                });
-                dispatch((0, _messages.sendSuccessMessage)(CAMPAIGNFORM_CREATE_SUCCESS));
-                return Promise.resolve();
-            }).catch(function (error) {
-                dispatch((0, _messages.sendFailureMessage)(CAMPAIGNFORM_GENERIC_ERROR));
-                return Promise.reject(error);
-            });
-        } else {
-            dispatch((0, _messages.sendFailureMessages)(messages));
-            return Promise.reject(new Error(Status.INVALID_INPUTS));
-        }
-    };
-}
-
-function removeCampaign(accountId, campaignId) {
-    return function (dispatch, getState) {
-        var state = getState();
-        var _state$lang5 = state.lang,
-            CAMPAIGNFORM_DELETE_SUCCESS = _state$lang5.CAMPAIGNFORM_DELETE_SUCCESS,
-            CAMPAIGNFORM_DELETE_ERROR = _state$lang5.CAMPAIGNFORM_DELETE_ERROR;
-        var token = state.user.token;
-
-        return (0, _Requests.removeCampaign)(token, accountId, campaignId).then(function (result) {
-            dispatch({
-                type: ActionTypes.CAMPAIGN_DELETE,
-                accountId: accountId,
-                campaignId: campaignId
-            });
-            dispatch((0, _messages.sendSuccessMessage)(CAMPAIGNFORM_DELETE_SUCCESS));
-            return Promise.resolve();
-        }).catch(function (error) {
-            dispatch((0, _messages.sendFailureMessage)(CAMPAIGNFORM_DELETE_ERROR));
-            return Promise.reject(error);
-        });
-    };
-}
-
-function updateCampaign(accountId, campaignId, name, dateBegin, dateEnd) {
-    return function (dispatch, getState) {
-        var state = getState();
-        var _state$lang6 = state.lang,
-            CAMPAIGNFORM_NAME_INCORRECT = _state$lang6.CAMPAIGNFORM_NAME_INCORRECT,
-            CAMPAIGNFORM_NAME_NOT_UNIQUE = _state$lang6.CAMPAIGNFORM_NAME_NOT_UNIQUE,
-            CAMPAIGNFORM_DATEBEGIN_INCORRECT = _state$lang6.CAMPAIGNFORM_DATEBEGIN_INCORRECT,
-            CAMPAIGNFORM_DATEEND_INCORRECT = _state$lang6.CAMPAIGNFORM_DATEEND_INCORRECT,
-            CAMPAIGNFORM_DATES_INCORRECT = _state$lang6.CAMPAIGNFORM_DATES_INCORRECT,
-            CAMPAIGNFORM_EDIT_SUCCESS = _state$lang6.CAMPAIGNFORM_EDIT_SUCCESS,
-            CAMPAIGNFORM_EDIT_ERROR = _state$lang6.CAMPAIGNFORM_EDIT_ERROR;
-
-        var accountIndex = (0, _lodash.findIndex)(state.accounts.data, { name: accountId });
-        var _state$accounts$data$2 = state.accounts.data[accountIndex].campaigns[(0, _lodash.findIndex)(state.accounts.data[accountIndex].campaigns, { name: campaignId })],
-            uid = _state$accounts$data$2.uid,
-            initialDateBegin = _state$accounts$data$2.dateBegin,
-            initialDateEnd = _state$accounts$data$2.dateEnd;
-
-        var messages = [];
-        var names = [];
-        for (var i = 0; i < state.accounts.data.length; i++) {
-            names = names.concat(state.accounts.data[i].campaigns.filter(function (campaign) {
-                return campaign.uid !== uid;
-            }).map(function (campaign) {
-                return campaign.name;
-            }));
-        }
-        if (name != null && !(0, _validator.isValidCampaignName)(name)) {
-            messages.push(CAMPAIGNFORM_NAME_INCORRECT);
-        }
-        if (name != null && !(0, _validator.isUniqueCampaignName)(name, names)) {
-            messages.push(CAMPAIGNFORM_NAME_NOT_UNIQUE);
-        }
-        if (dateBegin != null && !(0, _validator.isValidCampaignDateBegin)(dateBegin)) {
-            messages.push(CAMPAIGNFORM_DATEBEGIN_INCORRECT);
-        }
-        if (dateEnd != null && !(0, _validator.isValidCampaignDateEnd)(dateEnd)) {
-            messages.push(CAMPAIGNFORM_DATEEND_INCORRECT);
-        }
-        if ((dateBegin != null ? dateBegin : initialDateBegin) >= (dateEnd != null ? dateEnd : initialDateEnd)) {
-            messages.push(CAMPAIGNFORM_DATES_INCORRECT);
-        }
-        if (messages.length === 0) {
-            var newName = name !== campaignId ? name : null;
-            var newDateBegin = dateBegin !== initialDateBegin ? dateBegin : null;
-            var newDateEnd = dateEnd !== initialDateEnd ? dateEnd : null;
-            var token = state.user.token;
-
-            return (0, _Requests.updateCampaign)(token, accountId, campaignId, newName, newDateBegin, newDateEnd).then(function (result) {
-                dispatch({
-                    type: ActionTypes.CAMPAIGN_UPDATE,
-                    accountId: accountId,
-                    campaignId: campaignId,
-                    name: name,
-                    dateBegin: dateBegin,
-                    dateEnd: dateEnd
-                });
-                dispatch((0, _messages.sendSuccessMessage)(CAMPAIGNFORM_EDIT_SUCCESS));
-                return Promise.resolve();
-            }).catch(function (error) {
-                if (error.message === Status.NO_CHANGES) {
-                    return Promise.resolve();
-                } else {
-                    dispatch((0, _messages.sendFailureMessage)(CAMPAIGNFORM_EDIT_ERROR));
-                    return Promise.reject(error);
-                }
-            });
-        } else {
-            dispatch((0, _messages.sendFailureMessages)(messages));
-            return Promise.reject(new Error(Status.INVALID_INPUTS));
-        }
-    };
-}
-
-function addTwitterRule(accountId, campaignId, name, type, tweetMessages, track, condition, delay, undo, lang) {
-    return function (dispatch, getState) {
-        var state = getState();
-        var _state$lang7 = state.lang,
-            GENERIC_ERROR = _state$lang7.GENERIC_ERROR,
-            TWITTERRULE_NAME_INCORRECT = _state$lang7.TWITTERRULE_NAME_INCORRECT,
-            TWITTERRULE_NAME_NOT_UNIQUE = _state$lang7.TWITTERRULE_NAME_NOT_UNIQUE,
-            TWITTERRULE_ACTION_INCORRECT = _state$lang7.TWITTERRULE_ACTION_INCORRECT,
-            TWITTERRULE_MESSAGE_INCORRECT = _state$lang7.TWITTERRULE_MESSAGE_INCORRECT,
-            TWITTERRULE_MESSAGES_INCORRECT = _state$lang7.TWITTERRULE_MESSAGES_INCORRECT,
-            TWITTERRULE_TRACK_INCORRECT = _state$lang7.TWITTERRULE_TRACK_INCORRECT,
-            TWITTERRULE_KEYWORD_INCORRECT = _state$lang7.TWITTERRULE_KEYWORD_INCORRECT,
-            TWITTERRULE_CONDITION_INCORRECT = _state$lang7.TWITTERRULE_CONDITION_INCORRECT,
-            TWITTERRULE_DELAY_INCORRECT = _state$lang7.TWITTERRULE_DELAY_INCORRECT,
-            TWITTERRULE_UNDO_INCORRECT = _state$lang7.TWITTERRULE_UNDO_INCORRECT,
-            TWITTERRULE_LANGUAGE_INCORRECT = _state$lang7.TWITTERRULE_LANGUAGE_INCORRECT,
-            TWITTERRULE_CREATE_SUCCESS = _state$lang7.TWITTERRULE_CREATE_SUCCESS,
-            TWITTERRULE_CREATE_ERROR = _state$lang7.TWITTERRULE_CREATE_ERROR;
-
-        var accountIndex = (0, _lodash.findIndex)(state.accounts.data, { name: accountId });
-        if (accountIndex !== -1) {
-            var campaignIndex = (0, _lodash.findIndex)(state.accounts.data[accountIndex].campaigns, { name: campaignId });
-            if (campaignIndex !== -1) {
-                var messages = [];
-                var names = state.accounts.data[accountIndex].campaigns[campaignIndex].config.rules.map(function (rule) {
-                    return rule.name;
-                });
-                var result = (0, _validator.isValidTwitterRuleForm)(name, names, type, Object.values(TwitterRuleTypes), tweetMessages, 10, condition, Object.values(TwitterRuleConditions), track, 10, undo, 0, 7, lang, Object.values(TwitterRuleLangs), 10, delay, 60, 300, TWITTERRULE_NAME_INCORRECT, TWITTERRULE_NAME_NOT_UNIQUE, TWITTERRULE_ACTION_INCORRECT, TWITTERRULE_MESSAGES_INCORRECT, TWITTERRULE_MESSAGE_INCORRECT, TWITTERRULE_CONDITION_INCORRECT, TWITTERRULE_TRACK_INCORRECT, TWITTERRULE_KEYWORD_INCORRECT, TWITTERRULE_UNDO_INCORRECT, TWITTERRULE_LANGUAGE_INCORRECT, TWITTERRULE_DELAY_INCORRECT, true, false);
-                /*if (!isValidTwitterRuleName(name))
-                {
-                    messages.push(TWITTERRULE_NAME_INCORRECT);
-                }
-                if (!isUniqueTwitterRuleName(name, names))
-                {
-                    messages.push(TWITTERRULE_NAME_NOT_UNIQUE);
-                }
-                if (!isValidTwitterRuleAction(type, Object.values(TwitterRuleTypes)))
-                {
-                    messages.push(TWITTERRULE_ACTION_INCORRECT);
-                }
-                if (type === TwitterRuleTypes.TWEET)
-                {
-                    if (Array.isArray(tweetMessages))
-                    {
-                        for (const message of tweetMessages)
-                        {
-                            if (!isValidTwitterRuleMessage(message))
-                            {
-                                messages.push(message + TWITTERRULE_MESSAGE_INCORRECT);
+                        try {
+                            if (!_iteratorNormalCompletion && _iterator.return) {
+                                _iterator.return();
+                            }
+                        } finally {
+                            if (_didIteratorError) {
+                                throw _iteratorError;
                             }
                         }
                     }
-                    else
-                    {
-                        messages.push(TWITTERRULE_MESSAGES_INCORRECT);
-                    }
-                }
-                if (Array.isArray(track))
-                {
-                    for (const keyword of track)
-                    {
-                        if (!isValidTwitterRuleKeyword(keyword))
-                        {
-                            messages.push(keyword + TWITTERRULE_KEYWORD_INCORRECT);
-                        }
-                    }
-                }
-                else
-                {
-                    messages.push(TWITTERRULE_TRACK_INCORRECT);
-                }
-                if (!isValidTwitterRuleCondition(condition, Object.values(TwitterRuleConditions)))
-                {
-                    messages.push(TWITTERRULE_CONDITION_INCORRECT);
-                }
-                if (!isValidTwitterRuleDelay(delay, 60, 300))
-                {
-                    messages.push(TWITTERRULE_DELAY_INCORRECT);
-                }
-                if (!isValidTwitterRuleUndo(undo, 0, 7))
-                {
-                    messages.push(TWITTERRULE_UNDO_INCORRECT);
-                }
-                if (!isValidTwitterRuleLanguages(lang, Object.values(TwitterRuleLangs)))
-                {
-                    messages.push(TWITTERRULE_LANGUAGE_INCORRECT);
-                }*/
-                if (Array.isArray(result)) {
-                    messages = messages.concat(result);
-                }
-                if (messages.length === 0) {
-                    var token = state.user.token;
-
-                    return (0, _Requests.addTwitterRule)(token, accountId, campaignId, name, type, tweetMessages, track, condition, delay, undo, lang).then(function (result) {
-                        var rule = {
-                            accountId: accountId,
-                            campaignId: campaignId,
-                            name: name,
-                            action: type,
-                            track: track,
-                            condition: condition,
-                            delay: delay,
-                            undo: undo,
-                            lang: lang
-                        };
-                        if (tweetMessages != null) {
-                            rule.messages = tweetMessages;
-                        }
-                        dispatch(_extends({}, rule, {
-                            type: ActionTypes.TWITTERRULE_ADD
-                        }));
-                        dispatch((0, _messages.sendSuccessMessage)(TWITTERRULE_CREATE_SUCCESS));
-                        return Promise.resolve();
-                    }).catch(function (error) {
-                        dispatch((0, _messages.sendFailureMessage)(GENERIC_ERROR));
-                        return Promise.reject(error);
-                    });
                 } else {
-                    dispatch((0, _messages.sendFailureMessages)(messages));
-                    return Promise.reject(new Error(Status.INVALID_INPUTS));
+                    messages.push(TWITTERACCOUNTFORM_BLACKLIST_INCORRECT);
+                }
+            }
+            if (messages.length === 0) {
+                var newName = name !== initialName ? name : null;
+                var newConsumerKey = consumerKey !== initialConsumerKey ? consumerKey : null;
+                var newConsumerSecret = consumerSecret !== initialConsumerSecret ? consumerSecret : null;
+                var newAccessTokenKey = accessTokenKey !== initialAccessTokenKey ? accessTokenKey : null;
+                var newAccessTokenSecret = accessTokenSecret !== initialAccessTokenSecret ? accessTokenSecret : null;
+                var newBlacklist = blacklist !== initialBlacklist ? blacklist : null;
+                var token = state.user.token;
+
+                (0, _Requests.updateAccount)(token, initialName, newName, newConsumerKey, newConsumerSecret, newAccessTokenKey, newAccessTokenSecret, newBlacklist).then(function (result) {
+                    dispatch({
+                        type: ActionTypes.ACCOUNT_UPDATE,
+                        accountId: accountId,
+                        name: name,
+                        consumerKey: consumerKey,
+                        consumerSecret: consumerSecret,
+                        accessTokenKey: accessTokenKey,
+                        accessTokenSecret: accessTokenSecret,
+                        blacklist: blacklist
+                    });
+                    dispatch((0, _messages.sendSuccessMessage)(TWITTERACCOUNTFORM_EDIT_SUCCESS));
+                    resolve();
+                }).catch(function (error) {
+                    if (error.message === Status.NO_CHANGES) {
+                        resolve();
+                    } else {
+                        dispatch((0, _messages.sendFailureMessage)(TWITTERACCOUNTFORM_EDIT_ERROR));
+                        reject(error);
+                    }
+                });
+            } else {
+                dispatch((0, _messages.sendFailureMessages)(messages));
+                reject(new Error(Status.INVALID_INPUTS));
+            }
+        });
+    };
+};
+
+/**
+ * Remove account from database and then remove it from store.
+ * @public
+ * @param {string} accountId Account's name.
+ * @returns {Promise<void}
+ */
+var removeAccount = function removeAccount(accountId) {
+    return function (dispatch, getState) {
+        return new Promise(function (resolve, reject) {
+            var state = getState();
+            var token = state.user.token;
+            var _state$lang3 = state.lang,
+                TWITTERACCOUNTFORM_DELETE_SUCCESS = _state$lang3.TWITTERACCOUNTFORM_DELETE_SUCCESS,
+                TWITTERACCOUNTFORM_DELETE_ERROR = _state$lang3.TWITTERACCOUNTFORM_DELETE_ERROR;
+
+            (0, _Requests.removeAccount)(token, accountId).then(function (result) {
+                dispatch({
+                    type: ActionTypes.ACCOUNT_DELETE,
+                    accountId: accountId
+                });
+                dispatch((0, _messages.sendSuccessMessage)(TWITTERACCOUNTFORM_DELETE_SUCCESS));
+                resolve();
+            }).catch(function (error) {
+                dispatch((0, _messages.sendSuccessMessage)(TWITTERACCOUNTFORM_DELETE_ERROR));
+                reject(error);
+            });
+        });
+    };
+};
+
+//CAMPAIGNS
+/**
+ * @public
+ * @param {string} accountId Campaign's account name.
+ * @param {string} name Campaign's name.
+ * @param {number} dateBegin Campaign's date begin unix format.
+ * @param {number} dateEnd Campaign's date end unix format.
+ * @returns {Promise<void>}
+ */
+var addCampaign = function addCampaign(accountId, name, dateBegin, dateEnd) {
+    return function (dispatch, getState) {
+        return new Promise(function (resolve, reject) {
+            var state = getState();
+            var _state$lang4 = state.lang,
+                CAMPAIGNFORM_NAME_INCORRECT = _state$lang4.CAMPAIGNFORM_NAME_INCORRECT,
+                CAMPAIGNFORM_NAME_NOT_UNIQUE = _state$lang4.CAMPAIGNFORM_NAME_NOT_UNIQUE,
+                CAMPAIGNFORM_ACCOUNT_INCORRECT = _state$lang4.CAMPAIGNFORM_ACCOUNT_INCORRECT,
+                CAMPAIGNFORM_DATEBEGIN_INCORRECT = _state$lang4.CAMPAIGNFORM_DATEBEGIN_INCORRECT,
+                CAMPAIGNFORM_DATEEND_INCORRECT = _state$lang4.CAMPAIGNFORM_DATEEND_INCORRECT,
+                CAMPAIGNFORM_DATES_INCORRECT = _state$lang4.CAMPAIGNFORM_DATES_INCORRECT,
+                CAMPAIGNFORM_CREATE_SUCCESS = _state$lang4.CAMPAIGNFORM_CREATE_SUCCESS,
+                CAMPAIGNFORM_GENERIC_ERROR = _state$lang4.CAMPAIGNFORM_GENERIC_ERROR;
+
+            var messages = [];
+            var names = [];
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+                for (var _iterator2 = state.accounts.data[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var account = _step2.value;
+                    var _iteratorNormalCompletion3 = true;
+                    var _didIteratorError3 = false;
+                    var _iteratorError3 = undefined;
+
+                    try {
+                        for (var _iterator3 = account.campaigns[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                            var campaign = _step3.value;
+
+                            names.push(campaign.name);
+                        }
+                    } catch (err) {
+                        _didIteratorError3 = true;
+                        _iteratorError3 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                                _iterator3.return();
+                            }
+                        } finally {
+                            if (_didIteratorError3) {
+                                throw _iteratorError3;
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
+                }
+            }
+
+            var result = (0, _validator.isValidCampaignForm)(name, names, dateBegin, dateEnd, CAMPAIGNFORM_NAME_INCORRECT, CAMPAIGNFORM_NAME_NOT_UNIQUE, CAMPAIGNFORM_DATEBEGIN_INCORRECT, CAMPAIGNFORM_DATEEND_INCORRECT, CAMPAIGNFORM_DATES_INCORRECT, true, false);
+            if (Array.isArray(result)) {
+                messages = messages.concat(result);
+            }
+            if (messages.length === 0) {
+                var token = state.user.token;
+
+                (0, _Requests.addCampaign)(token, accountId, name, dateBegin, dateEnd).then(function (result) {
+                    dispatch({
+                        type: ActionTypes.CAMPAIGN_ADD,
+                        accountId: accountId,
+                        name: name,
+                        dateBegin: dateBegin,
+                        dateEnd: dateEnd,
+                        config: {
+                            rules: []
+                        }
+                    });
+                    dispatch((0, _messages.sendSuccessMessage)(CAMPAIGNFORM_CREATE_SUCCESS));
+                    resolve();
+                }).catch(function (error) {
+                    dispatch((0, _messages.sendFailureMessage)(CAMPAIGNFORM_GENERIC_ERROR));
+                    reject(error);
+                });
+            } else {
+                dispatch((0, _messages.sendFailureMessages)(messages));
+                reject(new Error(Status.INVALID_INPUTS));
+            }
+        });
+    };
+};
+
+/**
+ * Update campaign in database and store.
+ * @public
+ * @param {string} accountId Campaign's account name.
+ * @param {string} campaignId Campaign's name.
+ * @param {string} name Campaign's new name.
+ * @param {number} dateBegin Campaign's new date begin unix format.
+ * @param {number} dateEnd Campaign's new date end unix format.
+ * @returns {Promise<void>}
+ */
+var updateCampaign = function updateCampaign(accountId, campaignId, name, dateBegin, dateEnd) {
+    return function (dispatch, getState) {
+        return new Promise(function (resolve, reject) {
+            var state = getState();
+            var _state$lang5 = state.lang,
+                CAMPAIGNFORM_NAME_INCORRECT = _state$lang5.CAMPAIGNFORM_NAME_INCORRECT,
+                CAMPAIGNFORM_NAME_NOT_UNIQUE = _state$lang5.CAMPAIGNFORM_NAME_NOT_UNIQUE,
+                CAMPAIGNFORM_DATEBEGIN_INCORRECT = _state$lang5.CAMPAIGNFORM_DATEBEGIN_INCORRECT,
+                CAMPAIGNFORM_DATEEND_INCORRECT = _state$lang5.CAMPAIGNFORM_DATEEND_INCORRECT,
+                CAMPAIGNFORM_DATES_INCORRECT = _state$lang5.CAMPAIGNFORM_DATES_INCORRECT,
+                CAMPAIGNFORM_EDIT_SUCCESS = _state$lang5.CAMPAIGNFORM_EDIT_SUCCESS,
+                CAMPAIGNFORM_EDIT_ERROR = _state$lang5.CAMPAIGNFORM_EDIT_ERROR;
+
+            var accountIndex = (0, _lodash.findIndex)(state.accounts.data, { name: accountId });
+            var _state$accounts$data$2 = state.accounts.data[accountIndex].campaigns[(0, _lodash.findIndex)(state.accounts.data[accountIndex].campaigns, { name: campaignId })],
+                uid = _state$accounts$data$2.uid,
+                initialDateBegin = _state$accounts$data$2.dateBegin,
+                initialDateEnd = _state$accounts$data$2.dateEnd;
+
+            var messages = [];
+            var names = [];
+            for (var i = 0; i < state.accounts.data.length; i++) {
+                names = names.concat(state.accounts.data[i].campaigns.filter(function (campaign) {
+                    return campaign.uid !== uid;
+                }).map(function (campaign) {
+                    return campaign.name;
+                }));
+            }
+            if (name != null && !(0, _validator.isValidCampaignName)(name)) {
+                messages.push(CAMPAIGNFORM_NAME_INCORRECT);
+            }
+            if (name != null && !(0, _validator.isUniqueCampaignName)(name, names)) {
+                messages.push(CAMPAIGNFORM_NAME_NOT_UNIQUE);
+            }
+            if (dateBegin != null && !(0, _validator.isValidCampaignDateBegin)(dateBegin)) {
+                messages.push(CAMPAIGNFORM_DATEBEGIN_INCORRECT);
+            }
+            if (dateEnd != null && !(0, _validator.isValidCampaignDateEnd)(dateEnd)) {
+                messages.push(CAMPAIGNFORM_DATEEND_INCORRECT);
+            }
+            if ((dateBegin != null ? dateBegin : initialDateBegin) >= (dateEnd != null ? dateEnd : initialDateEnd)) {
+                messages.push(CAMPAIGNFORM_DATES_INCORRECT);
+            }
+            if (messages.length === 0) {
+                var newName = name !== campaignId ? name : null;
+                var newDateBegin = dateBegin !== initialDateBegin ? dateBegin : null;
+                var newDateEnd = dateEnd !== initialDateEnd ? dateEnd : null;
+                var token = state.user.token;
+
+                (0, _Requests.updateCampaign)(token, accountId, campaignId, newName, newDateBegin, newDateEnd).then(function (result) {
+                    dispatch({
+                        type: ActionTypes.CAMPAIGN_UPDATE,
+                        accountId: accountId,
+                        campaignId: campaignId,
+                        name: name,
+                        dateBegin: dateBegin,
+                        dateEnd: dateEnd
+                    });
+                    dispatch((0, _messages.sendSuccessMessage)(CAMPAIGNFORM_EDIT_SUCCESS));
+                    resolve();
+                }).catch(function (error) {
+                    if (error.message === Status.NO_CHANGES) {
+                        resolve();
+                    } else {
+                        dispatch((0, _messages.sendFailureMessage)(CAMPAIGNFORM_EDIT_ERROR));
+                        reject(error);
+                    }
+                });
+            } else {
+                dispatch((0, _messages.sendFailureMessages)(messages));
+                reject(new Error(Status.INVALID_INPUTS));
+            }
+        });
+    };
+};
+
+/**
+ * Remove campaign from database, then remove it from store.
+ * @public
+ * @param {string} accountId Campaign's account name.
+ * @param {stirng} campaignId Campaign's name.
+ * @returns {Promise<void>}
+ */
+var removeCampaign = function removeCampaign(accountId, campaignId) {
+    return function (dispatch, getState) {
+        return new Promise(function (resolve, reject) {
+            var state = getState();
+            var _state$lang6 = state.lang,
+                CAMPAIGNFORM_DELETE_SUCCESS = _state$lang6.CAMPAIGNFORM_DELETE_SUCCESS,
+                CAMPAIGNFORM_DELETE_ERROR = _state$lang6.CAMPAIGNFORM_DELETE_ERROR;
+            var token = state.user.token;
+
+            (0, _Requests.removeCampaign)(token, accountId, campaignId).then(function (result) {
+                dispatch({
+                    type: ActionTypes.CAMPAIGN_DELETE,
+                    accountId: accountId,
+                    campaignId: campaignId
+                });
+                dispatch((0, _messages.sendSuccessMessage)(CAMPAIGNFORM_DELETE_SUCCESS));
+                resolve();
+            }).catch(function (error) {
+                dispatch((0, _messages.sendFailureMessage)(CAMPAIGNFORM_DELETE_ERROR));
+                reject(error);
+            });
+        });
+    };
+};
+
+/**
+ * Add a rule to database and store.
+ * @public
+ * @param {string} accountId Rule's account name.
+ * @param {string} campaignId Rule's campaign name.
+ * @param {string} name Rule's name.
+ * @param {TwitterRuleTypes} type Rule's type.
+ * @param {Object<string, Array<string>>} tweetMessages Rule's messages.
+ * @param {Array<string>} track Rule's keyword list.
+ * @param {TwitterRuleConditions} condition Rule's condition.
+ * @param {number} delay Rule's delay.
+ * @param {number} undo Rule's undo.
+ * @param {Array<TwitterRuleLangs>} lang Rule's languages.
+ * @returns {Promise<void>}
+ */
+var addTwitterRule = function addTwitterRule(accountId, campaignId, name, type, tweetMessages, track, condition, delay, undo, lang) {
+    return function (dispatch, getState) {
+        return new Promise(function (resolve, reject) {
+            var state = getState();
+            var _state$lang7 = state.lang,
+                GENERIC_ERROR = _state$lang7.GENERIC_ERROR,
+                TWITTERRULE_NAME_INCORRECT = _state$lang7.TWITTERRULE_NAME_INCORRECT,
+                TWITTERRULE_NAME_NOT_UNIQUE = _state$lang7.TWITTERRULE_NAME_NOT_UNIQUE,
+                TWITTERRULE_ACTION_INCORRECT = _state$lang7.TWITTERRULE_ACTION_INCORRECT,
+                TWITTERRULE_MESSAGE_INCORRECT = _state$lang7.TWITTERRULE_MESSAGE_INCORRECT,
+                TWITTERRULE_MESSAGES_INCORRECT = _state$lang7.TWITTERRULE_MESSAGES_INCORRECT,
+                TWITTERRULE_TRACK_INCORRECT = _state$lang7.TWITTERRULE_TRACK_INCORRECT,
+                TWITTERRULE_KEYWORD_INCORRECT = _state$lang7.TWITTERRULE_KEYWORD_INCORRECT,
+                TWITTERRULE_CONDITION_INCORRECT = _state$lang7.TWITTERRULE_CONDITION_INCORRECT,
+                TWITTERRULE_DELAY_INCORRECT = _state$lang7.TWITTERRULE_DELAY_INCORRECT,
+                TWITTERRULE_UNDO_INCORRECT = _state$lang7.TWITTERRULE_UNDO_INCORRECT,
+                TWITTERRULE_LANGUAGE_INCORRECT = _state$lang7.TWITTERRULE_LANGUAGE_INCORRECT,
+                TWITTERRULE_CREATE_SUCCESS = _state$lang7.TWITTERRULE_CREATE_SUCCESS,
+                TWITTERRULE_CREATE_ERROR = _state$lang7.TWITTERRULE_CREATE_ERROR;
+
+            var accountIndex = (0, _lodash.findIndex)(state.accounts.data, { name: accountId });
+            if (accountIndex !== -1) {
+                var campaignIndex = (0, _lodash.findIndex)(state.accounts.data[accountIndex].campaigns, { name: campaignId });
+                if (campaignIndex !== -1) {
+                    var messages = [];
+                    var names = state.accounts.data[accountIndex].campaigns[campaignIndex].config.rules.map(function (rule) {
+                        return rule.name;
+                    });
+                    var result = (0, _validator.isValidTwitterRuleForm)(name, names, type, Object.values(TwitterRuleTypes), tweetMessages, 10, condition, Object.values(TwitterRuleConditions), track, 10, undo, 0, 7, lang, Object.values(TwitterRuleLangs), 10, delay, 60, 300, TWITTERRULE_NAME_INCORRECT, TWITTERRULE_NAME_NOT_UNIQUE, TWITTERRULE_ACTION_INCORRECT, TWITTERRULE_MESSAGES_INCORRECT, TWITTERRULE_MESSAGE_INCORRECT, TWITTERRULE_CONDITION_INCORRECT, TWITTERRULE_TRACK_INCORRECT, TWITTERRULE_KEYWORD_INCORRECT, TWITTERRULE_UNDO_INCORRECT, TWITTERRULE_LANGUAGE_INCORRECT, TWITTERRULE_DELAY_INCORRECT, true, false);
+                    if (Array.isArray(result)) {
+                        messages = messages.concat(result);
+                    }
+                    if (messages.length === 0) {
+                        var token = state.user.token;
+
+                        (0, _Requests.addTwitterRule)(token, accountId, campaignId, name, type, tweetMessages, track, condition, delay, undo, lang).then(function (result) {
+                            var rule = {
+                                accountId: accountId,
+                                campaignId: campaignId,
+                                name: name,
+                                action: type,
+                                track: track,
+                                condition: condition,
+                                delay: delay,
+                                undo: undo,
+                                lang: lang
+                            };
+                            if (tweetMessages != null) {
+                                rule.messages = tweetMessages;
+                            }
+                            dispatch(_extends({}, rule, {
+                                type: ActionTypes.TWITTERRULE_ADD
+                            }));
+                            dispatch((0, _messages.sendSuccessMessage)(TWITTERRULE_CREATE_SUCCESS));
+                            resolve();
+                        }).catch(function (error) {
+                            dispatch((0, _messages.sendFailureMessage)(GENERIC_ERROR));
+                            reject(error);
+                        });
+                    } else {
+                        dispatch((0, _messages.sendFailureMessages)(messages));
+                        reject(new Error(Status.INVALID_INPUTS));
+                    }
+                } else {
+                    dispatch((0, _messages.sendFailureMessage)(GENERIC_ERROR));
+                    reject(new Error(Status.INVALID_INPUTS));
                 }
             } else {
                 dispatch((0, _messages.sendFailureMessage)(GENERIC_ERROR));
-                return Promise.reject(new Error(Status.INVALID_INPUTS));
+                reject(new Error(Status.INVALID_INPUTS));
             }
-        } else {
-            dispatch((0, _messages.sendFailureMessage)(GENERIC_ERROR));
-            return Promise.reject(new Error(Status.INVALID_INPUTS));
-        }
+        });
     };
-}
+};
 
-function updateTwitterRule(accountId, campaignId, ruleId, name, type, tweetMessages, track, condition, delay, undo, lang) {
+/**
+ * Update rule in database and store.
+ * @public
+ * @param {string} accountId Rule's account name.
+ * @param {string} campaignId Rule's campaign name.
+ * @param {string} ruleId Rule's name.
+ * @param {string} name Rule's new name.
+ * @param {TwitterRuleTypes} type Rule's new type.
+ * @param {Object<string, Array<string>>} tweetMessages Rule's new tweet messages.
+ * @param {Array<string>} track Rule's new track.
+ * @param {TwitterRuleConditions} condition Rule's new condition.
+ * @param {number} delay Rule's new delay.
+ * @param {number} undo Relay's new undo.
+ * @param {Array<TwitterRuleLangs>} lang Rule's new languages.
+ * @returns {Promise<void>}
+ */
+var updateTwitterRule = function updateTwitterRule(accountId, campaignId, ruleId, name, type, tweetMessages, track, condition, delay, undo, lang) {
     return function (dispatch, getState) {
-        var state = getState();
-        var _state$lang8 = state.lang,
-            TWITTERRULE_NAME_INCORRECT = _state$lang8.TWITTERRULE_NAME_INCORRECT,
-            TWITTERRULE_NAME_NOT_UNIQUE = _state$lang8.TWITTERRULE_NAME_NOT_UNIQUE,
-            TWITTERRULE_ACTION_INCORRECT = _state$lang8.TWITTERRULE_ACTION_INCORRECT,
-            TWITTERRULE_MESSAGE_INCORRECT = _state$lang8.TWITTERRULE_MESSAGE_INCORRECT,
-            TWITTERRULE_MESSAGES_INCORRECT = _state$lang8.TWITTERRULE_MESSAGES_INCORRECT,
-            TWITTERRULE_TRACK_INCORRECT = _state$lang8.TWITTERRULE_TRACK_INCORRECT,
-            TWITTERRULE_KEYWORD_INCORRECT = _state$lang8.TWITTERRULE_KEYWORD_INCORRECT,
-            TWITTERRULE_CONDITION_INCORRECT = _state$lang8.TWITTERRULE_CONDITION_INCORRECT,
-            TWITTERRULE_DELAY_INCORRECT = _state$lang8.TWITTERRULE_DELAY_INCORRECT,
-            TWITTERRULE_UNDO_INCORRECT = _state$lang8.TWITTERRULE_UNDO_INCORRECT,
-            TWITTERRULE_LANGUAGE_INCORRECT = _state$lang8.TWITTERRULE_LANGUAGE_INCORRECT,
-            TWITTERRULE_EDIT_SUCCESS = _state$lang8.TWITTERRULE_EDIT_SUCCESS,
-            TWITTERRULE_EDIT_ERROR = _state$lang8.TWITTERRULE_EDIT_ERROR;
+        return new Promise(function (resolve, reject) {
+            var state = getState();
+            var _state$lang8 = state.lang,
+                TWITTERRULE_NAME_INCORRECT = _state$lang8.TWITTERRULE_NAME_INCORRECT,
+                TWITTERRULE_NAME_NOT_UNIQUE = _state$lang8.TWITTERRULE_NAME_NOT_UNIQUE,
+                TWITTERRULE_ACTION_INCORRECT = _state$lang8.TWITTERRULE_ACTION_INCORRECT,
+                TWITTERRULE_MESSAGE_INCORRECT = _state$lang8.TWITTERRULE_MESSAGE_INCORRECT,
+                TWITTERRULE_MESSAGES_INCORRECT = _state$lang8.TWITTERRULE_MESSAGES_INCORRECT,
+                TWITTERRULE_TRACK_INCORRECT = _state$lang8.TWITTERRULE_TRACK_INCORRECT,
+                TWITTERRULE_KEYWORD_INCORRECT = _state$lang8.TWITTERRULE_KEYWORD_INCORRECT,
+                TWITTERRULE_CONDITION_INCORRECT = _state$lang8.TWITTERRULE_CONDITION_INCORRECT,
+                TWITTERRULE_DELAY_INCORRECT = _state$lang8.TWITTERRULE_DELAY_INCORRECT,
+                TWITTERRULE_UNDO_INCORRECT = _state$lang8.TWITTERRULE_UNDO_INCORRECT,
+                TWITTERRULE_LANGUAGE_INCORRECT = _state$lang8.TWITTERRULE_LANGUAGE_INCORRECT,
+                TWITTERRULE_EDIT_SUCCESS = _state$lang8.TWITTERRULE_EDIT_SUCCESS,
+                TWITTERRULE_EDIT_ERROR = _state$lang8.TWITTERRULE_EDIT_ERROR;
 
-        var accountIndex = (0, _lodash.findIndex)(state.accounts.data, { name: accountId });
-        if (accountIndex !== -1) {
-            var campaignIndex = (0, _lodash.findIndex)(state.accounts.data[accountIndex].campaigns, { name: campaignId });
-            if (campaignIndex !== -1) {
-                var _state$accounts$data$3 = state.accounts.data[accountIndex].campaigns[campaignIndex].config.rules[(0, _lodash.findIndex)(state.accounts.data[accountIndex].campaigns[campaignIndex].config.rules, { name: ruleId })],
-                    uid = _state$accounts$data$3.uid,
-                    initialName = _state$accounts$data$3.name,
-                    initialType = _state$accounts$data$3.type,
-                    initialMessages = _state$accounts$data$3.messages,
-                    initialTrack = _state$accounts$data$3.track,
-                    initialCondition = _state$accounts$data$3.condition,
-                    initialDelay = _state$accounts$data$3.delay,
-                    initialUndo = _state$accounts$data$3.undo,
-                    initialLang = _state$accounts$data$3.lang;
+            var accountIndex = (0, _lodash.findIndex)(state.accounts.data, { name: accountId });
+            if (accountIndex !== -1) {
+                var campaignIndex = (0, _lodash.findIndex)(state.accounts.data[accountIndex].campaigns, { name: campaignId });
+                if (campaignIndex !== -1) {
+                    var _state$accounts$data$3 = state.accounts.data[accountIndex].campaigns[campaignIndex].config.rules[(0, _lodash.findIndex)(state.accounts.data[accountIndex].campaigns[campaignIndex].config.rules, { name: ruleId })],
+                        uid = _state$accounts$data$3.uid,
+                        initialName = _state$accounts$data$3.name,
+                        initialType = _state$accounts$data$3.type,
+                        initialMessages = _state$accounts$data$3.messages,
+                        initialTrack = _state$accounts$data$3.track,
+                        initialCondition = _state$accounts$data$3.condition,
+                        initialDelay = _state$accounts$data$3.delay,
+                        initialUndo = _state$accounts$data$3.undo,
+                        initialLang = _state$accounts$data$3.lang;
 
-                var messages = [];
-                if (name != null && !(0, _validator.isValidTwitterRuleName)(name)) {
-                    messages.push(TWITTERRULE_NAME_INCORRECT);
-                }
-                var names = state.accounts.data[accountIndex].campaigns[campaignIndex].config.rules.map(function (rule) {
-                    if (uid !== rule.uid) return rule.name;
-                });
-                if (name != null && !(0, _validator.isUniqueTwitterRuleName)(name, names)) {
-                    messages.push(TWITTERRULE_NAME_NOT_UNIQUE);
-                }
-                if (type != null && !(0, _validator.isValidTwitterRuleAction)(type, Object.values(TwitterRuleTypes))) {
-                    messages.push(TWITTERRULE_ACTION_INCORRECT);
-                }
-                if (type === TwitterRuleTypes.TWEET && tweetMessages != null) {
-                    if (Array.isArray(tweetMessages)) {
-                        var _iteratorNormalCompletion4 = true;
-                        var _didIteratorError4 = false;
-                        var _iteratorError4 = undefined;
-
-                        try {
-                            for (var _iterator4 = tweetMessages[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                                var message = _step4.value;
-
-                                if (!(0, _validator.isValidTwitterRuleMessage)(message)) {
-                                    messages.push(message + TWITTERRULE_MESSAGE_INCORRECT);
-                                }
-                            }
-                        } catch (err) {
-                            _didIteratorError4 = true;
-                            _iteratorError4 = err;
-                        } finally {
-                            try {
-                                if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                                    _iterator4.return();
-                                }
-                            } finally {
-                                if (_didIteratorError4) {
-                                    throw _iteratorError4;
-                                }
-                            }
-                        }
-                    } else {
-                        messages.push(TWITTERRULE_MESSAGES_INCORRECT);
+                    var messages = [];
+                    if (name != null && !(0, _validator.isValidTwitterRuleName)(name)) {
+                        messages.push(TWITTERRULE_NAME_INCORRECT);
                     }
-                }
-                if (track != null) {
-                    if (Array.isArray(track)) {
-                        var _iteratorNormalCompletion5 = true;
-                        var _didIteratorError5 = false;
-                        var _iteratorError5 = undefined;
-
-                        try {
-                            for (var _iterator5 = track[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                                var keyword = _step5.value;
-
-                                if (!(0, _validator.isValidTwitterRuleKeyword)(keyword)) {
-                                    messages.push(keyword + TWITTERRULE_KEYWORD_INCORRECT);
-                                }
-                            }
-                        } catch (err) {
-                            _didIteratorError5 = true;
-                            _iteratorError5 = err;
-                        } finally {
-                            try {
-                                if (!_iteratorNormalCompletion5 && _iterator5.return) {
-                                    _iterator5.return();
-                                }
-                            } finally {
-                                if (_didIteratorError5) {
-                                    throw _iteratorError5;
-                                }
-                            }
-                        }
-                    } else {
-                        messages.push(TWITTERRULE_TRACK_INCORRECT);
-                    }
-                }
-                if (condition != null && !(0, _validator.isValidTwitterRuleCondition)(condition, Object.values(TwitterRuleConditions))) {
-                    messages.push(TWITTERRULE_CONDITION_INCORRECT);
-                }
-                if (delay != null && !(0, _validator.isValidTwitterRuleDelay)(delay, 60, 300)) {
-                    messages.push(TWITTERRULE_DELAY_INCORRECT);
-                }
-                if (undo != null && !(0, _validator.isValidTwitterRuleUndo)(undo, 0, 7)) {
-                    messages.push(TWITTERRULE_UNDO_INCORRECT);
-                }
-                if (lang != null && !(0, _validator.isValidTwitterRuleLanguages)(lang, Object.values(TwitterRuleLangs))) {
-                    messages.push(TWITTERRULE_LANGUAGE_INCORRECT);
-                }
-                if (messages.length === 0) {
-                    var newName = name !== initialName ? name : null;
-                    var newType = type !== initialType ? type : null;
-                    var newMessages = !(0, _lodash.isEqual)(tweetMessages, initialMessages) ? tweetMessages : null;
-                    var newTrack = !(0, _lodash.isEqual)(track, initialTrack) ? track : null;
-                    var newCondition = condition !== initialCondition ? condition : null;
-                    var newDelay = delay !== initialDelay ? delay : null;
-                    var newUndo = undo !== initialUndo ? undo : null;
-                    var newLang = !(0, _lodash.isEqual)(lang, initialLang) ? lang : null;
-                    var token = state.user.token;
-
-                    return (0, _Requests.updateTwitterRule)(token, accountId, campaignId, ruleId, newName, newType, newMessages, newTrack, newCondition, newDelay, newUndo, newLang).then(function (result) {
-                        dispatch({
-                            type: ActionTypes.TWITTERRULE_UPDATE,
-                            accountId: accountId,
-                            campaignId: campaignId,
-                            ruleId: ruleId,
-                            name: name,
-                            action: type,
-                            messages: tweetMessages,
-                            track: track,
-                            condition: condition,
-                            delay: delay,
-                            undo: undo,
-                            lang: lang
-                        });
-                        dispatch((0, _messages.sendSuccessMessage)(TWITTERRULE_EDIT_SUCCESS));
-                        return Promise.resolve();
-                    }).catch(function (error) {
-                        if (error.message === Status.NO_CHANGES) {
-                            return Promise.resolve();
-                        } else {
-                            dispatch((0, _messages.sendFailureMessage)(TWITTERRULE_EDIT_ERROR));
-                            return Promise.reject(error);
-                        }
+                    var names = state.accounts.data[accountIndex].campaigns[campaignIndex].config.rules.map(function (rule) {
+                        if (uid !== rule.uid) return rule.name;
                     });
+                    if (name != null && !(0, _validator.isUniqueTwitterRuleName)(name, names)) {
+                        messages.push(TWITTERRULE_NAME_NOT_UNIQUE);
+                    }
+                    if (type != null && !(0, _validator.isValidTwitterRuleAction)(type, Object.values(TwitterRuleTypes))) {
+                        messages.push(TWITTERRULE_ACTION_INCORRECT);
+                    }
+                    if (type === TwitterRuleTypes.TWEET && tweetMessages != null) {
+                        if (Array.isArray(tweetMessages)) {
+                            var _iteratorNormalCompletion4 = true;
+                            var _didIteratorError4 = false;
+                            var _iteratorError4 = undefined;
+
+                            try {
+                                for (var _iterator4 = tweetMessages[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                                    var message = _step4.value;
+
+                                    if (!(0, _validator.isValidTwitterRuleMessage)(message)) {
+                                        messages.push(message + TWITTERRULE_MESSAGE_INCORRECT);
+                                    }
+                                }
+                            } catch (err) {
+                                _didIteratorError4 = true;
+                                _iteratorError4 = err;
+                            } finally {
+                                try {
+                                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                                        _iterator4.return();
+                                    }
+                                } finally {
+                                    if (_didIteratorError4) {
+                                        throw _iteratorError4;
+                                    }
+                                }
+                            }
+                        } else {
+                            messages.push(TWITTERRULE_MESSAGES_INCORRECT);
+                        }
+                    }
+                    if (track != null) {
+                        if (Array.isArray(track)) {
+                            var _iteratorNormalCompletion5 = true;
+                            var _didIteratorError5 = false;
+                            var _iteratorError5 = undefined;
+
+                            try {
+                                for (var _iterator5 = track[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                                    var keyword = _step5.value;
+
+                                    if (!(0, _validator.isValidTwitterRuleKeyword)(keyword)) {
+                                        messages.push(keyword + TWITTERRULE_KEYWORD_INCORRECT);
+                                    }
+                                }
+                            } catch (err) {
+                                _didIteratorError5 = true;
+                                _iteratorError5 = err;
+                            } finally {
+                                try {
+                                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                                        _iterator5.return();
+                                    }
+                                } finally {
+                                    if (_didIteratorError5) {
+                                        throw _iteratorError5;
+                                    }
+                                }
+                            }
+                        } else {
+                            messages.push(TWITTERRULE_TRACK_INCORRECT);
+                        }
+                    }
+                    if (condition != null && !(0, _validator.isValidTwitterRuleCondition)(condition, Object.values(TwitterRuleConditions))) {
+                        messages.push(TWITTERRULE_CONDITION_INCORRECT);
+                    }
+                    if (delay != null && !(0, _validator.isValidTwitterRuleDelay)(delay, 60, 300)) {
+                        messages.push(TWITTERRULE_DELAY_INCORRECT);
+                    }
+                    if (undo != null && !(0, _validator.isValidTwitterRuleUndo)(undo, 0, 7)) {
+                        messages.push(TWITTERRULE_UNDO_INCORRECT);
+                    }
+                    if (lang != null && !(0, _validator.isValidTwitterRuleLanguages)(lang, Object.values(TwitterRuleLangs))) {
+                        messages.push(TWITTERRULE_LANGUAGE_INCORRECT);
+                    }
+                    if (messages.length === 0) {
+                        var newName = name !== initialName ? name : null;
+                        var newType = type !== initialType ? type : null;
+                        var newMessages = !(0, _lodash.isEqual)(tweetMessages, initialMessages) ? tweetMessages : null;
+                        var newTrack = !(0, _lodash.isEqual)(track, initialTrack) ? track : null;
+                        var newCondition = condition !== initialCondition ? condition : null;
+                        var newDelay = delay !== initialDelay ? delay : null;
+                        var newUndo = undo !== initialUndo ? undo : null;
+                        var newLang = !(0, _lodash.isEqual)(lang, initialLang) ? lang : null;
+                        var token = state.user.token;
+
+                        (0, _Requests.updateTwitterRule)(token, accountId, campaignId, ruleId, newName, newType, newMessages, newTrack, newCondition, newDelay, newUndo, newLang).then(function (result) {
+                            dispatch({
+                                type: ActionTypes.TWITTERRULE_UPDATE,
+                                accountId: accountId,
+                                campaignId: campaignId,
+                                ruleId: ruleId,
+                                name: name,
+                                action: type,
+                                messages: tweetMessages,
+                                track: track,
+                                condition: condition,
+                                delay: delay,
+                                undo: undo,
+                                lang: lang
+                            });
+                            dispatch((0, _messages.sendSuccessMessage)(TWITTERRULE_EDIT_SUCCESS));
+                            resolve();
+                        }).catch(function (error) {
+                            if (error.message === Status.NO_CHANGES) {
+                                resolve();
+                            } else {
+                                dispatch((0, _messages.sendFailureMessage)(TWITTERRULE_EDIT_ERROR));
+                                reject(error);
+                            }
+                        });
+                    } else {
+                        dispatch((0, _messages.sendFailureMessages)(messages));
+                        reject(new Error(Status.INVALID_INPUTS));
+                    }
                 } else {
-                    dispatch((0, _messages.sendFailureMessages)(messages));
-                    return Promise.reject(new Error(Status.INVALID_INPUTS));
+                    dispatch((0, _messages.sendFailureMessage)(TWITTERRULE_EDIT_ERROR));
+                    reject(new Error(Status.INVALID_INPUTS));
                 }
             } else {
                 dispatch((0, _messages.sendFailureMessage)(TWITTERRULE_EDIT_ERROR));
-                return Promise.reject(new Error(Status.INVALID_INPUTS));
+                reject(new Error(Status.INVALID_INPUTS));
             }
-        } else {
-            dispatch((0, _messages.sendFailureMessage)(TWITTERRULE_EDIT_ERROR));
-            return Promise.reject(new Error(Status.INVALID_INPUTS));
-        }
-    };
-}
-
-function removeTwitterRule(accountId, campaignId, ruleId) {
-    return function (dispatch, getState) {
-        var state = getState();
-        var _state$lang9 = state.lang,
-            TWITTERRULE_DELETE_ERROR = _state$lang9.TWITTERRULE_DELETE_ERROR,
-            TWITTERRULE_DELETE_SUCCESS = _state$lang9.TWITTERRULE_DELETE_SUCCESS;
-        var token = state.user.token;
-
-        return (0, _Requests.removeTwitterRule)(token, accountId, campaignId, ruleId).then(function (result) {
-            dispatch({
-                type: ActionTypes.TWITTERRULE_DELETE,
-                accountId: accountId,
-                campaignId: campaignId,
-                ruleId: ruleId
-            });
-            dispatch((0, _messages.sendSuccessMessage)(TWITTERRULE_DELETE_SUCCESS));
-            return Promise.resolve();
-        }).catch(function (error) {
-            dispatch((0, _messages.sendFailureMessage)(TWITTERRULE_DELETE_ERROR));
-            return Promise.reject(error);
         });
     };
-}
+};
 
-},{"../constants/ActionTypes":62,"../constants/RequestStatus":67,"../constants/TwitterRuleConditions":69,"../constants/TwitterRuleLangs":70,"../constants/TwitterRuleTypes":71,"../net/Requests":76,"./messages":3,"./user":4,"lodash":330,"validator":499}],2:[function(require,module,exports){
+/**
+ * Remove rule from database and store.
+ * @public
+ * @param {string} accountId Rule's account name.
+ * @param {string} campaignId Rule's campaign name.
+ * @param {string} ruleId Rule's name.
+ * @returns {Promise<void>}
+ */
+var removeTwitterRule = function removeTwitterRule(accountId, campaignId, ruleId) {
+    return function (dispatch, getState) {
+        return new Promise(function (resolve, reject) {
+            var state = getState();
+            var _state$lang9 = state.lang,
+                TWITTERRULE_DELETE_ERROR = _state$lang9.TWITTERRULE_DELETE_ERROR,
+                TWITTERRULE_DELETE_SUCCESS = _state$lang9.TWITTERRULE_DELETE_SUCCESS;
+            var token = state.user.token;
+
+            (0, _Requests.removeTwitterRule)(token, accountId, campaignId, ruleId).then(function (result) {
+                dispatch({
+                    type: ActionTypes.TWITTERRULE_DELETE,
+                    accountId: accountId,
+                    campaignId: campaignId,
+                    ruleId: ruleId
+                });
+                dispatch((0, _messages.sendSuccessMessage)(TWITTERRULE_DELETE_SUCCESS));
+                resolve();
+            }).catch(function (error) {
+                dispatch((0, _messages.sendFailureMessage)(TWITTERRULE_DELETE_ERROR));
+                reject(error);
+            });
+        });
+    };
+};
+
+exports.fetchAccountList = fetchAccountList;
+exports.addAccount = addAccount;
+exports.updateAccount = updateAccount;
+exports.removeAccount = removeAccount;
+exports.addCampaign = addCampaign;
+exports.updateCampaign = updateCampaign;
+exports.removeCampaign = removeCampaign;
+exports.addTwitterRule = addTwitterRule;
+exports.updateTwitterRule = updateTwitterRule;
+exports.removeTwitterRule = removeTwitterRule;
+
+},{"../constants/ActionTypes":63,"../constants/RequestStatus":68,"../constants/TwitterRuleConditions":70,"../constants/TwitterRuleLangs":71,"../constants/TwitterRuleTypes":72,"../net/Requests":77,"./messages":3,"./user":4,"lodash":292,"validator":501}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.changeLanguage = undefined;
+
+var _ActionTypes = require("../constants/ActionTypes");
+
+var ActionTypes = _interopRequireWildcard(_ActionTypes);
+
+var _Languages = require("../constants/Languages");
+
+var Languages = _interopRequireWildcard(_Languages);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/**
+ * Load language in store.
+ * @public
+ * @param {Languages} lang Language.
+ * @returns {void}
+ */
+var changeLanguage = function changeLanguage(lang) {
+    return function (dispatch) {
+        return dispatch({
+            type: ActionTypes.LANG_UPDATE,
+            lang: lang
+        });
+    };
+};
+
 exports.changeLanguage = changeLanguage;
+
+},{"../constants/ActionTypes":63,"../constants/Languages":64}],3:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.sendInfoMessages = exports.sendInfoMessage = exports.sendSuccessMessages = exports.sendSuccessMessage = exports.sendFailureMessages = exports.sendFailureMessage = exports.clearMessages = undefined;
 
 var _ActionTypes = require("../constants/ActionTypes");
 
@@ -820,21 +915,109 @@ var ActionTypes = _interopRequireWildcard(_ActionTypes);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function changeLanguage(lang) {
+/**
+ * Delete all messages from store.
+ * @public
+ * @returns {void}
+ */
+var clearMessages = function clearMessages() {
     return function (dispatch) {
         return dispatch({
-            type: ActionTypes.LANG_UPDATE,
-            lang: lang
+            type: ActionTypes.CLEAR_MESSAGES
         });
     };
-}
+};
 
-},{"../constants/ActionTypes":62}],3:[function(require,module,exports){
-"use strict";
+/**
+ * Set failure message in store.
+ * @public
+ * @param {string} message Failure message.
+ * @returns {void}
+ */
+var sendFailureMessage = function sendFailureMessage(message) {
+    return function (dispatch) {
+        return dispatch({
+            type: ActionTypes.FAILURE_MESSAGE,
+            message: message
+        });
+    };
+};
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
+/**
+ * Set failure messages in store.
+ * @public
+ * @param {Array<string>} messages Failure message list.
+ * @returns {void}
+ */
+var sendFailureMessages = function sendFailureMessages(messages) {
+    return function (dispatch) {
+        return dispatch({
+            type: ActionTypes.FAILURE_MESSAGES,
+            messages: messages
+        });
+    };
+};
+
+/**
+ * Set success message in store.
+ * @public
+ * @param {string} message Success message.
+ * @returns {void}
+ */
+var sendSuccessMessage = function sendSuccessMessage(message) {
+    return function (dispatch) {
+        return dispatch({
+            type: ActionTypes.SUCCESS_MESSAGE,
+            message: message
+        });
+    };
+};
+
+/**
+ * Set success messages in store.
+ * @public
+ * @param {Array<string>} messages Success message list.
+ * @returns {void}
+ */
+var sendSuccessMessages = function sendSuccessMessages(messages) {
+    return function (dispatch) {
+        return dispatch({
+            type: ActionTypes.SUCCESS_MESSAGES,
+            messages: messages
+        });
+    };
+};
+
+/**
+ * Set information message in store.
+ * @public
+ * @param {string} message Information message.
+ * @returns {void}
+ */
+var sendInfoMessage = function sendInfoMessage(message) {
+    return function (dispatch) {
+        return dispatch({
+            type: ActionTypes.INFO_MESSAGE,
+            message: message
+        });
+    };
+};
+
+/**
+ * Set information messages in store.
+ * @public
+ * @param {Array<string>} messages Information message list.
+ * @returns {void}
+ */
+var sendInfoMessages = function sendInfoMessages(messages) {
+    return function (dispatch) {
+        return dispatch({
+            type: ActionTypes.INFO_MESSAGES,
+            messages: messages
+        });
+    };
+};
+
 exports.clearMessages = clearMessages;
 exports.sendFailureMessage = sendFailureMessage;
 exports.sendFailureMessages = sendFailureMessages;
@@ -843,85 +1026,13 @@ exports.sendSuccessMessages = sendSuccessMessages;
 exports.sendInfoMessage = sendInfoMessage;
 exports.sendInfoMessages = sendInfoMessages;
 
-var _ActionTypes = require("../constants/ActionTypes");
-
-var ActionTypes = _interopRequireWildcard(_ActionTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function clearMessages() {
-    return function (dispatch) {
-        return dispatch({
-            type: ActionTypes.CLEAR_MESSAGES
-        });
-    };
-}
-
-function sendFailureMessage(message) {
-    return function (dispatch) {
-        return dispatch({
-            type: ActionTypes.FAILURE_MESSAGE,
-            message: message
-        });
-    };
-}
-
-function sendFailureMessages(messages) {
-    return function (dispatch) {
-        return dispatch({
-            type: ActionTypes.FAILURE_MESSAGES,
-            messages: messages
-        });
-    };
-}
-
-function sendSuccessMessage(message) {
-    return function (dispatch) {
-        return dispatch({
-            type: ActionTypes.SUCCESS_MESSAGE,
-            message: message
-        });
-    };
-}
-
-function sendSuccessMessages(messages) {
-    return function (dispatch) {
-        return dispatch({
-            type: ActionTypes.SUCCESS_MESSAGES,
-            messages: messages
-        });
-    };
-}
-
-function sendInfoMessage(message) {
-    return function (dispatch) {
-        return dispatch({
-            type: ActionTypes.INFO_MESSAGE,
-            message: message
-        });
-    };
-}
-
-function sendInfoMessages(messages) {
-    return function (dispatch) {
-        return dispatch({
-            type: ActionTypes.INFO_MESSAGES,
-            messages: messages
-        });
-    };
-}
-
-},{"../constants/ActionTypes":62}],4:[function(require,module,exports){
+},{"../constants/ActionTypes":63}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.connect = connect;
-exports.register = register;
-exports.fetchUser = fetchUser;
-exports.disconnect = disconnect;
-exports.updateUser = updateUser;
+exports.updateUser = exports.disconnect = exports.fetchUser = exports.register = exports.connect = undefined;
 
 var _reduxCookie = require("redux-cookie");
 
@@ -947,242 +1058,300 @@ var _lang = require("./lang");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function connect(email, password) {
+/**
+ * Connect.
+ * @public
+ * @param {string} email User's email.
+ * @param {string} password User's password. (clear)
+ * @returns {Promise<void>}
+ */
+var connect = function connect(email, password) {
 	return function (dispatch, getState) {
-		var _getState$lang = getState().lang,
-		    LANG = _getState$lang.LANG,
-		    SIGNIN_EMAIL_INCORRECT = _getState$lang.SIGNIN_EMAIL_INCORRECT,
-		    SIGNIN_PASSWORD_INCORRECT = _getState$lang.SIGNIN_PASSWORD_INCORRECT,
-		    SIGNIN_CREDENTIALS_INCORRECT = _getState$lang.SIGNIN_CREDENTIALS_INCORRECT;
+		return new Promise(function (resolve, reject) {
+			var _getState$lang = getState().lang,
+			    LANG = _getState$lang.LANG,
+			    SIGNIN_EMAIL_INCORRECT = _getState$lang.SIGNIN_EMAIL_INCORRECT,
+			    SIGNIN_PASSWORD_INCORRECT = _getState$lang.SIGNIN_PASSWORD_INCORRECT,
+			    SIGNIN_CREDENTIALS_INCORRECT = _getState$lang.SIGNIN_CREDENTIALS_INCORRECT;
 
-		var messages = [];
-		var result = (0, _validator.isValidSigninForm)(email, password, SIGNIN_EMAIL_INCORRECT, SIGNIN_PASSWORD_INCORRECT, true, false);
-		if (Array.isArray(result)) {
-			messages = messages.concat(result);
-		}
-		if (messages.length === 0) {
-			return (0, _Requests.getUser)(email, password).then(function (result) {
-				dispatch({
-					type: ActionTypes.USER_SET,
-					token: result.token,
-					email: email,
-					rank: result.rank,
-					lang: result.lang
+			var messages = [];
+			var result = (0, _validator.isValidSigninForm)(email, password, SIGNIN_EMAIL_INCORRECT, SIGNIN_PASSWORD_INCORRECT, true, false);
+			if (Array.isArray(result)) {
+				messages = messages.concat(result);
+			}
+			if (messages.length === 0) {
+				(0, _Requests.getUser)(email, password).then(function (result) {
+					dispatch({
+						type: ActionTypes.USER_SET,
+						token: result.token,
+						email: email,
+						rank: result.rank,
+						lang: result.lang
+					});
+					if (LANG !== result.lang) {
+						dispatch((0, _lang.changeLanguage)(result.lang));
+					}
+					dispatch((0, _reduxCookie.setCookie)("user", {
+						token: result.token,
+						email: email,
+						rank: result.rank,
+						lang: result.lang
+					}, {
+						path: "/"
+					}));
+					resolve();
+				}).catch(function (error) {
+					dispatch((0, _messages.sendFailureMessage)(SIGNIN_CREDENTIALS_INCORRECT));
+					reject(error);
 				});
-				if (LANG !== result.lang) {
-					dispatch((0, _lang.changeLanguage)(result.lang));
-				}
-				dispatch((0, _reduxCookie.setCookie)("user", {
-					token: result.token,
-					email: email,
-					rank: result.rank,
-					lang: result.lang
-				}, {
-					path: "/"
-				}));
-				return Promise.resolve();
-			}).catch(function (error) {
-				dispatch((0, _messages.sendFailureMessage)(SIGNIN_CREDENTIALS_INCORRECT));
-				return Promise.reject(error);
-			});
-		} else {
-			dispatch((0, _messages.sendFailureMessages)(messages));
-			return Promise.reject(new Error(Status.INVALID_INPUTS));
-		}
-	};
-}
-
-function register(email, password, cpassword, firstname, lastname, lang, useterms, recaptcha) {
-	return function (dispatch, getState) {
-		var _getState$lang2 = getState().lang,
-		    LANG = _getState$lang2.LANG,
-		    REGISTER_FIRSTNAME_INCORRECT = _getState$lang2.REGISTER_FIRSTNAME_INCORRECT,
-		    REGISTER_LASTNAME_INCORRECT = _getState$lang2.REGISTER_LASTNAME_INCORRECT,
-		    REGISTER_EMAIL_INCORRECT = _getState$lang2.REGISTER_EMAIL_INCORRECT,
-		    REGISTER_PASSWORD_INCORRECT = _getState$lang2.REGISTER_PASSWORD_INCORRECT,
-		    REGISTER_PASSWORD_NOT_MATCH = _getState$lang2.REGISTER_PASSWORD_NOT_MATCH,
-		    REGISTER_USETERMS_INCORRECT = _getState$lang2.REGISTER_USETERMS_INCORRECT,
-		    REGISTER_LANG_INCORRECT = _getState$lang2.REGISTER_LANG_INCORRECT,
-		    REGISTER_ERROR = _getState$lang2.REGISTER_ERROR;
-
-		var messages = [];
-		var result = (0, _validator.isValidSignupForm)(email, password, cpassword, firstname, lastname, lang, Object.values(Languages), REGISTER_EMAIL_INCORRECT, REGISTER_PASSWORD_INCORRECT, REGISTER_PASSWORD_NOT_MATCH, REGISTER_FIRSTNAME_INCORRECT, REGISTER_LASTNAME_INCORRECT, REGISTER_LANG_INCORRECT, true, false);
-		if (Array.isArray(result)) {
-			messages = messages.concat(result);
-		}
-		if (!useterms) {
-			messages.push(REGISTER_USETERMS_INCORRECT);
-		}
-		if (messages.length === 0) {
-			return (0, _Requests.addUser)(email, password, firstname, lastname, lang, recaptcha).then(function (result) {
-				dispatch({
-					type: ActionTypes.USER_SET,
-					token: result.token,
-					email: email,
-					rank: result.rank,
-					lang: result.lang
-				});
-				if (LANG !== result.lang) {
-					dispatch((0, _lang.changeLanguage)(result.lang));
-				}
-				dispatch((0, _reduxCookie.setCookie)("user", {
-					email: email,
-					token: result.token,
-					rank: result.rank,
-					lang: result.lang
-				}, {
-					path: "/"
-				}));
-				return Promise.resolve();
-			}).catch(function (error) {
-				dispatch((0, _messages.sendFailureMessage)(REGISTER_ERROR));
-				return Promise.reject(error);
-			});
-		} else {
-			dispatch((0, _messages.sendFailureMessages)(messages));
-			return Promise.reject(new Error(Status.INVALID_INPUTS));
-		}
-	};
-}
-
-function fetchUser() {
-	return function (dispatch, getState) {
-		var state = getState();
-		var token = state.user.token;
-
-		return (0, _Requests.getUserInfos)(token, state.user).then(function (result) {
-			dispatch({
-				type: ActionTypes.USER_UPDATE_INFOS,
-				email: result.email,
-				firstname: result.firstname,
-				lastname: result.lastname,
-				maxAccounts: result.max_accounts
-			});
-			return Promise.resolve();
-		}).catch(function (error) {
-			if (error.message === Status.DATA_CACHED) {
-				return Promise.resolve();
-			} else if (error.message === Status.UNAUTHORIZED) {
-				var SESSION_EXPIRED = state.lang.SESSION_EXPIRED;
-
-				dispatch(disconnect());
-				dispatch((0, _messages.sendFailureMessage)(SESSION_EXPIRED));
-				return Promise.reject(error);
 			} else {
-				return Promise.reject(error);
+				dispatch((0, _messages.sendFailureMessages)(messages));
+				reject(new Error(Status.INVALID_INPUTS));
 			}
 		});
 	};
-}
+};
 
-function disconnect() {
-	return function (dispatch) {
-		dispatch({
-			type: ActionTypes.USER_UNSET
-		});
-		dispatch({
-			type: ActionTypes.ACCOUNTS_UNSET
-		});
-		dispatch((0, _reduxCookie.removeCookie)("user", {
-			path: "/"
-		}));
-		return Promise.resolve();
-	};
-}
-
-function updateUser(email, oldpassword, password, cpassword, firstname, lastname, lang) {
+/**
+ * Register.
+ * @public
+ * @param {string} email User's email.
+ * @param {string} password User's password. (clear)
+ * @param {string} cpassword User's confirm password. (clear)
+ * @param {string} firstname User's firstname.
+ * @param {string} lastname User's lastname.
+ * @param {Languages} lang User's lang.
+ * @param {boolean} useterms User's userterms.
+ * @param {string} recaptcha User's recaptcha.
+ * @returns {Promise<void>}
+ */
+var register = function register(email, password, cpassword, firstname, lastname, lang, useterms, recaptcha) {
 	return function (dispatch, getState) {
-		var state = getState();
-		var _state$lang = state.lang,
-		    USER_EMAIL_INCORRECT = _state$lang.USER_EMAIL_INCORRECT,
-		    USER_PASSWORD_INCORRECT = _state$lang.USER_PASSWORD_INCORRECT,
-		    USER_PASSWORD_NOT_MATCH = _state$lang.USER_PASSWORD_NOT_MATCH,
-		    USER_FIRSTNAME_INCORRECT = _state$lang.USER_FIRSTNAME_INCORRECT,
-		    USER_LASTNAME_INCORRECT = _state$lang.USER_LASTNAME_INCORRECT,
-		    USER_LANGUAGE_INCORRECT = _state$lang.USER_LANGUAGE_INCORRECT,
-		    GENERIC_ERROR = _state$lang.GENERIC_ERROR,
-		    USERPASSWORDFORM_EDIT_ERROR = _state$lang.USERPASSWORDFORM_EDIT_ERROR;
+		return new Promise(function (resolve, reject) {
+			var _getState$lang2 = getState().lang,
+			    LANG = _getState$lang2.LANG,
+			    REGISTER_FIRSTNAME_INCORRECT = _getState$lang2.REGISTER_FIRSTNAME_INCORRECT,
+			    REGISTER_LASTNAME_INCORRECT = _getState$lang2.REGISTER_LASTNAME_INCORRECT,
+			    REGISTER_EMAIL_INCORRECT = _getState$lang2.REGISTER_EMAIL_INCORRECT,
+			    REGISTER_PASSWORD_INCORRECT = _getState$lang2.REGISTER_PASSWORD_INCORRECT,
+			    REGISTER_PASSWORD_NOT_MATCH = _getState$lang2.REGISTER_PASSWORD_NOT_MATCH,
+			    REGISTER_USETERMS_INCORRECT = _getState$lang2.REGISTER_USETERMS_INCORRECT,
+			    REGISTER_LANG_INCORRECT = _getState$lang2.REGISTER_LANG_INCORRECT,
+			    REGISTER_ERROR = _getState$lang2.REGISTER_ERROR;
 
-		var messages = [];
-		if (email != null && !(0, _validator.isValidEmail)(email)) {
-			messages.push(USER_EMAIL_INCORRECT);
-		}
-		if (oldpassword != null && !(0, _validator.isValidPassword)(oldpassword)) {
-			messages.push(USER_PASSWORD_INCORRECT);
-		}
-		if (password != null && !(0, _validator.isValidPassword)(password)) {
-			messages.push(USER_PASSWORD_INCORRECT);
-		}
-		if (password !== cpassword) {
-			messages.push(USER_PASSWORD_NOT_MATCH);
-		}
-		if (firstname != null && !(0, _validator.isValidFirstname)(firstname)) {
-			messages.push(USER_FIRSTNAME_INCORRECT);
-		}
-		if (lastname != null && !(0, _validator.isValidLastname)(lastname)) {
-			messages.push(USER_LASTNAME_INCORRECT);
-		}
-		if (lang != null && !(0, _validator.isValidLanguage)(lang, Object.values(Languages))) {
-			messages.push(USER_LANGUAGE_INCORRECT);
-		}
-		if (messages.length === 0) {
-			var _state$user = state.user,
-			    initialEmail = _state$user.email,
-			    initialToken = _state$user.token,
-			    initialFirstname = _state$user.firstname,
-			    initialLastname = _state$user.lastname,
-			    initialLang = _state$user.lang,
-			    initialRank = _state$user.rank;
-
-			var newEmail = email !== initialEmail ? email : null;
-			var oldPassword = oldpassword || null;
-			var newPassword = password || null;
-			var newFirstname = firstname !== initialFirstname ? firstname : null;
-			var newLastname = lastname !== initialLastname ? lastname : null;
-			var newLang = lang !== initialLang ? lang : null;
-			return (0, _Requests.updateUser)(initialToken, newEmail, oldPassword, newPassword, newFirstname, newLastname, newLang).then(function (result) {
-				dispatch({
-					type: ActionTypes.USER_UPDATE,
-					email: email,
-					firstname: firstname,
-					lastname: lastname,
-					lang: lang
-				});
-				if (newLang) {
-					dispatch((0, _lang.changeLanguage)(lang));
-				}
-				dispatch((0, _reduxCookie.setCookie)("user", {
-					email: newEmail || initialEmail,
-					token: initialToken,
-					lang: newLang || initialLang,
-					rank: initialRank
-				}, {
-					path: "/"
-				}));
-				var USER_EDIT_SUCCESS = getState().lang.USER_EDIT_SUCCESS;
-
-				dispatch((0, _messages.sendSuccessMessage)(USER_EDIT_SUCCESS));
-				return Promise.resolve();
-			}).catch(function (error) {
-				if (error.message === Status.NO_CHANGES) {
-					return Promise.resolve();
-				} else {
-					if (password !== null) {
-						dispatch((0, _messages.sendFailureMessage)(USERPASSWORDFORM_EDIT_ERROR));
-					} else {
-						dispatch((0, _messages.sendFailureMessage)(GENERIC_ERROR));
+			var messages = [];
+			var result = (0, _validator.isValidSignupForm)(email, password, cpassword, firstname, lastname, lang, Object.values(Languages), REGISTER_EMAIL_INCORRECT, REGISTER_PASSWORD_INCORRECT, REGISTER_PASSWORD_NOT_MATCH, REGISTER_FIRSTNAME_INCORRECT, REGISTER_LASTNAME_INCORRECT, REGISTER_LANG_INCORRECT, true, false);
+			if (Array.isArray(result)) {
+				messages = messages.concat(result);
+			}
+			if (!useterms) {
+				messages.push(REGISTER_USETERMS_INCORRECT);
+			}
+			if (messages.length === 0) {
+				(0, _Requests.addUser)(email, password, firstname, lastname, lang, recaptcha).then(function (result) {
+					dispatch({
+						type: ActionTypes.USER_SET,
+						token: result.token,
+						email: email,
+						rank: result.rank,
+						lang: result.lang
+					});
+					if (LANG !== result.lang) {
+						dispatch((0, _lang.changeLanguage)(result.lang));
 					}
-					return Promise.reject(error);
+					dispatch((0, _reduxCookie.setCookie)("user", {
+						email: email,
+						token: result.token,
+						rank: result.rank,
+						lang: result.lang
+					}, {
+						path: "/"
+					}));
+					resolve();
+				}).catch(function (error) {
+					dispatch((0, _messages.sendFailureMessage)(REGISTER_ERROR));
+					reject(error);
+				});
+			} else {
+				dispatch((0, _messages.sendFailureMessages)(messages));
+				reject(new Error(Status.INVALID_INPUTS));
+			}
+		});
+	};
+};
+
+/**
+ * Fetch user informations.
+ * @public
+ * @returns {Promise<void>}
+ */
+var fetchUser = function fetchUser() {
+	return function (dispatch, getState) {
+		return new Promise(function (resolve, reject) {
+			var state = getState();
+			var token = state.user.token;
+
+			(0, _Requests.getUserInfos)(token, state.user).then(function (result) {
+				dispatch({
+					type: ActionTypes.USER_UPDATE_INFOS,
+					email: result.email,
+					firstname: result.firstname,
+					lastname: result.lastname,
+					maxAccounts: result.max_accounts
+				});
+				resolve();
+			}).catch(function (error) {
+				if (error.message === Status.DATA_CACHED) {
+					resolve();
+				} else if (error.message === Status.UNAUTHORIZED) {
+					var SESSION_EXPIRED = state.lang.SESSION_EXPIRED;
+
+					dispatch(disconnect());
+					dispatch((0, _messages.sendFailureMessage)(SESSION_EXPIRED));
+					reject(error);
+				} else {
+					reject(error);
 				}
 			});
-		} else {
-			dispatch((0, _messages.sendFailureMessages)(messages));
-			return Promise.reject(new Error(Status.INVALID_INPUTS));
-		}
+		});
 	};
-}
+};
 
-},{"../constants/ActionTypes":62,"../constants/Languages":63,"../constants/RequestStatus":67,"../net/Requests":76,"./lang":2,"./messages":3,"redux-cookie":478,"validator":499}],5:[function(require,module,exports){
+/**
+ * Disconnect.
+ * @public
+ * @returns {Promise<void>}
+ */
+var disconnect = function disconnect() {
+	return function (dispatch) {
+		return new Promise(function (resolve, reject) {
+			dispatch({
+				type: ActionTypes.USER_UNSET
+			});
+			dispatch({
+				type: ActionTypes.ACCOUNTS_UNSET
+			});
+			dispatch((0, _reduxCookie.removeCookie)("user", {
+				path: "/"
+			}));
+			resolve();
+		});
+	};
+};
+
+/**
+ * Update user.
+ * @public
+ * @param {string} email User's email.
+ * @param {string} oldpassword User's old password. (clear)
+ * @param {string} password User's new password. (clear)
+ * @param {string} cpassword User's new confirm password. (clear)
+ * @param {string} firstname User's new firstname.
+ * @param {string} lastname User's new lastname.
+ * @param {Languages} lang User's new language.
+ * @returns {Promise<void>}
+ */
+var updateUser = function updateUser(email, oldpassword, password, cpassword, firstname, lastname, lang) {
+	return function (dispatch, getState) {
+		return new Promise(function (resolve, reject) {
+			var state = getState();
+			var _state$lang = state.lang,
+			    USER_EMAIL_INCORRECT = _state$lang.USER_EMAIL_INCORRECT,
+			    USER_PASSWORD_INCORRECT = _state$lang.USER_PASSWORD_INCORRECT,
+			    USER_PASSWORD_NOT_MATCH = _state$lang.USER_PASSWORD_NOT_MATCH,
+			    USER_FIRSTNAME_INCORRECT = _state$lang.USER_FIRSTNAME_INCORRECT,
+			    USER_LASTNAME_INCORRECT = _state$lang.USER_LASTNAME_INCORRECT,
+			    USER_LANGUAGE_INCORRECT = _state$lang.USER_LANGUAGE_INCORRECT,
+			    GENERIC_ERROR = _state$lang.GENERIC_ERROR,
+			    USERPASSWORDFORM_EDIT_ERROR = _state$lang.USERPASSWORDFORM_EDIT_ERROR;
+
+			var messages = [];
+			if (email != null && !(0, _validator.isValidEmail)(email)) {
+				messages.push(USER_EMAIL_INCORRECT);
+			}
+			if (oldpassword != null && !(0, _validator.isValidPassword)(oldpassword)) {
+				messages.push(USER_PASSWORD_INCORRECT);
+			}
+			if (password != null && !(0, _validator.isValidPassword)(password)) {
+				messages.push(USER_PASSWORD_INCORRECT);
+			}
+			if (password !== cpassword) {
+				messages.push(USER_PASSWORD_NOT_MATCH);
+			}
+			if (firstname != null && !(0, _validator.isValidFirstname)(firstname)) {
+				messages.push(USER_FIRSTNAME_INCORRECT);
+			}
+			if (lastname != null && !(0, _validator.isValidLastname)(lastname)) {
+				messages.push(USER_LASTNAME_INCORRECT);
+			}
+			if (lang != null && !(0, _validator.isValidLanguage)(lang, Object.values(Languages))) {
+				messages.push(USER_LANGUAGE_INCORRECT);
+			}
+			if (messages.length === 0) {
+				var _state$user = state.user,
+				    initialEmail = _state$user.email,
+				    initialToken = _state$user.token,
+				    initialFirstname = _state$user.firstname,
+				    initialLastname = _state$user.lastname,
+				    initialLang = _state$user.lang,
+				    initialRank = _state$user.rank;
+
+				var newEmail = email !== initialEmail ? email : null;
+				var oldPassword = oldpassword || null;
+				var newPassword = password || null;
+				var newFirstname = firstname !== initialFirstname ? firstname : null;
+				var newLastname = lastname !== initialLastname ? lastname : null;
+				var newLang = lang !== initialLang ? lang : null;
+				(0, _Requests.updateUser)(initialToken, newEmail, oldPassword, newPassword, newFirstname, newLastname, newLang).then(function (result) {
+					dispatch({
+						type: ActionTypes.USER_UPDATE,
+						email: email,
+						firstname: firstname,
+						lastname: lastname,
+						lang: lang
+					});
+					if (newLang) {
+						dispatch((0, _lang.changeLanguage)(lang));
+					}
+					dispatch((0, _reduxCookie.setCookie)("user", {
+						email: newEmail || initialEmail,
+						token: initialToken,
+						lang: newLang || initialLang,
+						rank: initialRank
+					}, {
+						path: "/"
+					}));
+					var USER_EDIT_SUCCESS = getState().lang.USER_EDIT_SUCCESS;
+
+					dispatch((0, _messages.sendSuccessMessage)(USER_EDIT_SUCCESS));
+					resolve();
+				}).catch(function (error) {
+					if (error.message === Status.NO_CHANGES) {
+						resolve();
+					} else {
+						if (password !== null) {
+							dispatch((0, _messages.sendFailureMessage)(USERPASSWORDFORM_EDIT_ERROR));
+						} else {
+							dispatch((0, _messages.sendFailureMessage)(GENERIC_ERROR));
+						}
+						reject(error);
+					}
+				});
+			} else {
+				dispatch((0, _messages.sendFailureMessages)(messages));
+				reject(new Error(Status.INVALID_INPUTS));
+			}
+		});
+	};
+};
+
+exports.connect = connect;
+exports.register = register;
+exports.fetchUser = fetchUser;
+exports.disconnect = disconnect;
+exports.updateUser = updateUser;
+
+},{"../constants/ActionTypes":63,"../constants/Languages":64,"../constants/RequestStatus":68,"../net/Requests":77,"./lang":2,"./messages":3,"redux-cookie":481,"validator":501}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1245,7 +1414,7 @@ AccountItem.defaultProps = {
 };
 exports.default = AccountItem;
 
-},{"prop-types":357,"react":431,"react-redux":381}],6:[function(require,module,exports){
+},{"prop-types":320,"react":394,"react-redux":344}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1413,7 +1582,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(App));
 
-},{"../actions/user":4,"../constants/Ranks":64,"./Containers/AccountOverview":11,"./Containers/AdminDashboard":13,"./Containers/CampaignOverview":14,"./Containers/ForgotPassword":15,"./Containers/Profile":16,"./Containers/Register":17,"./Containers/Signin":18,"./Containers/UserDashboard":19,"./Footer":20,"./Header":30,"./Home":31,"./NotFound":43,"./routes/AdminRoute":57,"./routes/LoggedInRoute":58,"./routes/NotLoggedInRoute":59,"prop-types":357,"react":431,"react-redux":381,"react-router-dom":401,"redux":487}],7:[function(require,module,exports){
+},{"../actions/user":4,"../constants/Ranks":65,"./Containers/AccountOverview":11,"./Containers/AdminDashboard":13,"./Containers/CampaignOverview":14,"./Containers/ForgotPassword":15,"./Containers/Profile":16,"./Containers/Register":17,"./Containers/Signin":18,"./Containers/UserDashboard":19,"./Footer":20,"./Header":30,"./Home":31,"./NotFound":43,"./routes/AdminRoute":58,"./routes/LoggedInRoute":59,"./routes/NotLoggedInRoute":60,"prop-types":320,"react":394,"react-redux":344,"react-router-dom":364,"redux":490}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1460,10 +1629,12 @@ var CampaignItem = function (_Component) {
     }, {
         key: "render",
         value: function render() {
+            var campaign = this.props.campaign;
+
             return _react2.default.createElement(
                 "div",
-                { id: this.props.campaign.name, className: "campaignitem col-md-4 col-sm-6 col-xs-12", onClick: this.handleClick },
-                this.props.campaign.name
+                { id: campaign.name, className: "campaignitem col-md-4 col-sm-6 col-xs-12", onClick: this.handleClick },
+                campaign.name
             );
         }
     }]);
@@ -1485,7 +1656,7 @@ CampaignItem.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(CampaignItem);
 
-},{"./withLanguage":60,"prop-types":357,"react":431}],8:[function(require,module,exports){
+},{"./withLanguage":61,"prop-types":320,"react":394}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1549,11 +1720,12 @@ var CampaignList = function (_Component) {
             var _this2 = this;
 
             var CAMPAIGNLIST_NOCAMPAIGN = this.props.lang.CAMPAIGNLIST_NOCAMPAIGN;
+            var campaigns = this.props.campaigns;
 
-            return this.props.campaigns.length > 0 ? _react2.default.createElement(
+            return campaigns.length > 0 ? _react2.default.createElement(
                 "div",
                 null,
-                this.props.campaigns.map(function (campaign) {
+                campaigns.map(function (campaign) {
                     return _react2.default.createElement(_CampaignItem2.default, { key: campaign.uid, id: campaign.name, onClick: _this2.handleClick, campaign: campaign });
                 })
             ) : _react2.default.createElement(
@@ -1587,7 +1759,7 @@ CampaignList.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(CampaignList);
 
-},{"./CampaignItem":7,"./LoadingCog":41,"./withLanguage":60,"prop-types":357,"react":431}],9:[function(require,module,exports){
+},{"./CampaignItem":7,"./LoadingCog":41,"./withLanguage":61,"prop-types":320,"react":394}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1667,7 +1839,7 @@ Card.defaultProps = {
 };
 exports.default = Card;
 
-},{"prop-types":357,"react":431}],10:[function(require,module,exports){
+},{"prop-types":320,"react":394}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1711,11 +1883,12 @@ var Container = function (_Component) {
         value: function render() {
             var _props = this.props,
                 children = _props.children,
-                center = _props.center;
+                center = _props.center,
+                fluid = _props.fluid;
 
             return _react2.default.createElement(
                 "div",
-                { className: "container" + (center ? " text-center" : "") },
+                { className: "container" + (fluid ? "-fluid " : " ") + (center ? " text-center" : "") },
                 children
             );
         }
@@ -1726,7 +1899,8 @@ var Container = function (_Component) {
 
 Container.propTypes = {
     children: _propTypes2.default.any,
-    center: _propTypes2.default.bool
+    center: _propTypes2.default.bool,
+    fluid: _propTypes2.default.bool
 };
 Container.defaultProps = {
     children: null,
@@ -1734,7 +1908,7 @@ Container.defaultProps = {
 };
 exports.default = Container;
 
-},{"prop-types":357,"react":431}],11:[function(require,module,exports){
+},{"prop-types":320,"react":394}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1804,6 +1978,14 @@ var _TwitterRuleForm2 = _interopRequireDefault(_TwitterRuleForm);
 var _WordList = require("../WordList");
 
 var _WordList2 = _interopRequireDefault(_WordList);
+
+var _TextInput = require("../Inputs/TextInput");
+
+var _TextInput2 = _interopRequireDefault(_TextInput);
+
+var _Text = require("../Text");
+
+var _Text2 = _interopRequireDefault(_Text);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1958,6 +2140,17 @@ var AccountOverview = function (_Component) {
                         null,
                         _react2.default.createElement(
                             _Card2.default,
+                            { title: "Informations" },
+                            _react2.default.createElement(_TextInput2.default, { name: "name", value: account.name, label: "Name" }),
+                            _react2.default.createElement(_TextInput2.default, { name: "consumerKey", value: account.consumerSecret, label: "Consumer Key" }),
+                            _react2.default.createElement(_TextInput2.default, { name: "consumerSecret", value: account.consumerSecret, label: "Consumer Secret" }),
+                            _react2.default.createElement(_TextInput2.default, { name: "accessTokenSecret", value: account.accessTokenKey, label: "Access Token Key" }),
+                            _react2.default.createElement(_TextInput2.default, { name: "accessTokenSecret", value: account.accessTokenSecret, label: "Access Token Secret" }),
+                            _react2.default.createElement(_Text2.default, { name: "maxCampaigns", value: account.maxCampaigns, label: "Max campaigns" }),
+                            _react2.default.createElement(_WordList2.default, { words: account.blacklist })
+                        ),
+                        _react2.default.createElement(
+                            _Card2.default,
                             { title: ACCOUNTOVERVIEW_CAMPAIGNS_TITLE },
                             _react2.default.createElement(_CampaignList2.default, { account: account, campaigns: account.campaigns, onClick: this.handleCampaignSelection })
                         ),
@@ -2013,7 +2206,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _withMessages.withMessages)((0, _withLanguage.withLanguage)((0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(AccountOverview))));
 
-},{"../../actions/accounts":1,"../CampaignList":8,"../Card":9,"../Container":10,"../Forms/TwitterAccountForm":24,"../Forms/TwitterRuleForm":25,"../LoadingCog":41,"../Messages":42,"../WordList":50,"../buttons/PrimaryButton":54,"../buttons/SuccessButton":56,"../withLanguage":60,"../withMessages":61,"lodash":330,"prop-types":357,"react":431,"react-redux":381,"react-router-dom":401,"redux":487}],12:[function(require,module,exports){
+},{"../../actions/accounts":1,"../CampaignList":8,"../Card":9,"../Container":10,"../Forms/TwitterAccountForm":24,"../Forms/TwitterRuleForm":25,"../Inputs/TextInput":40,"../LoadingCog":41,"../Messages":42,"../Text":48,"../WordList":51,"../buttons/PrimaryButton":55,"../buttons/SuccessButton":57,"../withLanguage":61,"../withMessages":62,"lodash":292,"prop-types":320,"react":394,"react-redux":344,"react-router-dom":364,"redux":490}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2212,7 +2405,7 @@ var AccountsManagment = function (_Component) {
                 loadingAccountForm = _state.loadingAccountForm;
 
             return loading ? _react2.default.createElement(_LoadingCog2.default, { center: true }) : creationFormDisplayed ? _react2.default.createElement(_TwitterAccountForm2.default, { cancel: true, loading: loadingAccountForm, onCancel: this.handleAccountCreationCancel, onSubmit: this.handleAccountCreationSubmit }) : _react2.default.createElement(
-                "div",
+                _react.Fragment,
                 null,
                 _react2.default.createElement(
                     "ul",
@@ -2271,7 +2464,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _withLanguage.withLanguage)((0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(AccountsManagment));
 
-},{"../../actions/accounts":1,"../AccountItem":5,"../Forms/TwitterAccountForm":24,"../LoadingCog":41,"../buttons/SuccessButton":56,"../withLanguage":60,"prop-types":357,"react":431,"react-redux":381,"redux":487}],13:[function(require,module,exports){
+},{"../../actions/accounts":1,"../AccountItem":5,"../Forms/TwitterAccountForm":24,"../LoadingCog":41,"../buttons/SuccessButton":57,"../withLanguage":61,"prop-types":320,"react":394,"react-redux":344,"redux":490}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2350,7 +2543,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _withMessages.withMessages)((0, _withLanguage.withLanguage)((0, _reactRedux.connect)(mapStateToProps)(AdminDashboard)));
 
-},{"../Card":9,"../Container":10,"../withLanguage":60,"../withMessages":61,"prop-types":357,"react":431,"react-redux":381}],14:[function(require,module,exports){
+},{"../Card":9,"../Container":10,"../withLanguage":61,"../withMessages":62,"prop-types":320,"react":394,"react-redux":344}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2416,6 +2609,14 @@ var _SuccessButton2 = _interopRequireDefault(_SuccessButton);
 var _TwitterRuleForm = require("../Forms/TwitterRuleForm");
 
 var _TwitterRuleForm2 = _interopRequireDefault(_TwitterRuleForm);
+
+var _TextInput = require("../Inputs/TextInput");
+
+var _TextInput2 = _interopRequireDefault(_TextInput);
+
+var _DateInput = require("../Inputs/DateInput");
+
+var _DateInput2 = _interopRequireDefault(_DateInput);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2649,7 +2850,18 @@ var CampaignOverview = function (_Component) {
                 CAMPAIGNOVERVIEW_ADD_RULE_BUTTON = _props$lang.CAMPAIGNOVERVIEW_ADD_RULE_BUTTON,
                 CAMPAIGNOVERVIEW_TITLE_ACCOUNT = _props$lang.CAMPAIGNOVERVIEW_TITLE_ACCOUNT,
                 CAMPAIGNOVERVIEW_TITLE_CAMPAIGN = _props$lang.CAMPAIGNOVERVIEW_TITLE_CAMPAIGN;
-            var messages = this.props.messages;
+            var _props = this.props,
+                messages = _props.messages,
+                accounts = _props.accounts;
+            var _state4 = this.state,
+                loadingAccountList = _state4.loadingAccountList,
+                accountId = _state4.accountId,
+                campaignId = _state4.campaignId,
+                editCampaign = _state4.editCampaign,
+                loading = _state4.loading,
+                campaign = _state4.campaign,
+                creationRuleFormDisplayed = _state4.creationRuleFormDisplayed,
+                selectedRule = _state4.selectedRule;
 
             return _react2.default.createElement(
                 _Container2.default,
@@ -2659,25 +2871,32 @@ var CampaignOverview = function (_Component) {
                     { title: _react2.default.createElement(
                             "span",
                             null,
-                            CAMPAIGNOVERVIEW_TITLE_ACCOUNT + this.state.accountId + " - " + CAMPAIGNOVERVIEW_TITLE_CAMPAIGN + this.state.campaignId,
-                            !this.state.editCampaign && _react2.default.createElement(
+                            CAMPAIGNOVERVIEW_TITLE_ACCOUNT + accountId + " - " + CAMPAIGNOVERVIEW_TITLE_CAMPAIGN + campaignId,
+                            !editCampaign && _react2.default.createElement(
                                 _PrimaryButton2.default,
                                 { id: "editCampaign", style: { float: "right" }, onClick: this.handleClick },
                                 CAMPAIGNOVERVIEW_EDIT_BUTTON
                             )
                         ) },
-                    this.state.loadingAccountList ? _react2.default.createElement(_LoadingCog2.default, { center: true }) : this.state.campaign ? this.state.editCampaign ? _react2.default.createElement(_CampaignForm2.default, { onSubmit: this.handleCampaignEditionSubmit, onDelete: this.handleCampaignEditionDelete, onCancel: this.handleCampaignEditionCancel, accounts: this.props.accounts.map(function (account) {
+                    loadingAccountList ? _react2.default.createElement(_LoadingCog2.default, { center: true }) : campaign ? editCampaign ? _react2.default.createElement(_CampaignForm2.default, { accounts: this.props.accounts.map(function (account) {
                             return account.name;
-                        }), accountId: this.state.accountId, campaign: this.state.campaign, messages: this.props.messages, edit: true, cancel: true, "delete": true }) : _react2.default.createElement(
-                        "div",
+                        }), accountId: accountId, campaign: campaign, messages: this.props.messages, edit: true, cancel: true, "delete": true, onCancel: this.handleCampaignEditionCancel, onDelete: this.handleCampaignEditionDelete, onSubmit: this.handleCampaignEditionSubmit }) : _react2.default.createElement(
+                        _react.Fragment,
                         null,
                         _react2.default.createElement(_Messages2.default, { messages: messages }),
                         _react2.default.createElement(
                             _Card2.default,
                             { title: CAMPAIGNOVERVIEW_RULES_TITLE },
-                            this.state.creationRuleFormDisplayed ? _react2.default.createElement(_TwitterRuleForm2.default, { onSubmit: this.handleRuleCreationSubmit, cancel: true, onCancel: this.handleRuleCreationCancel, loading: this.state.loading }) : _react2.default.createElement(_RuleList2.default, { accountId: this.state.accountId, campaignId: this.state.campaignId, rules: this.state.campaign.config.rules, onRuleEditMode: this.handleRuleEditMode, selectedRule: this.state.selectedRule, loading: this.state.loading, onRuleEditionSubmit: this.handleRuleEditionSubmit, onRuleEditionDelete: this.handleRuleEditionDelete, onRuleEditionCancel: this.handleRuleEditionCancel })
+                            creationRuleFormDisplayed ? _react2.default.createElement(_TwitterRuleForm2.default, { cancel: true, loading: loading, onCancel: this.handleRuleCreationCancel, onSubmit: this.handleRuleCreationSubmit }) : _react2.default.createElement(
+                                _react.Fragment,
+                                null,
+                                _react2.default.createElement(_TextInput2.default, { name: "name", value: campaign.name, label: "Name" }),
+                                _react2.default.createElement(_DateInput2.default, { name: "dateBegin", value: campaign.dateBegin, label: "Date begin" }),
+                                _react2.default.createElement(_DateInput2.default, { name: "dateEnd", value: campaign.dateBegin, label: "Date end", disabled: true }),
+                                _react2.default.createElement(_RuleList2.default, { accountId: accountId, campaignId: campaignId, rules: campaign.config.rules, onRuleEditMode: this.handleRuleEditMode, selectedRule: selectedRule, loading: loading, onRuleEditionSubmit: this.handleRuleEditionSubmit, onRuleEditionDelete: this.handleRuleEditionDelete, onRuleEditionCancel: this.handleRuleEditionCancel })
+                            )
                         ),
-                        !this.state.creationRuleFormDisplayed && _react2.default.createElement(
+                        !creationRuleFormDisplayed && _react2.default.createElement(
                             _SuccessButton2.default,
                             { id: "createRule", onClick: this.handleClick },
                             CAMPAIGNOVERVIEW_ADD_RULE_BUTTON
@@ -2732,7 +2951,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _withMessages.withMessages)((0, _withLanguage.withLanguage)((0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(CampaignOverview))));
 
-},{"../../actions/accounts":1,"../Card":9,"../Container":10,"../Forms/CampaignForm":23,"../Forms/TwitterRuleForm":25,"../LoadingCog":41,"../Messages":42,"../RuleList":47,"../buttons/PrimaryButton":54,"../buttons/SuccessButton":56,"../withLanguage":60,"../withMessages":61,"lodash":330,"prop-types":357,"react":431,"react-redux":381,"react-router-dom":401,"redux":487}],15:[function(require,module,exports){
+},{"../../actions/accounts":1,"../Card":9,"../Container":10,"../Forms/CampaignForm":23,"../Forms/TwitterRuleForm":25,"../Inputs/DateInput":35,"../Inputs/TextInput":40,"../LoadingCog":41,"../Messages":42,"../RuleList":47,"../buttons/PrimaryButton":55,"../buttons/SuccessButton":57,"../withLanguage":61,"../withMessages":62,"lodash":292,"prop-types":320,"react":394,"react-redux":344,"react-router-dom":364,"redux":490}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2817,7 +3036,7 @@ ForgotPassword.propTypes = {
 };
 exports.default = (0, _withMessages.withMessages)(ForgotPassword);
 
-},{"../Card":9,"../Container":10,"../Forms/UserForgotPasswordForm":26,"../withMessages":61,"prop-types":357,"react":431}],16:[function(require,module,exports){
+},{"../Card":9,"../Container":10,"../Forms/UserForgotPasswordForm":26,"../withMessages":62,"prop-types":320,"react":394}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3171,7 +3390,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _withMessages.withMessages)((0, _withLanguage.withLanguage)((0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Profile)));
 
-},{"../../actions/accounts":1,"../../actions/user":4,"../../constants/Languages":63,"../../constants/Ranks":64,"../Card":9,"../Container":10,"../Form":21,"../Forms/UserPasswordForm":27,"../Inputs/ListInput":37,"../Inputs/TextInput":40,"../LoadingCog":41,"../Messages":42,"../buttons/PrimaryButton":54,"../withLanguage":60,"../withMessages":61,"./AccountsManagment":12,"prop-types":357,"react":431,"react-redux":381,"redux":487}],17:[function(require,module,exports){
+},{"../../actions/accounts":1,"../../actions/user":4,"../../constants/Languages":64,"../../constants/Ranks":65,"../Card":9,"../Container":10,"../Form":21,"../Forms/UserPasswordForm":27,"../Inputs/ListInput":37,"../Inputs/TextInput":40,"../LoadingCog":41,"../Messages":42,"../buttons/PrimaryButton":55,"../withLanguage":61,"../withMessages":62,"./AccountsManagment":12,"prop-types":320,"react":394,"react-redux":344,"redux":490}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3287,7 +3506,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _withMessages.withMessages)((0, _reactRedux.connect)(null, mapDispatchToProps)(Register));
 
-},{"../../actions/user":4,"../Container":10,"../Forms/UserRegisterForm":28,"../LoadingCog":41,"../withMessages":61,"prop-types":357,"react":431,"react-redux":381,"redux":487}],18:[function(require,module,exports){
+},{"../../actions/user":4,"../Container":10,"../Forms/UserRegisterForm":28,"../LoadingCog":41,"../withMessages":62,"prop-types":320,"react":394,"react-redux":344,"redux":490}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3420,7 +3639,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _withMessages.withMessages)((0, _withLanguage.withLanguage)((0, _reactRedux.connect)(null, mapDispatchToProps)(Signin)));
 
-},{"../../actions/user":4,"../Container":10,"../Forms/UserSigninForm":29,"../LoadingCog":41,"../withLanguage":60,"../withMessages":61,"prop-types":357,"react":431,"react-redux":381,"react-router-dom":401,"redux":487}],19:[function(require,module,exports){
+},{"../../actions/user":4,"../Container":10,"../Forms/UserSigninForm":29,"../LoadingCog":41,"../withLanguage":61,"../withMessages":62,"prop-types":320,"react":394,"react-redux":344,"react-router-dom":364,"redux":490}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3671,7 +3890,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _withMessages.withMessages)((0, _withLanguage.withLanguage)((0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(UserDashboard))));
 
-},{"../../actions/accounts":1,"../CampaignList":8,"../Card":9,"../Container":10,"../Forms/CampaignForm":23,"../LoadingCog":41,"../buttons/InfoButton":53,"../buttons/SuccessButton":56,"../withLanguage":60,"../withMessages":61,"./CampaignOverview":14,"lodash":330,"prop-types":357,"react":431,"react-redux":381,"react-router-dom":401,"redux":487}],20:[function(require,module,exports){
+},{"../../actions/accounts":1,"../CampaignList":8,"../Card":9,"../Container":10,"../Forms/CampaignForm":23,"../LoadingCog":41,"../buttons/InfoButton":54,"../buttons/SuccessButton":57,"../withLanguage":61,"../withMessages":62,"./CampaignOverview":14,"lodash":292,"prop-types":320,"react":394,"react-redux":344,"react-router-dom":364,"redux":490}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3743,7 +3962,7 @@ Footer.propTypes = {
 };
 exports.default = (0, _withLanguage.withLanguage)(Footer);
 
-},{"./withLanguage":60,"prop-types":357,"react":431}],21:[function(require,module,exports){
+},{"./withLanguage":61,"prop-types":320,"react":394}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3818,7 +4037,7 @@ Form.defaultProps = {
 };
 exports.default = Form;
 
-},{"./Card":9,"prop-types":357,"react":431}],22:[function(require,module,exports){
+},{"./Card":9,"prop-types":320,"react":394}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3850,7 +4069,7 @@ var FormGroup = function FormGroup(_ref) {
 
 exports.default = FormGroup;
 
-},{"react":431}],23:[function(require,module,exports){
+},{"react":394}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4023,7 +4242,7 @@ var CampaignForm = function (_Component) {
 
             return _react2.default.createElement(
                 _Form2.default,
-                { title: title ? edit ? CAMPAIGNFORM_EDIT_TITLE : CAMPAIGNFORM_CREATE_TITLE : null },
+                { title: title ? edit ? CAMPAIGNFORM_EDIT_TITLE : CAMPAIGNFORM_CREATE_TITLE : undefined },
                 messages && _react2.default.createElement(_Messages2.default, { messages: messages }),
                 _react2.default.createElement(_Input2.default, { name: "name", id: "name", value: name, label: CAMPAIGNFORM_NAME, tooltip: CAMPAIGNFORM_NAME_TOOLTIP, onChange: this.handleChange, autoFocus: true }),
                 _react2.default.createElement(_ListInput2.default, { id: "accountId", name: "accountId", options: accounts, defaultOption: campaign ? accountId : undefined, label: CAMPAIGNFORM_ACCOUNT, onChange: this.handleChange, disabled: campaign !== undefined }),
@@ -4147,7 +4366,7 @@ CampaignForm.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(CampaignForm);
 
-},{"../Form":21,"../FormGroup":22,"../Inputs/DateInput":35,"../Inputs/Input":36,"../Inputs/ListInput":37,"../LoadingCog":41,"../Messages":42,"../buttons/DangerButton":51,"../buttons/SecondaryButton":55,"../buttons/SuccessButton":56,"../withLanguage":60,"moment":350,"prop-types":357,"react":431}],24:[function(require,module,exports){
+},{"../Form":21,"../FormGroup":22,"../Inputs/DateInput":35,"../Inputs/Input":36,"../Inputs/ListInput":37,"../LoadingCog":41,"../Messages":42,"../buttons/DangerButton":52,"../buttons/SecondaryButton":56,"../buttons/SuccessButton":57,"../withLanguage":61,"moment":313,"prop-types":320,"react":394}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4454,7 +4673,7 @@ TwitterAccountForm.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(TwitterAccountForm);
 
-},{"../Form":21,"../FormGroup":22,"../Inputs/ArrayInput":33,"../Inputs/Input":36,"../LoadingCog":41,"../Messages":42,"../buttons/DangerButton":51,"../buttons/SecondaryButton":55,"../buttons/SuccessButton":56,"../withLanguage":60,"prop-types":357,"react":431}],25:[function(require,module,exports){
+},{"../Form":21,"../FormGroup":22,"../Inputs/ArrayInput":33,"../Inputs/Input":36,"../LoadingCog":41,"../Messages":42,"../buttons/DangerButton":52,"../buttons/SecondaryButton":56,"../buttons/SuccessButton":57,"../withLanguage":61,"prop-types":320,"react":394}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4790,7 +5009,7 @@ TwitterRuleForm.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(TwitterRuleForm);
 
-},{"../../constants/TwitterRuleConditions":69,"../../constants/TwitterRuleLangs":70,"../../constants/TwitterRuleTypes":71,"../Form":21,"../FormGroup":22,"../Inputs/ArrayInput":33,"../Inputs/Input":36,"../Inputs/ListInput":37,"../Inputs/NumberInput":38,"../Inputs/Switch":39,"../LoadingCog":41,"../Messages":42,"../buttons/DangerButton":51,"../buttons/SecondaryButton":55,"../buttons/SuccessButton":56,"../withLanguage":60,"lodash":330,"prop-types":357,"react":431}],26:[function(require,module,exports){
+},{"../../constants/TwitterRuleConditions":70,"../../constants/TwitterRuleLangs":71,"../../constants/TwitterRuleTypes":72,"../Form":21,"../FormGroup":22,"../Inputs/ArrayInput":33,"../Inputs/Input":36,"../Inputs/ListInput":37,"../Inputs/NumberInput":38,"../Inputs/Switch":39,"../LoadingCog":41,"../Messages":42,"../buttons/DangerButton":52,"../buttons/SecondaryButton":56,"../buttons/SuccessButton":57,"../withLanguage":61,"lodash":292,"prop-types":320,"react":394}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4968,7 +5187,7 @@ UserForgotPasswordForm.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(UserForgotPasswordForm);
 
-},{"../Form":21,"../FormGroup":22,"../Inputs/Input":36,"../LoadingCog":41,"../Messages":42,"../Recaptcha":44,"../buttons/SuccessButton":56,"../withLanguage":60,"prop-types":357,"react":431}],27:[function(require,module,exports){
+},{"../Form":21,"../FormGroup":22,"../Inputs/Input":36,"../LoadingCog":41,"../Messages":42,"../Recaptcha":44,"../buttons/SuccessButton":57,"../withLanguage":61,"prop-types":320,"react":394}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5163,7 +5382,7 @@ UserPasswordForm.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(UserPasswordForm);
 
-},{"../Form":21,"../FormGroup":22,"../Inputs/Input":36,"../LoadingCog":41,"../Messages":42,"../Recaptcha":44,"../buttons/SecondaryButton":55,"../buttons/SuccessButton":56,"../withLanguage":60,"prop-types":357,"react":431}],28:[function(require,module,exports){
+},{"../Form":21,"../FormGroup":22,"../Inputs/Input":36,"../LoadingCog":41,"../Messages":42,"../Recaptcha":44,"../buttons/SecondaryButton":56,"../buttons/SuccessButton":57,"../withLanguage":61,"prop-types":320,"react":394}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5393,7 +5612,7 @@ UserRegisterForm.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(UserRegisterForm);
 
-},{"../../constants/Languages":63,"../Form":21,"../FormGroup":22,"../Inputs/Checkbox":34,"../Inputs/Input":36,"../Inputs/ListInput":37,"../LoadingCog":41,"../Messages":42,"../Recaptcha":44,"../buttons/SuccessButton":56,"../withLanguage":60,"lodash":330,"prop-types":357,"react":431}],29:[function(require,module,exports){
+},{"../../constants/Languages":64,"../Form":21,"../FormGroup":22,"../Inputs/Checkbox":34,"../Inputs/Input":36,"../Inputs/ListInput":37,"../LoadingCog":41,"../Messages":42,"../Recaptcha":44,"../buttons/SuccessButton":57,"../withLanguage":61,"lodash":292,"prop-types":320,"react":394}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5544,14 +5763,12 @@ UserSigninForm.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(UserSigninForm);
 
-},{"../Form":21,"../FormGroup":22,"../Inputs/Input":36,"../LoadingCog":41,"../Messages":42,"../buttons/SuccessButton":56,"../withLanguage":60,"prop-types":357,"react":431}],30:[function(require,module,exports){
+},{"../Form":21,"../FormGroup":22,"../Inputs/Input":36,"../LoadingCog":41,"../Messages":42,"../buttons/SuccessButton":57,"../withLanguage":61,"prop-types":320,"react":394}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -5599,8 +5816,7 @@ var Header = function (_Component) {
     _createClass(Header, [{
         key: "render",
         value: function render() {
-            var active = { borderBottomColor: "#3f51b5" };
-            var isLoggedIn = this.props.user.token !== undefined;
+            var isLoggedIn = this.props.user.token != null;
             var isAdmin = this.props.user.rank === Ranks.ADMIN;
             var _props$lang = this.props.lang,
                 HEADER_SR_ONLY = _props$lang.HEADER_SR_ONLY,
@@ -5613,66 +5829,6 @@ var Header = function (_Component) {
                 COMPANY_NAME = _props$lang.COMPANY_NAME,
                 HEADER_HOME = _props$lang.HEADER_HOME;
 
-            var menu = [];
-            if (isAdmin) {
-                menu.push(_react2.default.createElement(
-                    "li",
-                    { className: "nav-item" },
-                    _react2.default.createElement(
-                        _reactRouterDom.NavLink,
-                        { className: "nav-link", to: "/admin-dashboard", activeStyle: active },
-                        HEADER_ADMIN_DASHBOARD
-                    )
-                ));
-            }
-            if (isLoggedIn) {
-                menu.push(_react2.default.createElement(
-                    "li",
-                    { className: "nav-item" },
-                    _react2.default.createElement(
-                        _reactRouterDom.NavLink,
-                        { className: "nav-link", to: "/user-dashboard", activeStyle: active },
-                        HEADER_USER_DASHBOARD
-                    )
-                ));
-                menu.push(_react2.default.createElement(
-                    "li",
-                    { className: "nav-item" },
-                    _react2.default.createElement(
-                        _reactRouterDom.NavLink,
-                        { className: "nav-link", to: "/profile", activeStyle: active },
-                        HEADER_PROFILE
-                    )
-                ));
-                menu.push(_react2.default.createElement(
-                    "li",
-                    { className: "nav-item", onClick: this.props.onDisconnect },
-                    _react2.default.createElement(
-                        "a",
-                        { className: "nav-link", style: { cursor: "pointer" } },
-                        HEADER_DISCONNECT
-                    )
-                ));
-            } else {
-                menu.push(_react2.default.createElement(
-                    "li",
-                    null,
-                    _react2.default.createElement(
-                        _reactRouterDom.NavLink,
-                        { className: "nav-link", to: "/signin", activeStyle: active },
-                        HEADER_SIGNIN
-                    )
-                ));
-                menu.push(_react2.default.createElement(
-                    "li",
-                    null,
-                    _react2.default.createElement(
-                        _reactRouterDom.NavLink,
-                        { className: "nav-link", to: "/register", activeStyle: active },
-                        HEADER_REGISTER
-                    )
-                ));
-            }
             return _react2.default.createElement(
                 _Container2.default,
                 null,
@@ -5700,13 +5856,71 @@ var Header = function (_Component) {
                                 { className: "nav-item" },
                                 _react2.default.createElement(
                                     _reactRouterDom.NavLink,
-                                    { className: "nav-link", to: "/", activeStyle: active, exact: true },
+                                    { className: "nav-link", to: "/", exact: true },
                                     HEADER_HOME
                                 )
                             ),
-                            menu.map(function (element, index) {
-                                return _extends({}, element, { key: index });
-                            })
+                            isAdmin && _react2.default.createElement(
+                                "li",
+                                { className: "nav-item" },
+                                _react2.default.createElement(
+                                    _reactRouterDom.NavLink,
+                                    { className: "nav-link", to: "/admin-dashboard" },
+                                    HEADER_ADMIN_DASHBOARD
+                                )
+                            ),
+                            isLoggedIn ? _react2.default.createElement(
+                                _react.Fragment,
+                                null,
+                                _react2.default.createElement(
+                                    "li",
+                                    { className: "nav-item" },
+                                    _react2.default.createElement(
+                                        _reactRouterDom.NavLink,
+                                        { className: "nav-link", to: "/user-dashboard" },
+                                        HEADER_USER_DASHBOARD
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    "li",
+                                    { className: "nav-item" },
+                                    _react2.default.createElement(
+                                        _reactRouterDom.NavLink,
+                                        { className: "nav-link", to: "/profile" },
+                                        HEADER_PROFILE
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    "li",
+                                    { className: "nav-item", onClick: this.props.onDisconnect },
+                                    _react2.default.createElement(
+                                        "a",
+                                        { className: "nav-link", style: { cursor: "pointer" } },
+                                        HEADER_DISCONNECT
+                                    )
+                                )
+                            ) : _react2.default.createElement(
+                                _react.Fragment,
+                                null,
+                                _react2.default.createElement(
+                                    "li",
+                                    null,
+                                    _react2.default.createElement(
+                                        _reactRouterDom.NavLink,
+                                        { className: "nav-link", to: "/signin" },
+                                        HEADER_SIGNIN
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    "li",
+                                    null,
+                                    _react2.default.createElement(
+                                        _reactRouterDom.NavLink,
+                                        { className: "nav-link", to: "/register" },
+                                        HEADER_REGISTER
+                                    )
+                                )
+                            )
                         )
                     )
                 )
@@ -5741,11 +5955,11 @@ Header.defaultProps = {
 };
 exports.default = (0, _reactRouterDom.withRouter)((0, _withLanguage.withLanguage)(Header));
 
-},{"../constants/Ranks":64,"./Container":10,"./withLanguage":60,"prop-types":357,"react":431,"react-redux":381,"react-router-dom":401}],31:[function(require,module,exports){
+},{"../constants/Ranks":65,"./Container":10,"./withLanguage":61,"prop-types":320,"react":394,"react-redux":344,"react-router-dom":364}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5754,15 +5968,27 @@ var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = require("react-redux");
-
 var _propTypes = require("prop-types");
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
+var _withMessages = require("./withMessages");
+
 var _UserSubscriptionChart = require("./UserSubscriptionChart");
 
 var _UserSubscriptionChart2 = _interopRequireDefault(_UserSubscriptionChart);
+
+var _Container = require("./Container");
+
+var _Container2 = _interopRequireDefault(_Container);
+
+var _Card = require("./Card");
+
+var _Card2 = _interopRequireDefault(_Card);
+
+var _Row = require("./Row");
+
+var _Row2 = _interopRequireDefault(_Row);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5773,128 +5999,108 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var Home = function (_Component) {
-  _inherits(Home, _Component);
+    _inherits(Home, _Component);
 
-  function Home(props) {
-    _classCallCheck(this, Home);
+    function Home() {
+        _classCallCheck(this, Home);
 
-    return _possibleConstructorReturn(this, (Home.__proto__ || Object.getPrototypeOf(Home)).call(this, props));
-  }
-
-  _createClass(Home, [{
-    key: "render",
-    value: function render() {
-      var data = [{ index: '01/05', value: 10 }, { index: '02/05', value: 15 }, { index: '03/05', value: 25 }, { index: '04/05', value: 50 }, { index: '05/05', value: 60 }, { index: '06/05', value: 72 }, { index: '07/05', value: 84 }];
-      return _react2.default.createElement(
-        "div",
-        { className: "container-fluid" },
-        _react2.default.createElement(
-          "div",
-          { className: "row" },
-          _react2.default.createElement(
-            "div",
-            { className: "col-sm-4" },
-            _react2.default.createElement(
-              "div",
-              { className: "card" },
-              _react2.default.createElement(
-                "div",
-                { className: "card-body" },
-                _react2.default.createElement(_UserSubscriptionChart2.default, { data: data }),
-                _react2.default.createElement(
-                  "h3",
-                  null,
-                  "Heading"
-                ),
-                _react2.default.createElement(
-                  "p",
-                  null,
-                  "Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui."
-                ),
-                _react2.default.createElement(
-                  "a",
-                  { href: "#", role: "button", className: "btn btn-secondary" },
-                  "View details"
-                )
-              )
-            )
-          ),
-          _react2.default.createElement(
-            "div",
-            { className: "col-sm-4" },
-            _react2.default.createElement(
-              "div",
-              { className: "card" },
-              _react2.default.createElement(
-                "div",
-                { className: "card-body" },
-                _react2.default.createElement(
-                  "h3",
-                  null,
-                  "Heading"
-                ),
-                _react2.default.createElement(
-                  "p",
-                  null,
-                  "Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui."
-                ),
-                _react2.default.createElement(
-                  "a",
-                  { href: "#", role: "button", className: "btn btn-secondary" },
-                  "View details"
-                )
-              )
-            )
-          ),
-          _react2.default.createElement(
-            "div",
-            { className: "col-sm-4" },
-            _react2.default.createElement(
-              "div",
-              { className: "card" },
-              _react2.default.createElement(
-                "div",
-                { className: "card-body" },
-                _react2.default.createElement(
-                  "h3",
-                  null,
-                  "Heading"
-                ),
-                _react2.default.createElement(
-                  "p",
-                  null,
-                  "Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui."
-                ),
-                _react2.default.createElement(
-                  "a",
-                  { href: "#", role: "button", className: "btn btn-secondary" },
-                  "View details"
-                )
-              )
-            )
-          )
-        )
-      );
+        return _possibleConstructorReturn(this, (Home.__proto__ || Object.getPrototypeOf(Home)).apply(this, arguments));
     }
-  }]);
 
-  return Home;
+    _createClass(Home, [{
+        key: "render",
+        value: function render() {
+            var data = [{ index: '01/05', value: 10 }, { index: '02/05', value: 15 }, { index: '03/05', value: 25 }, { index: '04/05', value: 50 }, { index: '05/05', value: 60 }, { index: '06/05', value: 72 }, { index: '07/05', value: 84 }];
+            return _react2.default.createElement(
+                _Container2.default,
+                { fluid: true },
+                _react2.default.createElement(
+                    _Row2.default,
+                    null,
+                    _react2.default.createElement(
+                        "div",
+                        { className: "col-sm-4" },
+                        _react2.default.createElement(
+                            _Card2.default,
+                            null,
+                            _react2.default.createElement(_UserSubscriptionChart2.default, { data: data }),
+                            _react2.default.createElement(
+                                "h3",
+                                null,
+                                "Heading"
+                            ),
+                            _react2.default.createElement(
+                                "p",
+                                null,
+                                "Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui."
+                            ),
+                            _react2.default.createElement(
+                                "a",
+                                { href: "#", role: "button", className: "btn btn-secondary" },
+                                "View details"
+                            )
+                        )
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        { className: "col-sm-4" },
+                        _react2.default.createElement(
+                            _Card2.default,
+                            null,
+                            _react2.default.createElement(
+                                "h3",
+                                null,
+                                "Heading"
+                            ),
+                            _react2.default.createElement(
+                                "p",
+                                null,
+                                "Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui."
+                            ),
+                            _react2.default.createElement(
+                                "a",
+                                { href: "#", role: "button", className: "btn btn-secondary" },
+                                "View details"
+                            )
+                        )
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        { className: "col-sm-4" },
+                        _react2.default.createElement(
+                            _Card2.default,
+                            null,
+                            _react2.default.createElement(
+                                "h3",
+                                null,
+                                "Heading"
+                            ),
+                            _react2.default.createElement(
+                                "p",
+                                null,
+                                "Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui."
+                            ),
+                            _react2.default.createElement(
+                                "a",
+                                { href: "#", role: "button", className: "btn btn-secondary" },
+                                "View details"
+                            )
+                        )
+                    )
+                )
+            );
+        }
+    }]);
+
+    return Home;
 }(_react.Component);
 
 Home.propTypes = {
-  messages: _propTypes2.default.object.isRequired
+    messages: _propTypes2.default.object.isRequired
 };
+exports.default = (0, _withMessages.withMessages)(Home);
 
-
-var mapStateToProps = function mapStateToProps(state) {
-  return {
-    messages: state.messages
-  };
-};
-
-exports.default = (0, _reactRedux.connect)(mapStateToProps)(Home);
-
-},{"./UserSubscriptionChart":49,"prop-types":357,"react":431,"react-redux":381}],32:[function(require,module,exports){
+},{"./Card":9,"./Container":10,"./Row":45,"./UserSubscriptionChart":50,"./withMessages":62,"prop-types":320,"react":394}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5926,7 +6132,7 @@ var InputGroup = function InputGroup(_ref) {
 
 exports.default = InputGroup;
 
-},{"react":431}],33:[function(require,module,exports){
+},{"react":394}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6215,7 +6421,7 @@ ArrayInput.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(ArrayInput);
 
-},{"../FormGroup":22,"../InputGroup":32,"../Row":45,"../Tooltip":48,"../buttons/DangerButton":51,"../buttons/SuccessButton":56,"../withLanguage":60,"./Input":36,"./ListInput":37,"prop-types":357,"react":431,"uuid/v4":498}],34:[function(require,module,exports){
+},{"../FormGroup":22,"../InputGroup":32,"../Row":45,"../Tooltip":49,"../buttons/DangerButton":52,"../buttons/SuccessButton":57,"../withLanguage":61,"./Input":36,"./ListInput":37,"prop-types":320,"react":394,"uuid/v4":500}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6290,13 +6496,15 @@ var Checkbox = function (_Component) {
                 id = _props.id,
                 name = _props.name,
                 label = _props.label,
-                tooltip = _props.tooltip;
+                tooltip = _props.tooltip,
+                autoFocus = _props.autoFocus,
+                disabled = _props.disabled;
             var value = this.state.value;
 
             var checkbox = _react2.default.createElement(
                 "div",
                 { className: "component-checkbox" },
-                _react2.default.createElement(_Input2.default, { type: "checkbox", name: name, id: "checkbox", onChange: this.handleChange, checked: value }),
+                _react2.default.createElement(_Input2.default, { type: "checkbox", name: name, id: "checkbox", onChange: this.handleChange, checked: value, autoFocus: autoFocus, disabled: disabled }),
                 _react2.default.createElement("label", { htmlFor: "checkbox" })
             );
             return label ? _react2.default.createElement(
@@ -6338,7 +6546,9 @@ Checkbox.propTypes = {
     label: _propTypes2.default.string,
     id: _propTypes2.default.string,
     tooltip: _propTypes2.default.string,
-    onChange: _propTypes2.default.func
+    onChange: _propTypes2.default.func,
+    autoFocus: _propTypes2.default.bool,
+    disabled: _propTypes2.default.bool
 };
 Checkbox.defaultProps = {
     name: "checkbox",
@@ -6347,7 +6557,7 @@ Checkbox.defaultProps = {
 };
 exports.default = Checkbox;
 
-},{"../FormGroup":22,"../Row":45,"../Tooltip":48,"./Input":36,"prop-types":357,"react":431}],35:[function(require,module,exports){
+},{"../FormGroup":22,"../Row":45,"../Tooltip":49,"./Input":36,"prop-types":320,"react":394}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6428,7 +6638,8 @@ var DateInput = function (_Component) {
                 id = _props.id,
                 label = _props.label,
                 value = _props.value,
-                tooltip = _props.tooltip;
+                tooltip = _props.tooltip,
+                disabled = _props.disabled;
             var _state = this.state,
                 yesterday = _state.yesterday,
                 nextYear = _state.nextYear;
@@ -6436,7 +6647,7 @@ var DateInput = function (_Component) {
             var valid = function valid(current) {
                 return current.isAfter(yesterday) && current.isBefore(nextYear);
             };
-            var dateInput = _react2.default.createElement(_reactDatetime2.default, { locale: REACT_DATETIME_LANGUAGE, isValidDate: valid, onChange: this.handleChange, value: value ? new Date(value * 1000) : "" });
+            var dateInput = _react2.default.createElement(_reactDatetime2.default, { locale: REACT_DATETIME_LANGUAGE, isValidDate: valid, onChange: this.handleChange, value: value ? new Date(value * 1000) : "", disabled: disabled });
             return label ? _react2.default.createElement(
                 _FormGroup2.default,
                 null,
@@ -6476,7 +6687,8 @@ DateInput.propTypes = {
     value: _propTypes2.default.number,
     id: _propTypes2.default.string,
     tooltip: _propTypes2.default.string,
-    label: _propTypes2.default.string
+    label: _propTypes2.default.string,
+    disabled: _propTypes2.default.bool
 };
 DateInput.defaultProps = {
     name: "dateinput",
@@ -6485,7 +6697,7 @@ DateInput.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(DateInput);
 
-},{"../FormGroup":22,"../Row":45,"../Tooltip":48,"../withLanguage":60,"moment":350,"moment/locale/fr":349,"prop-types":357,"react":431,"react-datetime":360}],36:[function(require,module,exports){
+},{"../FormGroup":22,"../Row":45,"../Tooltip":49,"../withLanguage":61,"moment":313,"moment/locale/fr":312,"prop-types":320,"react":394,"react-datetime":323}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6592,6 +6804,7 @@ var Input = function (_Component) {
 Input.propTypes = {
     name: _propTypes2.default.string,
     value: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number]),
+    id: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number]),
     type: _propTypes2.default.string,
     label: _propTypes2.default.string,
     tooltip: _propTypes2.default.string,
@@ -6605,7 +6818,7 @@ Input.defaultProps = {
 };
 exports.default = Input;
 
-},{"../FormGroup":22,"../Row":45,"../Tooltip":48,"prop-types":357,"react":431}],37:[function(require,module,exports){
+},{"../FormGroup":22,"../Row":45,"../Tooltip":49,"prop-types":320,"react":394}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6786,7 +6999,7 @@ ListInput.defaultProps = {
 };
 exports.default = ListInput;
 
-},{"../FormGroup":22,"../LoadingCog":41,"../Row":45,"../Tooltip":48,"prop-types":357,"react":431,"uuid/v4":498}],38:[function(require,module,exports){
+},{"../FormGroup":22,"../LoadingCog":41,"../Row":45,"../Tooltip":49,"prop-types":320,"react":394,"uuid/v4":500}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6893,13 +7106,15 @@ var NumberInput = function (_Component) {
             var _props = this.props,
                 id = _props.id,
                 label = _props.label,
-                tooltip = _props.tooltip;
+                tooltip = _props.tooltip,
+                autoFocus = _props.autoFocus,
+                disabled = _props.disabled;
             var value = this.state.value;
 
             var numberInput = _react2.default.createElement(
                 _InputGroup2.default,
                 null,
-                _react2.default.createElement(_Input2.default, { id: id, value: value, onChange: this.handleChange, autoFocus: true }),
+                _react2.default.createElement(_Input2.default, { id: id, value: value, onChange: this.handleChange, autoFocus: autoFocus, disabled: disabled }),
                 _react2.default.createElement(_IconButton2.default, { id: "buttonDecrement", className: "input-group-append input-group-text numberinput-button", icon: "fa fa-minus fa-fw", onClick: this.handleClick }),
                 _react2.default.createElement(_IconButton2.default, { id: "buttonIncrement", className: "input-group-append input-group-text numberinput-button", icon: "fa fa-plus fa-fw", onClick: this.handleClick })
             );
@@ -6942,7 +7157,9 @@ NumberInput.propTypes = {
     id: _propTypes2.default.string,
     label: _propTypes2.default.string,
     tooltip: _propTypes2.default.string,
-    onChange: _propTypes2.default.func
+    onChange: _propTypes2.default.func,
+    autoFocus: _propTypes2.default.bool,
+    disabled: _propTypes2.default.bool
 };
 NumberInput.defaultProps = {
     name: "numberinput",
@@ -6951,7 +7168,7 @@ NumberInput.defaultProps = {
 };
 exports.default = NumberInput;
 
-},{"../FormGroup":22,"../InputGroup":32,"../Row":45,"../Tooltip":48,"../buttons/IconButton":52,"./Input":36,"prop-types":357,"react":431}],39:[function(require,module,exports){
+},{"../FormGroup":22,"../InputGroup":32,"../Row":45,"../Tooltip":49,"../buttons/IconButton":53,"./Input":36,"prop-types":320,"react":394}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7094,7 +7311,7 @@ Switch.defaultProps = {
 };
 exports.default = Switch;
 
-},{"../FormGroup":22,"../Row":45,"../Tooltip":48,"./Input":36,"prop-types":357,"react":431}],40:[function(require,module,exports){
+},{"../FormGroup":22,"../Row":45,"../Tooltip":49,"./Input":36,"prop-types":320,"react":394}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7200,7 +7417,9 @@ var TextInput = function (_Component) {
                 loading = _props.loading,
                 id = _props.id,
                 label = _props.label,
-                tooltip = _props.tooltip;
+                tooltip = _props.tooltip,
+                autoFocus = _props.autoFocus,
+                disabled = _props.disabled;
             var _state = this.state,
                 isEditMode = _state.isEditMode,
                 value = _state.value;
@@ -7208,7 +7427,7 @@ var TextInput = function (_Component) {
             var textInput = loading ? _react2.default.createElement(_LoadingCog2.default, null) : isEditMode ? _react2.default.createElement(
                 _InputGroup2.default,
                 null,
-                _react2.default.createElement(_Input2.default, { value: value, onChange: this.handleChange, autoFocus: true }),
+                _react2.default.createElement(_Input2.default, { value: value, onChange: this.handleChange, autoFocus: autoFocus, disabled: disabled }),
                 _react2.default.createElement(_IconButton2.default, { id: "buttonTextSubmit", className: "input-group-append input-group-text edit-button", icon: "fas fa-check", onClick: this.handleClick }),
                 _react2.default.createElement(_IconButton2.default, { id: "buttonTextCancel", className: "input-group-append input-group-text edit-button", icon: "fas fa-times", onClick: this.handleClick })
             ) : _react2.default.createElement(
@@ -7261,7 +7480,9 @@ TextInput.propTypes = {
     id: _propTypes2.default.string,
     label: _propTypes2.default.string,
     tooltip: _propTypes2.default.string,
-    onSubmit: _propTypes2.default.func
+    onSubmit: _propTypes2.default.func,
+    autoFocus: _propTypes2.default.bool,
+    disabled: _propTypes2.default.bool
 };
 TextInput.defaultProps = {
     name: "textinput",
@@ -7271,7 +7492,7 @@ TextInput.defaultProps = {
 };
 exports.default = TextInput;
 
-},{"../FormGroup":22,"../InputGroup":32,"../LoadingCog":41,"../Row":45,"../Tooltip":48,"../buttons/IconButton":52,"./Input":36,"prop-types":357,"react":431}],41:[function(require,module,exports){
+},{"../FormGroup":22,"../InputGroup":32,"../LoadingCog":41,"../Row":45,"../Tooltip":49,"../buttons/IconButton":53,"./Input":36,"prop-types":320,"react":394}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7333,7 +7554,7 @@ LoadingCog.defaultProps = {
 };
 exports.default = LoadingCog;
 
-},{"prop-types":357,"react":431}],42:[function(require,module,exports){
+},{"prop-types":320,"react":394}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7375,30 +7596,32 @@ var Messages = function (_Component) {
     }, {
         key: "render",
         value: function render() {
-            return this.props.messages.success ? _react2.default.createElement(
+            var messages = this.props.messages;
+
+            return messages.success ? _react2.default.createElement(
                 "div",
                 { role: "alert", className: "alert alert-success" },
-                this.props.messages.success.map(function (message, index) {
+                messages.success.map(function (message, index) {
                     return _react2.default.createElement(
                         "div",
                         { key: index },
                         message.msg
                     );
                 })
-            ) : this.props.messages.error ? _react2.default.createElement(
+            ) : messages.error ? _react2.default.createElement(
                 "div",
                 { role: "alert", className: "alert alert-danger" },
-                this.props.messages.error.map(function (message, index) {
+                messages.error.map(function (message, index) {
                     return _react2.default.createElement(
                         "div",
                         { key: index },
                         message.msg
                     );
                 })
-            ) : this.props.messages.info ? _react2.default.createElement(
+            ) : messages.info ? _react2.default.createElement(
                 "div",
                 { role: "alert", className: "alert alert-info" },
-                this.props.messages.info.map(function (message, index) {
+                messages.info.map(function (message, index) {
                     return _react2.default.createElement(
                         "div",
                         { key: index },
@@ -7427,7 +7650,7 @@ Messages.propTypes = {
 };
 exports.default = Messages;
 
-},{"prop-types":357,"react":431}],43:[function(require,module,exports){
+},{"prop-types":320,"react":394}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7504,7 +7727,7 @@ NotFound.propTypes = {
 };
 exports.default = (0, _withLanguage.withLanguage)(NotFound);
 
-},{"./Container":10,"./withLanguage":60,"prop-types":357,"react":431}],44:[function(require,module,exports){
+},{"./Container":10,"./withLanguage":61,"prop-types":320,"react":394}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7576,7 +7799,7 @@ Recaptcha.defaultProps = {
 };
 exports.default = Recaptcha;
 
-},{"../../client-config.json":85,"prop-types":357,"react":431,"react-recaptcha":371}],45:[function(require,module,exports){
+},{"../../client-config.json":86,"prop-types":320,"react":394,"react-recaptcha":334}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7608,7 +7831,7 @@ var Row = function Row(_ref) {
 
 exports.default = Row;
 
-},{"react":431}],46:[function(require,module,exports){
+},{"react":394}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7694,11 +7917,14 @@ var RuleItem = function (_Component) {
                 delay = _props$rule.delay,
                 undo = _props$rule.undo,
                 lang = _props$rule.lang;
+            var _props = this.props,
+                edit = _props.edit,
+                loading = _props.loading;
 
             return _react2.default.createElement(
                 "div",
                 { id: name, className: "col-md-12" },
-                this.props.edit ? this.props.loading ? _react2.default.createElement(_LoadingCog2.default, { center: true }) : _react2.default.createElement(_TwitterRuleForm2.default, { edit: true, cancel: true, "delete": true, rule: this.props.rule, onSubmit: this.props.onRuleEditionSubmit, onDelete: this.props.onRuleEditionDelete, onCancel: this.props.onRuleEditionCancel }) : _react2.default.createElement(
+                edit ? loading ? _react2.default.createElement(_LoadingCog2.default, { center: true }) : _react2.default.createElement(_TwitterRuleForm2.default, { edit: true, cancel: true, "delete": true, rule: this.props.rule, onSubmit: this.props.onRuleEditionSubmit, onDelete: this.props.onRuleEditionDelete, onCancel: this.props.onRuleEditionCancel }) : _react2.default.createElement(
                     "div",
                     null,
                     _react2.default.createElement(
@@ -7780,7 +8006,7 @@ RuleItem.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(RuleItem);
 
-},{"../constants/TwitterRuleConditions":69,"../constants/TwitterRuleLangs":70,"../constants/TwitterRuleTypes":71,"./Forms/TwitterRuleForm":25,"./LoadingCog":41,"./buttons/PrimaryButton":54,"./withLanguage":60,"lodash":330,"prop-types":357,"react":431}],47:[function(require,module,exports){
+},{"../constants/TwitterRuleConditions":70,"../constants/TwitterRuleLangs":71,"../constants/TwitterRuleTypes":72,"./Forms/TwitterRuleForm":25,"./LoadingCog":41,"./buttons/PrimaryButton":55,"./withLanguage":61,"lodash":292,"prop-types":320,"react":394}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7831,28 +8057,34 @@ var RuleList = function (_Component) {
     _createClass(RuleList, [{
         key: "render",
         value: function render() {
-            var _this2 = this;
-
+            var RULELIST_NO_RULES = this.props.lang.RULELIST_NO_RULES;
             var _props = this.props,
+                rules = _props.rules,
+                accountId = _props.accountId,
+                campaignId = _props.campaignId,
                 selectedRule = _props.selectedRule,
-                loading = _props.loading;
+                loading = _props.loading,
+                onRuleEditMode = _props.onRuleEditMode,
+                onRuleEditionCancel = _props.onRuleEditionCancel,
+                onRuleEditionDelete = _props.onRuleEditionDelete,
+                onRuleEditionSubmit = _props.onRuleEditionSubmit;
 
-            return this.props.rules.length > 0 ? _react2.default.createElement(
+            return rules.length > 0 ? _react2.default.createElement(
                 "div",
                 null,
-                this.props.rules.map(function (rule) {
+                rules.map(function (rule) {
                     return _react2.default.createElement(
                         "div",
                         { key: rule.uid },
-                        _react2.default.createElement(_RuleItem2.default, { accountId: _this2.props.accountId, campaignId: _this2.props.campaignId, rule: rule, onEditMode: _this2.props.onRuleEditMode,
-                            edit: rule.name === selectedRule, loading: rule.name === selectedRule && loading, onRuleEditionSubmit: _this2.props.onRuleEditionSubmit,
-                            onRuleEditionDelete: _this2.props.onRuleEditionDelete, onRuleEditionCancel: _this2.props.onRuleEditionCancel })
+                        _react2.default.createElement(_RuleItem2.default, { accountId: accountId, campaignId: campaignId, rule: rule, onEditMode: onRuleEditMode,
+                            edit: rule.name === selectedRule, loading: rule.name === selectedRule && loading, onRuleEditionSubmit: onRuleEditionSubmit,
+                            onRuleEditionDelete: onRuleEditionDelete, onRuleEditionCancel: onRuleEditionCancel })
                     );
                 })
             ) : _react2.default.createElement(
                 "div",
                 null,
-                "There is no rule yet."
+                RULELIST_NO_RULES
             );
         }
     }]);
@@ -7861,6 +8093,9 @@ var RuleList = function (_Component) {
 }(_react.Component);
 
 RuleList.propTypes = {
+    lang: _propTypes2.default.shape({
+        RULELIST_NO_RULES: _propTypes2.default.string.isRequired
+    }).isRequired,
     accountId: _propTypes2.default.string.isRequired,
     campaignId: _propTypes2.default.string.isRequired,
     rules: _propTypes2.default.arrayOf(_propTypes2.default.shape({
@@ -7881,7 +8116,7 @@ RuleList.propTypes = {
     onRuleEditionCancel: _propTypes2.default.func
 };
 RuleList.defaultProps = {
-    selectedRule: null,
+    selectedRule: undefined,
     loading: false,
     onRuleEditMode: function onRuleEditMode() {},
     onRuleEditionSubmit: function onRuleEditionSubmit() {},
@@ -7890,7 +8125,111 @@ RuleList.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(RuleList);
 
-},{"./Forms/TwitterRuleForm":25,"./LoadingCog":41,"./RuleItem":46,"./withLanguage":60,"prop-types":357,"react":431}],48:[function(require,module,exports){
+},{"./Forms/TwitterRuleForm":25,"./LoadingCog":41,"./RuleItem":46,"./withLanguage":61,"prop-types":320,"react":394}],48:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require("prop-types");
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _FormGroup = require("./FormGroup");
+
+var _FormGroup2 = _interopRequireDefault(_FormGroup);
+
+var _Row = require("./Row");
+
+var _Row2 = _interopRequireDefault(_Row);
+
+var _Tooltip = require("./Tooltip");
+
+var _Tooltip2 = _interopRequireDefault(_Tooltip);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Text = function (_Component) {
+    _inherits(Text, _Component);
+
+    function Text() {
+        _classCallCheck(this, Text);
+
+        return _possibleConstructorReturn(this, (Text.__proto__ || Object.getPrototypeOf(Text)).apply(this, arguments));
+    }
+
+    _createClass(Text, [{
+        key: "render",
+        value: function render() {
+            var _props = this.props,
+                id = _props.id,
+                label = _props.label,
+                tooltip = _props.tooltip,
+                value = _props.value,
+                props = _objectWithoutProperties(_props, ["id", "label", "tooltip", "value"]);
+
+            return label ? _react2.default.createElement(
+                _FormGroup2.default,
+                null,
+                _react2.default.createElement(
+                    _Row2.default,
+                    null,
+                    _react2.default.createElement(
+                        "label",
+                        { htmlFor: id, className: "col-xs-12 col-sm-3 col-md-2" },
+                        label,
+                        tooltip && _react2.default.createElement(
+                            "span",
+                            { style: { float: "right" } },
+                            _react2.default.createElement(
+                                _Tooltip2.default,
+                                null,
+                                tooltip
+                            )
+                        )
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        { className: "col-xs-12 col-sm-9 col-md-10" },
+                        value
+                    )
+                )
+            ) : value;
+        }
+    }]);
+
+    return Text;
+}(_react.Component);
+
+Text.propTypes = {
+    name: _propTypes2.default.string,
+    value: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number]),
+    id: _propTypes2.default.string,
+    label: _propTypes2.default.string,
+    tooltip: _propTypes2.default.string
+};
+Text.defaultProps = {
+    name: "text",
+    value: ""
+};
+exports.default = Text;
+
+},{"./FormGroup":22,"./Row":45,"./Tooltip":49,"prop-types":320,"react":394}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7950,7 +8289,7 @@ var Tooltip = function (_Component) {
 
 exports.default = Tooltip;
 
-},{"prop-types":357,"react":431}],49:[function(require,module,exports){
+},{"prop-types":320,"react":394}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8054,7 +8393,7 @@ UserSubscriptionChart.propTypes = {
 };
 exports.default = UserSubscriptionChart;
 
-},{"prop-types":357,"react":431,"recharts/lib/cartesian/Bar.js":436,"recharts/lib/cartesian/CartesianGrid.js":439,"recharts/lib/cartesian/XAxis.js":444,"recharts/lib/cartesian/YAxis.js":445,"recharts/lib/chart/BarChart.js":446,"recharts/lib/component/Legend.js":453,"recharts/lib/component/ResponsiveContainer.js":454,"recharts/lib/component/Tooltip.js":456,"recharts/lib/polyfill.js":459}],50:[function(require,module,exports){
+},{"prop-types":320,"react":394,"recharts/lib/cartesian/Bar.js":399,"recharts/lib/cartesian/CartesianGrid.js":402,"recharts/lib/cartesian/XAxis.js":407,"recharts/lib/cartesian/YAxis.js":408,"recharts/lib/chart/BarChart.js":409,"recharts/lib/component/Legend.js":416,"recharts/lib/component/ResponsiveContainer.js":417,"recharts/lib/component/Tooltip.js":419,"recharts/lib/polyfill.js":422}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8131,7 +8470,7 @@ WordList.propTypes = {
 };
 exports.default = WordList;
 
-},{"prop-types":357,"react":431,"uuid/v4":498}],51:[function(require,module,exports){
+},{"prop-types":320,"react":394,"uuid/v4":500}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8163,7 +8502,7 @@ var DangerButton = function DangerButton(_ref) {
 
 exports.default = DangerButton;
 
-},{"react":431}],52:[function(require,module,exports){
+},{"react":394}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8231,7 +8570,7 @@ IconButton.defaultProps = {
 };
 exports.default = IconButton;
 
-},{"prop-types":357,"react":431}],53:[function(require,module,exports){
+},{"prop-types":320,"react":394}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8263,7 +8602,7 @@ var InfoButton = function InfoButton(_ref) {
 
 exports.default = InfoButton;
 
-},{"react":431}],54:[function(require,module,exports){
+},{"react":394}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8295,7 +8634,7 @@ var PrimaryButton = function PrimaryButton(_ref) {
 
 exports.default = PrimaryButton;
 
-},{"react":431}],55:[function(require,module,exports){
+},{"react":394}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8327,7 +8666,7 @@ var SecondaryButton = function SecondaryButton(_ref) {
 
 exports.default = SecondaryButton;
 
-},{"react":431}],56:[function(require,module,exports){
+},{"react":394}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8359,7 +8698,7 @@ var SuccessButton = function SuccessButton(_ref) {
 
 exports.default = SuccessButton;
 
-},{"react":431}],57:[function(require,module,exports){
+},{"react":394}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8431,7 +8770,7 @@ AdminRoute.propTypes = (_AdminRoute$propTypes = {
 }, _defineProperty(_AdminRoute$propTypes, "path", _propTypes2.default.string), _defineProperty(_AdminRoute$propTypes, "strict", _propTypes2.default.bool), _defineProperty(_AdminRoute$propTypes, "exact", _propTypes2.default.bool), _defineProperty(_AdminRoute$propTypes, "location", _propTypes2.default.object), _defineProperty(_AdminRoute$propTypes, "sensitive", _propTypes2.default.bool), _AdminRoute$propTypes);
 exports.default = AdminRoute;
 
-},{"prop-types":357,"react":431,"react-router-dom":401}],58:[function(require,module,exports){
+},{"prop-types":320,"react":394,"react-router-dom":364}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8503,7 +8842,7 @@ LoggedInRoute.propTypes = (_LoggedInRoute$propTy = {
 }, _defineProperty(_LoggedInRoute$propTy, "path", _propTypes2.default.string), _defineProperty(_LoggedInRoute$propTy, "strict", _propTypes2.default.bool), _defineProperty(_LoggedInRoute$propTy, "exact", _propTypes2.default.bool), _defineProperty(_LoggedInRoute$propTy, "location", _propTypes2.default.object), _defineProperty(_LoggedInRoute$propTy, "sensitive", _propTypes2.default.bool), _LoggedInRoute$propTy);
 exports.default = LoggedInRoute;
 
-},{"prop-types":357,"react":431,"react-router-dom":401}],59:[function(require,module,exports){
+},{"prop-types":320,"react":394,"react-router-dom":364}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8575,7 +8914,7 @@ NotLoggedInRoute.propTypes = (_NotLoggedInRoute$pro = {
 }, _defineProperty(_NotLoggedInRoute$pro, "path", _propTypes2.default.string), _defineProperty(_NotLoggedInRoute$pro, "strict", _propTypes2.default.bool), _defineProperty(_NotLoggedInRoute$pro, "exact", _propTypes2.default.bool), _defineProperty(_NotLoggedInRoute$pro, "location", _propTypes2.default.object), _defineProperty(_NotLoggedInRoute$pro, "sensitive", _propTypes2.default.bool), _NotLoggedInRoute$pro);
 exports.default = NotLoggedInRoute;
 
-},{"prop-types":357,"react":431,"react-router-dom":401}],60:[function(require,module,exports){
+},{"prop-types":320,"react":394,"react-router-dom":364}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8636,7 +8975,7 @@ var mapStateToProps = function mapStateToProps(state) {
     };
 };
 
-},{"react":431,"react-redux":381}],61:[function(require,module,exports){
+},{"react":394,"react-redux":344}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8714,7 +9053,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
     };
 };
 
-},{"../actions/messages":3,"react":431,"react-redux":381,"redux":487}],62:[function(require,module,exports){
+},{"../actions/messages":3,"react":394,"react-redux":344,"redux":490}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8748,7 +9087,7 @@ var TWITTERRULE_ADD = exports.TWITTERRULE_ADD = "TWITTERRULE_ADD";
 var TWITTERRULE_UPDATE = exports.TWITTERRULE_UPDATE = "TWITTERRULE_UPDATE";
 var TWITTERRULE_DELETE = exports.TWITTERRULE_DELETE = "TWITTERRULE_DELETE";
 
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8757,7 +9096,7 @@ Object.defineProperty(exports, "__esModule", {
 var FRENCH = exports.FRENCH = "FR";
 var ENGLISH = exports.ENGLISH = "EN";
 
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8766,7 +9105,7 @@ Object.defineProperty(exports, "__esModule", {
 var ADMIN = exports.ADMIN = "ADMIN";
 var MEMBER = exports.MEMBER = "MEMBER";
 
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8788,7 +9127,7 @@ var TWITTERRULE_CREATE = exports.TWITTERRULE_CREATE = "rule";
 var TWITTERRULE_UPDATE = exports.TWITTERRULE_UPDATE = "rule";
 var TWITTERRULE_DELETE = exports.TWITTERRULE_DELETE = "rule";
 
-},{}],66:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8799,7 +9138,7 @@ var POST = exports.POST = "POST";
 var PUT = exports.PUT = "PUT";
 var DELETE = exports.DELETE = "DELETE";
 
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8811,7 +9150,7 @@ var NO_CHANGES = exports.NO_CHANGES = "Nothing to update.";
 var DATA_CACHED = exports.DATA_CACHED = "Data already in cache.";
 var INVALID_INPUTS = exports.INVALID_INPUTS = "Invalid fields.";
 
-},{}],68:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8823,7 +9162,7 @@ var USER_FULL = exports.USER_FULL = "USER_FULL";
 //ACCOUNT
 var ACCOUNT_LIST = exports.ACCOUNT_LIST = "ACCOUNT_LIST";
 
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8832,7 +9171,7 @@ Object.defineProperty(exports, "__esModule", {
 var AND = exports.AND = "and";
 var OR = exports.OR = "or";
 
-},{}],70:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8841,7 +9180,7 @@ Object.defineProperty(exports, "__esModule", {
 var EN = exports.EN = "en";
 var FR = exports.FR = "fr";
 
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8852,17 +9191,21 @@ var RETWEET = exports.RETWEET = 1;
 var FAVORITE = exports.FAVORITE = 2;
 var FOLLOW = exports.FOLLOW = 3;
 
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.default = getLanguage;
 
 var _Languages = require("../constants/Languages");
 
-function getLanguage() {
+/**
+ * Return english locale.
+ * @public
+ * @returns {Object<string,string>}
+ */
+var getLanguage = function getLanguage() {
     return {
         //---MAIN VALUES---
         LANG: _Languages.ENGLISH,
@@ -8953,7 +9296,7 @@ function getLanguage() {
         CAMPAIGNOVERVIEW_TITLE_CAMPAIGN: "Campaign : ",
         //---USERPASSWORDFORM---
         USERPASSWORDFORM_CREATE_TITLE: "Set a new password",
-        USERPASSWORDFORM_EDIT_TITLE: "Edit your password",
+        USERPASSWORDFORM_EDIT_TITLE: "Edit password",
         USERPASSWORDFORM_CREATE_BUTTON: "Confirm",
         USERPASSWORDFORM_EDIT_BUTTON: "Edit",
         USERPASSWORDFORM_CANCEL_BUTTON: "Cancel",
@@ -9019,6 +9362,8 @@ function getLanguage() {
         CAMPAIGNFORM_DELETE_ERROR: "An error happened during campaign deletion.",
         //---CAMPAIGNLIST---
         CAMPAIGNLIST_NOCAMPAIGN: "There is no campaign yet.",
+        //---RULELIST---
+        RULELIST_NO_RULES: "There is no rule yet.",
         //---RULEITEM---
         RULEITEM_EDIT_BUTTON: "Edit this rule",
         //---TWITTERRULEFORM---
@@ -9068,21 +9413,27 @@ function getLanguage() {
         TWITTERRULE_DELETE_ERROR: "An error happened during rule deletion.",
         TWITTERRULE_DELETE_SUCCESS: "This rule was deleted successfully."
     };
-}
+};
 
-},{"../constants/Languages":63}],73:[function(require,module,exports){
+exports.default = getLanguage;
+
+},{"../constants/Languages":64}],74:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.default = getLanguage;
 
 var _Languages = require("../constants/Languages");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function getLanguage() {
+/**
+ * Return french locale.
+ * @public
+ * @returns {Object<string,string>}
+ */
+var getLanguage = function getLanguage() {
     var _ref;
 
     return _ref = {
@@ -9091,7 +9442,7 @@ function getLanguage() {
         COMPANY_NAME: "Hubgine",
         REACT_DATETIME_LANGUAGE: "fr",
         GENERIC_ERROR: "Une erreur est survenue.",
-        SESSION_EXPIRED: "La session est expirée.",
+        SESSION_EXPIRED: "La session a expirée.",
         //---HEADER---
         HEADER_SR_ONLY: "Menu",
         HEADER_HOME: "Home",
@@ -9151,16 +9502,17 @@ function getLanguage() {
         PROFILE_SUCCESSEDITING_LASTNAME: "Nom édité avec succès.",
         PROFILE_ERROREDITING_LANGUAGE: "La langue selectionné est incorrecte.",
         PROFILE_SUCCESSEDITING_LANGUAGE: "La langue a été éditée avec succès."
-    }, _defineProperty(_ref, "PROFILE_SUCCESSEDITING_LANGUAGE", "Le mot de passe a été édité avec succès."), _defineProperty(_ref, "ACCOUNTSMANAGMENT_ADD_ACCOUNT", "Ajouter un compte"), _defineProperty(_ref, "ADMINDASHBOARD_TITLE", "Tableau de bord de l'administrateur"), _defineProperty(_ref, "USERDASHBOARD_TITLE", "Votre tableau de bord"), _defineProperty(_ref, "USERDASHBOARD_ADD_CAMPAIGN", "Ajouter une campagne"), _defineProperty(_ref, "USERDASHBOARD_NO_ACCOUNTS", "Vous n'avez pas de compte actuellement. Vous pouvez en créer à partir de votre page Profil."), _defineProperty(_ref, "USERDASHBOARD_DISPLAY_ACCOUNT_BUTTON", "VOIR"), _defineProperty(_ref, "ACCOUNTOVERVIEW_NO_ACCOUNT", "Ce compte n'existe pas."), _defineProperty(_ref, "ACCOUNTOVERVIEW_EDIT_BUTTON", "Modifier ce compte"), _defineProperty(_ref, "ACCOUNTOVERVIEW_CAMPAIGNS_TITLE", "Les campagnes :"), _defineProperty(_ref, "ACCOUNTOVERVIEW_BLACKLIST_TITLE", "La liste noire de mots :"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_NO_CAMPAIGN", "Cette campagne n'existe pas."), _defineProperty(_ref, "CAMPAIGNOVERVIEW_EDIT_BUTTON", "Modifier cette campagne"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_RULES_TITLE", "Les règles :"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_ADD_RULE_BUTTON", "Ajouter une règle"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_TITLE_ACCOUNT", "Compte : "), _defineProperty(_ref, "CAMPAIGNOVERVIEW_TITLE_CAMPAIGN", "Campagne : "), _defineProperty(_ref, "USERPASSWORDFORM_CREATE_TITLE", "Définir un nouveau mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_EDIT_TITLE", "Changer de mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_CREATE_BUTTON", "Confirmer"), _defineProperty(_ref, "USERPASSWORDFORM_EDIT_BUTTON", "Editer"), _defineProperty(_ref, "USERPASSWORDFORM_CANCEL_BUTTON", "Annuler"), _defineProperty(_ref, "USERPASSWORDFORM_OLDPASSWORD", "Ancien mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_PASSWORD", "Nouveau mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_CPASSWORD", "Confirmation du nouveau mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_EDIT_ERROR", "L'ancien mot de passe est invalide"), _defineProperty(_ref, "FORGOTPASSWORD_TITLE", "Réinitialiser le mot de passe"), _defineProperty(_ref, "FORGOTPASSWORD_SUBMIT", "Réinitialiser le mot de passe"), _defineProperty(_ref, "FORGOTPASSWORD_EMAIL", "Email"), _defineProperty(_ref, "TWITTERACCOUNTFORM_NAME", "Nom"), _defineProperty(_ref, "TWITTERACCOUNTFORM_CONSUMERKEY", "Consumer key"), _defineProperty(_ref, "TWITTERACCOUNTFORM_CONSUMERSECRET", "Consumer secret"), _defineProperty(_ref, "TWITTERACCOUNTFORM_ACCESSTOKENKEY", "Access token key"), _defineProperty(_ref, "TWITTERACCOUNTFORM_ACCESSTOKENSECRET", "Access token secret"), _defineProperty(_ref, "TWITTERACCOUNTFORM_BLACKLIST", "Liste noire de mots"), _defineProperty(_ref, "TWITTERACCOUNTFORM_NAME_INCORRECT", "Un nom valide est requis."), _defineProperty(_ref, "TWITTERACCOUNTFORM_NAME_NOT_UNIQUE", "Ce nom existe déjà."), _defineProperty(_ref, "TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT", "Votre \"consumer key\" est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT", "Votre \"consumer secret\" est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT", "Votre \"access token key\" est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT", "Votre \"access token secret\" est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT", " n'est pas un mot valide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_BLACKLIST_INCORRECT", "Votre liste noire de mots est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_GENERIC_ERROR", "Une erreur est survenue."), _defineProperty(_ref, "TWITTERACCOUNTFORM_CREATE_SUCCESS", "Un compte a été créé avec succès."), _defineProperty(_ref, "TWITTERACCOUNTFORM_CREATE_TITLE", "Créer un compte"), _defineProperty(_ref, "TWITTERACCOUNTFORM_EDIT_TITLE", "Editer un compte"), _defineProperty(_ref, "TWITTERACCOUNTFORM_CREATE_BUTTON", "Créer un compte"), _defineProperty(_ref, "TWITTERACCOUNTFORM_EDIT_BUTTON", "Editer un compte"), _defineProperty(_ref, "TWITTERACCOUNTFORM_CANCEL_BUTTON", "Annuler"), _defineProperty(_ref, "TWITTERACCOUNTFORM_EDIT_SUCCESS", "Ce compte a été mis à jour."), _defineProperty(_ref, "TWITTERACCOUNTFORM_EDIT_ERROR", "Une erreur est survenue lors de la mise à jour du compte."), _defineProperty(_ref, "TWITTERACCOUNTFORM_DELETE_SUCCESS", "Ce compte a été supprimé avec succès."), _defineProperty(_ref, "TWITTERACCOUNTFORM_DELETE_ERROR", "Une errreur est survenue lors de la suppression du compte."), _defineProperty(_ref, "TWITTERACCOUNTFORM_DELETE_BUTTON", "Supprimer un compte"), _defineProperty(_ref, "CAMPAIGNFORM_CREATE_TITLE", "Créer un campagne"), _defineProperty(_ref, "CAMPAIGNFORM_EDIT_TITLE", "Editer une campagne"), _defineProperty(_ref, "CAMPAIGNFORM_CREATE_BUTTON", "Créer une campagne"), _defineProperty(_ref, "CAMPAIGNFORM_EDIT_BUTTON", "Editer la campagne"), _defineProperty(_ref, "CAMPAIGNFORM_CANCEL_BUTTON", "Annuler"), _defineProperty(_ref, "CAMPAIGNFORM_DELETE_BUTTON", "Supprimer la campagne"), _defineProperty(_ref, "CAMPAIGNFORM_NAME", "Nom"), _defineProperty(_ref, "CAMPAIGNFORM_ACCOUNT", "Compte"), _defineProperty(_ref, "CAMPAIGNFORM_DATEBEGIN", "Date de début"), _defineProperty(_ref, "CAMPAIGNFORM_DATEEND", "Date de fin"), _defineProperty(_ref, "CAMPAIGNFORM_NAME_TOOLTIP", "Les caractères spéciaux ne sont pas autorisés."), _defineProperty(_ref, "CAMPAIGNFORM_DATEBEGIN_TOOLTIP", "La campagne va démarrer a cette heure. Votre fuseau horaire est UTC"), _defineProperty(_ref, "CAMPAIGNFORM_NAME_INCORRECT", "Un nom valide est requis."), _defineProperty(_ref, "CAMPAIGNFORM_NAME_NOT_UNIQUE", "Ce nom est déjà utilisé."), _defineProperty(_ref, "CAMPAIGNFORM_ACCOUNT_INCORRECT", "Un compte valide est requis."), _defineProperty(_ref, "CAMPAIGNFORM_DATEBEGIN_INCORRECT", "Une date valide est requise."), _defineProperty(_ref, "CAMPAIGNFORM_DATEEND_INCORRECT", "Une date valide est requise."), _defineProperty(_ref, "CAMPAIGNFORM_DATES_INCORRECT", "Les dates sont invalides."), _defineProperty(_ref, "CAMPAIGNFORM_GENERIC_ERROR", "Une erreur est survenue."), _defineProperty(_ref, "CAMPAIGNFORM_CREATE_SUCCESS", "Une campagne a été créée avec succès."), _defineProperty(_ref, "CAMPAIGNFORM_EDIT_SUCCESS", "Cette campagne a été mise à jour."), _defineProperty(_ref, "CAMPAIGNFORM_EDIT_ERROR", "Une erreur est survenue lors de la mise à jour de la campagne."), _defineProperty(_ref, "CAMPAIGNFORM_DELETE_SUCCESS", "Cette campagne a été supprimée avec succès."), _defineProperty(_ref, "CAMPAIGNFORM_DELETE_ERROR", "Une erreur est survenue lors de la suppression de la campagne."), _defineProperty(_ref, "CAMPAIGNLIST_NOCAMPAIGN", "Il n'y a pas de campagnes actuellement."), _defineProperty(_ref, "RULEITEM_EDIT_BUTTON", "Editer cette règle"), _defineProperty(_ref, "TWITTERRULEFORM_CREATE_TITLE", "Créer une règle twitter"), _defineProperty(_ref, "TWITTERRULEFORM_EDIT_TITLE", "Editer une règle"), _defineProperty(_ref, "TWITTERRULEFORM_CREATE_BUTTON", "Créer une règle"), _defineProperty(_ref, "TWITTERRULEFORM_EDIT_BUTTON", "Editier la règle"), _defineProperty(_ref, "TWITTERRULEFORM_CANCEL_BUTTON", "Annuler"), _defineProperty(_ref, "TWITTERRULEFORM_DELETE_BUTTON", "Supprimer la règle"), _defineProperty(_ref, "TWITTERRULEFORM_NAME", "Nom"), _defineProperty(_ref, "TWITTERRULEFORM_ACTION", "Action"), _defineProperty(_ref, "TWITTERRULEFORM_MESSAGES", "Messages"), _defineProperty(_ref, "TWITTERRULEFORM_CONDITION", "Condition"), _defineProperty(_ref, "TWITTERRULEFORM_KEYWORDS", "Mots-clés"), _defineProperty(_ref, "TWITTERRULEFORM_LANGUAGES", "Langages"), _defineProperty(_ref, "TWITTERRULEFORM_DELAY", "Délai"), _defineProperty(_ref, "TWITTERRULEFORM_LANG_TOOLTIP", "Si vous ne selectionnez pas de langage, ce filtre sera ignoré, dans le cas contraire les tweets seront filtrés en fonction des langues selectionnées."), _defineProperty(_ref, "TWITTERRULEFORM_DELAY_TOOLTIP", "Temps entre le traitement de deux tweets. Le valeur minimale est de 60 secondes."), _defineProperty(_ref, "ARRAYINPUT_ADD_BUTTON", "Ajouter"), _defineProperty(_ref, "ARRAYINPUT_DELETE_BUTTON", "Supprimer"), _defineProperty(_ref, "USER_EMAIL_INCORRECT", "L'adresse mail est incorrecte."), _defineProperty(_ref, "USER_EMAIL_NOT_UNIQUE", "L'adresse mail est déjà utilisée."), _defineProperty(_ref, "USER_PASSWORD_INCORRECT", "Le mot de passe doit avoir une longueur minimale de 6 caractères."), _defineProperty(_ref, "USER_PASSWORD_NOT_MATCH", "Les mots de passe ne sont pas identiques."), _defineProperty(_ref, "USER_FIRSTNAME_INCORRECT", "Le prénom est invalide."), _defineProperty(_ref, "USER_LASTNAME_INCORRECT", "Le nom est invalide."), _defineProperty(_ref, "USER_LANGUAGE_INCORRECT", "Une langue valide est requise."), _defineProperty(_ref, "USER_EDIT_SUCCESS", "Votre profil a été mis à jour."), _defineProperty(_ref, "TWITTERRULE_NAME_INCORRECT", "Un nom valide est requis."), _defineProperty(_ref, "TWITTERRULE_NAME_NOT_UNIQUE", "Ce nom est déjà utilisé."), _defineProperty(_ref, "TWITTERRULE_ACTION_INCORRECT", "Une action valide est requise."), _defineProperty(_ref, "TWITTERRULE_MESSAGE_INCORRECT", " n'est pas un message valide."), _defineProperty(_ref, "TWITTERRULE_MESSAGES_INCORRECT", "La liste des messages n'est pas valide."), _defineProperty(_ref, "TWITTERRULE_TRACK_INCORRECT", "Une liste de mots clés valides est requise."), _defineProperty(_ref, "TWITTERRULE_KEYWORD_INCORRECT", " n'est pas un mot clé valide."), _defineProperty(_ref, "TWITTERRULE_CONDITION_INCORRECT", "Une condition valide est requise."), _defineProperty(_ref, "TWITTERRULE_DELAY_INCORRECT", "Un délai valide est requis."), _defineProperty(_ref, "TWITTERRULE_UNDO_INCORRECT", "Une date d'annulation valide est requise."), _defineProperty(_ref, "TWITTERRULE_LANGUAGE_INCORRECT", "Une langue valide est requise."), _defineProperty(_ref, "TWITTERRULE_CREATE_SUCCESS", "Une règle a été créée avec succès."), _defineProperty(_ref, "TWITTERRULE_CREATE_ERROR", "Une erreur est survenue lors de la creation de la règle."), _defineProperty(_ref, "TWITTERRULE_EDIT_ERROR", "Une erreur est survenue lors de la mise à jour de la règle."), _defineProperty(_ref, "TWITTERRULE_EDIT_SUCCESS", "Cette règle a été mise à jour."), _defineProperty(_ref, "TWITTERRULE_DELETE_ERROR", "Une erreur est survenue lors de la suppression de la règle."), _defineProperty(_ref, "TWITTERRULE_DELETE_SUCCESS", "Cette règle a été supprimée avec succès."), _ref;
-}
+    }, _defineProperty(_ref, "PROFILE_SUCCESSEDITING_LANGUAGE", "Le mot de passe a été édité avec succès."), _defineProperty(_ref, "ACCOUNTSMANAGMENT_ADD_ACCOUNT", "Ajouter un compte"), _defineProperty(_ref, "ADMINDASHBOARD_TITLE", "Tableau de bord de l'administrateur"), _defineProperty(_ref, "USERDASHBOARD_TITLE", "Votre tableau de bord"), _defineProperty(_ref, "USERDASHBOARD_ADD_CAMPAIGN", "Ajouter une campagne"), _defineProperty(_ref, "USERDASHBOARD_NO_ACCOUNTS", "Vous n'avez pas de compte actuellement. Vous pouvez en créer à partir de votre page Profil."), _defineProperty(_ref, "USERDASHBOARD_DISPLAY_ACCOUNT_BUTTON", "VOIR"), _defineProperty(_ref, "ACCOUNTOVERVIEW_NO_ACCOUNT", "Ce compte n'existe pas."), _defineProperty(_ref, "ACCOUNTOVERVIEW_EDIT_BUTTON", "Modifier ce compte"), _defineProperty(_ref, "ACCOUNTOVERVIEW_CAMPAIGNS_TITLE", "Les campagnes :"), _defineProperty(_ref, "ACCOUNTOVERVIEW_BLACKLIST_TITLE", "La liste noire de mots :"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_NO_CAMPAIGN", "Cette campagne n'existe pas."), _defineProperty(_ref, "CAMPAIGNOVERVIEW_EDIT_BUTTON", "Modifier cette campagne"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_RULES_TITLE", "Les règles :"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_ADD_RULE_BUTTON", "Ajouter une règle"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_TITLE_ACCOUNT", "Compte : "), _defineProperty(_ref, "CAMPAIGNOVERVIEW_TITLE_CAMPAIGN", "Campagne : "), _defineProperty(_ref, "USERPASSWORDFORM_CREATE_TITLE", "Définir un nouveau mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_EDIT_TITLE", "Changer de mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_CREATE_BUTTON", "Confirmer"), _defineProperty(_ref, "USERPASSWORDFORM_EDIT_BUTTON", "Editer"), _defineProperty(_ref, "USERPASSWORDFORM_CANCEL_BUTTON", "Annuler"), _defineProperty(_ref, "USERPASSWORDFORM_OLDPASSWORD", "Ancien mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_PASSWORD", "Nouveau mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_CPASSWORD", "Confirmation du nouveau mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_EDIT_ERROR", "L'ancien mot de passe est invalide"), _defineProperty(_ref, "FORGOTPASSWORD_TITLE", "Réinitialiser le mot de passe"), _defineProperty(_ref, "FORGOTPASSWORD_SUBMIT", "Réinitialiser le mot de passe"), _defineProperty(_ref, "FORGOTPASSWORD_EMAIL", "Email"), _defineProperty(_ref, "TWITTERACCOUNTFORM_NAME", "Nom"), _defineProperty(_ref, "TWITTERACCOUNTFORM_CONSUMERKEY", "Consumer key"), _defineProperty(_ref, "TWITTERACCOUNTFORM_CONSUMERSECRET", "Consumer secret"), _defineProperty(_ref, "TWITTERACCOUNTFORM_ACCESSTOKENKEY", "Access token key"), _defineProperty(_ref, "TWITTERACCOUNTFORM_ACCESSTOKENSECRET", "Access token secret"), _defineProperty(_ref, "TWITTERACCOUNTFORM_BLACKLIST", "Liste noire de mots"), _defineProperty(_ref, "TWITTERACCOUNTFORM_NAME_INCORRECT", "Un nom valide est requis."), _defineProperty(_ref, "TWITTERACCOUNTFORM_NAME_NOT_UNIQUE", "Ce nom existe déjà."), _defineProperty(_ref, "TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT", "Votre \"consumer key\" est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT", "Votre \"consumer secret\" est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT", "Votre \"access token key\" est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT", "Votre \"access token secret\" est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT", " n'est pas un mot valide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_BLACKLIST_INCORRECT", "Votre liste noire de mots est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_GENERIC_ERROR", "Une erreur est survenue."), _defineProperty(_ref, "TWITTERACCOUNTFORM_CREATE_SUCCESS", "Un compte a été créé avec succès."), _defineProperty(_ref, "TWITTERACCOUNTFORM_CREATE_TITLE", "Créer un compte"), _defineProperty(_ref, "TWITTERACCOUNTFORM_EDIT_TITLE", "Editer un compte"), _defineProperty(_ref, "TWITTERACCOUNTFORM_CREATE_BUTTON", "Créer un compte"), _defineProperty(_ref, "TWITTERACCOUNTFORM_EDIT_BUTTON", "Editer un compte"), _defineProperty(_ref, "TWITTERACCOUNTFORM_CANCEL_BUTTON", "Annuler"), _defineProperty(_ref, "TWITTERACCOUNTFORM_EDIT_SUCCESS", "Ce compte a été mis à jour."), _defineProperty(_ref, "TWITTERACCOUNTFORM_EDIT_ERROR", "Une erreur est survenue lors de la mise à jour du compte."), _defineProperty(_ref, "TWITTERACCOUNTFORM_DELETE_SUCCESS", "Ce compte a été supprimé avec succès."), _defineProperty(_ref, "TWITTERACCOUNTFORM_DELETE_ERROR", "Une errreur est survenue lors de la suppression du compte."), _defineProperty(_ref, "TWITTERACCOUNTFORM_DELETE_BUTTON", "Supprimer un compte"), _defineProperty(_ref, "CAMPAIGNFORM_CREATE_TITLE", "Créer un campagne"), _defineProperty(_ref, "CAMPAIGNFORM_EDIT_TITLE", "Editer une campagne"), _defineProperty(_ref, "CAMPAIGNFORM_CREATE_BUTTON", "Créer une campagne"), _defineProperty(_ref, "CAMPAIGNFORM_EDIT_BUTTON", "Editer la campagne"), _defineProperty(_ref, "CAMPAIGNFORM_CANCEL_BUTTON", "Annuler"), _defineProperty(_ref, "CAMPAIGNFORM_DELETE_BUTTON", "Supprimer la campagne"), _defineProperty(_ref, "CAMPAIGNFORM_NAME", "Nom"), _defineProperty(_ref, "CAMPAIGNFORM_ACCOUNT", "Compte"), _defineProperty(_ref, "CAMPAIGNFORM_DATEBEGIN", "Date de début"), _defineProperty(_ref, "CAMPAIGNFORM_DATEEND", "Date de fin"), _defineProperty(_ref, "CAMPAIGNFORM_NAME_TOOLTIP", "Les caractères spéciaux ne sont pas autorisés."), _defineProperty(_ref, "CAMPAIGNFORM_DATEBEGIN_TOOLTIP", "La campagne va démarrer a cette heure. Votre fuseau horaire est UTC"), _defineProperty(_ref, "CAMPAIGNFORM_NAME_INCORRECT", "Un nom valide est requis."), _defineProperty(_ref, "CAMPAIGNFORM_NAME_NOT_UNIQUE", "Ce nom est déjà utilisé."), _defineProperty(_ref, "CAMPAIGNFORM_ACCOUNT_INCORRECT", "Un compte valide est requis."), _defineProperty(_ref, "CAMPAIGNFORM_DATEBEGIN_INCORRECT", "Une date valide est requise."), _defineProperty(_ref, "CAMPAIGNFORM_DATEEND_INCORRECT", "Une date valide est requise."), _defineProperty(_ref, "CAMPAIGNFORM_DATES_INCORRECT", "Les dates sont invalides."), _defineProperty(_ref, "CAMPAIGNFORM_GENERIC_ERROR", "Une erreur est survenue."), _defineProperty(_ref, "CAMPAIGNFORM_CREATE_SUCCESS", "Une campagne a été créée avec succès."), _defineProperty(_ref, "CAMPAIGNFORM_EDIT_SUCCESS", "Cette campagne a été mise à jour."), _defineProperty(_ref, "CAMPAIGNFORM_EDIT_ERROR", "Une erreur est survenue lors de la mise à jour de la campagne."), _defineProperty(_ref, "CAMPAIGNFORM_DELETE_SUCCESS", "Cette campagne a été supprimée avec succès."), _defineProperty(_ref, "CAMPAIGNFORM_DELETE_ERROR", "Une erreur est survenue lors de la suppression de la campagne."), _defineProperty(_ref, "CAMPAIGNLIST_NOCAMPAIGN", "Il n'y a pas de campagnes actuellement."), _defineProperty(_ref, "RULELIST_NO_RULES", "Il n'y a pas de règles actuellement."), _defineProperty(_ref, "RULEITEM_EDIT_BUTTON", "Editer cette règle"), _defineProperty(_ref, "TWITTERRULEFORM_CREATE_TITLE", "Créer une règle twitter"), _defineProperty(_ref, "TWITTERRULEFORM_EDIT_TITLE", "Editer une règle"), _defineProperty(_ref, "TWITTERRULEFORM_CREATE_BUTTON", "Créer une règle"), _defineProperty(_ref, "TWITTERRULEFORM_EDIT_BUTTON", "Editier la règle"), _defineProperty(_ref, "TWITTERRULEFORM_CANCEL_BUTTON", "Annuler"), _defineProperty(_ref, "TWITTERRULEFORM_DELETE_BUTTON", "Supprimer la règle"), _defineProperty(_ref, "TWITTERRULEFORM_NAME", "Nom"), _defineProperty(_ref, "TWITTERRULEFORM_ACTION", "Action"), _defineProperty(_ref, "TWITTERRULEFORM_MESSAGES", "Messages"), _defineProperty(_ref, "TWITTERRULEFORM_CONDITION", "Condition"), _defineProperty(_ref, "TWITTERRULEFORM_KEYWORDS", "Mots-clés"), _defineProperty(_ref, "TWITTERRULEFORM_LANGUAGES", "Langages"), _defineProperty(_ref, "TWITTERRULEFORM_DELAY", "Délai"), _defineProperty(_ref, "TWITTERRULEFORM_LANG_TOOLTIP", "Si vous ne selectionnez pas de langage, ce filtre sera ignoré, dans le cas contraire les tweets seront filtrés en fonction des langues selectionnées."), _defineProperty(_ref, "TWITTERRULEFORM_DELAY_TOOLTIP", "Temps entre le traitement de deux tweets. Le valeur minimale est de 60 secondes."), _defineProperty(_ref, "ARRAYINPUT_ADD_BUTTON", "Ajouter"), _defineProperty(_ref, "ARRAYINPUT_DELETE_BUTTON", "Supprimer"), _defineProperty(_ref, "USER_EMAIL_INCORRECT", "L'adresse mail est incorrecte."), _defineProperty(_ref, "USER_EMAIL_NOT_UNIQUE", "L'adresse mail est déjà utilisée."), _defineProperty(_ref, "USER_PASSWORD_INCORRECT", "Le mot de passe doit avoir une longueur minimale de 6 caractères."), _defineProperty(_ref, "USER_PASSWORD_NOT_MATCH", "Les mots de passe ne sont pas identiques."), _defineProperty(_ref, "USER_FIRSTNAME_INCORRECT", "Le prénom est invalide."), _defineProperty(_ref, "USER_LASTNAME_INCORRECT", "Le nom est invalide."), _defineProperty(_ref, "USER_LANGUAGE_INCORRECT", "Une langue valide est requise."), _defineProperty(_ref, "USER_EDIT_SUCCESS", "Votre profil a été mis à jour."), _defineProperty(_ref, "TWITTERRULE_NAME_INCORRECT", "Un nom valide est requis."), _defineProperty(_ref, "TWITTERRULE_NAME_NOT_UNIQUE", "Ce nom est déjà utilisé."), _defineProperty(_ref, "TWITTERRULE_ACTION_INCORRECT", "Une action valide est requise."), _defineProperty(_ref, "TWITTERRULE_MESSAGE_INCORRECT", " n'est pas un message valide."), _defineProperty(_ref, "TWITTERRULE_MESSAGES_INCORRECT", "La liste des messages n'est pas valide."), _defineProperty(_ref, "TWITTERRULE_TRACK_INCORRECT", "Une liste de mots clés valides est requise."), _defineProperty(_ref, "TWITTERRULE_KEYWORD_INCORRECT", " n'est pas un mot clé valide."), _defineProperty(_ref, "TWITTERRULE_CONDITION_INCORRECT", "Une condition valide est requise."), _defineProperty(_ref, "TWITTERRULE_DELAY_INCORRECT", "Un délai valide est requis."), _defineProperty(_ref, "TWITTERRULE_UNDO_INCORRECT", "Une date d'annulation valide est requise."), _defineProperty(_ref, "TWITTERRULE_LANGUAGE_INCORRECT", "Une langue valide est requise."), _defineProperty(_ref, "TWITTERRULE_CREATE_SUCCESS", "Une règle a été créée avec succès."), _defineProperty(_ref, "TWITTERRULE_CREATE_ERROR", "Une erreur est survenue lors de la creation de la règle."), _defineProperty(_ref, "TWITTERRULE_EDIT_ERROR", "Une erreur est survenue lors de la mise à jour de la règle."), _defineProperty(_ref, "TWITTERRULE_EDIT_SUCCESS", "Cette règle a été mise à jour."), _defineProperty(_ref, "TWITTERRULE_DELETE_ERROR", "Une erreur est survenue lors de la suppression de la règle."), _defineProperty(_ref, "TWITTERRULE_DELETE_SUCCESS", "Cette règle a été supprimée avec succès."), _ref;
+};
 
-},{"../constants/Languages":63}],74:[function(require,module,exports){
+exports.default = getLanguage;
+
+},{"../constants/Languages":64}],75:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.default = getLanguage;
 
 var _en = require("./en");
 
@@ -9178,11 +9530,26 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function getLanguage(lang) {
-    if (lang === Languages.FRENCH) return (0, _fr2.default)();else return (0, _en2.default)();
-}
+/**
+ * Return all language locale.
+ * @public
+ * @param {string} lang Language.
+ * @returns {Object<string,string>}
+ */
+var getLanguage = function getLanguage(lang) {
+    switch (lang) {
+        case Languages.FRENCH:
+            return (0, _fr2.default)();
+        case Languages.ENGLISH:
+            return (0, _en2.default)();
+        default:
+            return (0, _en2.default)();
+    }
+};
 
-},{"../constants/Languages":63,"./en":72,"./fr":73}],75:[function(require,module,exports){
+exports.default = getLanguage;
+
+},{"../constants/Languages":64,"./en":73,"./fr":74}],76:[function(require,module,exports){
 "use strict";
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -9234,13 +9601,13 @@ var store = (0, _configureStore2.default)(_extends({}, window.INITIAL_STATE, {
     )
 ), document.getElementById("app"));
 
-},{"./components/App":6,"./constants/Languages":63,"./languages/lang":74,"./store/configureStore":82,"react":431,"react-dom":369,"react-redux":381,"react-router-dom":401,"universal-cookie":494}],76:[function(require,module,exports){
+},{"./components/App":6,"./constants/Languages":64,"./languages/lang":75,"./store/configureStore":83,"react":394,"react-dom":332,"react-redux":344,"react-router-dom":364,"universal-cookie":496}],77:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.removeTwitterRule = exports.updateTwitterRule = exports.addTwitterRule = exports.updateCampaign = exports.removeCampaign = exports.addCampaign = exports.getAccountList = exports.updateAccount = exports.updateUser = exports.getUserInfos = exports.resetPassword = exports.removeAccount = exports.addAccount = exports.addUser = exports.getUser = undefined;
+exports.removeTwitterRule = exports.updateTwitterRule = exports.addTwitterRule = exports.removeCampaign = exports.updateCampaign = exports.addCampaign = exports.getAccountList = exports.removeAccount = exports.updateAccount = exports.addAccount = exports.updateUser = exports.addUser = exports.getUser = exports.resetPassword = exports.getUserInfos = undefined;
 
 var _clientConfig = require("../../client-config.json");
 
@@ -9262,8 +9629,18 @@ var Status = _interopRequireWildcard(_RequestStatus);
 
 var _Metadata = require("../util/Metadata");
 
+var _Languages = require("../constants/Languages");
+
+var Languages = _interopRequireWildcard(_Languages);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+/**
+ * Serialize request's data.
+ * @public
+ * @param {Object<string,any>} data Object containing the data.
+ * @returns {String} Serialized data.
+ */
 var serializeRequest = function serializeRequest(data) {
     var serializedData = "";
     var first = true;
@@ -9282,7 +9659,7 @@ var serializeRequest = function serializeRequest(data) {
                 } else {
                     element = data[key];
                 }
-                serializedData += (first ? "?" : "&").toString() + key + "=" + encodeURIComponent(element);
+                serializedData += (first ? "?" : "&").toString() + encodeURIComponent(key) + "=" + encodeURIComponent(element);
                 if (first) {
                     first = false;
                 }
@@ -9306,145 +9683,357 @@ var serializeRequest = function serializeRequest(data) {
     return serializedData;
 };
 
+/**
+ * @public
+ * @param {Endpoints} endpoint Endpoint.
+ * @param {string} serializedData Serialized data.
+ * @returns {String} Request url.
+ */
 var buildURL = function buildURL(endpoint, serializedData) {
     return _clientConfig.api.host + ":" + _clientConfig.api.port + "/" + endpoint + serializedData;
 };
 
+/**
+ * @public
+ * @param {Methods} method Method.
+ * @param {Endpoints} endpoint Endpoint.
+ * @param {string} token Token.
+ * @param {Object<string,any>} data Data.
+ * @returns {Promise<Object<string,any>>} Received data.
+ */
 var request = function request(method, endpoint, token, data) {
-    var params = {
-        method: method
-    };
-    if (token) {
-        params.headers = {
-            "Content-Type": "application/json",
-            "X-API-KEY": token
+    return new Promise(function (resolve, reject) {
+        var params = {
+            method: method
         };
-    }
-    return fetch(buildURL(endpoint, serializeRequest(data)), params).then(function (response) {
-        if (response.status === 200) {
-            return Promise.resolve(response);
+        if (token) {
+            params.headers = {
+                "Content-Type": "application/json",
+                "X-API-KEY": token
+            };
         }
-        //TOKEN INVALID
-        else if (response.status === 401) {
-                return Promise.reject(new Error(Status.UNAUTHORIZED));
-            } else {
-                return Promise.reject(new Error(Status.WRONG_STATUS));
+        fetch(buildURL(endpoint, serializeRequest(data)), params).then(function (response) {
+            switch (response.status) {
+                case 200:
+                    response.json().then(function (result) {
+                        resolve(result);
+                    }).catch(function (error) {
+                        reject(error);
+                    });
+                    break;
+                //Token invalid.
+                case 401:
+                    reject(new Error(Status.UNAUTHORIZED));
+                    break;
+                default:
+                    reject(new Error(Status.WRONG_STATUS));
             }
-    }).then(function (response) {
-        return response.json();
+        });
     });
 };
 
+/**
+ * @public
+ * @param {Methods} method Method.
+ * @param {Endpoints} endpoint Endpoint.
+ * @param {string} token Token.
+ * @param {Object<string,any>} data Data.
+ * @param {Types} type Type.
+ * @param {Object<string,any>} entity Entity.
+ * @returns {Promise<Object<string,any>>} Received data.
+ */
 var requestIfNeeded = function requestIfNeeded(method, endpoint, token, data, type, entity) {
-    if (entity === undefined || entity !== undefined && !(0, _Metadata.isCached)(entity, type)) {
-        return request(method, endpoint, token, data);
-    } else {
-        return Promise.reject(new Error(Status.DATA_CACHED));
-    }
+    return new Promise(function (resolve, reject) {
+        if (entity === undefined || entity !== undefined && !(0, _Metadata.isCached)(entity, type)) {
+            request(method, endpoint, token, data).then(function (result) {
+                return resolve(result);
+            }).catch(function (error) {
+                return reject(error);
+            });
+        } else {
+            reject(new Error(Status.DATA_CACHED));
+        }
+    });
 };
 
-var getUser = exports.getUser = function getUser(email, password, user) {
-    var data = { email: email, password: password };
-
-    return requestIfNeeded(Methods.GET, Endpoints.USER_LOGIN, null, data, Types.USER_BASIC, user);
+/**
+ * Get users infos.
+ * @public
+ * @param {string} token User's token.
+ * @param {Object<string, any>} user Actual user in store.
+ * @returns {Promise<any>}
+ */
+var getUserInfos = exports.getUserInfos = function getUserInfos(token, user) {
+    return requestIfNeeded(Methods.GET, Endpoints.USER_GET, token, {}, Types.USER_FULL, user);
 };
 
-var addUser = exports.addUser = function addUser(email, password, firstname, lastname, lang) {
-    var data = { email: email, password: password, firstname: firstname, lastname: lastname, lang: lang };
-
-    return request(Methods.POST, Endpoints.USER_CREATE, null, data);
-};
-
-var addAccount = exports.addAccount = function addAccount(token, name, consumer_key, consumer_secret, access_token_key, access_token_secret, blacklist) {
-    var data = { name: name, consumer_key: consumer_key, consumer_secret: consumer_secret, access_token_key: access_token_key, access_token_secret: access_token_secret, blacklist: blacklist };
-
-    return request(Methods.POST, Endpoints.TWITTERACCOUNT_CREATE, token, data);
-};
-
-var removeAccount = exports.removeAccount = function removeAccount(token, id) {
-    var data = { id: id };
-
-    return request(Methods.DELETE, Endpoints.TWITTERACCOUNT_DELETE, token, data);
-};
-
+/**
+ * Reset user's password.
+ * @public
+ * @param {string} email User's email.
+ * @returns {Promise<any>}
+ */
 var resetPassword = exports.resetPassword = function resetPassword(email) {
     var data = { email: email };
 
     return request(Methods.DELETE, Endpoints.TWITTERACCOUNT_DELETE, token, data);
 };
 
-var getUserInfos = exports.getUserInfos = function getUserInfos(token, user) {
-    return requestIfNeeded(Methods.GET, Endpoints.USER_GET, token, {}, Types.USER_FULL, user);
+/**
+ * @public
+ * @param {string} email Email.
+ * @param {string} password Password.
+ * @param {Object<string,any>} user User object in store.
+ * @returns {Promise<any>}
+ */
+var getUser = exports.getUser = function getUser(email, password, user) {
+    var data = { email: email, password: password };
+
+    return requestIfNeeded(Methods.GET, Endpoints.USER_LOGIN, null, data, Types.USER_BASIC, user);
 };
 
+/**
+ * Add user.
+ * @public
+ * @param {string} email User's email.
+ * @param {string} password User's password (clear).
+ * @param {string} firstname User's firstname.
+ * @param {string} lastname User's lastname.
+ * @param {Languages} lang User's lang.
+ * @returns {Promise<any>}
+ */
+var addUser = exports.addUser = function addUser(email, password, firstname, lastname, lang) {
+    var data = { email: email, password: password, firstname: firstname, lastname: lastname, lang: lang };
+
+    return request(Methods.POST, Endpoints.USER_CREATE, null, data);
+};
+
+/**
+ * Update user.
+ * @public
+ * @param {string} token User's token.
+ * @param {string} new_email User's email?
+ * @param {string} old_password User's old password. (clear)
+ * @param {string} new_password User's new password. (clear)
+ * @param {string} new_firstname User's new firstname.
+ * @param {string} new_lastname User's new lastname.
+ * @param {Languages} new_lang User's new lang.
+ * @returns {Promise<any>}
+ */
 var updateUser = exports.updateUser = function updateUser(token, new_email, old_password, new_password, new_firstname, new_lastname, new_lang) {
-    var data = { new_email: new_email, old_password: old_password, new_password: new_password, new_firstname: new_firstname, new_lastname: new_lastname, new_lang: new_lang };
+    return new Promise(function (resolve, reject) {
+        var data = { new_email: new_email, old_password: old_password, new_password: new_password, new_firstname: new_firstname, new_lastname: new_lastname, new_lang: new_lang };
 
-    if (!(new_email === null && old_password === null && new_password === null && new_firstname === null && new_lastname === null && new_lang === null)) {
-        return request(Methods.PUT, Endpoints.USER_UPDATE, token, data);
-    } else {
-        return Promise.reject(new Error(Status.NO_CHANGES));
-    }
+        if (!(new_email === null && old_password === null && new_password === null && new_firstname === null && new_lastname === null && new_lang === null)) {
+            request(Methods.PUT, Endpoints.USER_UPDATE, token, data).then(function (result) {
+                return resolve(result);
+            }).catch(function (error) {
+                return reject(error);
+            });
+        } else {
+            reject(new Error(Status.NO_CHANGES));
+        }
+    });
 };
 
+/**
+ * Add account.
+ * @public
+ * @param {string} token User's token.
+ * @param {string} name Account's name.
+ * @param {string} consumer_key Account's consumer key.
+ * @param {string} consumer_secret Account's consumer secret.
+ * @param {string} access_token_key Account's access token key.
+ * @param {string} access_token_secret Account's access token secret.
+ * @param {Array<string>} blacklist Account's blacklist.
+ * @returns {Promise<any>}
+ */
+var addAccount = exports.addAccount = function addAccount(token, name, consumer_key, consumer_secret, access_token_key, access_token_secret, blacklist) {
+    var data = { name: name, consumer_key: consumer_key, consumer_secret: consumer_secret, access_token_key: access_token_key, access_token_secret: access_token_secret, blacklist: blacklist };
+
+    return request(Methods.POST, Endpoints.TWITTERACCOUNT_CREATE, token, data);
+};
+
+/**
+ * Update account.
+ * @public
+ * @param {string} token User's token.
+ * @param {string} id Account's name.
+ * @param {string} new_name Account's new name.
+ * @param {string} new_consumer_key Account's consumer key.
+ * @param {string} new_consumer_secret Account's consumer secret.
+ * @param {string} new_access_token_key Account's access token key.
+ * @param {string} new_access_token_secret Account's access token secret.
+ * @param {Array<string>} new_blacklist Account's new blacklist.
+ * @returns {Promise<any>}
+ */
 var updateAccount = exports.updateAccount = function updateAccount(token, id, new_name, new_consumer_key, new_consumer_secret, new_access_token_key, new_access_token_secret, new_blacklist) {
-    var data = { id: id, new_name: new_name, new_consumer_key: new_consumer_key, new_consumer_secret: new_consumer_secret, new_access_token_key: new_access_token_key, new_access_token_secret: new_access_token_secret, new_blacklist: new_blacklist };
+    return new Promise(function (resolve, reject) {
+        var data = { id: id, new_name: new_name, new_consumer_key: new_consumer_key, new_consumer_secret: new_consumer_secret, new_access_token_key: new_access_token_key, new_access_token_secret: new_access_token_secret, new_blacklist: new_blacklist };
 
-    if (!(new_name == null && new_consumer_key == null && new_consumer_secret == null && new_access_token_key == null && new_access_token_secret == null && new_blacklist == null)) {
-        return request(Methods.PUT, Endpoints.TWITTERACCOUNT_UPDATE, token, data);
-    } else {
-        return Promise.reject(new Error(Status.NO_CHANGES));
-    }
+        if (!(new_name == null && new_consumer_key == null && new_consumer_secret == null && new_access_token_key == null && new_access_token_secret == null && new_blacklist == null)) {
+            request(Methods.PUT, Endpoints.TWITTERACCOUNT_UPDATE, token, data).then(function (result) {
+                return resolve(result);
+            }).catch(function (error) {
+                return reject(error);
+            });
+        } else {
+            reject(new Error(Status.NO_CHANGES));
+        }
+    });
 };
 
+/**
+ * Delete an account.
+ * @public
+ * @param {string} token User's token.
+ * @param {string} id Account's name.
+ * @returns {Promise<any>}
+ */
+var removeAccount = exports.removeAccount = function removeAccount(token, id) {
+    var data = { id: id };
+
+    return request(Methods.DELETE, Endpoints.TWITTERACCOUNT_DELETE, token, data);
+};
+
+/**
+ * Get account list.
+ * @public
+ * @param {string} token User's token.
+ * @param {Array<Object>} accounts Account list in store.
+ * @returns {Promise<any>}
+ */
 var getAccountList = exports.getAccountList = function getAccountList(token, accounts) {
     return requestIfNeeded(Methods.GET, Endpoints.ACCOUNT_GET_LIST, token, {}, Types.ACCOUNT_LIST, accounts);
 };
 
+/**
+ * Add campaign.
+ * @public
+ * @param {string} token User's token.
+ * @param {string} account_id Account's name.
+ * @param {string} name Campaign's name.
+ * @param {number} date_begin Campaign's date begin.
+ * @param {number} date_end Campaign's date end.
+ * @returns {Promise<any>}
+ */
 var addCampaign = exports.addCampaign = function addCampaign(token, account_id, name, date_begin, date_end) {
     var data = { account_id: account_id, name: name, date_begin: date_begin, date_end: date_end };
 
     return request(Methods.POST, Endpoints.CAMPAIGN_CREATE, token, data);
 };
 
+/**
+ * Update campaign.
+ * @public
+ * @param {string} token User's token.
+ * @param {string} account_id Account's name.
+ * @param {string} campaign_id Campaign's name.
+ * @param {string} new_name Campaign's new name.
+ * @param {number} new_date_begin Campaign's new date begin.
+ * @param {number} new_date_end Campaign's new date end.
+ * @returns {Promise<any>}
+ */
+var updateCampaign = exports.updateCampaign = function updateCampaign(token, account_id, campaign_id, new_name, new_date_begin, new_date_end) {
+    return new Promise(function (resolve, reject) {
+        var data = { account_id: account_id, campaign_id: campaign_id, new_name: new_name, new_date_begin: new_date_begin, new_date_end: new_date_end };
+
+        if (!(new_name == null && new_date_begin == null && new_date_end == null)) {
+            request(Methods.PUT, Endpoints.CAMPAIGN_UPDATE, token, data).then(function (result) {
+                return resolve(result);
+            }).catch(function (error) {
+                return reject(error);
+            });
+        } else {
+            reject(new Error(Status.NO_CHANGES));
+        }
+    });
+};
+
+/**
+ * Remove campaign.
+ * @public
+ * @param {string} token User's token.
+ * @param {string} account_id Account's name.
+ * @param {string} campaign_id Campaign's name.
+ * @returns {Promise<any>}
+ */
 var removeCampaign = exports.removeCampaign = function removeCampaign(token, account_id, campaign_id) {
     var data = { account_id: account_id, campaign_id: campaign_id };
 
     return request(Methods.DELETE, Endpoints.CAMPAIGN_DELETE, token, data);
 };
 
-var updateCampaign = exports.updateCampaign = function updateCampaign(token, account_id, campaign_id, new_name, new_date_begin, new_date_end) {
-    var data = { account_id: account_id, campaign_id: campaign_id, new_name: new_name, new_date_begin: new_date_begin, new_date_end: new_date_end };
-
-    if (!(new_name == null && new_date_begin == null && new_date_end == null)) {
-        return request(Methods.PUT, Endpoints.CAMPAIGN_UPDATE, token, data);
-    } else {
-        return Promise.reject(new Error(Status.NO_CHANGES));
-    }
-};
-
+/**
+ * Add a twitter rule.
+ * @public
+ * @param {string} token User's token.
+ * @param {string} account_id Account's name.
+ * @param {string} campaign_id Campaign's name.
+ * @param {string} name Rule's name.
+ * @param {string} type Rule's type.
+ * @param {Object<string, string>} messages Rule's messages.
+ * @param {Object<string, string>} track Rule's track.
+ * @param {string} condition Rule's condition.
+ * @param {number} delay Rule's delay.
+ * @param {number} undo Rule's undo.
+ * @param {Array<string>} lang Rule's lang.
+ * @returns {Promise<any>}
+ */
 var addTwitterRule = exports.addTwitterRule = function addTwitterRule(token, account_id, campaign_id, name, type, messages, track, condition, delay, undo, lang) {
     var data = { account_id: account_id, campaign_id: campaign_id, name: name, type: type, messages: messages, track: track, condition: condition, delay: delay, undo: undo, lang: lang };
 
     return request(Methods.POST, Endpoints.TWITTERRULE_CREATE, token, data);
 };
 
+/**
+ * Update twitter rule.
+ * @public
+ * @param {string} token User's token.
+ * @param {string} account_id Account's name.
+ * @param {string} campaign_id Campaign's name.
+ * @param {string} rule_id Rule's name.
+ * @param {string} new_name Rule's new name.
+ * @param {string} new_type Rule's new type.
+ * @param {Object<string, any>} new_messages Rule's new messages.
+ * @param {Object<string, string>} new_track Rule's new track.
+ * @param {string} new_condition Rule's new condition.
+ * @param {number} new_delay Rule's new delay.
+ * @param {number} new_undo Rule's new undo.
+ * @param {Array<string>} new_lang Rule's new lang.
+ * @returns {Promise<any>}
+ */
 var updateTwitterRule = exports.updateTwitterRule = function updateTwitterRule(token, account_id, campaign_id, rule_id, new_name, new_type, new_messages, new_track, new_condition, new_delay, new_undo, new_lang) {
-    var data = { account_id: account_id, campaign_id: campaign_id, rule_id: rule_id, new_name: new_name, new_type: new_type, new_messages: new_messages, new_track: new_track, new_condition: new_condition, new_delay: new_delay, new_undo: new_undo, new_lang: new_lang };
-    if (!(new_name == null && new_type == null && new_messages == null && new_track == null && new_condition == null && new_delay == null && new_undo == null && new_lang == null)) {
-        return request(Methods.PUT, Endpoints.TWITTERRULE_UPDATE, token, data);
-    } else {
-        return Promise.reject(new Error(Status.NO_CHANGES));
-    }
+    return new Promise(function (resolve, reject) {
+        var data = { account_id: account_id, campaign_id: campaign_id, rule_id: rule_id, new_name: new_name, new_type: new_type, new_messages: new_messages, new_track: new_track, new_condition: new_condition, new_delay: new_delay, new_undo: new_undo, new_lang: new_lang };
+        if (!(new_name == null && new_type == null && new_messages == null && new_track == null && new_condition == null && new_delay == null && new_undo == null && new_lang == null)) {
+            request(Methods.PUT, Endpoints.TWITTERRULE_UPDATE, token, data).then(function (result) {
+                return resolve(result);
+            }).catch(function (error) {
+                return reject(error);
+            });
+        } else {
+            reject(new Error(Status.NO_CHANGES));
+        }
+    });
 };
 
+/**
+ * Remove twitter rule.
+ * @public
+ * @param {string} token User's token.
+ * @param {string} account_id Account's name.
+ * @param {string} campaign_id Campaign's name.
+ * @param {string} rule_id Rule's name.
+ * @returns {Promise<any>} 
+ */
 var removeTwitterRule = exports.removeTwitterRule = function removeTwitterRule(token, account_id, campaign_id, rule_id) {
     var data = { account_id: account_id, campaign_id: campaign_id, rule_id: rule_id };
 
     return request(Methods.DELETE, Endpoints.TWITTERRULE_DELETE, token, data);
 };
 
-},{"../../client-config.json":85,"../constants/RequestEndpoints":65,"../constants/RequestMethods":66,"../constants/RequestStatus":67,"../constants/RequestTypes":68,"../util/Metadata":84}],77:[function(require,module,exports){
+},{"../../client-config.json":86,"../constants/Languages":64,"../constants/RequestEndpoints":66,"../constants/RequestMethods":67,"../constants/RequestStatus":68,"../constants/RequestTypes":69,"../util/Metadata":85}],78:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9473,6 +10062,11 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+ * Accounts reducer.
+ * @param {Object<any>} state Accounts store state.
+ * @param {string} action ActionType.
+ */
 var accounts = function accounts() {
     var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var action = arguments[1];
@@ -9613,7 +10207,7 @@ var accounts = function accounts() {
 
 exports.default = accounts;
 
-},{"../constants/ActionTypes":62,"../constants/RequestTypes":68,"../util/Metadata":84,"lodash":330,"uuid/v4":498}],78:[function(require,module,exports){
+},{"../constants/ActionTypes":63,"../constants/RequestTypes":69,"../util/Metadata":85,"lodash":292,"uuid/v4":500}],79:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9647,7 +10241,7 @@ exports.default = (0, _redux.combineReducers)({
   lang: _lang2.default
 });
 
-},{"./accounts":77,"./lang":79,"./messages":80,"./user":81,"redux":487}],79:[function(require,module,exports){
+},{"./accounts":78,"./lang":80,"./messages":81,"./user":82,"redux":490}],80:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9666,6 +10260,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+/**
+ * Lang reducer.
+ * @param {Object<any>} state Language store state.
+ * @param {string} action ActionType.
+ */
+
 var lang = function lang() {
     var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var action = arguments[1];
@@ -9680,7 +10280,7 @@ var lang = function lang() {
 
 exports.default = lang;
 
-},{"../constants/ActionTypes":62,"../languages/lang":74}],80:[function(require,module,exports){
+},{"../constants/ActionTypes":63,"../languages/lang":75}],81:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9694,6 +10294,11 @@ var ActionTypes = _interopRequireWildcard(_ActionTypes);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+/**
+ * Messages reducer.
+ * @param {Object<any>} state Messages store state.
+ * @param {string} action ActionType.
+ */
 function messages() {
     var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var action = arguments[1];
@@ -9742,7 +10347,7 @@ function messages() {
     }
 }
 
-},{"../constants/ActionTypes":62}],81:[function(require,module,exports){
+},{"../constants/ActionTypes":63}],82:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9763,6 +10368,12 @@ var _Metadata = require("../util/Metadata");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+/**
+ * User reducer.
+ * @public
+ * @param {Object<any>} state Object state.
+ * @param {string} action ActionType
+ */
 var user = function user() {
     var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var action = arguments[1];
@@ -9798,7 +10409,7 @@ var user = function user() {
 
 exports.default = user;
 
-},{"../constants/ActionTypes":62,"../constants/RequestTypes":68,"../util/Metadata":84}],82:[function(require,module,exports){
+},{"../constants/ActionTypes":63,"../constants/RequestTypes":69,"../util/Metadata":85}],83:[function(require,module,exports){
 (function (process){
 "use strict";
 
@@ -9827,6 +10438,12 @@ var _index2 = _interopRequireDefault(_index);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+ * Configure default store.
+ * @public
+ * @param {Object<any>} initialState Initial state.
+ * @param {Object<any>} cookie Cookie.
+ */
 function configureStore(initialState, cookie) {
     var middlewareModules = [_reduxThunk2.default, _reduxPromise2.default, (0, _reduxCookie.createCookieMiddleware)(cookie)];
     if (process.env.NODE_ENV !== "production") {
@@ -9837,17 +10454,21 @@ function configureStore(initialState, cookie) {
 }
 
 }).call(this,require('_process'))
-},{"../reducers/index":78,"_process":353,"redux":487,"redux-cookie":478,"redux-logger":479,"redux-promise":480,"redux-thunk":481}],83:[function(require,module,exports){
+},{"../reducers/index":79,"_process":316,"redux":490,"redux-cookie":481,"redux-logger":482,"redux-promise":483,"redux-thunk":484}],84:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
+/**
+ * @public
+ * @returns {number} Unix timestamp.
+ */
 var getUnixTimestamp = exports.getUnixTimestamp = function getUnixTimestamp() {
-    return Math.floor(Date.now() / 1000);
+  return Math.floor(Date.now() / 1000);
 };
 
-},{}],84:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9859,7 +10480,7 @@ var _clientConfig = require("../../client-config.json");
 
 var _Date = require("./Date");
 
-/*
+/**
 Add additional data to an object, this allows to check if data is already in cache.
 Patern :
 {
@@ -9871,12 +10492,22 @@ Patern :
         ...someData
     }
 }
-*/
-
+ * @public
+ * @param {string} state Store object.
+ * @returns {Object<any>} Metadata.
+ */
 var getMetadata = exports.getMetadata = function getMetadata(state) {
     return state._metadata ? state._metadata : [];
 };
 
+/**
+ * Add metadata to store object.
+ * @public
+ * @param {Object<any>} state Store object.
+ * @param {string} requestType Request type.
+ * @param {number} date Date.
+ * @returns {Object<any>} Store object.
+ */
 var addMetadata = exports.addMetadata = function addMetadata(state, requestType) {
     var date = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : (0, _Date.getUnixTimestamp)();
 
@@ -9905,6 +10536,13 @@ var addMetadata = exports.addMetadata = function addMetadata(state, requestType)
     return newState;
 };
 
+/**
+ * Check if store object is cached and needs to be updated.
+ * @public
+ * @param {Object<any>} state Store object.
+ * @param {string} requestType Request type.
+ * @returns {boolean} Store object is cached.
+ */
 var isCached = exports.isCached = function isCached(state, requestType) {
     if (state._metadata) {
         for (var i = 0; i < state._metadata.length; i++) {
@@ -9919,7 +10557,7 @@ var isCached = exports.isCached = function isCached(state, requestType) {
     return false;
 };
 
-},{"../../client-config.json":85,"./Date":83}],85:[function(require,module,exports){
+},{"../../client-config.json":86,"./Date":84}],86:[function(require,module,exports){
 module.exports={
     "recaptcha": {
         "key": "6Le-wvkSAAAAAPBMRTvw0Q4Muexq9bi0DJwx_mJ-"
@@ -9932,7 +10570,7 @@ module.exports={
         "cache_time": 300
     }
 }
-},{}],86:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 module.exports = balanced;
 function balanced(a, b, str) {
   if (a instanceof RegExp) a = maybeMatch(a, str);
@@ -9992,7 +10630,7 @@ function range(a, b, str) {
   return result;
 }
 
-},{}],87:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 /*!
   Copyright (c) 2016 Jed Watson.
   Licensed under the MIT License (MIT), see
@@ -10042,7 +10680,7 @@ function range(a, b, str) {
 	}
 }());
 
-},{}],88:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 /*!
  * cookie
  * Copyright(c) 2012-2014 Roman Shtylman
@@ -10239,509 +10877,7 @@ function tryDecode(str, decode) {
   }
 }
 
-},{}],89:[function(require,module,exports){
-require('../modules/es6.math.acosh');
-require('../modules/es6.math.asinh');
-require('../modules/es6.math.atanh');
-require('../modules/es6.math.cbrt');
-require('../modules/es6.math.clz32');
-require('../modules/es6.math.cosh');
-require('../modules/es6.math.expm1');
-require('../modules/es6.math.fround');
-require('../modules/es6.math.hypot');
-require('../modules/es6.math.imul');
-require('../modules/es6.math.log10');
-require('../modules/es6.math.log1p');
-require('../modules/es6.math.log2');
-require('../modules/es6.math.sign');
-require('../modules/es6.math.sinh');
-require('../modules/es6.math.tanh');
-require('../modules/es6.math.trunc');
-module.exports = require('../modules/_core').Math;
-
-},{"../modules/_core":92,"../modules/es6.math.acosh":112,"../modules/es6.math.asinh":113,"../modules/es6.math.atanh":114,"../modules/es6.math.cbrt":115,"../modules/es6.math.clz32":116,"../modules/es6.math.cosh":117,"../modules/es6.math.expm1":118,"../modules/es6.math.fround":119,"../modules/es6.math.hypot":120,"../modules/es6.math.imul":121,"../modules/es6.math.log10":122,"../modules/es6.math.log1p":123,"../modules/es6.math.log2":124,"../modules/es6.math.sign":125,"../modules/es6.math.sinh":126,"../modules/es6.math.tanh":127,"../modules/es6.math.trunc":128}],90:[function(require,module,exports){
-module.exports = function (it) {
-  if (typeof it != 'function') throw TypeError(it + ' is not a function!');
-  return it;
-};
-
-},{}],91:[function(require,module,exports){
-var isObject = require('./_is-object');
-module.exports = function (it) {
-  if (!isObject(it)) throw TypeError(it + ' is not an object!');
-  return it;
-};
-
-},{"./_is-object":102}],92:[function(require,module,exports){
-var core = module.exports = { version: '2.5.1' };
-if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
-
-},{}],93:[function(require,module,exports){
-// optional / simple context binding
-var aFunction = require('./_a-function');
-module.exports = function (fn, that, length) {
-  aFunction(fn);
-  if (that === undefined) return fn;
-  switch (length) {
-    case 1: return function (a) {
-      return fn.call(that, a);
-    };
-    case 2: return function (a, b) {
-      return fn.call(that, a, b);
-    };
-    case 3: return function (a, b, c) {
-      return fn.call(that, a, b, c);
-    };
-  }
-  return function (/* ...args */) {
-    return fn.apply(that, arguments);
-  };
-};
-
-},{"./_a-function":90}],94:[function(require,module,exports){
-// Thank's IE8 for his funny defineProperty
-module.exports = !require('./_fails')(function () {
-  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
-});
-
-},{"./_fails":97}],95:[function(require,module,exports){
-var isObject = require('./_is-object');
-var document = require('./_global').document;
-// typeof document.createElement is 'object' in old IE
-var is = isObject(document) && isObject(document.createElement);
-module.exports = function (it) {
-  return is ? document.createElement(it) : {};
-};
-
-},{"./_global":98,"./_is-object":102}],96:[function(require,module,exports){
-var global = require('./_global');
-var core = require('./_core');
-var hide = require('./_hide');
-var redefine = require('./_redefine');
-var ctx = require('./_ctx');
-var PROTOTYPE = 'prototype';
-
-var $export = function (type, name, source) {
-  var IS_FORCED = type & $export.F;
-  var IS_GLOBAL = type & $export.G;
-  var IS_STATIC = type & $export.S;
-  var IS_PROTO = type & $export.P;
-  var IS_BIND = type & $export.B;
-  var target = IS_GLOBAL ? global : IS_STATIC ? global[name] || (global[name] = {}) : (global[name] || {})[PROTOTYPE];
-  var exports = IS_GLOBAL ? core : core[name] || (core[name] = {});
-  var expProto = exports[PROTOTYPE] || (exports[PROTOTYPE] = {});
-  var key, own, out, exp;
-  if (IS_GLOBAL) source = name;
-  for (key in source) {
-    // contains in native
-    own = !IS_FORCED && target && target[key] !== undefined;
-    // export native or passed
-    out = (own ? target : source)[key];
-    // bind timers to global for call from export context
-    exp = IS_BIND && own ? ctx(out, global) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;
-    // extend global
-    if (target) redefine(target, key, out, type & $export.U);
-    // export
-    if (exports[key] != out) hide(exports, key, exp);
-    if (IS_PROTO && expProto[key] != out) expProto[key] = out;
-  }
-};
-global.core = core;
-// type bitmap
-$export.F = 1;   // forced
-$export.G = 2;   // global
-$export.S = 4;   // static
-$export.P = 8;   // proto
-$export.B = 16;  // bind
-$export.W = 32;  // wrap
-$export.U = 64;  // safe
-$export.R = 128; // real proto method for `library`
-module.exports = $export;
-
-},{"./_core":92,"./_ctx":93,"./_global":98,"./_hide":100,"./_redefine":109}],97:[function(require,module,exports){
-module.exports = function (exec) {
-  try {
-    return !!exec();
-  } catch (e) {
-    return true;
-  }
-};
-
-},{}],98:[function(require,module,exports){
-// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
-var global = module.exports = typeof window != 'undefined' && window.Math == Math
-  ? window : typeof self != 'undefined' && self.Math == Math ? self
-  // eslint-disable-next-line no-new-func
-  : Function('return this')();
-if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
-
-},{}],99:[function(require,module,exports){
-var hasOwnProperty = {}.hasOwnProperty;
-module.exports = function (it, key) {
-  return hasOwnProperty.call(it, key);
-};
-
-},{}],100:[function(require,module,exports){
-var dP = require('./_object-dp');
-var createDesc = require('./_property-desc');
-module.exports = require('./_descriptors') ? function (object, key, value) {
-  return dP.f(object, key, createDesc(1, value));
-} : function (object, key, value) {
-  object[key] = value;
-  return object;
-};
-
-},{"./_descriptors":94,"./_object-dp":107,"./_property-desc":108}],101:[function(require,module,exports){
-module.exports = !require('./_descriptors') && !require('./_fails')(function () {
-  return Object.defineProperty(require('./_dom-create')('div'), 'a', { get: function () { return 7; } }).a != 7;
-});
-
-},{"./_descriptors":94,"./_dom-create":95,"./_fails":97}],102:[function(require,module,exports){
-module.exports = function (it) {
-  return typeof it === 'object' ? it !== null : typeof it === 'function';
-};
-
-},{}],103:[function(require,module,exports){
-// 20.2.2.14 Math.expm1(x)
-var $expm1 = Math.expm1;
-module.exports = (!$expm1
-  // Old FF bug
-  || $expm1(10) > 22025.465794806719 || $expm1(10) < 22025.4657948067165168
-  // Tor Browser bug
-  || $expm1(-2e-17) != -2e-17
-) ? function expm1(x) {
-  return (x = +x) == 0 ? x : x > -1e-6 && x < 1e-6 ? x + x * x / 2 : Math.exp(x) - 1;
-} : $expm1;
-
-},{}],104:[function(require,module,exports){
-// 20.2.2.16 Math.fround(x)
-var sign = require('./_math-sign');
-var pow = Math.pow;
-var EPSILON = pow(2, -52);
-var EPSILON32 = pow(2, -23);
-var MAX32 = pow(2, 127) * (2 - EPSILON32);
-var MIN32 = pow(2, -126);
-
-var roundTiesToEven = function (n) {
-  return n + 1 / EPSILON - 1 / EPSILON;
-};
-
-module.exports = Math.fround || function fround(x) {
-  var $abs = Math.abs(x);
-  var $sign = sign(x);
-  var a, result;
-  if ($abs < MIN32) return $sign * roundTiesToEven($abs / MIN32 / EPSILON32) * MIN32 * EPSILON32;
-  a = (1 + EPSILON32 / EPSILON) * $abs;
-  result = a - (a - $abs);
-  // eslint-disable-next-line no-self-compare
-  if (result > MAX32 || result != result) return $sign * Infinity;
-  return $sign * result;
-};
-
-},{"./_math-sign":106}],105:[function(require,module,exports){
-// 20.2.2.20 Math.log1p(x)
-module.exports = Math.log1p || function log1p(x) {
-  return (x = +x) > -1e-8 && x < 1e-8 ? x - x * x / 2 : Math.log(1 + x);
-};
-
-},{}],106:[function(require,module,exports){
-// 20.2.2.28 Math.sign(x)
-module.exports = Math.sign || function sign(x) {
-  // eslint-disable-next-line no-self-compare
-  return (x = +x) == 0 || x != x ? x : x < 0 ? -1 : 1;
-};
-
-},{}],107:[function(require,module,exports){
-var anObject = require('./_an-object');
-var IE8_DOM_DEFINE = require('./_ie8-dom-define');
-var toPrimitive = require('./_to-primitive');
-var dP = Object.defineProperty;
-
-exports.f = require('./_descriptors') ? Object.defineProperty : function defineProperty(O, P, Attributes) {
-  anObject(O);
-  P = toPrimitive(P, true);
-  anObject(Attributes);
-  if (IE8_DOM_DEFINE) try {
-    return dP(O, P, Attributes);
-  } catch (e) { /* empty */ }
-  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported!');
-  if ('value' in Attributes) O[P] = Attributes.value;
-  return O;
-};
-
-},{"./_an-object":91,"./_descriptors":94,"./_ie8-dom-define":101,"./_to-primitive":110}],108:[function(require,module,exports){
-module.exports = function (bitmap, value) {
-  return {
-    enumerable: !(bitmap & 1),
-    configurable: !(bitmap & 2),
-    writable: !(bitmap & 4),
-    value: value
-  };
-};
-
-},{}],109:[function(require,module,exports){
-var global = require('./_global');
-var hide = require('./_hide');
-var has = require('./_has');
-var SRC = require('./_uid')('src');
-var TO_STRING = 'toString';
-var $toString = Function[TO_STRING];
-var TPL = ('' + $toString).split(TO_STRING);
-
-require('./_core').inspectSource = function (it) {
-  return $toString.call(it);
-};
-
-(module.exports = function (O, key, val, safe) {
-  var isFunction = typeof val == 'function';
-  if (isFunction) has(val, 'name') || hide(val, 'name', key);
-  if (O[key] === val) return;
-  if (isFunction) has(val, SRC) || hide(val, SRC, O[key] ? '' + O[key] : TPL.join(String(key)));
-  if (O === global) {
-    O[key] = val;
-  } else if (!safe) {
-    delete O[key];
-    hide(O, key, val);
-  } else if (O[key]) {
-    O[key] = val;
-  } else {
-    hide(O, key, val);
-  }
-// add fake Function#toString for correct work wrapped methods / constructors with methods like LoDash isNative
-})(Function.prototype, TO_STRING, function toString() {
-  return typeof this == 'function' && this[SRC] || $toString.call(this);
-});
-
-},{"./_core":92,"./_global":98,"./_has":99,"./_hide":100,"./_uid":111}],110:[function(require,module,exports){
-// 7.1.1 ToPrimitive(input [, PreferredType])
-var isObject = require('./_is-object');
-// instead of the ES6 spec version, we didn't implement @@toPrimitive case
-// and the second argument - flag - preferred type is a string
-module.exports = function (it, S) {
-  if (!isObject(it)) return it;
-  var fn, val;
-  if (S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;
-  if (typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it))) return val;
-  if (!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;
-  throw TypeError("Can't convert object to primitive value");
-};
-
-},{"./_is-object":102}],111:[function(require,module,exports){
-var id = 0;
-var px = Math.random();
-module.exports = function (key) {
-  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
-};
-
-},{}],112:[function(require,module,exports){
-// 20.2.2.3 Math.acosh(x)
-var $export = require('./_export');
-var log1p = require('./_math-log1p');
-var sqrt = Math.sqrt;
-var $acosh = Math.acosh;
-
-$export($export.S + $export.F * !($acosh
-  // V8 bug: https://code.google.com/p/v8/issues/detail?id=3509
-  && Math.floor($acosh(Number.MAX_VALUE)) == 710
-  // Tor Browser bug: Math.acosh(Infinity) -> NaN
-  && $acosh(Infinity) == Infinity
-), 'Math', {
-  acosh: function acosh(x) {
-    return (x = +x) < 1 ? NaN : x > 94906265.62425156
-      ? Math.log(x) + Math.LN2
-      : log1p(x - 1 + sqrt(x - 1) * sqrt(x + 1));
-  }
-});
-
-},{"./_export":96,"./_math-log1p":105}],113:[function(require,module,exports){
-// 20.2.2.5 Math.asinh(x)
-var $export = require('./_export');
-var $asinh = Math.asinh;
-
-function asinh(x) {
-  return !isFinite(x = +x) || x == 0 ? x : x < 0 ? -asinh(-x) : Math.log(x + Math.sqrt(x * x + 1));
-}
-
-// Tor Browser bug: Math.asinh(0) -> -0
-$export($export.S + $export.F * !($asinh && 1 / $asinh(0) > 0), 'Math', { asinh: asinh });
-
-},{"./_export":96}],114:[function(require,module,exports){
-// 20.2.2.7 Math.atanh(x)
-var $export = require('./_export');
-var $atanh = Math.atanh;
-
-// Tor Browser bug: Math.atanh(-0) -> 0
-$export($export.S + $export.F * !($atanh && 1 / $atanh(-0) < 0), 'Math', {
-  atanh: function atanh(x) {
-    return (x = +x) == 0 ? x : Math.log((1 + x) / (1 - x)) / 2;
-  }
-});
-
-},{"./_export":96}],115:[function(require,module,exports){
-// 20.2.2.9 Math.cbrt(x)
-var $export = require('./_export');
-var sign = require('./_math-sign');
-
-$export($export.S, 'Math', {
-  cbrt: function cbrt(x) {
-    return sign(x = +x) * Math.pow(Math.abs(x), 1 / 3);
-  }
-});
-
-},{"./_export":96,"./_math-sign":106}],116:[function(require,module,exports){
-// 20.2.2.11 Math.clz32(x)
-var $export = require('./_export');
-
-$export($export.S, 'Math', {
-  clz32: function clz32(x) {
-    return (x >>>= 0) ? 31 - Math.floor(Math.log(x + 0.5) * Math.LOG2E) : 32;
-  }
-});
-
-},{"./_export":96}],117:[function(require,module,exports){
-// 20.2.2.12 Math.cosh(x)
-var $export = require('./_export');
-var exp = Math.exp;
-
-$export($export.S, 'Math', {
-  cosh: function cosh(x) {
-    return (exp(x = +x) + exp(-x)) / 2;
-  }
-});
-
-},{"./_export":96}],118:[function(require,module,exports){
-// 20.2.2.14 Math.expm1(x)
-var $export = require('./_export');
-var $expm1 = require('./_math-expm1');
-
-$export($export.S + $export.F * ($expm1 != Math.expm1), 'Math', { expm1: $expm1 });
-
-},{"./_export":96,"./_math-expm1":103}],119:[function(require,module,exports){
-// 20.2.2.16 Math.fround(x)
-var $export = require('./_export');
-
-$export($export.S, 'Math', { fround: require('./_math-fround') });
-
-},{"./_export":96,"./_math-fround":104}],120:[function(require,module,exports){
-// 20.2.2.17 Math.hypot([value1[, value2[, … ]]])
-var $export = require('./_export');
-var abs = Math.abs;
-
-$export($export.S, 'Math', {
-  hypot: function hypot(value1, value2) { // eslint-disable-line no-unused-vars
-    var sum = 0;
-    var i = 0;
-    var aLen = arguments.length;
-    var larg = 0;
-    var arg, div;
-    while (i < aLen) {
-      arg = abs(arguments[i++]);
-      if (larg < arg) {
-        div = larg / arg;
-        sum = sum * div * div + 1;
-        larg = arg;
-      } else if (arg > 0) {
-        div = arg / larg;
-        sum += div * div;
-      } else sum += arg;
-    }
-    return larg === Infinity ? Infinity : larg * Math.sqrt(sum);
-  }
-});
-
-},{"./_export":96}],121:[function(require,module,exports){
-// 20.2.2.18 Math.imul(x, y)
-var $export = require('./_export');
-var $imul = Math.imul;
-
-// some WebKit versions fails with big numbers, some has wrong arity
-$export($export.S + $export.F * require('./_fails')(function () {
-  return $imul(0xffffffff, 5) != -5 || $imul.length != 2;
-}), 'Math', {
-  imul: function imul(x, y) {
-    var UINT16 = 0xffff;
-    var xn = +x;
-    var yn = +y;
-    var xl = UINT16 & xn;
-    var yl = UINT16 & yn;
-    return 0 | xl * yl + ((UINT16 & xn >>> 16) * yl + xl * (UINT16 & yn >>> 16) << 16 >>> 0);
-  }
-});
-
-},{"./_export":96,"./_fails":97}],122:[function(require,module,exports){
-// 20.2.2.21 Math.log10(x)
-var $export = require('./_export');
-
-$export($export.S, 'Math', {
-  log10: function log10(x) {
-    return Math.log(x) * Math.LOG10E;
-  }
-});
-
-},{"./_export":96}],123:[function(require,module,exports){
-// 20.2.2.20 Math.log1p(x)
-var $export = require('./_export');
-
-$export($export.S, 'Math', { log1p: require('./_math-log1p') });
-
-},{"./_export":96,"./_math-log1p":105}],124:[function(require,module,exports){
-// 20.2.2.22 Math.log2(x)
-var $export = require('./_export');
-
-$export($export.S, 'Math', {
-  log2: function log2(x) {
-    return Math.log(x) / Math.LN2;
-  }
-});
-
-},{"./_export":96}],125:[function(require,module,exports){
-// 20.2.2.28 Math.sign(x)
-var $export = require('./_export');
-
-$export($export.S, 'Math', { sign: require('./_math-sign') });
-
-},{"./_export":96,"./_math-sign":106}],126:[function(require,module,exports){
-// 20.2.2.30 Math.sinh(x)
-var $export = require('./_export');
-var expm1 = require('./_math-expm1');
-var exp = Math.exp;
-
-// V8 near Chromium 38 has a problem with very small numbers
-$export($export.S + $export.F * require('./_fails')(function () {
-  return !Math.sinh(-2e-17) != -2e-17;
-}), 'Math', {
-  sinh: function sinh(x) {
-    return Math.abs(x = +x) < 1
-      ? (expm1(x) - expm1(-x)) / 2
-      : (exp(x - 1) - exp(-x - 1)) * (Math.E / 2);
-  }
-});
-
-},{"./_export":96,"./_fails":97,"./_math-expm1":103}],127:[function(require,module,exports){
-// 20.2.2.33 Math.tanh(x)
-var $export = require('./_export');
-var expm1 = require('./_math-expm1');
-var exp = Math.exp;
-
-$export($export.S, 'Math', {
-  tanh: function tanh(x) {
-    var a = expm1(x = +x);
-    var b = expm1(-x);
-    return a == Infinity ? 1 : b == Infinity ? -1 : (a - b) / (exp(x) + exp(-x));
-  }
-});
-
-},{"./_export":96,"./_math-expm1":103}],128:[function(require,module,exports){
-// 20.2.2.34 Math.trunc(x)
-var $export = require('./_export');
-
-$export($export.S, 'Math', {
-  trunc: function trunc(it) {
-    return (it > 0 ? Math.floor : Math.ceil)(it);
-  }
-});
-
-},{"./_export":96}],129:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -11015,6 +11151,27 @@ function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
      */
     componentWillUnmount: 'DEFINE_MANY',
 
+    /**
+     * Replacement for (deprecated) `componentWillMount`.
+     *
+     * @optional
+     */
+    UNSAFE_componentWillMount: 'DEFINE_MANY',
+
+    /**
+     * Replacement for (deprecated) `componentWillReceiveProps`.
+     *
+     * @optional
+     */
+    UNSAFE_componentWillReceiveProps: 'DEFINE_MANY',
+
+    /**
+     * Replacement for (deprecated) `componentWillUpdate`.
+     *
+     * @optional
+     */
+    UNSAFE_componentWillUpdate: 'DEFINE_MANY',
+
     // ==== Advanced methods ====
 
     /**
@@ -11028,6 +11185,23 @@ function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
      * @overridable
      */
     updateComponent: 'OVERRIDE_BASE'
+  };
+
+  /**
+   * Similar to ReactClassInterface but for static methods.
+   */
+  var ReactClassStaticInterface = {
+    /**
+     * This method is invoked after a component is instantiated and when it
+     * receives new props. Return an object to update state in response to
+     * prop changes. Return null to indicate no change to state.
+     *
+     * If an object is returned, its keys will be merged into the existing state.
+     *
+     * @return {object || null}
+     * @optional
+     */
+    getDerivedStateFromProps: 'DEFINE_MANY_MERGED'
   };
 
   /**
@@ -11264,6 +11438,7 @@ function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
     if (!statics) {
       return;
     }
+
     for (var name in statics) {
       var property = statics[name];
       if (!statics.hasOwnProperty(name)) {
@@ -11280,14 +11455,25 @@ function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
         name
       );
 
-      var isInherited = name in Constructor;
-      _invariant(
-        !isInherited,
-        'ReactClass: You are attempting to define ' +
-          '`%s` on your component more than once. This conflict may be ' +
-          'due to a mixin.',
-        name
-      );
+      var isAlreadyDefined = name in Constructor;
+      if (isAlreadyDefined) {
+        var specPolicy = ReactClassStaticInterface.hasOwnProperty(name)
+          ? ReactClassStaticInterface[name]
+          : null;
+
+        _invariant(
+          specPolicy === 'DEFINE_MANY_MERGED',
+          'ReactClass: You are attempting to define ' +
+            '`%s` on your component more than once. This conflict may be ' +
+            'due to a mixin.',
+          name
+        );
+
+        Constructor[name] = createMergedResultFunction(Constructor[name], property);
+
+        return;
+      }
+
       Constructor[name] = property;
     }
   }
@@ -11597,6 +11783,12 @@ function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
           'componentWillRecieveProps(). Did you mean componentWillReceiveProps()?',
         spec.displayName || 'A component'
       );
+      warning(
+        !Constructor.prototype.UNSAFE_componentWillRecieveProps,
+        '%s has a method called UNSAFE_componentWillRecieveProps(). ' +
+          'Did you mean UNSAFE_componentWillReceiveProps()?',
+        spec.displayName || 'A component'
+      );
     }
 
     // Reduce time spent doing lookups by setting these on the prototype.
@@ -11615,7 +11807,7 @@ function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
 module.exports = factory;
 
 }).call(this,require('_process'))
-},{"_process":353,"fbjs/lib/emptyObject":148,"fbjs/lib/invariant":153,"fbjs/lib/warning":157,"object-assign":351}],130:[function(require,module,exports){
+},{"_process":316,"fbjs/lib/emptyObject":109,"fbjs/lib/invariant":114,"fbjs/lib/warning":118,"object-assign":314}],91:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -11645,7 +11837,7 @@ module.exports = factory(
   ReactNoopUpdateQueue
 );
 
-},{"./factory":129,"react":431}],131:[function(require,module,exports){
+},{"./factory":90,"react":394}],92:[function(require,module,exports){
 // https://d3js.org/d3-array/ Version 1.2.1. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -12237,7 +12429,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],132:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 // https://d3js.org/d3-collection/ Version 1.0.4. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -12456,7 +12648,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],133:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 // https://d3js.org/d3-color/ Version 1.0.3. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -12981,8 +13173,8 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],134:[function(require,module,exports){
-// https://d3js.org/d3-format/ Version 1.2.1. Copyright 2017 Mike Bostock.
+},{}],95:[function(require,module,exports){
+// https://d3js.org/d3-format/ Version 1.2.2. Copyright 2018 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -13212,7 +13404,7 @@ var formatLocale = function(locale) {
 
         // Compute the prefix and suffix.
         valuePrefix = (valueNegative ? (sign === "(" ? sign : "-") : sign === "-" || sign === "(" ? "" : sign) + valuePrefix;
-        valueSuffix = valueSuffix + (type === "s" ? prefixes[8 + prefixExponent / 3] : "") + (valueNegative && sign === "(" ? ")" : "");
+        valueSuffix = (type === "s" ? prefixes[8 + prefixExponent / 3] : "") + valueSuffix + (valueNegative && sign === "(" ? ")" : "");
 
         // Break the formatted value into the integer “value” part that can be
         // grouped, and fractional or exponential “suffix” part that is not.
@@ -13314,7 +13506,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],135:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 // https://d3js.org/d3-interpolate/ Version 1.1.6. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-color')) :
@@ -13861,7 +14053,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-color":133}],136:[function(require,module,exports){
+},{"d3-color":94}],97:[function(require,module,exports){
 // https://d3js.org/d3-path/ Version 1.0.5. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -14004,7 +14196,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],137:[function(require,module,exports){
+},{}],98:[function(require,module,exports){
 // https://d3js.org/d3-scale/ Version 1.0.6. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-array'), require('d3-collection'), require('d3-interpolate'), require('d3-format'), require('d3-time'), require('d3-time-format'), require('d3-color')) :
@@ -14931,7 +15123,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-array":131,"d3-collection":132,"d3-color":133,"d3-format":134,"d3-interpolate":135,"d3-time":140,"d3-time-format":139}],138:[function(require,module,exports){
+},{"d3-array":92,"d3-collection":93,"d3-color":94,"d3-format":95,"d3-interpolate":96,"d3-time":101,"d3-time-format":100}],99:[function(require,module,exports){
 // https://d3js.org/d3-shape/ Version 1.2.0. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-path')) :
@@ -16868,7 +17060,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-path":136}],139:[function(require,module,exports){
+},{"d3-path":97}],100:[function(require,module,exports){
 // https://d3js.org/d3-time-format/ Version 2.1.1. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-time')) :
@@ -17558,7 +17750,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-time":140}],140:[function(require,module,exports){
+},{"d3-time":101}],101:[function(require,module,exports){
 // https://d3js.org/d3-time/ Version 1.0.8. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -17945,7 +18137,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],141:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -18249,7 +18441,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],142:[function(require,module,exports){
+},{}],103:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -18326,7 +18518,7 @@ var EventListener = {
 
 module.exports = EventListener;
 }).call(this,require('_process'))
-},{"./emptyFunction":147,"_process":353}],143:[function(require,module,exports){
+},{"./emptyFunction":108,"_process":316}],104:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -18360,7 +18552,7 @@ var ExecutionEnvironment = {
 };
 
 module.exports = ExecutionEnvironment;
-},{}],144:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 "use strict";
 
 /**
@@ -18390,7 +18582,7 @@ function camelize(string) {
 }
 
 module.exports = camelize;
-},{}],145:[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -18428,7 +18620,7 @@ function camelizeStyleName(string) {
 }
 
 module.exports = camelizeStyleName;
-},{"./camelize":144}],146:[function(require,module,exports){
+},{"./camelize":105}],107:[function(require,module,exports){
 'use strict';
 
 /**
@@ -18466,7 +18658,7 @@ function containsNode(outerNode, innerNode) {
 }
 
 module.exports = containsNode;
-},{"./isTextNode":155}],147:[function(require,module,exports){
+},{"./isTextNode":116}],108:[function(require,module,exports){
 "use strict";
 
 /**
@@ -18503,7 +18695,7 @@ emptyFunction.thatReturnsArgument = function (arg) {
 };
 
 module.exports = emptyFunction;
-},{}],148:[function(require,module,exports){
+},{}],109:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -18523,7 +18715,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = emptyObject;
 }).call(this,require('_process'))
-},{"_process":353}],149:[function(require,module,exports){
+},{"_process":316}],110:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -18548,7 +18740,7 @@ function focusNode(node) {
 }
 
 module.exports = focusNode;
-},{}],150:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 'use strict';
 
 /**
@@ -18585,7 +18777,7 @@ function getActiveElement(doc) /*?DOMElement*/{
 }
 
 module.exports = getActiveElement;
-},{}],151:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 'use strict';
 
 /**
@@ -18616,7 +18808,7 @@ function hyphenate(string) {
 }
 
 module.exports = hyphenate;
-},{}],152:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -18653,7 +18845,7 @@ function hyphenateStyleName(string) {
 }
 
 module.exports = hyphenateStyleName;
-},{"./hyphenate":151}],153:[function(require,module,exports){
+},{"./hyphenate":112}],114:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -18709,7 +18901,7 @@ function invariant(condition, format, a, b, c, d, e, f) {
 
 module.exports = invariant;
 }).call(this,require('_process'))
-},{"_process":353}],154:[function(require,module,exports){
+},{"_process":316}],115:[function(require,module,exports){
 'use strict';
 
 /**
@@ -18732,7 +18924,7 @@ function isNode(object) {
 }
 
 module.exports = isNode;
-},{}],155:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 'use strict';
 
 /**
@@ -18755,7 +18947,7 @@ function isTextNode(object) {
 }
 
 module.exports = isTextNode;
-},{"./isNode":154}],156:[function(require,module,exports){
+},{"./isNode":115}],117:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -18821,7 +19013,7 @@ function shallowEqual(objA, objB) {
 }
 
 module.exports = shallowEqual;
-},{}],157:[function(require,module,exports){
+},{}],118:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
@@ -18886,7 +19078,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = warning;
 }).call(this,require('_process'))
-},{"./emptyFunction":147,"_process":353}],158:[function(require,module,exports){
+},{"./emptyFunction":108,"_process":316}],119:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -18912,7 +19104,7 @@ function isFSA(action) {
 function isError(action) {
   return action.error === true;
 }
-},{"lodash.isplainobject":172}],159:[function(require,module,exports){
+},{"lodash.isplainobject":133}],120:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -18968,7 +19160,7 @@ var supportsGoWithoutReloadUsingHash = exports.supportsGoWithoutReloadUsingHash 
 var isExtraneousPopstateEvent = exports.isExtraneousPopstateEvent = function isExtraneousPopstateEvent(event) {
   return event.state === undefined && navigator.userAgent.indexOf('CriOS') === -1;
 };
-},{}],160:[function(require,module,exports){
+},{}],121:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19047,7 +19239,7 @@ var createLocation = exports.createLocation = function createLocation(path, stat
 var locationsAreEqual = exports.locationsAreEqual = function locationsAreEqual(a, b) {
   return a.pathname === b.pathname && a.search === b.search && a.hash === b.hash && a.key === b.key && (0, _valueEqual2.default)(a.state, b.state);
 };
-},{"./PathUtils":161,"resolve-pathname":489,"value-equal":501}],161:[function(require,module,exports){
+},{"./PathUtils":122,"resolve-pathname":492,"value-equal":503}],122:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19109,7 +19301,7 @@ var createPath = exports.createPath = function createPath(location) {
 
   return path;
 };
-},{}],162:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19417,7 +19609,7 @@ var createBrowserHistory = function createBrowserHistory() {
 };
 
 exports.default = createBrowserHistory;
-},{"./DOMUtils":159,"./LocationUtils":160,"./PathUtils":161,"./createTransitionManager":165,"invariant":168,"warning":502}],163:[function(require,module,exports){
+},{"./DOMUtils":120,"./LocationUtils":121,"./PathUtils":122,"./createTransitionManager":126,"invariant":129,"warning":504}],124:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19742,7 +19934,7 @@ var createHashHistory = function createHashHistory() {
 };
 
 exports.default = createHashHistory;
-},{"./DOMUtils":159,"./LocationUtils":160,"./PathUtils":161,"./createTransitionManager":165,"invariant":168,"warning":502}],164:[function(require,module,exports){
+},{"./DOMUtils":120,"./LocationUtils":121,"./PathUtils":122,"./createTransitionManager":126,"invariant":129,"warning":504}],125:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19913,7 +20105,7 @@ var createMemoryHistory = function createMemoryHistory() {
 };
 
 exports.default = createMemoryHistory;
-},{"./LocationUtils":160,"./PathUtils":161,"./createTransitionManager":165,"warning":502}],165:[function(require,module,exports){
+},{"./LocationUtils":121,"./PathUtils":122,"./createTransitionManager":126,"warning":504}],126:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19999,7 +20191,7 @@ var createTransitionManager = function createTransitionManager() {
 };
 
 exports.default = createTransitionManager;
-},{"warning":502}],166:[function(require,module,exports){
+},{"warning":504}],127:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -20052,7 +20244,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.createBrowserHistory = _createBrowserHistory3.default;
 exports.createHashHistory = _createHashHistory3.default;
 exports.createMemoryHistory = _createMemoryHistory3.default;
-},{"./LocationUtils":160,"./PathUtils":161,"./createBrowserHistory":162,"./createHashHistory":163,"./createMemoryHistory":164}],167:[function(require,module,exports){
+},{"./LocationUtils":121,"./PathUtils":122,"./createBrowserHistory":123,"./createHashHistory":124,"./createMemoryHistory":125}],128:[function(require,module,exports){
 /**
  * Copyright 2015, Yahoo! Inc.
  * Copyrights licensed under the New BSD License. See the accompanying LICENSE file for terms.
@@ -20119,7 +20311,7 @@ module.exports = function hoistNonReactStatics(targetComponent, sourceComponent,
     return targetComponent;
 };
 
-},{}],168:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -20174,7 +20366,7 @@ var invariant = function(condition, format, a, b, c, d, e, f) {
 module.exports = invariant;
 
 }).call(this,require('_process'))
-},{"_process":353}],169:[function(require,module,exports){
+},{"_process":316}],130:[function(require,module,exports){
 /**
  * lodash 3.0.3 (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -20224,7 +20416,7 @@ function createBaseFor(fromRight) {
 
 module.exports = baseFor;
 
-},{}],170:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -20455,7 +20647,7 @@ function isObjectLike(value) {
 
 module.exports = isArguments;
 
-},{}],171:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 /**
  * lodash 3.0.4 (Custom Build) <https://lodash.com/>
  * Build: `lodash modern modularize exports="npm" -o ./`
@@ -20637,7 +20829,7 @@ function isNative(value) {
 
 module.exports = isArray;
 
-},{}],172:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 /**
  * lodash 3.2.0 (Custom Build) <https://lodash.com/>
  * Build: `lodash modern modularize exports="npm" -o ./`
@@ -20742,7 +20934,7 @@ function isPlainObject(value) {
 
 module.exports = isPlainObject;
 
-},{"lodash._basefor":169,"lodash.isarguments":170,"lodash.keysin":173}],173:[function(require,module,exports){
+},{"lodash._basefor":130,"lodash.isarguments":131,"lodash.keysin":134}],134:[function(require,module,exports){
 /**
  * lodash 3.0.8 (Custom Build) <https://lodash.com/>
  * Build: `lodash modern modularize exports="npm" -o ./`
@@ -20876,7 +21068,7 @@ function keysIn(object) {
 
 module.exports = keysIn;
 
-},{"lodash.isarguments":170,"lodash.isarray":171}],174:[function(require,module,exports){
+},{"lodash.isarguments":131,"lodash.isarray":132}],135:[function(require,module,exports){
 var getNative = require('./_getNative'),
     root = require('./_root');
 
@@ -20885,7 +21077,7 @@ var DataView = getNative(root, 'DataView');
 
 module.exports = DataView;
 
-},{"./_getNative":249,"./_root":288}],175:[function(require,module,exports){
+},{"./_getNative":210,"./_root":249}],136:[function(require,module,exports){
 var hashClear = require('./_hashClear'),
     hashDelete = require('./_hashDelete'),
     hashGet = require('./_hashGet'),
@@ -20919,7 +21111,7 @@ Hash.prototype.set = hashSet;
 
 module.exports = Hash;
 
-},{"./_hashClear":256,"./_hashDelete":257,"./_hashGet":258,"./_hashHas":259,"./_hashSet":260}],176:[function(require,module,exports){
+},{"./_hashClear":217,"./_hashDelete":218,"./_hashGet":219,"./_hashHas":220,"./_hashSet":221}],137:[function(require,module,exports){
 var listCacheClear = require('./_listCacheClear'),
     listCacheDelete = require('./_listCacheDelete'),
     listCacheGet = require('./_listCacheGet'),
@@ -20953,7 +21145,7 @@ ListCache.prototype.set = listCacheSet;
 
 module.exports = ListCache;
 
-},{"./_listCacheClear":269,"./_listCacheDelete":270,"./_listCacheGet":271,"./_listCacheHas":272,"./_listCacheSet":273}],177:[function(require,module,exports){
+},{"./_listCacheClear":230,"./_listCacheDelete":231,"./_listCacheGet":232,"./_listCacheHas":233,"./_listCacheSet":234}],138:[function(require,module,exports){
 var getNative = require('./_getNative'),
     root = require('./_root');
 
@@ -20962,7 +21154,7 @@ var Map = getNative(root, 'Map');
 
 module.exports = Map;
 
-},{"./_getNative":249,"./_root":288}],178:[function(require,module,exports){
+},{"./_getNative":210,"./_root":249}],139:[function(require,module,exports){
 var mapCacheClear = require('./_mapCacheClear'),
     mapCacheDelete = require('./_mapCacheDelete'),
     mapCacheGet = require('./_mapCacheGet'),
@@ -20996,7 +21188,7 @@ MapCache.prototype.set = mapCacheSet;
 
 module.exports = MapCache;
 
-},{"./_mapCacheClear":274,"./_mapCacheDelete":275,"./_mapCacheGet":276,"./_mapCacheHas":277,"./_mapCacheSet":278}],179:[function(require,module,exports){
+},{"./_mapCacheClear":235,"./_mapCacheDelete":236,"./_mapCacheGet":237,"./_mapCacheHas":238,"./_mapCacheSet":239}],140:[function(require,module,exports){
 var getNative = require('./_getNative'),
     root = require('./_root');
 
@@ -21005,7 +21197,7 @@ var Promise = getNative(root, 'Promise');
 
 module.exports = Promise;
 
-},{"./_getNative":249,"./_root":288}],180:[function(require,module,exports){
+},{"./_getNative":210,"./_root":249}],141:[function(require,module,exports){
 var getNative = require('./_getNative'),
     root = require('./_root');
 
@@ -21014,7 +21206,7 @@ var Set = getNative(root, 'Set');
 
 module.exports = Set;
 
-},{"./_getNative":249,"./_root":288}],181:[function(require,module,exports){
+},{"./_getNative":210,"./_root":249}],142:[function(require,module,exports){
 var MapCache = require('./_MapCache'),
     setCacheAdd = require('./_setCacheAdd'),
     setCacheHas = require('./_setCacheHas');
@@ -21043,7 +21235,7 @@ SetCache.prototype.has = setCacheHas;
 
 module.exports = SetCache;
 
-},{"./_MapCache":178,"./_setCacheAdd":289,"./_setCacheHas":290}],182:[function(require,module,exports){
+},{"./_MapCache":139,"./_setCacheAdd":250,"./_setCacheHas":251}],143:[function(require,module,exports){
 var ListCache = require('./_ListCache'),
     stackClear = require('./_stackClear'),
     stackDelete = require('./_stackDelete'),
@@ -21072,7 +21264,7 @@ Stack.prototype.set = stackSet;
 
 module.exports = Stack;
 
-},{"./_ListCache":176,"./_stackClear":294,"./_stackDelete":295,"./_stackGet":296,"./_stackHas":297,"./_stackSet":298}],183:[function(require,module,exports){
+},{"./_ListCache":137,"./_stackClear":255,"./_stackDelete":256,"./_stackGet":257,"./_stackHas":258,"./_stackSet":259}],144:[function(require,module,exports){
 var root = require('./_root');
 
 /** Built-in value references. */
@@ -21080,7 +21272,7 @@ var Symbol = root.Symbol;
 
 module.exports = Symbol;
 
-},{"./_root":288}],184:[function(require,module,exports){
+},{"./_root":249}],145:[function(require,module,exports){
 var root = require('./_root');
 
 /** Built-in value references. */
@@ -21088,7 +21280,7 @@ var Uint8Array = root.Uint8Array;
 
 module.exports = Uint8Array;
 
-},{"./_root":288}],185:[function(require,module,exports){
+},{"./_root":249}],146:[function(require,module,exports){
 var getNative = require('./_getNative'),
     root = require('./_root');
 
@@ -21097,7 +21289,7 @@ var WeakMap = getNative(root, 'WeakMap');
 
 module.exports = WeakMap;
 
-},{"./_getNative":249,"./_root":288}],186:[function(require,module,exports){
+},{"./_getNative":210,"./_root":249}],147:[function(require,module,exports){
 /**
  * A faster alternative to `Function#apply`, this function invokes `func`
  * with the `this` binding of `thisArg` and the arguments of `args`.
@@ -21120,7 +21312,7 @@ function apply(func, thisArg, args) {
 
 module.exports = apply;
 
-},{}],187:[function(require,module,exports){
+},{}],148:[function(require,module,exports){
 /**
  * A specialized version of `_.filter` for arrays without support for
  * iteratee shorthands.
@@ -21147,7 +21339,7 @@ function arrayFilter(array, predicate) {
 
 module.exports = arrayFilter;
 
-},{}],188:[function(require,module,exports){
+},{}],149:[function(require,module,exports){
 var baseIndexOf = require('./_baseIndexOf');
 
 /**
@@ -21166,7 +21358,7 @@ function arrayIncludes(array, value) {
 
 module.exports = arrayIncludes;
 
-},{"./_baseIndexOf":207}],189:[function(require,module,exports){
+},{"./_baseIndexOf":168}],150:[function(require,module,exports){
 /**
  * This function is like `arrayIncludes` except that it accepts a comparator.
  *
@@ -21190,7 +21382,7 @@ function arrayIncludesWith(array, value, comparator) {
 
 module.exports = arrayIncludesWith;
 
-},{}],190:[function(require,module,exports){
+},{}],151:[function(require,module,exports){
 var baseTimes = require('./_baseTimes'),
     isArguments = require('./isArguments'),
     isArray = require('./isArray'),
@@ -21241,7 +21433,7 @@ function arrayLikeKeys(value, inherited) {
 
 module.exports = arrayLikeKeys;
 
-},{"./_baseTimes":229,"./_isIndex":262,"./isArguments":311,"./isArray":312,"./isBuffer":315,"./isTypedArray":327}],191:[function(require,module,exports){
+},{"./_baseTimes":190,"./_isIndex":223,"./isArguments":273,"./isArray":274,"./isBuffer":277,"./isTypedArray":289}],152:[function(require,module,exports){
 /**
  * A specialized version of `_.map` for arrays without support for iteratee
  * shorthands.
@@ -21264,7 +21456,7 @@ function arrayMap(array, iteratee) {
 
 module.exports = arrayMap;
 
-},{}],192:[function(require,module,exports){
+},{}],153:[function(require,module,exports){
 /**
  * Appends the elements of `values` to `array`.
  *
@@ -21286,7 +21478,7 @@ function arrayPush(array, values) {
 
 module.exports = arrayPush;
 
-},{}],193:[function(require,module,exports){
+},{}],154:[function(require,module,exports){
 /**
  * A specialized version of `_.some` for arrays without support for iteratee
  * shorthands.
@@ -21311,7 +21503,7 @@ function arraySome(array, predicate) {
 
 module.exports = arraySome;
 
-},{}],194:[function(require,module,exports){
+},{}],155:[function(require,module,exports){
 var eq = require('./eq');
 
 /**
@@ -21334,7 +21526,7 @@ function assocIndexOf(array, key) {
 
 module.exports = assocIndexOf;
 
-},{"./eq":305}],195:[function(require,module,exports){
+},{"./eq":266}],156:[function(require,module,exports){
 var baseForOwn = require('./_baseForOwn'),
     createBaseEach = require('./_createBaseEach');
 
@@ -21350,7 +21542,7 @@ var baseEach = createBaseEach(baseForOwn);
 
 module.exports = baseEach;
 
-},{"./_baseForOwn":201,"./_createBaseEach":238}],196:[function(require,module,exports){
+},{"./_baseForOwn":162,"./_createBaseEach":199}],157:[function(require,module,exports){
 var isSymbol = require('./isSymbol');
 
 /**
@@ -21384,7 +21576,7 @@ function baseExtremum(array, iteratee, comparator) {
 
 module.exports = baseExtremum;
 
-},{"./isSymbol":326}],197:[function(require,module,exports){
+},{"./isSymbol":288}],158:[function(require,module,exports){
 var baseEach = require('./_baseEach');
 
 /**
@@ -21407,7 +21599,7 @@ function baseFilter(collection, predicate) {
 
 module.exports = baseFilter;
 
-},{"./_baseEach":195}],198:[function(require,module,exports){
+},{"./_baseEach":156}],159:[function(require,module,exports){
 /**
  * The base implementation of `_.findIndex` and `_.findLastIndex` without
  * support for iteratee shorthands.
@@ -21433,7 +21625,7 @@ function baseFindIndex(array, predicate, fromIndex, fromRight) {
 
 module.exports = baseFindIndex;
 
-},{}],199:[function(require,module,exports){
+},{}],160:[function(require,module,exports){
 var arrayPush = require('./_arrayPush'),
     isFlattenable = require('./_isFlattenable');
 
@@ -21473,7 +21665,7 @@ function baseFlatten(array, depth, predicate, isStrict, result) {
 
 module.exports = baseFlatten;
 
-},{"./_arrayPush":192,"./_isFlattenable":261}],200:[function(require,module,exports){
+},{"./_arrayPush":153,"./_isFlattenable":222}],161:[function(require,module,exports){
 var createBaseFor = require('./_createBaseFor');
 
 /**
@@ -21491,7 +21683,7 @@ var baseFor = createBaseFor();
 
 module.exports = baseFor;
 
-},{"./_createBaseFor":239}],201:[function(require,module,exports){
+},{"./_createBaseFor":200}],162:[function(require,module,exports){
 var baseFor = require('./_baseFor'),
     keys = require('./keys');
 
@@ -21509,7 +21701,7 @@ function baseForOwn(object, iteratee) {
 
 module.exports = baseForOwn;
 
-},{"./_baseFor":200,"./keys":328}],202:[function(require,module,exports){
+},{"./_baseFor":161,"./keys":290}],163:[function(require,module,exports){
 var castPath = require('./_castPath'),
     toKey = require('./_toKey');
 
@@ -21535,7 +21727,7 @@ function baseGet(object, path) {
 
 module.exports = baseGet;
 
-},{"./_castPath":234,"./_toKey":301}],203:[function(require,module,exports){
+},{"./_castPath":195,"./_toKey":262}],164:[function(require,module,exports){
 var arrayPush = require('./_arrayPush'),
     isArray = require('./isArray');
 
@@ -21557,7 +21749,7 @@ function baseGetAllKeys(object, keysFunc, symbolsFunc) {
 
 module.exports = baseGetAllKeys;
 
-},{"./_arrayPush":192,"./isArray":312}],204:[function(require,module,exports){
+},{"./_arrayPush":153,"./isArray":274}],165:[function(require,module,exports){
 var Symbol = require('./_Symbol'),
     getRawTag = require('./_getRawTag'),
     objectToString = require('./_objectToString');
@@ -21587,7 +21779,7 @@ function baseGetTag(value) {
 
 module.exports = baseGetTag;
 
-},{"./_Symbol":183,"./_getRawTag":251,"./_objectToString":285}],205:[function(require,module,exports){
+},{"./_Symbol":144,"./_getRawTag":212,"./_objectToString":246}],166:[function(require,module,exports){
 /**
  * The base implementation of `_.gt` which doesn't coerce arguments.
  *
@@ -21603,7 +21795,7 @@ function baseGt(value, other) {
 
 module.exports = baseGt;
 
-},{}],206:[function(require,module,exports){
+},{}],167:[function(require,module,exports){
 /**
  * The base implementation of `_.hasIn` without support for deep paths.
  *
@@ -21618,7 +21810,7 @@ function baseHasIn(object, key) {
 
 module.exports = baseHasIn;
 
-},{}],207:[function(require,module,exports){
+},{}],168:[function(require,module,exports){
 var baseFindIndex = require('./_baseFindIndex'),
     baseIsNaN = require('./_baseIsNaN'),
     strictIndexOf = require('./_strictIndexOf');
@@ -21640,7 +21832,7 @@ function baseIndexOf(array, value, fromIndex) {
 
 module.exports = baseIndexOf;
 
-},{"./_baseFindIndex":198,"./_baseIsNaN":213,"./_strictIndexOf":299}],208:[function(require,module,exports){
+},{"./_baseFindIndex":159,"./_baseIsNaN":174,"./_strictIndexOf":260}],169:[function(require,module,exports){
 var SetCache = require('./_SetCache'),
     arrayIncludes = require('./_arrayIncludes'),
     arrayIncludesWith = require('./_arrayIncludesWith'),
@@ -21716,7 +21908,7 @@ function baseIntersection(arrays, iteratee, comparator) {
 
 module.exports = baseIntersection;
 
-},{"./_SetCache":181,"./_arrayIncludes":188,"./_arrayIncludesWith":189,"./_arrayMap":191,"./_baseUnary":231,"./_cacheHas":232}],209:[function(require,module,exports){
+},{"./_SetCache":142,"./_arrayIncludes":149,"./_arrayIncludesWith":150,"./_arrayMap":152,"./_baseUnary":192,"./_cacheHas":193}],170:[function(require,module,exports){
 var baseGetTag = require('./_baseGetTag'),
     isObjectLike = require('./isObjectLike');
 
@@ -21736,7 +21928,7 @@ function baseIsArguments(value) {
 
 module.exports = baseIsArguments;
 
-},{"./_baseGetTag":204,"./isObjectLike":323}],210:[function(require,module,exports){
+},{"./_baseGetTag":165,"./isObjectLike":285}],171:[function(require,module,exports){
 var baseIsEqualDeep = require('./_baseIsEqualDeep'),
     isObjectLike = require('./isObjectLike');
 
@@ -21766,7 +21958,7 @@ function baseIsEqual(value, other, bitmask, customizer, stack) {
 
 module.exports = baseIsEqual;
 
-},{"./_baseIsEqualDeep":211,"./isObjectLike":323}],211:[function(require,module,exports){
+},{"./_baseIsEqualDeep":172,"./isObjectLike":285}],172:[function(require,module,exports){
 var Stack = require('./_Stack'),
     equalArrays = require('./_equalArrays'),
     equalByTag = require('./_equalByTag'),
@@ -21851,7 +22043,7 @@ function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack) {
 
 module.exports = baseIsEqualDeep;
 
-},{"./_Stack":182,"./_equalArrays":242,"./_equalByTag":243,"./_equalObjects":244,"./_getTag":253,"./isArray":312,"./isBuffer":315,"./isTypedArray":327}],212:[function(require,module,exports){
+},{"./_Stack":143,"./_equalArrays":203,"./_equalByTag":204,"./_equalObjects":205,"./_getTag":214,"./isArray":274,"./isBuffer":277,"./isTypedArray":289}],173:[function(require,module,exports){
 var Stack = require('./_Stack'),
     baseIsEqual = require('./_baseIsEqual');
 
@@ -21915,7 +22107,7 @@ function baseIsMatch(object, source, matchData, customizer) {
 
 module.exports = baseIsMatch;
 
-},{"./_Stack":182,"./_baseIsEqual":210}],213:[function(require,module,exports){
+},{"./_Stack":143,"./_baseIsEqual":171}],174:[function(require,module,exports){
 /**
  * The base implementation of `_.isNaN` without support for number objects.
  *
@@ -21929,7 +22121,7 @@ function baseIsNaN(value) {
 
 module.exports = baseIsNaN;
 
-},{}],214:[function(require,module,exports){
+},{}],175:[function(require,module,exports){
 var isFunction = require('./isFunction'),
     isMasked = require('./_isMasked'),
     isObject = require('./isObject'),
@@ -21978,7 +22170,7 @@ function baseIsNative(value) {
 
 module.exports = baseIsNative;
 
-},{"./_isMasked":266,"./_toSource":302,"./isFunction":317,"./isObject":322}],215:[function(require,module,exports){
+},{"./_isMasked":227,"./_toSource":263,"./isFunction":279,"./isObject":284}],176:[function(require,module,exports){
 var baseGetTag = require('./_baseGetTag'),
     isLength = require('./isLength'),
     isObjectLike = require('./isObjectLike');
@@ -22040,7 +22232,7 @@ function baseIsTypedArray(value) {
 
 module.exports = baseIsTypedArray;
 
-},{"./_baseGetTag":204,"./isLength":318,"./isObjectLike":323}],216:[function(require,module,exports){
+},{"./_baseGetTag":165,"./isLength":280,"./isObjectLike":285}],177:[function(require,module,exports){
 var baseMatches = require('./_baseMatches'),
     baseMatchesProperty = require('./_baseMatchesProperty'),
     identity = require('./identity'),
@@ -22073,7 +22265,7 @@ function baseIteratee(value) {
 
 module.exports = baseIteratee;
 
-},{"./_baseMatches":220,"./_baseMatchesProperty":221,"./identity":309,"./isArray":312,"./property":335}],217:[function(require,module,exports){
+},{"./_baseMatches":181,"./_baseMatchesProperty":182,"./identity":271,"./isArray":274,"./property":298}],178:[function(require,module,exports){
 var isPrototype = require('./_isPrototype'),
     nativeKeys = require('./_nativeKeys');
 
@@ -22105,7 +22297,7 @@ function baseKeys(object) {
 
 module.exports = baseKeys;
 
-},{"./_isPrototype":267,"./_nativeKeys":283}],218:[function(require,module,exports){
+},{"./_isPrototype":228,"./_nativeKeys":244}],179:[function(require,module,exports){
 /**
  * The base implementation of `_.lt` which doesn't coerce arguments.
  *
@@ -22121,7 +22313,7 @@ function baseLt(value, other) {
 
 module.exports = baseLt;
 
-},{}],219:[function(require,module,exports){
+},{}],180:[function(require,module,exports){
 var baseEach = require('./_baseEach'),
     isArrayLike = require('./isArrayLike');
 
@@ -22145,7 +22337,7 @@ function baseMap(collection, iteratee) {
 
 module.exports = baseMap;
 
-},{"./_baseEach":195,"./isArrayLike":313}],220:[function(require,module,exports){
+},{"./_baseEach":156,"./isArrayLike":275}],181:[function(require,module,exports){
 var baseIsMatch = require('./_baseIsMatch'),
     getMatchData = require('./_getMatchData'),
     matchesStrictComparable = require('./_matchesStrictComparable');
@@ -22169,7 +22361,7 @@ function baseMatches(source) {
 
 module.exports = baseMatches;
 
-},{"./_baseIsMatch":212,"./_getMatchData":248,"./_matchesStrictComparable":280}],221:[function(require,module,exports){
+},{"./_baseIsMatch":173,"./_getMatchData":209,"./_matchesStrictComparable":241}],182:[function(require,module,exports){
 var baseIsEqual = require('./_baseIsEqual'),
     get = require('./get'),
     hasIn = require('./hasIn'),
@@ -22204,7 +22396,7 @@ function baseMatchesProperty(path, srcValue) {
 
 module.exports = baseMatchesProperty;
 
-},{"./_baseIsEqual":210,"./_isKey":264,"./_isStrictComparable":268,"./_matchesStrictComparable":280,"./_toKey":301,"./get":307,"./hasIn":308}],222:[function(require,module,exports){
+},{"./_baseIsEqual":171,"./_isKey":225,"./_isStrictComparable":229,"./_matchesStrictComparable":241,"./_toKey":262,"./get":269,"./hasIn":270}],183:[function(require,module,exports){
 var arrayMap = require('./_arrayMap'),
     baseIteratee = require('./_baseIteratee'),
     baseMap = require('./_baseMap'),
@@ -22240,7 +22432,7 @@ function baseOrderBy(collection, iteratees, orders) {
 
 module.exports = baseOrderBy;
 
-},{"./_arrayMap":191,"./_baseIteratee":216,"./_baseMap":219,"./_baseSortBy":228,"./_baseUnary":231,"./_compareMultiple":236,"./identity":309}],223:[function(require,module,exports){
+},{"./_arrayMap":152,"./_baseIteratee":177,"./_baseMap":180,"./_baseSortBy":189,"./_baseUnary":192,"./_compareMultiple":197,"./identity":271}],184:[function(require,module,exports){
 /**
  * The base implementation of `_.property` without support for deep paths.
  *
@@ -22256,7 +22448,7 @@ function baseProperty(key) {
 
 module.exports = baseProperty;
 
-},{}],224:[function(require,module,exports){
+},{}],185:[function(require,module,exports){
 var baseGet = require('./_baseGet');
 
 /**
@@ -22274,7 +22466,7 @@ function basePropertyDeep(path) {
 
 module.exports = basePropertyDeep;
 
-},{"./_baseGet":202}],225:[function(require,module,exports){
+},{"./_baseGet":163}],186:[function(require,module,exports){
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeCeil = Math.ceil,
     nativeMax = Math.max;
@@ -22304,7 +22496,7 @@ function baseRange(start, end, step, fromRight) {
 
 module.exports = baseRange;
 
-},{}],226:[function(require,module,exports){
+},{}],187:[function(require,module,exports){
 var identity = require('./identity'),
     overRest = require('./_overRest'),
     setToString = require('./_setToString');
@@ -22323,7 +22515,7 @@ function baseRest(func, start) {
 
 module.exports = baseRest;
 
-},{"./_overRest":287,"./_setToString":292,"./identity":309}],227:[function(require,module,exports){
+},{"./_overRest":248,"./_setToString":253,"./identity":271}],188:[function(require,module,exports){
 var constant = require('./constant'),
     defineProperty = require('./_defineProperty'),
     identity = require('./identity');
@@ -22347,7 +22539,7 @@ var baseSetToString = !defineProperty ? identity : function(func, string) {
 
 module.exports = baseSetToString;
 
-},{"./_defineProperty":241,"./constant":303,"./identity":309}],228:[function(require,module,exports){
+},{"./_defineProperty":202,"./constant":264,"./identity":271}],189:[function(require,module,exports){
 /**
  * The base implementation of `_.sortBy` which uses `comparer` to define the
  * sort order of `array` and replaces criteria objects with their corresponding
@@ -22370,7 +22562,7 @@ function baseSortBy(array, comparer) {
 
 module.exports = baseSortBy;
 
-},{}],229:[function(require,module,exports){
+},{}],190:[function(require,module,exports){
 /**
  * The base implementation of `_.times` without support for iteratee shorthands
  * or max array length checks.
@@ -22392,7 +22584,7 @@ function baseTimes(n, iteratee) {
 
 module.exports = baseTimes;
 
-},{}],230:[function(require,module,exports){
+},{}],191:[function(require,module,exports){
 var Symbol = require('./_Symbol'),
     arrayMap = require('./_arrayMap'),
     isArray = require('./isArray'),
@@ -22431,7 +22623,7 @@ function baseToString(value) {
 
 module.exports = baseToString;
 
-},{"./_Symbol":183,"./_arrayMap":191,"./isArray":312,"./isSymbol":326}],231:[function(require,module,exports){
+},{"./_Symbol":144,"./_arrayMap":152,"./isArray":274,"./isSymbol":288}],192:[function(require,module,exports){
 /**
  * The base implementation of `_.unary` without support for storing metadata.
  *
@@ -22447,7 +22639,7 @@ function baseUnary(func) {
 
 module.exports = baseUnary;
 
-},{}],232:[function(require,module,exports){
+},{}],193:[function(require,module,exports){
 /**
  * Checks if a `cache` value for `key` exists.
  *
@@ -22462,7 +22654,7 @@ function cacheHas(cache, key) {
 
 module.exports = cacheHas;
 
-},{}],233:[function(require,module,exports){
+},{}],194:[function(require,module,exports){
 var isArrayLikeObject = require('./isArrayLikeObject');
 
 /**
@@ -22478,7 +22670,7 @@ function castArrayLikeObject(value) {
 
 module.exports = castArrayLikeObject;
 
-},{"./isArrayLikeObject":314}],234:[function(require,module,exports){
+},{"./isArrayLikeObject":276}],195:[function(require,module,exports){
 var isArray = require('./isArray'),
     isKey = require('./_isKey'),
     stringToPath = require('./_stringToPath'),
@@ -22501,7 +22693,7 @@ function castPath(value, object) {
 
 module.exports = castPath;
 
-},{"./_isKey":264,"./_stringToPath":300,"./isArray":312,"./toString":343}],235:[function(require,module,exports){
+},{"./_isKey":225,"./_stringToPath":261,"./isArray":274,"./toString":306}],196:[function(require,module,exports){
 var isSymbol = require('./isSymbol');
 
 /**
@@ -22544,7 +22736,7 @@ function compareAscending(value, other) {
 
 module.exports = compareAscending;
 
-},{"./isSymbol":326}],236:[function(require,module,exports){
+},{"./isSymbol":288}],197:[function(require,module,exports){
 var compareAscending = require('./_compareAscending');
 
 /**
@@ -22590,7 +22782,7 @@ function compareMultiple(object, other, orders) {
 
 module.exports = compareMultiple;
 
-},{"./_compareAscending":235}],237:[function(require,module,exports){
+},{"./_compareAscending":196}],198:[function(require,module,exports){
 var root = require('./_root');
 
 /** Used to detect overreaching core-js shims. */
@@ -22598,7 +22790,7 @@ var coreJsData = root['__core-js_shared__'];
 
 module.exports = coreJsData;
 
-},{"./_root":288}],238:[function(require,module,exports){
+},{"./_root":249}],199:[function(require,module,exports){
 var isArrayLike = require('./isArrayLike');
 
 /**
@@ -22632,7 +22824,7 @@ function createBaseEach(eachFunc, fromRight) {
 
 module.exports = createBaseEach;
 
-},{"./isArrayLike":313}],239:[function(require,module,exports){
+},{"./isArrayLike":275}],200:[function(require,module,exports){
 /**
  * Creates a base function for methods like `_.forIn` and `_.forOwn`.
  *
@@ -22659,7 +22851,7 @@ function createBaseFor(fromRight) {
 
 module.exports = createBaseFor;
 
-},{}],240:[function(require,module,exports){
+},{}],201:[function(require,module,exports){
 var baseRange = require('./_baseRange'),
     isIterateeCall = require('./_isIterateeCall'),
     toFinite = require('./toFinite');
@@ -22691,7 +22883,7 @@ function createRange(fromRight) {
 
 module.exports = createRange;
 
-},{"./_baseRange":225,"./_isIterateeCall":263,"./toFinite":341}],241:[function(require,module,exports){
+},{"./_baseRange":186,"./_isIterateeCall":224,"./toFinite":304}],202:[function(require,module,exports){
 var getNative = require('./_getNative');
 
 var defineProperty = (function() {
@@ -22704,7 +22896,7 @@ var defineProperty = (function() {
 
 module.exports = defineProperty;
 
-},{"./_getNative":249}],242:[function(require,module,exports){
+},{"./_getNative":210}],203:[function(require,module,exports){
 var SetCache = require('./_SetCache'),
     arraySome = require('./_arraySome'),
     cacheHas = require('./_cacheHas');
@@ -22789,7 +22981,7 @@ function equalArrays(array, other, bitmask, customizer, equalFunc, stack) {
 
 module.exports = equalArrays;
 
-},{"./_SetCache":181,"./_arraySome":193,"./_cacheHas":232}],243:[function(require,module,exports){
+},{"./_SetCache":142,"./_arraySome":154,"./_cacheHas":193}],204:[function(require,module,exports){
 var Symbol = require('./_Symbol'),
     Uint8Array = require('./_Uint8Array'),
     eq = require('./eq'),
@@ -22903,7 +23095,7 @@ function equalByTag(object, other, tag, bitmask, customizer, equalFunc, stack) {
 
 module.exports = equalByTag;
 
-},{"./_Symbol":183,"./_Uint8Array":184,"./_equalArrays":242,"./_mapToArray":279,"./_setToArray":291,"./eq":305}],244:[function(require,module,exports){
+},{"./_Symbol":144,"./_Uint8Array":145,"./_equalArrays":203,"./_mapToArray":240,"./_setToArray":252,"./eq":266}],205:[function(require,module,exports){
 var getAllKeys = require('./_getAllKeys');
 
 /** Used to compose bitmasks for value comparisons. */
@@ -22994,7 +23186,7 @@ function equalObjects(object, other, bitmask, customizer, equalFunc, stack) {
 
 module.exports = equalObjects;
 
-},{"./_getAllKeys":246}],245:[function(require,module,exports){
+},{"./_getAllKeys":207}],206:[function(require,module,exports){
 (function (global){
 /** Detect free variable `global` from Node.js. */
 var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
@@ -23002,7 +23194,7 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 module.exports = freeGlobal;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],246:[function(require,module,exports){
+},{}],207:[function(require,module,exports){
 var baseGetAllKeys = require('./_baseGetAllKeys'),
     getSymbols = require('./_getSymbols'),
     keys = require('./keys');
@@ -23020,7 +23212,7 @@ function getAllKeys(object) {
 
 module.exports = getAllKeys;
 
-},{"./_baseGetAllKeys":203,"./_getSymbols":252,"./keys":328}],247:[function(require,module,exports){
+},{"./_baseGetAllKeys":164,"./_getSymbols":213,"./keys":290}],208:[function(require,module,exports){
 var isKeyable = require('./_isKeyable');
 
 /**
@@ -23040,7 +23232,7 @@ function getMapData(map, key) {
 
 module.exports = getMapData;
 
-},{"./_isKeyable":265}],248:[function(require,module,exports){
+},{"./_isKeyable":226}],209:[function(require,module,exports){
 var isStrictComparable = require('./_isStrictComparable'),
     keys = require('./keys');
 
@@ -23066,7 +23258,7 @@ function getMatchData(object) {
 
 module.exports = getMatchData;
 
-},{"./_isStrictComparable":268,"./keys":328}],249:[function(require,module,exports){
+},{"./_isStrictComparable":229,"./keys":290}],210:[function(require,module,exports){
 var baseIsNative = require('./_baseIsNative'),
     getValue = require('./_getValue');
 
@@ -23085,7 +23277,7 @@ function getNative(object, key) {
 
 module.exports = getNative;
 
-},{"./_baseIsNative":214,"./_getValue":254}],250:[function(require,module,exports){
+},{"./_baseIsNative":175,"./_getValue":215}],211:[function(require,module,exports){
 var overArg = require('./_overArg');
 
 /** Built-in value references. */
@@ -23093,7 +23285,7 @@ var getPrototype = overArg(Object.getPrototypeOf, Object);
 
 module.exports = getPrototype;
 
-},{"./_overArg":286}],251:[function(require,module,exports){
+},{"./_overArg":247}],212:[function(require,module,exports){
 var Symbol = require('./_Symbol');
 
 /** Used for built-in method references. */
@@ -23141,7 +23333,7 @@ function getRawTag(value) {
 
 module.exports = getRawTag;
 
-},{"./_Symbol":183}],252:[function(require,module,exports){
+},{"./_Symbol":144}],213:[function(require,module,exports){
 var arrayFilter = require('./_arrayFilter'),
     stubArray = require('./stubArray');
 
@@ -23173,7 +23365,7 @@ var getSymbols = !nativeGetSymbols ? stubArray : function(object) {
 
 module.exports = getSymbols;
 
-},{"./_arrayFilter":187,"./stubArray":338}],253:[function(require,module,exports){
+},{"./_arrayFilter":148,"./stubArray":301}],214:[function(require,module,exports){
 var DataView = require('./_DataView'),
     Map = require('./_Map'),
     Promise = require('./_Promise'),
@@ -23233,7 +23425,7 @@ if ((DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag) ||
 
 module.exports = getTag;
 
-},{"./_DataView":174,"./_Map":177,"./_Promise":179,"./_Set":180,"./_WeakMap":185,"./_baseGetTag":204,"./_toSource":302}],254:[function(require,module,exports){
+},{"./_DataView":135,"./_Map":138,"./_Promise":140,"./_Set":141,"./_WeakMap":146,"./_baseGetTag":165,"./_toSource":263}],215:[function(require,module,exports){
 /**
  * Gets the value at `key` of `object`.
  *
@@ -23248,7 +23440,7 @@ function getValue(object, key) {
 
 module.exports = getValue;
 
-},{}],255:[function(require,module,exports){
+},{}],216:[function(require,module,exports){
 var castPath = require('./_castPath'),
     isArguments = require('./isArguments'),
     isArray = require('./isArray'),
@@ -23289,7 +23481,7 @@ function hasPath(object, path, hasFunc) {
 
 module.exports = hasPath;
 
-},{"./_castPath":234,"./_isIndex":262,"./_toKey":301,"./isArguments":311,"./isArray":312,"./isLength":318}],256:[function(require,module,exports){
+},{"./_castPath":195,"./_isIndex":223,"./_toKey":262,"./isArguments":273,"./isArray":274,"./isLength":280}],217:[function(require,module,exports){
 var nativeCreate = require('./_nativeCreate');
 
 /**
@@ -23306,7 +23498,7 @@ function hashClear() {
 
 module.exports = hashClear;
 
-},{"./_nativeCreate":282}],257:[function(require,module,exports){
+},{"./_nativeCreate":243}],218:[function(require,module,exports){
 /**
  * Removes `key` and its value from the hash.
  *
@@ -23325,7 +23517,7 @@ function hashDelete(key) {
 
 module.exports = hashDelete;
 
-},{}],258:[function(require,module,exports){
+},{}],219:[function(require,module,exports){
 var nativeCreate = require('./_nativeCreate');
 
 /** Used to stand-in for `undefined` hash values. */
@@ -23357,7 +23549,7 @@ function hashGet(key) {
 
 module.exports = hashGet;
 
-},{"./_nativeCreate":282}],259:[function(require,module,exports){
+},{"./_nativeCreate":243}],220:[function(require,module,exports){
 var nativeCreate = require('./_nativeCreate');
 
 /** Used for built-in method references. */
@@ -23382,7 +23574,7 @@ function hashHas(key) {
 
 module.exports = hashHas;
 
-},{"./_nativeCreate":282}],260:[function(require,module,exports){
+},{"./_nativeCreate":243}],221:[function(require,module,exports){
 var nativeCreate = require('./_nativeCreate');
 
 /** Used to stand-in for `undefined` hash values. */
@@ -23407,7 +23599,7 @@ function hashSet(key, value) {
 
 module.exports = hashSet;
 
-},{"./_nativeCreate":282}],261:[function(require,module,exports){
+},{"./_nativeCreate":243}],222:[function(require,module,exports){
 var Symbol = require('./_Symbol'),
     isArguments = require('./isArguments'),
     isArray = require('./isArray');
@@ -23429,7 +23621,7 @@ function isFlattenable(value) {
 
 module.exports = isFlattenable;
 
-},{"./_Symbol":183,"./isArguments":311,"./isArray":312}],262:[function(require,module,exports){
+},{"./_Symbol":144,"./isArguments":273,"./isArray":274}],223:[function(require,module,exports){
 /** Used as references for various `Number` constants. */
 var MAX_SAFE_INTEGER = 9007199254740991;
 
@@ -23445,15 +23637,18 @@ var reIsUint = /^(?:0|[1-9]\d*)$/;
  * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
  */
 function isIndex(value, length) {
+  var type = typeof value;
   length = length == null ? MAX_SAFE_INTEGER : length;
+
   return !!length &&
-    (typeof value == 'number' || reIsUint.test(value)) &&
-    (value > -1 && value % 1 == 0 && value < length);
+    (type == 'number' ||
+      (type != 'symbol' && reIsUint.test(value))) &&
+        (value > -1 && value % 1 == 0 && value < length);
 }
 
 module.exports = isIndex;
 
-},{}],263:[function(require,module,exports){
+},{}],224:[function(require,module,exports){
 var eq = require('./eq'),
     isArrayLike = require('./isArrayLike'),
     isIndex = require('./_isIndex'),
@@ -23485,7 +23680,7 @@ function isIterateeCall(value, index, object) {
 
 module.exports = isIterateeCall;
 
-},{"./_isIndex":262,"./eq":305,"./isArrayLike":313,"./isObject":322}],264:[function(require,module,exports){
+},{"./_isIndex":223,"./eq":266,"./isArrayLike":275,"./isObject":284}],225:[function(require,module,exports){
 var isArray = require('./isArray'),
     isSymbol = require('./isSymbol');
 
@@ -23516,7 +23711,7 @@ function isKey(value, object) {
 
 module.exports = isKey;
 
-},{"./isArray":312,"./isSymbol":326}],265:[function(require,module,exports){
+},{"./isArray":274,"./isSymbol":288}],226:[function(require,module,exports){
 /**
  * Checks if `value` is suitable for use as unique object key.
  *
@@ -23533,7 +23728,7 @@ function isKeyable(value) {
 
 module.exports = isKeyable;
 
-},{}],266:[function(require,module,exports){
+},{}],227:[function(require,module,exports){
 var coreJsData = require('./_coreJsData');
 
 /** Used to detect methods masquerading as native. */
@@ -23555,7 +23750,7 @@ function isMasked(func) {
 
 module.exports = isMasked;
 
-},{"./_coreJsData":237}],267:[function(require,module,exports){
+},{"./_coreJsData":198}],228:[function(require,module,exports){
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
 
@@ -23575,7 +23770,7 @@ function isPrototype(value) {
 
 module.exports = isPrototype;
 
-},{}],268:[function(require,module,exports){
+},{}],229:[function(require,module,exports){
 var isObject = require('./isObject');
 
 /**
@@ -23592,7 +23787,7 @@ function isStrictComparable(value) {
 
 module.exports = isStrictComparable;
 
-},{"./isObject":322}],269:[function(require,module,exports){
+},{"./isObject":284}],230:[function(require,module,exports){
 /**
  * Removes all key-value entries from the list cache.
  *
@@ -23607,7 +23802,7 @@ function listCacheClear() {
 
 module.exports = listCacheClear;
 
-},{}],270:[function(require,module,exports){
+},{}],231:[function(require,module,exports){
 var assocIndexOf = require('./_assocIndexOf');
 
 /** Used for built-in method references. */
@@ -23644,7 +23839,7 @@ function listCacheDelete(key) {
 
 module.exports = listCacheDelete;
 
-},{"./_assocIndexOf":194}],271:[function(require,module,exports){
+},{"./_assocIndexOf":155}],232:[function(require,module,exports){
 var assocIndexOf = require('./_assocIndexOf');
 
 /**
@@ -23665,7 +23860,7 @@ function listCacheGet(key) {
 
 module.exports = listCacheGet;
 
-},{"./_assocIndexOf":194}],272:[function(require,module,exports){
+},{"./_assocIndexOf":155}],233:[function(require,module,exports){
 var assocIndexOf = require('./_assocIndexOf');
 
 /**
@@ -23683,7 +23878,7 @@ function listCacheHas(key) {
 
 module.exports = listCacheHas;
 
-},{"./_assocIndexOf":194}],273:[function(require,module,exports){
+},{"./_assocIndexOf":155}],234:[function(require,module,exports){
 var assocIndexOf = require('./_assocIndexOf');
 
 /**
@@ -23711,7 +23906,7 @@ function listCacheSet(key, value) {
 
 module.exports = listCacheSet;
 
-},{"./_assocIndexOf":194}],274:[function(require,module,exports){
+},{"./_assocIndexOf":155}],235:[function(require,module,exports){
 var Hash = require('./_Hash'),
     ListCache = require('./_ListCache'),
     Map = require('./_Map');
@@ -23734,7 +23929,7 @@ function mapCacheClear() {
 
 module.exports = mapCacheClear;
 
-},{"./_Hash":175,"./_ListCache":176,"./_Map":177}],275:[function(require,module,exports){
+},{"./_Hash":136,"./_ListCache":137,"./_Map":138}],236:[function(require,module,exports){
 var getMapData = require('./_getMapData');
 
 /**
@@ -23754,7 +23949,7 @@ function mapCacheDelete(key) {
 
 module.exports = mapCacheDelete;
 
-},{"./_getMapData":247}],276:[function(require,module,exports){
+},{"./_getMapData":208}],237:[function(require,module,exports){
 var getMapData = require('./_getMapData');
 
 /**
@@ -23772,7 +23967,7 @@ function mapCacheGet(key) {
 
 module.exports = mapCacheGet;
 
-},{"./_getMapData":247}],277:[function(require,module,exports){
+},{"./_getMapData":208}],238:[function(require,module,exports){
 var getMapData = require('./_getMapData');
 
 /**
@@ -23790,7 +23985,7 @@ function mapCacheHas(key) {
 
 module.exports = mapCacheHas;
 
-},{"./_getMapData":247}],278:[function(require,module,exports){
+},{"./_getMapData":208}],239:[function(require,module,exports){
 var getMapData = require('./_getMapData');
 
 /**
@@ -23814,7 +24009,7 @@ function mapCacheSet(key, value) {
 
 module.exports = mapCacheSet;
 
-},{"./_getMapData":247}],279:[function(require,module,exports){
+},{"./_getMapData":208}],240:[function(require,module,exports){
 /**
  * Converts `map` to its key-value pairs.
  *
@@ -23834,7 +24029,7 @@ function mapToArray(map) {
 
 module.exports = mapToArray;
 
-},{}],280:[function(require,module,exports){
+},{}],241:[function(require,module,exports){
 /**
  * A specialized version of `matchesProperty` for source values suitable
  * for strict equality comparisons, i.e. `===`.
@@ -23856,7 +24051,7 @@ function matchesStrictComparable(key, srcValue) {
 
 module.exports = matchesStrictComparable;
 
-},{}],281:[function(require,module,exports){
+},{}],242:[function(require,module,exports){
 var memoize = require('./memoize');
 
 /** Used as the maximum memoize cache size. */
@@ -23884,7 +24079,7 @@ function memoizeCapped(func) {
 
 module.exports = memoizeCapped;
 
-},{"./memoize":332}],282:[function(require,module,exports){
+},{"./memoize":295}],243:[function(require,module,exports){
 var getNative = require('./_getNative');
 
 /* Built-in method references that are verified to be native. */
@@ -23892,7 +24087,7 @@ var nativeCreate = getNative(Object, 'create');
 
 module.exports = nativeCreate;
 
-},{"./_getNative":249}],283:[function(require,module,exports){
+},{"./_getNative":210}],244:[function(require,module,exports){
 var overArg = require('./_overArg');
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
@@ -23900,7 +24095,7 @@ var nativeKeys = overArg(Object.keys, Object);
 
 module.exports = nativeKeys;
 
-},{"./_overArg":286}],284:[function(require,module,exports){
+},{"./_overArg":247}],245:[function(require,module,exports){
 var freeGlobal = require('./_freeGlobal');
 
 /** Detect free variable `exports`. */
@@ -23924,7 +24119,7 @@ var nodeUtil = (function() {
 
 module.exports = nodeUtil;
 
-},{"./_freeGlobal":245}],285:[function(require,module,exports){
+},{"./_freeGlobal":206}],246:[function(require,module,exports){
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
 
@@ -23948,7 +24143,7 @@ function objectToString(value) {
 
 module.exports = objectToString;
 
-},{}],286:[function(require,module,exports){
+},{}],247:[function(require,module,exports){
 /**
  * Creates a unary function that invokes `func` with its argument transformed.
  *
@@ -23965,7 +24160,7 @@ function overArg(func, transform) {
 
 module.exports = overArg;
 
-},{}],287:[function(require,module,exports){
+},{}],248:[function(require,module,exports){
 var apply = require('./_apply');
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
@@ -24003,7 +24198,7 @@ function overRest(func, start, transform) {
 
 module.exports = overRest;
 
-},{"./_apply":186}],288:[function(require,module,exports){
+},{"./_apply":147}],249:[function(require,module,exports){
 var freeGlobal = require('./_freeGlobal');
 
 /** Detect free variable `self`. */
@@ -24014,7 +24209,7 @@ var root = freeGlobal || freeSelf || Function('return this')();
 
 module.exports = root;
 
-},{"./_freeGlobal":245}],289:[function(require,module,exports){
+},{"./_freeGlobal":206}],250:[function(require,module,exports){
 /** Used to stand-in for `undefined` hash values. */
 var HASH_UNDEFINED = '__lodash_hash_undefined__';
 
@@ -24035,7 +24230,7 @@ function setCacheAdd(value) {
 
 module.exports = setCacheAdd;
 
-},{}],290:[function(require,module,exports){
+},{}],251:[function(require,module,exports){
 /**
  * Checks if `value` is in the array cache.
  *
@@ -24051,7 +24246,7 @@ function setCacheHas(value) {
 
 module.exports = setCacheHas;
 
-},{}],291:[function(require,module,exports){
+},{}],252:[function(require,module,exports){
 /**
  * Converts `set` to an array of its values.
  *
@@ -24071,7 +24266,7 @@ function setToArray(set) {
 
 module.exports = setToArray;
 
-},{}],292:[function(require,module,exports){
+},{}],253:[function(require,module,exports){
 var baseSetToString = require('./_baseSetToString'),
     shortOut = require('./_shortOut');
 
@@ -24087,7 +24282,7 @@ var setToString = shortOut(baseSetToString);
 
 module.exports = setToString;
 
-},{"./_baseSetToString":227,"./_shortOut":293}],293:[function(require,module,exports){
+},{"./_baseSetToString":188,"./_shortOut":254}],254:[function(require,module,exports){
 /** Used to detect hot functions by number of calls within a span of milliseconds. */
 var HOT_COUNT = 800,
     HOT_SPAN = 16;
@@ -24126,7 +24321,7 @@ function shortOut(func) {
 
 module.exports = shortOut;
 
-},{}],294:[function(require,module,exports){
+},{}],255:[function(require,module,exports){
 var ListCache = require('./_ListCache');
 
 /**
@@ -24143,7 +24338,7 @@ function stackClear() {
 
 module.exports = stackClear;
 
-},{"./_ListCache":176}],295:[function(require,module,exports){
+},{"./_ListCache":137}],256:[function(require,module,exports){
 /**
  * Removes `key` and its value from the stack.
  *
@@ -24163,7 +24358,7 @@ function stackDelete(key) {
 
 module.exports = stackDelete;
 
-},{}],296:[function(require,module,exports){
+},{}],257:[function(require,module,exports){
 /**
  * Gets the stack value for `key`.
  *
@@ -24179,7 +24374,7 @@ function stackGet(key) {
 
 module.exports = stackGet;
 
-},{}],297:[function(require,module,exports){
+},{}],258:[function(require,module,exports){
 /**
  * Checks if a stack value for `key` exists.
  *
@@ -24195,7 +24390,7 @@ function stackHas(key) {
 
 module.exports = stackHas;
 
-},{}],298:[function(require,module,exports){
+},{}],259:[function(require,module,exports){
 var ListCache = require('./_ListCache'),
     Map = require('./_Map'),
     MapCache = require('./_MapCache');
@@ -24231,7 +24426,7 @@ function stackSet(key, value) {
 
 module.exports = stackSet;
 
-},{"./_ListCache":176,"./_Map":177,"./_MapCache":178}],299:[function(require,module,exports){
+},{"./_ListCache":137,"./_Map":138,"./_MapCache":139}],260:[function(require,module,exports){
 /**
  * A specialized version of `_.indexOf` which performs strict equality
  * comparisons of values, i.e. `===`.
@@ -24256,12 +24451,11 @@ function strictIndexOf(array, value, fromIndex) {
 
 module.exports = strictIndexOf;
 
-},{}],300:[function(require,module,exports){
+},{}],261:[function(require,module,exports){
 var memoizeCapped = require('./_memoizeCapped');
 
 /** Used to match property names within property paths. */
-var reLeadingDot = /^\./,
-    rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
+var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
 
 /** Used to match backslashes in property paths. */
 var reEscapeChar = /\\(\\)?/g;
@@ -24275,18 +24469,18 @@ var reEscapeChar = /\\(\\)?/g;
  */
 var stringToPath = memoizeCapped(function(string) {
   var result = [];
-  if (reLeadingDot.test(string)) {
+  if (string.charCodeAt(0) === 46 /* . */) {
     result.push('');
   }
-  string.replace(rePropName, function(match, number, quote, string) {
-    result.push(quote ? string.replace(reEscapeChar, '$1') : (number || match));
+  string.replace(rePropName, function(match, number, quote, subString) {
+    result.push(quote ? subString.replace(reEscapeChar, '$1') : (number || match));
   });
   return result;
 });
 
 module.exports = stringToPath;
 
-},{"./_memoizeCapped":281}],301:[function(require,module,exports){
+},{"./_memoizeCapped":242}],262:[function(require,module,exports){
 var isSymbol = require('./isSymbol');
 
 /** Used as references for various `Number` constants. */
@@ -24309,7 +24503,7 @@ function toKey(value) {
 
 module.exports = toKey;
 
-},{"./isSymbol":326}],302:[function(require,module,exports){
+},{"./isSymbol":288}],263:[function(require,module,exports){
 /** Used for built-in method references. */
 var funcProto = Function.prototype;
 
@@ -24337,7 +24531,7 @@ function toSource(func) {
 
 module.exports = toSource;
 
-},{}],303:[function(require,module,exports){
+},{}],264:[function(require,module,exports){
 /**
  * Creates a function that returns `value`.
  *
@@ -24365,7 +24559,7 @@ function constant(value) {
 
 module.exports = constant;
 
-},{}],304:[function(require,module,exports){
+},{}],265:[function(require,module,exports){
 var isObject = require('./isObject'),
     now = require('./now'),
     toNumber = require('./toNumber');
@@ -24476,9 +24670,11 @@ function debounce(func, wait, options) {
   function remainingWait(time) {
     var timeSinceLastCall = time - lastCallTime,
         timeSinceLastInvoke = time - lastInvokeTime,
-        result = wait - timeSinceLastCall;
+        timeWaiting = wait - timeSinceLastCall;
 
-    return maxing ? nativeMin(result, maxWait - timeSinceLastInvoke) : result;
+    return maxing
+      ? nativeMin(timeWaiting, maxWait - timeSinceLastInvoke)
+      : timeWaiting;
   }
 
   function shouldInvoke(time) {
@@ -24555,7 +24751,7 @@ function debounce(func, wait, options) {
 
 module.exports = debounce;
 
-},{"./isObject":322,"./now":334,"./toNumber":342}],305:[function(require,module,exports){
+},{"./isObject":284,"./now":297,"./toNumber":305}],266:[function(require,module,exports){
 /**
  * Performs a
  * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
@@ -24594,7 +24790,7 @@ function eq(value, other) {
 
 module.exports = eq;
 
-},{}],306:[function(require,module,exports){
+},{}],267:[function(require,module,exports){
 var arrayFilter = require('./_arrayFilter'),
     baseFilter = require('./_baseFilter'),
     baseIteratee = require('./_baseIteratee'),
@@ -24644,7 +24840,38 @@ function filter(collection, predicate) {
 
 module.exports = filter;
 
-},{"./_arrayFilter":187,"./_baseFilter":197,"./_baseIteratee":216,"./isArray":312}],307:[function(require,module,exports){
+},{"./_arrayFilter":148,"./_baseFilter":158,"./_baseIteratee":177,"./isArray":274}],268:[function(require,module,exports){
+var baseFlatten = require('./_baseFlatten'),
+    map = require('./map');
+
+/**
+ * Creates a flattened array of values by running each element in `collection`
+ * thru `iteratee` and flattening the mapped results. The iteratee is invoked
+ * with three arguments: (value, index|key, collection).
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Collection
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} [iteratee=_.identity] The function invoked per iteration.
+ * @returns {Array} Returns the new flattened array.
+ * @example
+ *
+ * function duplicate(n) {
+ *   return [n, n];
+ * }
+ *
+ * _.flatMap([1, 2], duplicate);
+ * // => [1, 1, 2, 2]
+ */
+function flatMap(collection, iteratee) {
+  return baseFlatten(map(collection, iteratee), 1);
+}
+
+module.exports = flatMap;
+
+},{"./_baseFlatten":160,"./map":293}],269:[function(require,module,exports){
 var baseGet = require('./_baseGet');
 
 /**
@@ -24679,7 +24906,7 @@ function get(object, path, defaultValue) {
 
 module.exports = get;
 
-},{"./_baseGet":202}],308:[function(require,module,exports){
+},{"./_baseGet":163}],270:[function(require,module,exports){
 var baseHasIn = require('./_baseHasIn'),
     hasPath = require('./_hasPath');
 
@@ -24715,7 +24942,7 @@ function hasIn(object, path) {
 
 module.exports = hasIn;
 
-},{"./_baseHasIn":206,"./_hasPath":255}],309:[function(require,module,exports){
+},{"./_baseHasIn":167,"./_hasPath":216}],271:[function(require,module,exports){
 /**
  * This method returns the first argument it receives.
  *
@@ -24738,7 +24965,7 @@ function identity(value) {
 
 module.exports = identity;
 
-},{}],310:[function(require,module,exports){
+},{}],272:[function(require,module,exports){
 var arrayMap = require('./_arrayMap'),
     baseIntersection = require('./_baseIntersection'),
     baseRest = require('./_baseRest'),
@@ -24770,7 +24997,7 @@ var intersection = baseRest(function(arrays) {
 
 module.exports = intersection;
 
-},{"./_arrayMap":191,"./_baseIntersection":208,"./_baseRest":226,"./_castArrayLikeObject":233}],311:[function(require,module,exports){
+},{"./_arrayMap":152,"./_baseIntersection":169,"./_baseRest":187,"./_castArrayLikeObject":194}],273:[function(require,module,exports){
 var baseIsArguments = require('./_baseIsArguments'),
     isObjectLike = require('./isObjectLike');
 
@@ -24808,7 +25035,7 @@ var isArguments = baseIsArguments(function() { return arguments; }()) ? baseIsAr
 
 module.exports = isArguments;
 
-},{"./_baseIsArguments":209,"./isObjectLike":323}],312:[function(require,module,exports){
+},{"./_baseIsArguments":170,"./isObjectLike":285}],274:[function(require,module,exports){
 /**
  * Checks if `value` is classified as an `Array` object.
  *
@@ -24836,7 +25063,7 @@ var isArray = Array.isArray;
 
 module.exports = isArray;
 
-},{}],313:[function(require,module,exports){
+},{}],275:[function(require,module,exports){
 var isFunction = require('./isFunction'),
     isLength = require('./isLength');
 
@@ -24871,7 +25098,7 @@ function isArrayLike(value) {
 
 module.exports = isArrayLike;
 
-},{"./isFunction":317,"./isLength":318}],314:[function(require,module,exports){
+},{"./isFunction":279,"./isLength":280}],276:[function(require,module,exports){
 var isArrayLike = require('./isArrayLike'),
     isObjectLike = require('./isObjectLike');
 
@@ -24906,7 +25133,7 @@ function isArrayLikeObject(value) {
 
 module.exports = isArrayLikeObject;
 
-},{"./isArrayLike":313,"./isObjectLike":323}],315:[function(require,module,exports){
+},{"./isArrayLike":275,"./isObjectLike":285}],277:[function(require,module,exports){
 var root = require('./_root'),
     stubFalse = require('./stubFalse');
 
@@ -24946,7 +25173,7 @@ var isBuffer = nativeIsBuffer || stubFalse;
 
 module.exports = isBuffer;
 
-},{"./_root":288,"./stubFalse":339}],316:[function(require,module,exports){
+},{"./_root":249,"./stubFalse":302}],278:[function(require,module,exports){
 var baseIsEqual = require('./_baseIsEqual');
 
 /**
@@ -24983,7 +25210,7 @@ function isEqual(value, other) {
 
 module.exports = isEqual;
 
-},{"./_baseIsEqual":210}],317:[function(require,module,exports){
+},{"./_baseIsEqual":171}],279:[function(require,module,exports){
 var baseGetTag = require('./_baseGetTag'),
     isObject = require('./isObject');
 
@@ -25022,7 +25249,7 @@ function isFunction(value) {
 
 module.exports = isFunction;
 
-},{"./_baseGetTag":204,"./isObject":322}],318:[function(require,module,exports){
+},{"./_baseGetTag":165,"./isObject":284}],280:[function(require,module,exports){
 /** Used as references for various `Number` constants. */
 var MAX_SAFE_INTEGER = 9007199254740991;
 
@@ -25059,7 +25286,7 @@ function isLength(value) {
 
 module.exports = isLength;
 
-},{}],319:[function(require,module,exports){
+},{}],281:[function(require,module,exports){
 var isNumber = require('./isNumber');
 
 /**
@@ -25099,7 +25326,7 @@ function isNaN(value) {
 
 module.exports = isNaN;
 
-},{"./isNumber":321}],320:[function(require,module,exports){
+},{"./isNumber":283}],282:[function(require,module,exports){
 /**
  * Checks if `value` is `null` or `undefined`.
  *
@@ -25126,7 +25353,7 @@ function isNil(value) {
 
 module.exports = isNil;
 
-},{}],321:[function(require,module,exports){
+},{}],283:[function(require,module,exports){
 var baseGetTag = require('./_baseGetTag'),
     isObjectLike = require('./isObjectLike');
 
@@ -25166,7 +25393,7 @@ function isNumber(value) {
 
 module.exports = isNumber;
 
-},{"./_baseGetTag":204,"./isObjectLike":323}],322:[function(require,module,exports){
+},{"./_baseGetTag":165,"./isObjectLike":285}],284:[function(require,module,exports){
 /**
  * Checks if `value` is the
  * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
@@ -25199,7 +25426,7 @@ function isObject(value) {
 
 module.exports = isObject;
 
-},{}],323:[function(require,module,exports){
+},{}],285:[function(require,module,exports){
 /**
  * Checks if `value` is object-like. A value is object-like if it's not `null`
  * and has a `typeof` result of "object".
@@ -25230,7 +25457,7 @@ function isObjectLike(value) {
 
 module.exports = isObjectLike;
 
-},{}],324:[function(require,module,exports){
+},{}],286:[function(require,module,exports){
 var baseGetTag = require('./_baseGetTag'),
     getPrototype = require('./_getPrototype'),
     isObjectLike = require('./isObjectLike');
@@ -25294,7 +25521,7 @@ function isPlainObject(value) {
 
 module.exports = isPlainObject;
 
-},{"./_baseGetTag":204,"./_getPrototype":250,"./isObjectLike":323}],325:[function(require,module,exports){
+},{"./_baseGetTag":165,"./_getPrototype":211,"./isObjectLike":285}],287:[function(require,module,exports){
 var baseGetTag = require('./_baseGetTag'),
     isArray = require('./isArray'),
     isObjectLike = require('./isObjectLike');
@@ -25326,7 +25553,7 @@ function isString(value) {
 
 module.exports = isString;
 
-},{"./_baseGetTag":204,"./isArray":312,"./isObjectLike":323}],326:[function(require,module,exports){
+},{"./_baseGetTag":165,"./isArray":274,"./isObjectLike":285}],288:[function(require,module,exports){
 var baseGetTag = require('./_baseGetTag'),
     isObjectLike = require('./isObjectLike');
 
@@ -25357,7 +25584,7 @@ function isSymbol(value) {
 
 module.exports = isSymbol;
 
-},{"./_baseGetTag":204,"./isObjectLike":323}],327:[function(require,module,exports){
+},{"./_baseGetTag":165,"./isObjectLike":285}],289:[function(require,module,exports){
 var baseIsTypedArray = require('./_baseIsTypedArray'),
     baseUnary = require('./_baseUnary'),
     nodeUtil = require('./_nodeUtil');
@@ -25386,7 +25613,7 @@ var isTypedArray = nodeIsTypedArray ? baseUnary(nodeIsTypedArray) : baseIsTypedA
 
 module.exports = isTypedArray;
 
-},{"./_baseIsTypedArray":215,"./_baseUnary":231,"./_nodeUtil":284}],328:[function(require,module,exports){
+},{"./_baseIsTypedArray":176,"./_baseUnary":192,"./_nodeUtil":245}],290:[function(require,module,exports){
 var arrayLikeKeys = require('./_arrayLikeKeys'),
     baseKeys = require('./_baseKeys'),
     isArrayLike = require('./isArrayLike');
@@ -25425,7 +25652,7 @@ function keys(object) {
 
 module.exports = keys;
 
-},{"./_arrayLikeKeys":190,"./_baseKeys":217,"./isArrayLike":313}],329:[function(require,module,exports){
+},{"./_arrayLikeKeys":151,"./_baseKeys":178,"./isArrayLike":275}],291:[function(require,module,exports){
 /**
  * Gets the last element of `array`.
  *
@@ -25447,7 +25674,7 @@ function last(array) {
 
 module.exports = last;
 
-},{}],330:[function(require,module,exports){
+},{}],292:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -25463,7 +25690,7 @@ module.exports = last;
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.4';
+  var VERSION = '4.17.5';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -25594,7 +25821,6 @@ module.exports = last;
   /** Used to match property names within property paths. */
   var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,
       reIsPlainProp = /^\w*$/,
-      reLeadingDot = /^\./,
       rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
 
   /**
@@ -25694,8 +25920,8 @@ module.exports = last;
       reOptMod = rsModifier + '?',
       rsOptVar = '[' + rsVarRange + ']?',
       rsOptJoin = '(?:' + rsZWJ + '(?:' + [rsNonAstral, rsRegional, rsSurrPair].join('|') + ')' + rsOptVar + reOptMod + ')*',
-      rsOrdLower = '\\d*(?:(?:1st|2nd|3rd|(?![123])\\dth)\\b)',
-      rsOrdUpper = '\\d*(?:(?:1ST|2ND|3RD|(?![123])\\dTH)\\b)',
+      rsOrdLower = '\\d*(?:1st|2nd|3rd|(?![123])\\dth)(?=\\b|[A-Z_])',
+      rsOrdUpper = '\\d*(?:1ST|2ND|3RD|(?![123])\\dTH)(?=\\b|[a-z_])',
       rsSeq = rsOptVar + reOptMod + rsOptJoin,
       rsEmoji = '(?:' + [rsDingbat, rsRegional, rsSurrPair].join('|') + ')' + rsSeq,
       rsSymbol = '(?:' + [rsNonAstral + rsCombo + '?', rsCombo, rsRegional, rsSurrPair, rsAstral].join('|') + ')';
@@ -25901,34 +26127,6 @@ module.exports = last;
       nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray;
 
   /*--------------------------------------------------------------------------*/
-
-  /**
-   * Adds the key-value `pair` to `map`.
-   *
-   * @private
-   * @param {Object} map The map to modify.
-   * @param {Array} pair The key-value pair to add.
-   * @returns {Object} Returns `map`.
-   */
-  function addMapEntry(map, pair) {
-    // Don't return `map.set` because it's not chainable in IE 11.
-    map.set(pair[0], pair[1]);
-    return map;
-  }
-
-  /**
-   * Adds `value` to `set`.
-   *
-   * @private
-   * @param {Object} set The set to modify.
-   * @param {*} value The value to add.
-   * @returns {Object} Returns `set`.
-   */
-  function addSetEntry(set, value) {
-    // Don't return `set.add` because it's not chainable in IE 11.
-    set.add(value);
-    return set;
-  }
 
   /**
    * A faster alternative to `Function#apply`, this function invokes `func`
@@ -26694,6 +26892,20 @@ module.exports = last;
       }
     }
     return result;
+  }
+
+  /**
+   * Gets the value at `key`, unless `key` is "__proto__".
+   *
+   * @private
+   * @param {Object} object The object to query.
+   * @param {string} key The key of the property to get.
+   * @returns {*} Returns the property value.
+   */
+  function safeGet(object, key) {
+    return key == '__proto__'
+      ? undefined
+      : object[key];
   }
 
   /**
@@ -28128,7 +28340,7 @@ module.exports = last;
           if (!cloneableTags[tag]) {
             return object ? value : {};
           }
-          result = initCloneByTag(value, tag, baseClone, isDeep);
+          result = initCloneByTag(value, tag, isDeep);
         }
       }
       // Check for circular references and return its corresponding clone.
@@ -28138,6 +28350,22 @@ module.exports = last;
         return stacked;
       }
       stack.set(value, result);
+
+      if (isSet(value)) {
+        value.forEach(function(subValue) {
+          result.add(baseClone(subValue, bitmask, customizer, subValue, value, stack));
+        });
+
+        return result;
+      }
+
+      if (isMap(value)) {
+        value.forEach(function(subValue, key) {
+          result.set(key, baseClone(subValue, bitmask, customizer, key, value, stack));
+        });
+
+        return result;
+      }
 
       var keysFunc = isFull
         ? (isFlat ? getAllKeysIn : getAllKeys)
@@ -29066,7 +29294,7 @@ module.exports = last;
         }
         else {
           var newValue = customizer
-            ? customizer(object[key], srcValue, (key + ''), object, source, stack)
+            ? customizer(safeGet(object, key), srcValue, (key + ''), object, source, stack)
             : undefined;
 
           if (newValue === undefined) {
@@ -29093,8 +29321,8 @@ module.exports = last;
      *  counterparts.
      */
     function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, stack) {
-      var objValue = object[key],
-          srcValue = source[key],
+      var objValue = safeGet(object, key),
+          srcValue = safeGet(source, key),
           stacked = stack.get(srcValue);
 
       if (stacked) {
@@ -30003,20 +30231,6 @@ module.exports = last;
     }
 
     /**
-     * Creates a clone of `map`.
-     *
-     * @private
-     * @param {Object} map The map to clone.
-     * @param {Function} cloneFunc The function to clone values.
-     * @param {boolean} [isDeep] Specify a deep clone.
-     * @returns {Object} Returns the cloned map.
-     */
-    function cloneMap(map, isDeep, cloneFunc) {
-      var array = isDeep ? cloneFunc(mapToArray(map), CLONE_DEEP_FLAG) : mapToArray(map);
-      return arrayReduce(array, addMapEntry, new map.constructor);
-    }
-
-    /**
      * Creates a clone of `regexp`.
      *
      * @private
@@ -30027,20 +30241,6 @@ module.exports = last;
       var result = new regexp.constructor(regexp.source, reFlags.exec(regexp));
       result.lastIndex = regexp.lastIndex;
       return result;
-    }
-
-    /**
-     * Creates a clone of `set`.
-     *
-     * @private
-     * @param {Object} set The set to clone.
-     * @param {Function} cloneFunc The function to clone values.
-     * @param {boolean} [isDeep] Specify a deep clone.
-     * @returns {Object} Returns the cloned set.
-     */
-    function cloneSet(set, isDeep, cloneFunc) {
-      var array = isDeep ? cloneFunc(setToArray(set), CLONE_DEEP_FLAG) : setToArray(set);
-      return arrayReduce(array, addSetEntry, new set.constructor);
     }
 
     /**
@@ -31637,7 +31837,7 @@ module.exports = last;
      */
     function initCloneArray(array) {
       var length = array.length,
-          result = array.constructor(length);
+          result = new array.constructor(length);
 
       // Add properties assigned by `RegExp#exec`.
       if (length && typeof array[0] == 'string' && hasOwnProperty.call(array, 'index')) {
@@ -31664,16 +31864,15 @@ module.exports = last;
      * Initializes an object clone based on its `toStringTag`.
      *
      * **Note:** This function only supports cloning values with tags of
-     * `Boolean`, `Date`, `Error`, `Number`, `RegExp`, or `String`.
+     * `Boolean`, `Date`, `Error`, `Map`, `Number`, `RegExp`, `Set`, or `String`.
      *
      * @private
      * @param {Object} object The object to clone.
      * @param {string} tag The `toStringTag` of the object to clone.
-     * @param {Function} cloneFunc The function to clone values.
      * @param {boolean} [isDeep] Specify a deep clone.
      * @returns {Object} Returns the initialized clone.
      */
-    function initCloneByTag(object, tag, cloneFunc, isDeep) {
+    function initCloneByTag(object, tag, isDeep) {
       var Ctor = object.constructor;
       switch (tag) {
         case arrayBufferTag:
@@ -31692,7 +31891,7 @@ module.exports = last;
           return cloneTypedArray(object, isDeep);
 
         case mapTag:
-          return cloneMap(object, isDeep, cloneFunc);
+          return new Ctor;
 
         case numberTag:
         case stringTag:
@@ -31702,7 +31901,7 @@ module.exports = last;
           return cloneRegExp(object);
 
         case setTag:
-          return cloneSet(object, isDeep, cloneFunc);
+          return new Ctor;
 
         case symbolTag:
           return cloneSymbol(object);
@@ -31749,10 +31948,13 @@ module.exports = last;
      * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
      */
     function isIndex(value, length) {
+      var type = typeof value;
       length = length == null ? MAX_SAFE_INTEGER : length;
+
       return !!length &&
-        (typeof value == 'number' || reIsUint.test(value)) &&
-        (value > -1 && value % 1 == 0 && value < length);
+        (type == 'number' ||
+          (type != 'symbol' && reIsUint.test(value))) &&
+            (value > -1 && value % 1 == 0 && value < length);
     }
 
     /**
@@ -32202,11 +32404,11 @@ module.exports = last;
      */
     var stringToPath = memoizeCapped(function(string) {
       var result = [];
-      if (reLeadingDot.test(string)) {
+      if (string.charCodeAt(0) === 46 /* . */) {
         result.push('');
       }
-      string.replace(rePropName, function(match, number, quote, string) {
-        result.push(quote ? string.replace(reEscapeChar, '$1') : (number || match));
+      string.replace(rePropName, function(match, number, quote, subString) {
+        result.push(quote ? subString.replace(reEscapeChar, '$1') : (number || match));
       });
       return result;
     });
@@ -35814,9 +36016,11 @@ module.exports = last;
       function remainingWait(time) {
         var timeSinceLastCall = time - lastCallTime,
             timeSinceLastInvoke = time - lastInvokeTime,
-            result = wait - timeSinceLastCall;
+            timeWaiting = wait - timeSinceLastCall;
 
-        return maxing ? nativeMin(result, maxWait - timeSinceLastInvoke) : result;
+        return maxing
+          ? nativeMin(timeWaiting, maxWait - timeSinceLastInvoke)
+          : timeWaiting;
       }
 
       function shouldInvoke(time) {
@@ -38248,9 +38452,35 @@ module.exports = last;
      * _.defaults({ 'a': 1 }, { 'b': 2 }, { 'a': 3 });
      * // => { 'a': 1, 'b': 2 }
      */
-    var defaults = baseRest(function(args) {
-      args.push(undefined, customDefaultsAssignIn);
-      return apply(assignInWith, undefined, args);
+    var defaults = baseRest(function(object, sources) {
+      object = Object(object);
+
+      var index = -1;
+      var length = sources.length;
+      var guard = length > 2 ? sources[2] : undefined;
+
+      if (guard && isIterateeCall(sources[0], sources[1], guard)) {
+        length = 1;
+      }
+
+      while (++index < length) {
+        var source = sources[index];
+        var props = keysIn(source);
+        var propsIndex = -1;
+        var propsLength = props.length;
+
+        while (++propsIndex < propsLength) {
+          var key = props[propsIndex];
+          var value = object[key];
+
+          if (value === undefined ||
+              (eq(value, objectProto[key]) && !hasOwnProperty.call(object, key))) {
+            object[key] = source[key];
+          }
+        }
+      }
+
+      return object;
     });
 
     /**
@@ -38647,6 +38877,11 @@ module.exports = last;
      * // => { '1': 'c', '2': 'b' }
      */
     var invert = createInverter(function(result, value, key) {
+      if (value != null &&
+          typeof value.toString != 'function') {
+        value = nativeObjectToString.call(value);
+      }
+
       result[value] = key;
     }, constant(identity));
 
@@ -38677,6 +38912,11 @@ module.exports = last;
      * // => { 'group1': ['a', 'c'], 'group2': ['b'] }
      */
     var invertBy = createInverter(function(result, value, key) {
+      if (value != null &&
+          typeof value.toString != 'function') {
+        value = nativeObjectToString.call(value);
+      }
+
       if (hasOwnProperty.call(result, value)) {
         result[value].push(key);
       } else {
@@ -42535,7 +42775,62 @@ module.exports = last;
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],331:[function(require,module,exports){
+},{}],293:[function(require,module,exports){
+var arrayMap = require('./_arrayMap'),
+    baseIteratee = require('./_baseIteratee'),
+    baseMap = require('./_baseMap'),
+    isArray = require('./isArray');
+
+/**
+ * Creates an array of values by running each element in `collection` thru
+ * `iteratee`. The iteratee is invoked with three arguments:
+ * (value, index|key, collection).
+ *
+ * Many lodash methods are guarded to work as iteratees for methods like
+ * `_.every`, `_.filter`, `_.map`, `_.mapValues`, `_.reject`, and `_.some`.
+ *
+ * The guarded methods are:
+ * `ary`, `chunk`, `curry`, `curryRight`, `drop`, `dropRight`, `every`,
+ * `fill`, `invert`, `parseInt`, `random`, `range`, `rangeRight`, `repeat`,
+ * `sampleSize`, `slice`, `some`, `sortBy`, `split`, `take`, `takeRight`,
+ * `template`, `trim`, `trimEnd`, `trimStart`, and `words`
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Collection
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} [iteratee=_.identity] The function invoked per iteration.
+ * @returns {Array} Returns the new mapped array.
+ * @example
+ *
+ * function square(n) {
+ *   return n * n;
+ * }
+ *
+ * _.map([4, 8], square);
+ * // => [16, 64]
+ *
+ * _.map({ 'a': 4, 'b': 8 }, square);
+ * // => [16, 64] (iteration order is not guaranteed)
+ *
+ * var users = [
+ *   { 'user': 'barney' },
+ *   { 'user': 'fred' }
+ * ];
+ *
+ * // The `_.property` iteratee shorthand.
+ * _.map(users, 'user');
+ * // => ['barney', 'fred']
+ */
+function map(collection, iteratee) {
+  var func = isArray(collection) ? arrayMap : baseMap;
+  return func(collection, baseIteratee(iteratee, 3));
+}
+
+module.exports = map;
+
+},{"./_arrayMap":152,"./_baseIteratee":177,"./_baseMap":180,"./isArray":274}],294:[function(require,module,exports){
 var baseExtremum = require('./_baseExtremum'),
     baseGt = require('./_baseGt'),
     identity = require('./identity');
@@ -42566,7 +42861,7 @@ function max(array) {
 
 module.exports = max;
 
-},{"./_baseExtremum":196,"./_baseGt":205,"./identity":309}],332:[function(require,module,exports){
+},{"./_baseExtremum":157,"./_baseGt":166,"./identity":271}],295:[function(require,module,exports){
 var MapCache = require('./_MapCache');
 
 /** Error message constants. */
@@ -42641,7 +42936,7 @@ memoize.Cache = MapCache;
 
 module.exports = memoize;
 
-},{"./_MapCache":178}],333:[function(require,module,exports){
+},{"./_MapCache":139}],296:[function(require,module,exports){
 var baseExtremum = require('./_baseExtremum'),
     baseLt = require('./_baseLt'),
     identity = require('./identity');
@@ -42672,7 +42967,7 @@ function min(array) {
 
 module.exports = min;
 
-},{"./_baseExtremum":196,"./_baseLt":218,"./identity":309}],334:[function(require,module,exports){
+},{"./_baseExtremum":157,"./_baseLt":179,"./identity":271}],297:[function(require,module,exports){
 var root = require('./_root');
 
 /**
@@ -42697,7 +42992,7 @@ var now = function() {
 
 module.exports = now;
 
-},{"./_root":288}],335:[function(require,module,exports){
+},{"./_root":249}],298:[function(require,module,exports){
 var baseProperty = require('./_baseProperty'),
     basePropertyDeep = require('./_basePropertyDeep'),
     isKey = require('./_isKey'),
@@ -42731,7 +43026,7 @@ function property(path) {
 
 module.exports = property;
 
-},{"./_baseProperty":223,"./_basePropertyDeep":224,"./_isKey":264,"./_toKey":301}],336:[function(require,module,exports){
+},{"./_baseProperty":184,"./_basePropertyDeep":185,"./_isKey":225,"./_toKey":262}],299:[function(require,module,exports){
 var createRange = require('./_createRange');
 
 /**
@@ -42779,7 +43074,7 @@ var range = createRange();
 
 module.exports = range;
 
-},{"./_createRange":240}],337:[function(require,module,exports){
+},{"./_createRange":201}],300:[function(require,module,exports){
 var baseFlatten = require('./_baseFlatten'),
     baseOrderBy = require('./_baseOrderBy'),
     baseRest = require('./_baseRest'),
@@ -42829,7 +43124,7 @@ var sortBy = baseRest(function(collection, iteratees) {
 
 module.exports = sortBy;
 
-},{"./_baseFlatten":199,"./_baseOrderBy":222,"./_baseRest":226,"./_isIterateeCall":263}],338:[function(require,module,exports){
+},{"./_baseFlatten":160,"./_baseOrderBy":183,"./_baseRest":187,"./_isIterateeCall":224}],301:[function(require,module,exports){
 /**
  * This method returns a new empty array.
  *
@@ -42854,7 +43149,7 @@ function stubArray() {
 
 module.exports = stubArray;
 
-},{}],339:[function(require,module,exports){
+},{}],302:[function(require,module,exports){
 /**
  * This method returns `false`.
  *
@@ -42874,7 +43169,7 @@ function stubFalse() {
 
 module.exports = stubFalse;
 
-},{}],340:[function(require,module,exports){
+},{}],303:[function(require,module,exports){
 var debounce = require('./debounce'),
     isObject = require('./isObject');
 
@@ -42945,7 +43240,7 @@ function throttle(func, wait, options) {
 
 module.exports = throttle;
 
-},{"./debounce":304,"./isObject":322}],341:[function(require,module,exports){
+},{"./debounce":265,"./isObject":284}],304:[function(require,module,exports){
 var toNumber = require('./toNumber');
 
 /** Used as references for various `Number` constants. */
@@ -42989,7 +43284,7 @@ function toFinite(value) {
 
 module.exports = toFinite;
 
-},{"./toNumber":342}],342:[function(require,module,exports){
+},{"./toNumber":305}],305:[function(require,module,exports){
 var isObject = require('./isObject'),
     isSymbol = require('./isSymbol');
 
@@ -43057,7 +43352,7 @@ function toNumber(value) {
 
 module.exports = toNumber;
 
-},{"./isObject":322,"./isSymbol":326}],343:[function(require,module,exports){
+},{"./isObject":284,"./isSymbol":288}],306:[function(require,module,exports){
 var baseToString = require('./_baseToString');
 
 /**
@@ -43087,7 +43382,7 @@ function toString(value) {
 
 module.exports = toString;
 
-},{"./_baseToString":230}],344:[function(require,module,exports){
+},{"./_baseToString":191}],307:[function(require,module,exports){
 var Mexp=require('./postfix_evaluator.js');
 Mexp.prototype.formulaEval = function () {
 	"use strict";
@@ -43129,7 +43424,7 @@ Mexp.prototype.formulaEval = function () {
 	return disp[0].value;
 };
 module.exports=Mexp;
-},{"./postfix_evaluator.js":348}],345:[function(require,module,exports){
+},{"./postfix_evaluator.js":311}],308:[function(require,module,exports){
 var Mexp=require('./math_function.js');
 	function inc(arr,val){
 		for(var i=0;i<arr.length;i++)
@@ -43440,7 +43735,7 @@ var Mexp=require('./math_function.js');
 	};
     module.exports=Mexp;
 
-},{"./math_function.js":346}],346:[function(require,module,exports){
+},{"./math_function.js":309}],309:[function(require,module,exports){
 	var Mexp=function(parsed){
 		this.value=parsed;
 
@@ -43561,7 +43856,7 @@ var Mexp=require('./math_function.js');
 		this.message=message;
 	};
     module.exports=Mexp;
-},{}],347:[function(require,module,exports){
+},{}],310:[function(require,module,exports){
 
     var Mexp=require('./lexer.js');
 
@@ -43612,7 +43907,7 @@ var Mexp=require('./math_function.js');
 		return new Mexp(post);
 	};
     module.exports=Mexp;
-},{"./lexer.js":345}],348:[function(require,module,exports){
+},{"./lexer.js":308}],311:[function(require,module,exports){
 var Mexp=require('./postfix.js');
 Mexp.prototype.postfixEval = function (UserDefined) {
 	'use strict';
@@ -43718,7 +44013,7 @@ Mexp.eval=function(str,tokens,obj){
 		return this.lex(str,tokens).toPostfix().postfixEval(obj);
 };
 module.exports=Mexp;
-},{"./postfix.js":347}],349:[function(require,module,exports){
+},{"./postfix.js":310}],312:[function(require,module,exports){
 //! moment.js locale configuration
 //! locale : French [fr]
 //! author : John Fischer : https://github.com/jfroffice
@@ -43804,7 +44099,7 @@ return fr;
 
 })));
 
-},{"../moment":350}],350:[function(require,module,exports){
+},{"../moment":313}],313:[function(require,module,exports){
 //! moment.js
 //! version : 2.20.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -48341,7 +48636,7 @@ return hooks;
 
 })));
 
-},{}],351:[function(require,module,exports){
+},{}],314:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -48433,7 +48728,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],352:[function(require,module,exports){
+},{}],315:[function(require,module,exports){
 (function (process){
 // Generated by CoffeeScript 1.12.2
 (function() {
@@ -48473,7 +48768,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 
 }).call(this,require('_process'))
-},{"_process":353}],353:[function(require,module,exports){
+},{"_process":316}],316:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -48659,7 +48954,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],354:[function(require,module,exports){
+},{}],317:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -48722,7 +49017,7 @@ function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
 module.exports = checkPropTypes;
 
 }).call(this,require('_process'))
-},{"./lib/ReactPropTypesSecret":358,"_process":353,"fbjs/lib/invariant":153,"fbjs/lib/warning":157}],355:[function(require,module,exports){
+},{"./lib/ReactPropTypesSecret":321,"_process":316,"fbjs/lib/invariant":114,"fbjs/lib/warning":118}],318:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -48782,7 +49077,7 @@ module.exports = function() {
   return ReactPropTypes;
 };
 
-},{"./lib/ReactPropTypesSecret":358,"fbjs/lib/emptyFunction":147,"fbjs/lib/invariant":153}],356:[function(require,module,exports){
+},{"./lib/ReactPropTypesSecret":321,"fbjs/lib/emptyFunction":108,"fbjs/lib/invariant":114}],319:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -49328,7 +49623,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 };
 
 }).call(this,require('_process'))
-},{"./checkPropTypes":354,"./lib/ReactPropTypesSecret":358,"_process":353,"fbjs/lib/emptyFunction":147,"fbjs/lib/invariant":153,"fbjs/lib/warning":157,"object-assign":351}],357:[function(require,module,exports){
+},{"./checkPropTypes":317,"./lib/ReactPropTypesSecret":321,"_process":316,"fbjs/lib/emptyFunction":108,"fbjs/lib/invariant":114,"fbjs/lib/warning":118,"object-assign":314}],320:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -49360,7 +49655,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 }).call(this,require('_process'))
-},{"./factoryWithThrowingShims":355,"./factoryWithTypeCheckers":356,"_process":353}],358:[function(require,module,exports){
+},{"./factoryWithThrowingShims":318,"./factoryWithTypeCheckers":319,"_process":316}],321:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -49374,7 +49669,7 @@ var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
 module.exports = ReactPropTypesSecret;
 
-},{}],359:[function(require,module,exports){
+},{}],322:[function(require,module,exports){
 (function (global){
 var now = require('performance-now')
   , root = typeof window === 'undefined' ? global : window
@@ -49453,7 +49748,7 @@ module.exports.polyfill = function(object) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"performance-now":352}],360:[function(require,module,exports){
+},{"performance-now":315}],323:[function(require,module,exports){
 'use strict';
 
 var assign = require('object-assign'),
@@ -49909,7 +50204,7 @@ Datetime.moment = moment;
 
 module.exports = Datetime;
 
-},{"./src/CalendarContainer":362,"create-react-class":130,"moment":350,"object-assign":361,"prop-types":357,"react":431}],361:[function(require,module,exports){
+},{"./src/CalendarContainer":325,"create-react-class":91,"moment":313,"object-assign":324,"prop-types":320,"react":394}],324:[function(require,module,exports){
 'use strict';
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
@@ -49950,7 +50245,7 @@ module.exports = Object.assign || function (target, source) {
 	return to;
 };
 
-},{}],362:[function(require,module,exports){
+},{}],325:[function(require,module,exports){
 'use strict';
 
 var React = require('react'),
@@ -49976,7 +50271,7 @@ var CalendarContainer = createClass({
 
 module.exports = CalendarContainer;
 
-},{"./DaysView":363,"./MonthsView":364,"./TimeView":365,"./YearsView":366,"create-react-class":130,"react":431}],363:[function(require,module,exports){
+},{"./DaysView":326,"./MonthsView":327,"./TimeView":328,"./YearsView":329,"create-react-class":91,"react":394}],326:[function(require,module,exports){
 'use strict';
 
 var React = require('react'),
@@ -50122,7 +50417,7 @@ var DateTimePickerDays = onClickOutside( createClass({
 
 module.exports = DateTimePickerDays;
 
-},{"create-react-class":130,"moment":350,"react":431,"react-onclickoutside":370}],364:[function(require,module,exports){
+},{"create-react-class":91,"moment":313,"react":394,"react-onclickoutside":333}],327:[function(require,module,exports){
 'use strict';
 
 var React = require('react'),
@@ -50231,7 +50526,7 @@ function capitalize( str ) {
 
 module.exports = DateTimePickerMonths;
 
-},{"create-react-class":130,"react":431,"react-onclickoutside":370}],365:[function(require,module,exports){
+},{"create-react-class":91,"react":394,"react-onclickoutside":333}],328:[function(require,module,exports){
 'use strict';
 
 var React = require('react'),
@@ -50468,7 +50763,7 @@ var DateTimePickerTime = onClickOutside( createClass({
 
 module.exports = DateTimePickerTime;
 
-},{"create-react-class":130,"object-assign":361,"react":431,"react-onclickoutside":370}],366:[function(require,module,exports){
+},{"create-react-class":91,"object-assign":324,"react":394,"react-onclickoutside":333}],329:[function(require,module,exports){
 'use strict';
 
 var React = require('react'),
@@ -50575,7 +50870,7 @@ var DateTimePickerYears = onClickOutside( createClass({
 
 module.exports = DateTimePickerYears;
 
-},{"create-react-class":130,"react":431,"react-onclickoutside":370}],367:[function(require,module,exports){
+},{"create-react-class":91,"react":394,"react-onclickoutside":333}],330:[function(require,module,exports){
 (function (process){
 /** @license React v16.2.0
  * react-dom.development.js
@@ -65973,7 +66268,7 @@ module.exports = reactDom;
 }
 
 }).call(this,require('_process'))
-},{"_process":353,"fbjs/lib/EventListener":142,"fbjs/lib/ExecutionEnvironment":143,"fbjs/lib/camelizeStyleName":145,"fbjs/lib/containsNode":146,"fbjs/lib/emptyFunction":147,"fbjs/lib/emptyObject":148,"fbjs/lib/focusNode":149,"fbjs/lib/getActiveElement":150,"fbjs/lib/hyphenateStyleName":152,"fbjs/lib/invariant":153,"fbjs/lib/shallowEqual":156,"fbjs/lib/warning":157,"object-assign":351,"prop-types/checkPropTypes":354,"react":431}],368:[function(require,module,exports){
+},{"_process":316,"fbjs/lib/EventListener":103,"fbjs/lib/ExecutionEnvironment":104,"fbjs/lib/camelizeStyleName":106,"fbjs/lib/containsNode":107,"fbjs/lib/emptyFunction":108,"fbjs/lib/emptyObject":109,"fbjs/lib/focusNode":110,"fbjs/lib/getActiveElement":111,"fbjs/lib/hyphenateStyleName":113,"fbjs/lib/invariant":114,"fbjs/lib/shallowEqual":117,"fbjs/lib/warning":118,"object-assign":314,"prop-types/checkPropTypes":317,"react":394}],331:[function(require,module,exports){
 /** @license React v16.2.0
  * react-dom.production.min.js
  *
@@ -66204,7 +66499,7 @@ var Sg={createPortal:Qg,findDOMNode:function(a){if(null==a)return null;if(1===a.
 E("40");return a._reactRootContainer?(Z.unbatchedUpdates(function(){Pg(null,null,a,!1,function(){a._reactRootContainer=null})}),!0):!1},unstable_createPortal:Qg,unstable_batchedUpdates:tc,unstable_deferredUpdates:Z.deferredUpdates,flushSync:Z.flushSync,__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED:{EventPluginHub:mb,EventPluginRegistry:Va,EventPropagators:Cb,ReactControlledComponent:qc,ReactDOMComponentTree:sb,ReactDOMEventListener:xd}};
 Z.injectIntoDevTools({findFiberByHostInstance:pb,bundleType:0,version:"16.2.0",rendererPackageName:"react-dom"});var Tg=Object.freeze({default:Sg}),Ug=Tg&&Sg||Tg;module.exports=Ug["default"]?Ug["default"]:Ug;
 
-},{"fbjs/lib/EventListener":142,"fbjs/lib/ExecutionEnvironment":143,"fbjs/lib/containsNode":146,"fbjs/lib/emptyFunction":147,"fbjs/lib/emptyObject":148,"fbjs/lib/focusNode":149,"fbjs/lib/getActiveElement":150,"fbjs/lib/shallowEqual":156,"object-assign":351,"react":431}],369:[function(require,module,exports){
+},{"fbjs/lib/EventListener":103,"fbjs/lib/ExecutionEnvironment":104,"fbjs/lib/containsNode":107,"fbjs/lib/emptyFunction":108,"fbjs/lib/emptyObject":109,"fbjs/lib/focusNode":110,"fbjs/lib/getActiveElement":111,"fbjs/lib/shallowEqual":117,"object-assign":314,"react":394}],332:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -66246,7 +66541,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this,require('_process'))
-},{"./cjs/react-dom.development.js":367,"./cjs/react-dom.production.min.js":368,"_process":353}],370:[function(require,module,exports){
+},{"./cjs/react-dom.development.js":330,"./cjs/react-dom.production.min.js":331,"_process":316}],333:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -66378,12 +66673,29 @@ var enabledInstances = {};
 var touchEvents = ['touchstart', 'touchmove'];
 var IGNORE_CLASS_NAME = 'ignore-react-onclickoutside';
 /**
+ * Options for addEventHandler and removeEventHandler
+ */
+
+function getEventHandlerOptions(instance, eventName) {
+  var handlerOptions = null;
+  var isTouchEvent = touchEvents.indexOf(eventName) !== -1;
+
+  if (isTouchEvent && passiveEventSupport) {
+    handlerOptions = {
+      passive: !instance.props.preventDefault
+    };
+  }
+
+  return handlerOptions;
+}
+/**
  * This function generates the HOC function that you'll use
  * in order to impart onOutsideClick listening to an
  * arbitrary component. It gets called at the end of the
  * bootstrapping code to yield an instance of the
  * onClickOutsideHOC function defined inside setupHOC().
  */
+
 
 function onClickOutsideHOC(WrappedComponent, config) {
   var _class, _temp;
@@ -66459,16 +66771,7 @@ function onClickOutsideHOC(WrappedComponent, config) {
         };
 
         events.forEach(function (eventName) {
-          var handlerOptions = null;
-          var isTouchEvent = touchEvents.indexOf(eventName) !== -1;
-
-          if (isTouchEvent && passiveEventSupport) {
-            handlerOptions = {
-              passive: !_this.props.preventDefault
-            };
-          }
-
-          document.addEventListener(eventName, handlersMap[_this._uid], handlerOptions);
+          document.addEventListener(eventName, handlersMap[_this._uid], getEventHandlerOptions(_this, eventName));
         });
       };
 
@@ -66484,7 +66787,7 @@ function onClickOutsideHOC(WrappedComponent, config) {
           }
 
           events.forEach(function (eventName) {
-            return document.removeEventListener(eventName, fn);
+            return document.removeEventListener(eventName, fn, getEventHandlerOptions(_this, eventName));
           });
           delete handlersMap[_this._uid];
         }
@@ -66591,9 +66894,9 @@ function onClickOutsideHOC(WrappedComponent, config) {
 exports.IGNORE_CLASS_NAME = IGNORE_CLASS_NAME;
 exports['default'] = onClickOutsideHOC;
 
-},{"react":431,"react-dom":369}],371:[function(require,module,exports){
+},{"react":394,"react-dom":332}],334:[function(require,module,exports){
 !function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t(require("react")):"function"==typeof define&&define.amd?define(["react"],t):"object"==typeof exports?exports.ReactRecaptcha=t(require("react")):e.ReactRecaptcha=t(e.React)}(this,function(e){return function(e){function t(r){if(a[r])return a[r].exports;var n=a[r]={exports:{},id:r,loaded:!1};return e[r].call(n.exports,n,n.exports,t),n.loaded=!0,n.exports}var a={};return t.m=e,t.c=a,t.p="",t(0)}([function(e,t,a){"use strict";function r(e){return e&&e.__esModule?e:{default:e}}function n(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function o(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function i(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}Object.defineProperty(t,"__esModule",{value:!0});var s=function(){function e(e,t){for(var a=0;a<t.length;a++){var r=t[a];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,a,r){return a&&e(t.prototype,a),r&&e(t,r),t}}(),l=a(6),c=r(l),p=a(4),u=r(p),d={className:u.default.string,onloadCallbackName:u.default.string,elementID:u.default.string,onloadCallback:u.default.func,verifyCallback:u.default.func,expiredCallback:u.default.func,render:u.default.string,sitekey:u.default.string,theme:u.default.string,type:u.default.string,verifyCallbackName:u.default.string,expiredCallbackName:u.default.string,size:u.default.string,tabindex:u.default.string,hl:u.default.string,badge:u.default.string},f={elementID:"g-recaptcha",onloadCallback:void 0,onloadCallbackName:"onloadCallback",verifyCallback:void 0,verifyCallbackName:"verifyCallback",expiredCallback:void 0,expiredCallbackName:"expiredCallback",render:"onload",theme:"light",type:"image",size:"normal",tabindex:"0",hl:"en",badge:"bottomright"},h=function(){return"undefined"!=typeof window&&"undefined"!=typeof window.grecaptcha},b=void 0,y=function(e){function t(e){n(this,t);var a=o(this,(t.__proto__||Object.getPrototypeOf(t)).call(this,e));return a._renderGrecaptcha=a._renderGrecaptcha.bind(a),a.reset=a.reset.bind(a),a.state={ready:h(),widget:null},a.state.ready||(b=setInterval(a._updateReadyState.bind(a),1e3)),a}return i(t,e),s(t,[{key:"componentDidMount",value:function(){this.state.ready&&this._renderGrecaptcha()}},{key:"componentDidUpdate",value:function(e,t){var a=this.props,r=a.render,n=a.onloadCallback;"explicit"===r&&n&&this.state.ready&&!t.ready&&this._renderGrecaptcha()}},{key:"componentWillUnmount",value:function(){clearInterval(b)}},{key:"reset",value:function(){var e=this.state,t=e.ready,a=e.widget;t&&null!==a&&grecaptcha.reset(a)}},{key:"_updateReadyState",value:function(){h()&&(this.setState({ready:!0}),clearInterval(b))}},{key:"_renderGrecaptcha",value:function(){this.state.widget=grecaptcha.render(this.props.elementID,{sitekey:this.props.sitekey,callback:this.props.verifyCallback?this.props.verifyCallback:void 0,theme:this.props.theme,type:this.props.type,size:this.props.size,tabindex:this.props.tabindex,hl:this.props.hl,badge:this.props.badge,"expired-callback":this.props.expiredCallback?this.props.expiredCallback:void 0}),this.props.onloadCallback&&this.props.onloadCallback()}},{key:"render",value:function(){return"explicit"===this.props.render&&this.props.onloadCallback?c.default.createElement("div",{id:this.props.elementID,"data-onloadcallbackname":this.props.onloadCallbackName,"data-verifycallbackname":this.props.verifyCallbackName}):c.default.createElement("div",{id:this.props.elementID,className:"g-recaptcha","data-sitekey":this.props.sitekey,"data-theme":this.props.theme,"data-type":this.props.type,"data-size":this.props.size,"data-badge":this.props.badge,"data-tabindex":this.props.tabindex})}}]),t}(l.Component);t.default=y,y.propTypes=d,y.defaultProps=f,e.exports=t.default},function(e,t){"use strict";function a(e){return function(){return e}}var r=function(){};r.thatReturns=a,r.thatReturnsFalse=a(!1),r.thatReturnsTrue=a(!0),r.thatReturnsNull=a(null),r.thatReturnsThis=function(){return this},r.thatReturnsArgument=function(e){return e},e.exports=r},function(e,t,a){"use strict";function r(e,t,a,r,o,i,s,l){if(n(t),!e){var c;if(void 0===t)c=new Error("Minified exception occurred; use the non-minified dev environment for the full error message and additional helpful warnings.");else{var p=[a,r,o,i,s,l],u=0;c=new Error(t.replace(/%s/g,function(){return p[u++]})),c.name="Invariant Violation"}throw c.framesToPop=1,c}}var n=function(e){};e.exports=r},function(e,t,a){"use strict";var r=a(1),n=a(2),o=a(5);e.exports=function(){function e(e,t,a,r,i,s){s!==o&&n(!1,"Calling PropTypes validators directly is not supported by the `prop-types` package. Use PropTypes.checkPropTypes() to call them. Read more at http://fb.me/use-check-prop-types")}function t(){return e}e.isRequired=e;var a={array:e,bool:e,func:e,number:e,object:e,string:e,symbol:e,any:e,arrayOf:t,element:e,instanceOf:t,node:e,objectOf:t,oneOf:t,oneOfType:t,shape:t};return a.checkPropTypes=r,a.PropTypes=a,a}},function(e,t,a){e.exports=a(3)()},function(e,t){"use strict";var a="SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED";e.exports=a},function(t,a){t.exports=e}])});
-},{"react":431}],372:[function(require,module,exports){
+},{"react":394}],335:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -66682,7 +66985,7 @@ function createProvider() {
 
 exports.default = createProvider();
 }).call(this,require('_process'))
-},{"../utils/PropTypes":382,"../utils/warning":386,"_process":353,"prop-types":357,"react":431}],373:[function(require,module,exports){
+},{"../utils/PropTypes":345,"../utils/warning":349,"_process":316,"prop-types":320,"react":394}],336:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -66991,7 +67294,7 @@ selectorFactory) {
   };
 }
 }).call(this,require('_process'))
-},{"../utils/PropTypes":382,"../utils/Subscription":383,"_process":353,"hoist-non-react-statics":167,"invariant":168,"react":431}],374:[function(require,module,exports){
+},{"../utils/PropTypes":345,"../utils/Subscription":346,"_process":316,"hoist-non-react-statics":128,"invariant":129,"react":394}],337:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -67120,7 +67423,7 @@ function createConnect() {
 }
 
 exports.default = createConnect();
-},{"../components/connectAdvanced":373,"../utils/shallowEqual":384,"./mapDispatchToProps":375,"./mapStateToProps":376,"./mergeProps":377,"./selectorFactory":378}],375:[function(require,module,exports){
+},{"../components/connectAdvanced":336,"../utils/shallowEqual":347,"./mapDispatchToProps":338,"./mapStateToProps":339,"./mergeProps":340,"./selectorFactory":341}],338:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -67149,7 +67452,7 @@ function whenMapDispatchToPropsIsObject(mapDispatchToProps) {
 }
 
 exports.default = [whenMapDispatchToPropsIsFunction, whenMapDispatchToPropsIsMissing, whenMapDispatchToPropsIsObject];
-},{"./wrapMapToProps":380,"redux":487}],376:[function(require,module,exports){
+},{"./wrapMapToProps":343,"redux":490}],339:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -67169,7 +67472,7 @@ function whenMapStateToPropsIsMissing(mapStateToProps) {
 }
 
 exports.default = [whenMapStateToPropsIsFunction, whenMapStateToPropsIsMissing];
-},{"./wrapMapToProps":380}],377:[function(require,module,exports){
+},{"./wrapMapToProps":343}],340:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -67230,7 +67533,7 @@ function whenMergePropsIsOmitted(mergeProps) {
 
 exports.default = [whenMergePropsIsFunction, whenMergePropsIsOmitted];
 }).call(this,require('_process'))
-},{"../utils/verifyPlainObject":385,"_process":353}],378:[function(require,module,exports){
+},{"../utils/verifyPlainObject":348,"_process":316}],341:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -67346,7 +67649,7 @@ function finalPropsSelectorFactory(dispatch, _ref2) {
   return selectorFactory(mapStateToProps, mapDispatchToProps, mergeProps, dispatch, options);
 }
 }).call(this,require('_process'))
-},{"./verifySubselectors":379,"_process":353}],379:[function(require,module,exports){
+},{"./verifySubselectors":342,"_process":316}],342:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -67373,7 +67676,7 @@ function verifySubselectors(mapStateToProps, mapDispatchToProps, mergeProps, dis
   verify(mapDispatchToProps, 'mapDispatchToProps', displayName);
   verify(mergeProps, 'mergeProps', displayName);
 }
-},{"../utils/warning":386}],380:[function(require,module,exports){
+},{"../utils/warning":349}],343:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -67454,7 +67757,7 @@ function wrapMapToPropsFunc(mapToProps, methodName) {
   };
 }
 }).call(this,require('_process'))
-},{"../utils/verifyPlainObject":385,"_process":353}],381:[function(require,module,exports){
+},{"../utils/verifyPlainObject":348,"_process":316}],344:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -67478,7 +67781,7 @@ exports.Provider = _Provider2.default;
 exports.createProvider = _Provider.createProvider;
 exports.connectAdvanced = _connectAdvanced2.default;
 exports.connect = _connect2.default;
-},{"./components/Provider":372,"./components/connectAdvanced":373,"./connect/connect":374}],382:[function(require,module,exports){
+},{"./components/Provider":335,"./components/connectAdvanced":336,"./connect/connect":337}],345:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -67502,7 +67805,7 @@ var storeShape = exports.storeShape = _propTypes2.default.shape({
   dispatch: _propTypes2.default.func.isRequired,
   getState: _propTypes2.default.func.isRequired
 });
-},{"prop-types":357}],383:[function(require,module,exports){
+},{"prop-types":320}],346:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -67599,7 +67902,7 @@ var Subscription = function () {
 }();
 
 exports.default = Subscription;
-},{}],384:[function(require,module,exports){
+},{}],347:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -67634,7 +67937,7 @@ function shallowEqual(objA, objB) {
 
   return true;
 }
-},{}],385:[function(require,module,exports){
+},{}],348:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -67655,7 +67958,7 @@ function verifyPlainObject(value, displayName, methodName) {
     (0, _warning2.default)(methodName + '() in ' + displayName + ' must return a plain object. Instead received ' + value + '.');
   }
 }
-},{"./warning":386,"lodash/isPlainObject":324}],386:[function(require,module,exports){
+},{"./warning":349,"lodash/isPlainObject":286}],349:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -67681,7 +67984,7 @@ function warning(message) {
   } catch (e) {}
   /* eslint-enable no-empty */
 }
-},{}],387:[function(require,module,exports){
+},{}],350:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -67875,7 +68178,7 @@ ResizeDetector.defaultProps = {
     return e;
   }
 };
-},{"../helpers/resizeDetectorStyles":388,"prop-types":357,"react":431}],388:[function(require,module,exports){
+},{"../helpers/resizeDetectorStyles":351,"prop-types":320,"react":394}],351:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -67907,7 +68210,7 @@ var expandChildStyle = exports.expandChildStyle = {
   width: '100%',
   height: '100%'
 };
-},{}],389:[function(require,module,exports){
+},{}],352:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -67921,7 +68224,7 @@ var _ResizeDetector2 = _interopRequireDefault(_ResizeDetector);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _ResizeDetector2.default;
-},{"./components/ResizeDetector":387}],390:[function(require,module,exports){
+},{"./components/ResizeDetector":350}],353:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -67991,7 +68294,7 @@ BrowserRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = BrowserRouter;
-},{"./Router":398,"history/createBrowserHistory":162,"prop-types":357,"react":431,"warning":502}],391:[function(require,module,exports){
+},{"./Router":361,"history/createBrowserHistory":123,"prop-types":320,"react":394,"warning":504}],354:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68060,7 +68363,7 @@ HashRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = HashRouter;
-},{"./Router":398,"history/createHashHistory":163,"prop-types":357,"react":431,"warning":502}],392:[function(require,module,exports){
+},{"./Router":361,"history/createHashHistory":124,"prop-types":320,"react":394,"warning":504}],355:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68171,7 +68474,7 @@ Link.contextTypes = {
   }).isRequired
 };
 exports.default = Link;
-},{"invariant":168,"prop-types":357,"react":431}],393:[function(require,module,exports){
+},{"invariant":129,"prop-types":320,"react":394}],356:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68183,7 +68486,7 @@ var _MemoryRouter2 = _interopRequireDefault(_MemoryRouter);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _MemoryRouter2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/MemoryRouter":404}],394:[function(require,module,exports){
+},{"react-router/MemoryRouter":367}],357:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68270,7 +68573,7 @@ NavLink.defaultProps = {
 };
 
 exports.default = NavLink;
-},{"./Link":392,"./Route":397,"prop-types":357,"react":431}],395:[function(require,module,exports){
+},{"./Link":355,"./Route":360,"prop-types":320,"react":394}],358:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68282,7 +68585,7 @@ var _Prompt2 = _interopRequireDefault(_Prompt);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Prompt2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Prompt":405}],396:[function(require,module,exports){
+},{"react-router/Prompt":368}],359:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68294,7 +68597,7 @@ var _Redirect2 = _interopRequireDefault(_Redirect);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Redirect2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Redirect":406}],397:[function(require,module,exports){
+},{"react-router/Redirect":369}],360:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68306,7 +68609,7 @@ var _Route2 = _interopRequireDefault(_Route);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Route2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Route":407}],398:[function(require,module,exports){
+},{"react-router/Route":370}],361:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68318,7 +68621,7 @@ var _Router2 = _interopRequireDefault(_Router);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Router2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Router":408}],399:[function(require,module,exports){
+},{"react-router/Router":371}],362:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68330,7 +68633,7 @@ var _StaticRouter2 = _interopRequireDefault(_StaticRouter);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _StaticRouter2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/StaticRouter":409}],400:[function(require,module,exports){
+},{"react-router/StaticRouter":372}],363:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68342,7 +68645,7 @@ var _Switch2 = _interopRequireDefault(_Switch);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Switch2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Switch":410}],401:[function(require,module,exports){
+},{"react-router/Switch":373}],364:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68415,7 +68718,7 @@ exports.StaticRouter = _StaticRouter3.default;
 exports.Switch = _Switch3.default;
 exports.matchPath = _matchPath3.default;
 exports.withRouter = _withRouter3.default;
-},{"./BrowserRouter":390,"./HashRouter":391,"./Link":392,"./MemoryRouter":393,"./NavLink":394,"./Prompt":395,"./Redirect":396,"./Route":397,"./Router":398,"./StaticRouter":399,"./Switch":400,"./matchPath":402,"./withRouter":403}],402:[function(require,module,exports){
+},{"./BrowserRouter":353,"./HashRouter":354,"./Link":355,"./MemoryRouter":356,"./NavLink":357,"./Prompt":358,"./Redirect":359,"./Route":360,"./Router":361,"./StaticRouter":362,"./Switch":363,"./matchPath":365,"./withRouter":366}],365:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68427,7 +68730,7 @@ var _matchPath2 = _interopRequireDefault(_matchPath);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _matchPath2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/matchPath":411}],403:[function(require,module,exports){
+},{"react-router/matchPath":374}],366:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68439,7 +68742,7 @@ var _withRouter2 = _interopRequireDefault(_withRouter);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _withRouter2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/withRouter":414}],404:[function(require,module,exports){
+},{"react-router/withRouter":377}],367:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68509,7 +68812,7 @@ MemoryRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = MemoryRouter;
-},{"./Router":408,"history/createMemoryHistory":164,"prop-types":357,"react":431,"warning":502}],405:[function(require,module,exports){
+},{"./Router":371,"history/createMemoryHistory":125,"prop-types":320,"react":394,"warning":504}],368:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68600,7 +68903,7 @@ Prompt.contextTypes = {
   }).isRequired
 };
 exports.default = Prompt;
-},{"invariant":168,"prop-types":357,"react":431}],406:[function(require,module,exports){
+},{"invariant":129,"prop-types":320,"react":394}],369:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68709,7 +69012,7 @@ Redirect.contextTypes = {
   }).isRequired
 };
 exports.default = Redirect;
-},{"history":166,"invariant":168,"prop-types":357,"react":431,"warning":502}],407:[function(require,module,exports){
+},{"history":127,"invariant":129,"prop-types":320,"react":394,"warning":504}],370:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68862,7 +69165,7 @@ Route.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = Route;
-},{"./matchPath":411,"invariant":168,"prop-types":357,"react":431,"warning":502}],408:[function(require,module,exports){
+},{"./matchPath":374,"invariant":129,"prop-types":320,"react":394,"warning":504}],371:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -68982,7 +69285,7 @@ Router.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = Router;
-},{"invariant":168,"prop-types":357,"react":431,"warning":502}],409:[function(require,module,exports){
+},{"invariant":129,"prop-types":320,"react":394,"warning":504}],372:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -69168,7 +69471,7 @@ StaticRouter.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = StaticRouter;
-},{"./Router":408,"history/PathUtils":161,"invariant":168,"prop-types":357,"react":431,"warning":502}],410:[function(require,module,exports){
+},{"./Router":371,"history/PathUtils":122,"invariant":129,"prop-types":320,"react":394,"warning":504}],373:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -69265,7 +69568,7 @@ Switch.propTypes = {
   location: _propTypes2.default.object
 };
 exports.default = Switch;
-},{"./matchPath":411,"invariant":168,"prop-types":357,"react":431,"warning":502}],411:[function(require,module,exports){
+},{"./matchPath":374,"invariant":129,"prop-types":320,"react":394,"warning":504}],374:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -69343,12 +69646,12 @@ var matchPath = function matchPath(pathname) {
 };
 
 exports.default = matchPath;
-},{"path-to-regexp":413}],412:[function(require,module,exports){
+},{"path-to-regexp":376}],375:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],413:[function(require,module,exports){
+},{}],376:[function(require,module,exports){
 var isarray = require('isarray')
 
 /**
@@ -69776,7 +70079,7 @@ function pathToRegexp (path, keys, options) {
   return stringToRegexp(/** @type {string} */ (path), /** @type {!Array} */ (keys), options)
 }
 
-},{"isarray":412}],414:[function(require,module,exports){
+},{"isarray":375}],377:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -69826,7 +70129,7 @@ var withRouter = function withRouter(Component) {
 };
 
 exports.default = withRouter;
-},{"./Route":407,"hoist-non-react-statics":167,"prop-types":357,"react":431}],415:[function(require,module,exports){
+},{"./Route":370,"hoist-non-react-statics":128,"prop-types":320,"react":394}],378:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70234,7 +70537,7 @@ var Animate = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_C
 }, _temp)) || _class;
 
 exports.default = Animate;
-},{"./AnimateManager":418,"./PureRender":419,"./configUpdate":420,"./easing":421,"./util":424,"lodash/isEqual":316,"prop-types":357,"react":431}],416:[function(require,module,exports){
+},{"./AnimateManager":381,"./PureRender":382,"./configUpdate":383,"./easing":384,"./util":387,"lodash/isEqual":278,"prop-types":320,"react":394}],379:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70320,7 +70623,7 @@ var AnimateGroup = (_temp = _class = function (_Component) {
   component: 'span'
 }, _temp);
 exports.default = AnimateGroup;
-},{"./AnimateGroupChild":417,"prop-types":357,"react":431,"react-transition-group/TransitionGroup":426}],417:[function(require,module,exports){
+},{"./AnimateGroupChild":380,"prop-types":320,"react":394,"react-transition-group/TransitionGroup":389}],380:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70473,7 +70776,7 @@ var AnimateGroupChild = (_temp2 = _class = function (_Component) {
   children: _propTypes2.default.element
 }, _temp2);
 exports.default = AnimateGroupChild;
-},{"./Animate":415,"lodash/isNumber":321,"prop-types":357,"react":431,"react-transition-group/Transition":425}],418:[function(require,module,exports){
+},{"./Animate":378,"lodash/isNumber":283,"prop-types":320,"react":394,"react-transition-group/Transition":388}],381:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70555,7 +70858,7 @@ function createAnimateManager() {
     }
   };
 }
-},{"./setRafTimeout":423}],419:[function(require,module,exports){
+},{"./setRafTimeout":386}],382:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70635,7 +70938,7 @@ function pureRenderDecorator(component) {
 }
 exports.shallowEqual = shallowEqual;
 exports.default = pureRenderDecorator;
-},{"lodash/isArray":312,"lodash/isEqual":316,"lodash/isPlainObject":324}],420:[function(require,module,exports){
+},{"lodash/isArray":274,"lodash/isEqual":278,"lodash/isPlainObject":286}],383:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70795,7 +71098,7 @@ exports.default = function (from, to, easing, duration, render) {
     };
   };
 };
-},{"./util":424,"lodash/filter":306,"raf":359}],421:[function(require,module,exports){
+},{"./util":387,"lodash/filter":267,"raf":322}],384:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -70992,7 +71295,7 @@ var configEasing = exports.configEasing = function configEasing() {
 
   return null;
 };
-},{"./util":424}],422:[function(require,module,exports){
+},{"./util":387}],385:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71019,7 +71322,7 @@ exports.configBezier = _easing.configBezier;
 exports.AnimateGroup = _AnimateGroup2.default;
 exports.translateStyle = _util.translateStyle;
 exports.default = _Animate2.default;
-},{"./Animate":415,"./AnimateGroup":416,"./easing":421,"./util":424}],423:[function(require,module,exports){
+},{"./Animate":378,"./AnimateGroup":379,"./easing":384,"./util":387}],386:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71053,7 +71356,7 @@ function setRafTimeout(callback) {
 
   (0, _raf2.default)(shouldUpdate);
 }
-},{"raf":359}],424:[function(require,module,exports){
+},{"raf":322}],387:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -71227,7 +71530,7 @@ var warn = exports.warn = function warn(condition, format, a, b, c, d, e, f) {
   }
 };
 }).call(this,require('_process'))
-},{"_process":353,"lodash/intersection":310}],425:[function(require,module,exports){
+},{"_process":316,"lodash/intersection":272}],388:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -71787,7 +72090,7 @@ Transition.EXITING = 4;
 
 exports.default = Transition;
 }).call(this,require('_process'))
-},{"./utils/PropTypes":428,"_process":353,"prop-types":357,"react":431,"react-dom":369}],426:[function(require,module,exports){
+},{"./utils/PropTypes":391,"_process":316,"prop-types":320,"react":394,"react-dom":332}],389:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -72080,7 +72383,7 @@ TransitionGroup.defaultProps = defaultProps;
 exports.default = TransitionGroup;
 module.exports = exports['default'];
 }).call(this,require('_process'))
-},{"./utils/ChildMapping":427,"_process":353,"prop-types":357,"react":431}],427:[function(require,module,exports){
+},{"./utils/ChildMapping":390,"_process":316,"prop-types":320,"react":394}],390:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -72170,7 +72473,7 @@ function mergeChildMappings(prev, next) {
 
   return childMapping;
 }
-},{"react":431}],428:[function(require,module,exports){
+},{"react":394}],391:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -72219,7 +72522,7 @@ var classNamesShape = exports.classNamesShape = _propTypes2.default.oneOfType([_
   exit: _propTypes2.default.string,
   exitActive: _propTypes2.default.string
 })]);
-},{"prop-types":357}],429:[function(require,module,exports){
+},{"prop-types":320}],392:[function(require,module,exports){
 (function (process){
 /** @license React v16.2.0
  * react.development.js
@@ -73580,7 +73883,7 @@ module.exports = react;
 }
 
 }).call(this,require('_process'))
-},{"_process":353,"fbjs/lib/emptyFunction":147,"fbjs/lib/emptyObject":148,"fbjs/lib/invariant":153,"fbjs/lib/warning":157,"object-assign":351,"prop-types/checkPropTypes":354}],430:[function(require,module,exports){
+},{"_process":316,"fbjs/lib/emptyFunction":108,"fbjs/lib/emptyObject":109,"fbjs/lib/invariant":114,"fbjs/lib/warning":118,"object-assign":314,"prop-types/checkPropTypes":317}],393:[function(require,module,exports){
 /** @license React v16.2.0
  * react.production.min.js
  *
@@ -73603,7 +73906,7 @@ var U={Children:{map:function(a,b,e){if(null==a)return a;var c=[];T(a,c,null,b,e
 d=a.key,g=a.ref,k=a._owner;if(null!=b){void 0!==b.ref&&(g=b.ref,k=G.current);void 0!==b.key&&(d=""+b.key);if(a.type&&a.type.defaultProps)var f=a.type.defaultProps;for(h in b)H.call(b,h)&&!I.hasOwnProperty(h)&&(c[h]=void 0===b[h]&&void 0!==f?f[h]:b[h])}var h=arguments.length-2;if(1===h)c.children=e;else if(1<h){f=Array(h);for(var l=0;l<h;l++)f[l]=arguments[l+2];c.children=f}return{$$typeof:r,type:a.type,key:d,ref:g,props:c,_owner:k}},createFactory:function(a){var b=J.bind(null,a);b.type=a;return b},
 isValidElement:K,version:"16.2.0",__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED:{ReactCurrentOwner:G,assign:m}},V=Object.freeze({default:U}),W=V&&U||V;module.exports=W["default"]?W["default"]:W;
 
-},{"fbjs/lib/emptyFunction":147,"fbjs/lib/emptyObject":148,"object-assign":351}],431:[function(require,module,exports){
+},{"fbjs/lib/emptyFunction":108,"fbjs/lib/emptyObject":109,"object-assign":314}],394:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -73614,7 +73917,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this,require('_process'))
-},{"./cjs/react.development.js":429,"./cjs/react.production.min.js":430,"_process":353}],432:[function(require,module,exports){
+},{"./cjs/react.development.js":392,"./cjs/react.production.min.js":393,"_process":316}],395:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73880,7 +74183,7 @@ function getTickValuesFixedDomainFn(_ref7, tickCount) {
 var getNiceTickValues = exports.getNiceTickValues = (0, _utils.memoize)(getNiceTickValuesFn);
 var getTickValues = exports.getTickValues = (0, _utils.memoize)(getTickValuesFn);
 var getTickValuesFixedDomain = exports.getTickValuesFixedDomain = (0, _utils.memoize)(getTickValuesFixedDomainFn);
-},{"./util/arithmetic":434,"./util/utils":435}],433:[function(require,module,exports){
+},{"./util/arithmetic":397,"./util/utils":398}],396:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73907,7 +74210,7 @@ Object.defineProperty(exports, 'getTickValuesFixedDomain', {
     return _getNiceTickValues.getTickValuesFixedDomain;
   }
 });
-},{"./getNiceTickValues":432}],434:[function(require,module,exports){
+},{"./getNiceTickValues":395}],397:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74127,7 +74430,7 @@ exports.default = {
   uninterpolateNumber: uninterpolateNumber,
   uninterpolateTruncation: uninterpolateTruncation
 };
-},{"./utils":435}],435:[function(require,module,exports){
+},{"./utils":398}],398:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74265,7 +74568,7 @@ var memoize = exports.memoize = function memoize(fn) {
     return lastResult;
   };
 };
-},{}],436:[function(require,module,exports){
+},{}],399:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -74807,7 +75110,7 @@ var Bar = (0, _PureRender2.default)(_class = (_temp2 = _class2 = function (_Comp
 }, _temp2)) || _class;
 
 exports.default = Bar;
-},{"../component/Cell":448,"../component/LabelList":452,"../container/Layer":457,"../shape/Rectangle":463,"../util/ChartUtils":467,"../util/DataUtils":470,"../util/PureRender":474,"../util/ReactUtils":475,"./ErrorBar":440,"classnames":87,"lodash/isArray":312,"lodash/isEqual":316,"lodash/isFunction":317,"lodash/isNil":320,"prop-types":357,"react":431,"react-smooth":422}],437:[function(require,module,exports){
+},{"../component/Cell":411,"../component/LabelList":415,"../container/Layer":420,"../shape/Rectangle":426,"../util/ChartUtils":430,"../util/DataUtils":433,"../util/PureRender":437,"../util/ReactUtils":438,"./ErrorBar":403,"classnames":88,"lodash/isArray":274,"lodash/isEqual":278,"lodash/isFunction":279,"lodash/isNil":282,"prop-types":320,"react":394,"react-smooth":385}],400:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75006,24 +75309,27 @@ var Brush = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Com
     value: function getIndex(_ref) {
       var startX = _ref.startX,
           endX = _ref.endX;
+      var _props2 = this.props,
+          gap = _props2.gap,
+          data = _props2.data;
 
+      var lastIndex = data.length - 1;
       var min = Math.min(startX, endX);
       var max = Math.max(startX, endX);
       var minIndex = this.getIndexInRange(this.scaleValues, min);
       var maxIndex = this.getIndexInRange(this.scaleValues, max);
-
       return {
-        startIndex: minIndex,
-        endIndex: maxIndex
+        startIndex: minIndex - minIndex % gap,
+        endIndex: maxIndex === lastIndex ? lastIndex : maxIndex - maxIndex % gap
       };
     }
   }, {
     key: 'getTextOfTick',
     value: function getTextOfTick(index) {
-      var _props2 = this.props,
-          data = _props2.data,
-          tickFormatter = _props2.tickFormatter,
-          dataKey = _props2.dataKey;
+      var _props3 = this.props,
+          data = _props3.data,
+          tickFormatter = _props3.tickFormatter,
+          dataKey = _props3.dataKey;
 
       var text = (0, _ChartUtils.getValueByDataKey)(data[index], dataKey, index);
 
@@ -75036,13 +75342,13 @@ var Brush = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Com
           slideMoveStartX = _state.slideMoveStartX,
           startX = _state.startX,
           endX = _state.endX;
-      var _props3 = this.props,
-          x = _props3.x,
-          width = _props3.width,
-          travellerWidth = _props3.travellerWidth,
-          startIndex = _props3.startIndex,
-          endIndex = _props3.endIndex,
-          onChange = _props3.onChange;
+      var _props4 = this.props,
+          x = _props4.x,
+          width = _props4.width,
+          travellerWidth = _props4.travellerWidth,
+          startIndex = _props4.startIndex,
+          endIndex = _props4.endIndex,
+          onChange = _props4.onChange;
 
       var delta = e.pageX - slideMoveStartX;
 
@@ -75085,19 +75391,23 @@ var Brush = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Com
 
       var _state2 = this.state,
           brushMoveStartX = _state2.brushMoveStartX,
-          movingTravellerId = _state2.movingTravellerId;
+          movingTravellerId = _state2.movingTravellerId,
+          endX = _state2.endX,
+          startX = _state2.startX;
 
       var prevValue = this.state[movingTravellerId];
-      var _props4 = this.props,
-          x = _props4.x,
-          width = _props4.width,
-          travellerWidth = _props4.travellerWidth,
-          onChange = _props4.onChange;
 
+      var _props5 = this.props,
+          x = _props5.x,
+          width = _props5.width,
+          travellerWidth = _props5.travellerWidth,
+          onChange = _props5.onChange,
+          gap = _props5.gap,
+          data = _props5.data;
 
       var params = { startX: this.state.startX, endX: this.state.endX };
-      var delta = e.pageX - brushMoveStartX;
 
+      var delta = e.pageX - brushMoveStartX;
       if (delta > 0) {
         delta = Math.min(delta, x + width - travellerWidth - prevValue);
       } else if (delta < 0) {
@@ -75105,11 +75415,24 @@ var Brush = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Com
       }
 
       params[movingTravellerId] = prevValue + delta;
+
       var newIndex = this.getIndex(params);
+      var startIndex = newIndex.startIndex,
+          endIndex = newIndex.endIndex;
+
+      var isFullGap = function isFullGap() {
+        var lastIndex = data.length - 1;
+        if (movingTravellerId === 'startX' && (endX > startX ? startIndex % gap === 0 : endIndex % gap === 0) || endX < startX && endIndex === lastIndex || movingTravellerId === 'endX' && (endX > startX ? endIndex % gap === 0 : startIndex % gap === 0) || endX > startX && endIndex === lastIndex) {
+          return true;
+        }
+        return false;
+      };
 
       this.setState((_setState = {}, _defineProperty(_setState, movingTravellerId, prevValue + delta), _defineProperty(_setState, 'brushMoveStartX', e.pageX), _setState), function () {
         if (onChange) {
-          onChange(newIndex);
+          if (isFullGap()) {
+            onChange(newIndex);
+          }
         }
       });
     }
@@ -75141,13 +75464,13 @@ var Brush = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Com
   }, {
     key: 'renderBackground',
     value: function renderBackground() {
-      var _props5 = this.props,
-          x = _props5.x,
-          y = _props5.y,
-          width = _props5.width,
-          height = _props5.height,
-          fill = _props5.fill,
-          stroke = _props5.stroke;
+      var _props6 = this.props,
+          x = _props6.x,
+          y = _props6.y,
+          width = _props6.width,
+          height = _props6.height,
+          fill = _props6.fill,
+          stroke = _props6.stroke;
 
 
       return _react2.default.createElement('rect', {
@@ -75162,14 +75485,14 @@ var Brush = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Com
   }, {
     key: 'renderPanorama',
     value: function renderPanorama() {
-      var _props6 = this.props,
-          x = _props6.x,
-          y = _props6.y,
-          width = _props6.width,
-          height = _props6.height,
-          data = _props6.data,
-          children = _props6.children,
-          padding = _props6.padding;
+      var _props7 = this.props,
+          x = _props7.x,
+          y = _props7.y,
+          width = _props7.width,
+          height = _props7.height,
+          data = _props7.data,
+          children = _props7.children,
+          padding = _props7.padding;
 
       var chartElement = _react.Children.only(children);
 
@@ -75190,11 +75513,11 @@ var Brush = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Com
   }, {
     key: 'renderTraveller',
     value: function renderTraveller(travellerX, id) {
-      var _props7 = this.props,
-          y = _props7.y,
-          travellerWidth = _props7.travellerWidth,
-          height = _props7.height,
-          stroke = _props7.stroke;
+      var _props8 = this.props,
+          y = _props8.y,
+          travellerWidth = _props8.travellerWidth,
+          height = _props8.height,
+          stroke = _props8.stroke;
 
       var lineY = Math.floor(y + height / 2) - 1;
       var x = Math.max(travellerX, this.props.x);
@@ -75238,10 +75561,10 @@ var Brush = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Com
   }, {
     key: 'renderSlide',
     value: function renderSlide(startX, endX) {
-      var _props8 = this.props,
-          y = _props8.y,
-          height = _props8.height,
-          stroke = _props8.stroke;
+      var _props9 = this.props,
+          y = _props9.y,
+          height = _props9.height,
+          stroke = _props9.stroke;
 
 
       return _react2.default.createElement('rect', {
@@ -75263,13 +75586,13 @@ var Brush = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Com
   }, {
     key: 'renderText',
     value: function renderText() {
-      var _props9 = this.props,
-          startIndex = _props9.startIndex,
-          endIndex = _props9.endIndex,
-          y = _props9.y,
-          height = _props9.height,
-          travellerWidth = _props9.travellerWidth,
-          stroke = _props9.stroke;
+      var _props10 = this.props,
+          startIndex = _props10.startIndex,
+          endIndex = _props10.endIndex,
+          y = _props10.y,
+          height = _props10.height,
+          travellerWidth = _props10.travellerWidth,
+          stroke = _props10.stroke;
       var _state3 = this.state,
           startX = _state3.startX,
           endX = _state3.endX;
@@ -75308,14 +75631,14 @@ var Brush = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Com
   }, {
     key: 'render',
     value: function render() {
-      var _props10 = this.props,
-          data = _props10.data,
-          className = _props10.className,
-          children = _props10.children,
-          x = _props10.x,
-          y = _props10.y,
-          width = _props10.width,
-          height = _props10.height;
+      var _props11 = this.props,
+          data = _props11.data,
+          className = _props11.className,
+          children = _props11.children,
+          x = _props11.x,
+          y = _props11.y,
+          width = _props11.width,
+          height = _props11.height;
       var _state4 = this.state,
           startX = _state4.startX,
           endX = _state4.endX,
@@ -75364,6 +75687,7 @@ var Brush = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Com
   width: _propTypes2.default.number,
   height: _propTypes2.default.number.isRequired,
   travellerWidth: _propTypes2.default.number,
+  gap: _propTypes2.default.number,
   padding: _propTypes2.default.shape({
     top: _propTypes2.default.number,
     right: _propTypes2.default.number,
@@ -75384,13 +75708,14 @@ var Brush = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Com
 }, _class2.defaultProps = {
   height: 40,
   travellerWidth: 5,
+  gap: 1,
   fill: '#fff',
   stroke: '#666',
   padding: { top: 1, right: 1, bottom: 1, left: 1 }
 }, _temp)) || _class;
 
 exports.default = Brush;
-},{"../component/Text":455,"../container/Layer":457,"../util/ChartUtils":467,"../util/CssPrefixUtils":468,"../util/DataUtils":470,"../util/PureRender":474,"classnames":87,"d3-scale":137,"lodash/isFunction":317,"lodash/range":336,"prop-types":357,"react":431}],438:[function(require,module,exports){
+},{"../component/Text":418,"../container/Layer":420,"../util/ChartUtils":430,"../util/CssPrefixUtils":431,"../util/DataUtils":433,"../util/PureRender":437,"classnames":88,"d3-scale":98,"lodash/isFunction":279,"lodash/range":299,"prop-types":320,"react":394}],401:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -75970,7 +76295,7 @@ var CartesianAxis = (_temp = _class = function (_Component) {
   interval: 'preserveEnd'
 }, _temp);
 exports.default = CartesianAxis;
-},{"../component/Label":451,"../component/Text":455,"../container/Layer":457,"../util/DOMUtils":469,"../util/DataUtils":470,"../util/PureRender":474,"../util/ReactUtils":475,"classnames":87,"lodash/isFunction":317,"prop-types":357,"react":431}],439:[function(require,module,exports){
+},{"../component/Label":414,"../component/Text":418,"../container/Layer":420,"../util/DOMUtils":432,"../util/DataUtils":433,"../util/PureRender":437,"../util/ReactUtils":438,"classnames":88,"lodash/isFunction":279,"prop-types":320,"react":394}],402:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76363,7 +76688,7 @@ var CartesianGrid = (0, _PureRender2.default)(_class = (_temp = _class2 = functi
 }, _temp)) || _class;
 
 exports.default = CartesianGrid;
-},{"../util/DataUtils":470,"../util/PureRender":474,"../util/ReactUtils":475,"lodash/isFunction":317,"prop-types":357,"react":431}],440:[function(require,module,exports){
+},{"../util/DataUtils":433,"../util/PureRender":437,"../util/ReactUtils":438,"lodash/isFunction":279,"prop-types":320,"react":394}],403:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76524,7 +76849,7 @@ var ErrorBar = (_temp = _class = function (_Component) {
   layout: 'horizontal'
 }, _temp);
 exports.default = ErrorBar;
-},{"../container/Layer":457,"../util/ReactUtils":475,"prop-types":357,"react":431}],441:[function(require,module,exports){
+},{"../container/Layer":420,"../util/ReactUtils":438,"prop-types":320,"react":394}],404:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76743,7 +77068,7 @@ var ReferenceArea = (0, _PureRender2.default)(_class = (_temp = _class2 = functi
 }, _temp)) || _class;
 
 exports.default = ReferenceArea;
-},{"../component/Label":451,"../container/Layer":457,"../shape/Rectangle":463,"../util/ChartUtils":467,"../util/DataUtils":470,"../util/PureRender":474,"../util/ReactUtils":475,"classnames":87,"lodash/isFunction":317,"prop-types":357,"react":431}],442:[function(require,module,exports){
+},{"../component/Label":414,"../container/Layer":420,"../shape/Rectangle":426,"../util/ChartUtils":430,"../util/DataUtils":433,"../util/PureRender":437,"../util/ReactUtils":438,"classnames":88,"lodash/isFunction":279,"prop-types":320,"react":394}],405:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -76926,7 +77251,7 @@ var ReferenceDot = (0, _PureRender2.default)(_class = (_temp = _class2 = functio
 }, _temp)) || _class;
 
 exports.default = ReferenceDot;
-},{"../component/Label":451,"../container/Layer":457,"../shape/Dot":462,"../util/ChartUtils":467,"../util/DataUtils":470,"../util/PureRender":474,"../util/ReactUtils":475,"classnames":87,"lodash/isFunction":317,"prop-types":357,"react":431}],443:[function(require,module,exports){
+},{"../component/Label":414,"../container/Layer":420,"../shape/Dot":425,"../util/ChartUtils":430,"../util/DataUtils":433,"../util/PureRender":437,"../util/ReactUtils":438,"classnames":88,"lodash/isFunction":279,"prop-types":320,"react":394}],406:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -77129,7 +77454,7 @@ var ReferenceLine = (0, _PureRender2.default)(_class = (_temp = _class2 = functi
 }, _temp)) || _class;
 
 exports.default = ReferenceLine;
-},{"../component/Label":451,"../container/Layer":457,"../util/ChartUtils":467,"../util/DataUtils":470,"../util/PureRender":474,"../util/ReactUtils":475,"classnames":87,"lodash/isFunction":317,"prop-types":357,"react":431}],444:[function(require,module,exports){
+},{"../component/Label":414,"../container/Layer":420,"../util/ChartUtils":430,"../util/DataUtils":433,"../util/PureRender":437,"../util/ReactUtils":438,"classnames":88,"lodash/isFunction":279,"prop-types":320,"react":394}],407:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -77240,7 +77565,7 @@ var XAxis = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Com
 }, _temp)) || _class;
 
 exports.default = XAxis;
-},{"../util/PureRender":474,"../util/ReactUtils":475,"prop-types":357,"react":431}],445:[function(require,module,exports){
+},{"../util/PureRender":437,"../util/ReactUtils":438,"prop-types":320,"react":394}],408:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -77349,7 +77674,7 @@ var YAxis = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Com
 }, _temp)) || _class;
 
 exports.default = YAxis;
-},{"../util/PureRender":474,"prop-types":357,"react":431}],446:[function(require,module,exports){
+},{"../util/PureRender":437,"prop-types":320,"react":394}],409:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -77384,7 +77709,7 @@ exports.default = (0, _generateCategoricalChart2.default)({
 }); /**
      * @fileOverview Bar Chart
      */
-},{"../cartesian/Bar":436,"../cartesian/XAxis":444,"../cartesian/YAxis":445,"../util/CartesianUtils":466,"./generateCategoricalChart":447}],447:[function(require,module,exports){
+},{"../cartesian/Bar":399,"../cartesian/XAxis":407,"../cartesian/YAxis":408,"../util/CartesianUtils":429,"./generateCategoricalChart":410}],410:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -79253,7 +79578,7 @@ var generateCategoricalChart = function generateCategoricalChart(_ref) {
 };
 
 exports.default = generateCategoricalChart;
-},{"../cartesian/Brush":437,"../cartesian/CartesianAxis":438,"../component/Legend":453,"../component/Tooltip":456,"../container/Layer":457,"../container/Surface":458,"../shape/Cross":460,"../shape/Curve":461,"../shape/Dot":462,"../shape/Rectangle":463,"../shape/Sector":464,"../util/ChartUtils":467,"../util/DOMUtils":469,"../util/DataUtils":470,"../util/Events":471,"../util/PolarUtils":473,"../util/PureRender":474,"../util/ReactUtils":475,"classnames":87,"lodash/isFunction":317,"lodash/isNil":320,"lodash/range":336,"lodash/sortBy":337,"lodash/throttle":340,"prop-types":357,"react":431}],448:[function(require,module,exports){
+},{"../cartesian/Brush":400,"../cartesian/CartesianAxis":401,"../component/Legend":416,"../component/Tooltip":419,"../container/Layer":420,"../container/Surface":421,"../shape/Cross":423,"../shape/Curve":424,"../shape/Dot":425,"../shape/Rectangle":426,"../shape/Sector":427,"../util/ChartUtils":430,"../util/DOMUtils":432,"../util/DataUtils":433,"../util/Events":434,"../util/PolarUtils":436,"../util/PureRender":437,"../util/ReactUtils":438,"classnames":88,"lodash/isFunction":279,"lodash/isNil":282,"lodash/range":299,"lodash/sortBy":300,"lodash/throttle":303,"prop-types":320,"react":394}],411:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -79281,7 +79606,7 @@ Cell.propTypes = _extends({}, _ReactUtils.PRESENTATION_ATTRIBUTES);
 Cell.displayName = 'Cell';
 
 exports.default = Cell;
-},{"../util/ReactUtils":475,"react":431}],449:[function(require,module,exports){
+},{"../util/ReactUtils":438,"react":394}],412:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -79512,7 +79837,7 @@ var DefaultLegendContent = (0, _PureRender2.default)(_class = (_temp = _class2 =
 }, _temp)) || _class;
 
 exports.default = DefaultLegendContent;
-},{"../container/Surface":458,"../shape/Symbols":465,"../util/PureRender":474,"../util/ReactUtils":475,"classnames":87,"prop-types":357,"react":431}],450:[function(require,module,exports){
+},{"../container/Surface":421,"../shape/Symbols":428,"../util/PureRender":437,"../util/ReactUtils":438,"classnames":88,"prop-types":320,"react":394}],413:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -79687,7 +80012,7 @@ var DefaultTooltipContent = (0, _PureRender2.default)(_class = (_temp = _class2 
 }, _temp)) || _class;
 
 exports.default = DefaultTooltipContent;
-},{"../util/DataUtils":470,"../util/PureRender":474,"lodash/isArray":312,"prop-types":357,"react":431}],451:[function(require,module,exports){
+},{"../util/DataUtils":433,"../util/PureRender":437,"lodash/isArray":274,"prop-types":320,"react":394}],414:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -80182,7 +80507,7 @@ Label.parseViewBox = parseViewBox;
 Label.renderCallByParent = renderCallByParent;
 
 exports.default = Label;
-},{"../util/DataUtils":470,"../util/PolarUtils":473,"../util/ReactUtils":475,"./Text":455,"classnames":87,"lodash/isFunction":317,"lodash/isNil":320,"lodash/isObject":322,"prop-types":357,"react":431}],452:[function(require,module,exports){
+},{"../util/DataUtils":433,"../util/PolarUtils":436,"../util/ReactUtils":438,"./Text":418,"classnames":88,"lodash/isFunction":279,"lodash/isNil":282,"lodash/isObject":284,"prop-types":320,"react":394}],415:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -80333,7 +80658,7 @@ LabelList.renderCallByParent = renderCallByParent;
 LabelList.defaultProps = defaultProps;
 
 exports.default = LabelList;
-},{"../container/Layer":457,"../util/ChartUtils":467,"../util/ReactUtils":475,"./Label":451,"lodash/isArray":312,"lodash/isFunction":317,"lodash/isNil":320,"lodash/isObject":322,"lodash/last":329,"prop-types":357,"react":431}],453:[function(require,module,exports){
+},{"../container/Layer":420,"../util/ChartUtils":430,"../util/ReactUtils":438,"./Label":414,"lodash/isArray":274,"lodash/isFunction":279,"lodash/isNil":282,"lodash/isObject":284,"lodash/last":291,"prop-types":320,"react":394}],416:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -80593,7 +80918,7 @@ var Legend = (0, _PureRender2.default)(_class = (_temp2 = _class2 = function (_C
 }, _temp2)) || _class;
 
 exports.default = Legend;
-},{"../util/DataUtils":470,"../util/PureRender":474,"../util/ReactUtils":475,"./DefaultLegendContent":449,"lodash/isFunction":317,"prop-types":357,"react":431}],454:[function(require,module,exports){
+},{"../util/DataUtils":433,"../util/PureRender":437,"../util/ReactUtils":438,"./DefaultLegendContent":412,"lodash/isFunction":279,"prop-types":320,"react":394}],417:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -80803,7 +81128,7 @@ var ResponsiveContainer = (_temp = _class = function (_Component) {
   debounce: 0
 }, _temp);
 exports.default = ResponsiveContainer;
-},{"../util/DataUtils":470,"../util/LogUtils":472,"classnames":87,"lodash/debounce":304,"prop-types":357,"react":431,"react-resize-detector":389}],455:[function(require,module,exports){
+},{"../util/DataUtils":433,"../util/LogUtils":435,"classnames":88,"lodash/debounce":265,"prop-types":320,"react":394,"react-resize-detector":352}],418:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -81042,7 +81367,7 @@ var Text = (_temp2 = _class = function (_Component) {
   verticalAnchor: 'end' // Maintain compat with existing charts / default SVG behavior
 }, _temp2);
 exports.default = Text;
-},{"../util/DOMUtils":469,"../util/DataUtils":470,"../util/ReactUtils":475,"classnames":87,"lodash/isNil":320,"prop-types":357,"react":431,"reduce-css-calc":476}],456:[function(require,module,exports){
+},{"../util/DOMUtils":432,"../util/DataUtils":433,"../util/ReactUtils":438,"classnames":88,"lodash/isNil":282,"prop-types":320,"react":394,"reduce-css-calc":479}],419:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -81306,7 +81631,7 @@ var Tooltip = (0, _PureRender2.default)(_class = (_temp2 = _class2 = function (_
 }(_react.Component), _class2.displayName = 'Tooltip', _class2.propTypes = propTypes, _class2.defaultProps = defaultProps, _temp2)) || _class;
 
 exports.default = Tooltip;
-},{"../util/DataUtils":470,"../util/PureRender":474,"../util/ReactUtils":475,"./DefaultTooltipContent":450,"lodash/isFunction":317,"lodash/isNil":320,"prop-types":357,"react":431,"react-smooth":422}],457:[function(require,module,exports){
+},{"../util/DataUtils":433,"../util/PureRender":437,"../util/ReactUtils":438,"./DefaultTooltipContent":413,"lodash/isFunction":279,"lodash/isNil":282,"prop-types":320,"react":394,"react-smooth":385}],420:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -81356,7 +81681,7 @@ function Layer(props) {
 Layer.propTypes = propTypes;
 
 exports.default = Layer;
-},{"classnames":87,"prop-types":357,"react":431}],458:[function(require,module,exports){
+},{"classnames":88,"prop-types":320,"react":394}],421:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -81429,7 +81754,7 @@ function Surface(props) {
 Surface.propTypes = propTypes;
 
 exports.default = Surface;
-},{"../util/ReactUtils":475,"classnames":87,"prop-types":357,"react":431}],459:[function(require,module,exports){
+},{"../util/ReactUtils":438,"classnames":88,"prop-types":320,"react":394}],422:[function(require,module,exports){
 'use strict';
 
 require('core-js/es6/math');
@@ -81448,7 +81773,7 @@ if (!(Object.setPrototypeOf || testObject.__proto__)) {
     return nativeGetPrototypeOf.call(Object, object);
   };
 }
-},{"core-js/es6/math":89}],460:[function(require,module,exports){
+},{"core-js/es6/math":439}],423:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -81549,7 +81874,7 @@ var Cross = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Com
 }, _temp)) || _class;
 
 exports.default = Cross;
-},{"../util/DataUtils":470,"../util/PureRender":474,"../util/ReactUtils":475,"classnames":87,"prop-types":357,"react":431}],461:[function(require,module,exports){
+},{"../util/DataUtils":433,"../util/PureRender":437,"../util/ReactUtils":438,"classnames":88,"prop-types":320,"react":394}],424:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -81731,7 +82056,7 @@ var Curve = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Com
 }, _temp)) || _class;
 
 exports.default = Curve;
-},{"../util/DataUtils":470,"../util/PureRender":474,"../util/ReactUtils":475,"classnames":87,"d3-shape":138,"lodash/isArray":312,"lodash/isFunction":317,"prop-types":357,"react":431}],462:[function(require,module,exports){
+},{"../util/DataUtils":433,"../util/PureRender":437,"../util/ReactUtils":438,"classnames":88,"d3-shape":99,"lodash/isArray":274,"lodash/isFunction":279,"prop-types":320,"react":394}],425:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -81815,7 +82140,7 @@ var Dot = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Compo
 }, _temp)) || _class;
 
 exports.default = Dot;
-},{"../util/PureRender":474,"../util/ReactUtils":475,"classnames":87,"prop-types":357,"react":431}],463:[function(require,module,exports){
+},{"../util/PureRender":437,"../util/ReactUtils":438,"classnames":88,"prop-types":320,"react":394}],426:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -82049,7 +82374,7 @@ var Rectangle = (0, _PureRender2.default)(_class = (_temp2 = _class2 = function 
 }, _temp2)) || _class;
 
 exports.default = Rectangle;
-},{"../util/PureRender":474,"../util/ReactUtils":475,"classnames":87,"prop-types":357,"react":431,"react-smooth":422}],464:[function(require,module,exports){
+},{"../util/PureRender":437,"../util/ReactUtils":438,"classnames":88,"prop-types":320,"react":394,"react-smooth":385}],427:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -82285,7 +82610,7 @@ var Sector = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_Co
 }, _temp)) || _class;
 
 exports.default = Sector;
-},{"../util/DataUtils":470,"../util/PolarUtils":473,"../util/PureRender":474,"../util/ReactUtils":475,"classnames":87,"prop-types":357,"react":431}],465:[function(require,module,exports){
+},{"../util/DataUtils":433,"../util/PolarUtils":436,"../util/PureRender":437,"../util/ReactUtils":438,"classnames":88,"prop-types":320,"react":394}],428:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -82433,7 +82758,7 @@ var Symbols = (0, _PureRender2.default)(_class = (_temp = _class2 = function (_C
 }, _temp)) || _class;
 
 exports.default = Symbols;
-},{"../util/PureRender":474,"../util/ReactUtils":475,"classnames":87,"d3-shape":138,"prop-types":357,"react":431}],466:[function(require,module,exports){
+},{"../util/PureRender":437,"../util/ReactUtils":438,"classnames":88,"d3-shape":99,"prop-types":320,"react":394}],429:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -82536,7 +82861,7 @@ var formatAxisMap = exports.formatAxisMap = function formatAxisMap(props, axisMa
     return _extends({}, result, _defineProperty({}, id, finalAxis));
   }, {});
 };
-},{"./ChartUtils":467}],467:[function(require,module,exports){
+},{"./ChartUtils":430}],430:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -82571,6 +82896,10 @@ var _min3 = _interopRequireDefault(_min2);
 var _isArray2 = require('lodash/isArray');
 
 var _isArray3 = _interopRequireDefault(_isArray2);
+
+var _flatMap2 = require('lodash/flatMap');
+
+var _flatMap3 = _interopRequireDefault(_flatMap2);
 
 var _isFunction2 = require('lodash/isFunction');
 
@@ -82650,15 +82979,9 @@ var getValueByDataKey = exports.getValueByDataKey = function getValueByDataKey(o
  * @return {Array} Domain of data
  */
 var getDomainOfDataByKey = exports.getDomainOfDataByKey = function getDomainOfDataByKey(data, key, type, filterNil) {
-  var flattenData = data.reduce(function (result, entry) {
-    var value = getValueByDataKey(entry, key);
-
-    if ((0, _isArray3.default)(value)) {
-      return [].concat(_toConsumableArray(result), _toConsumableArray(value));
-    }
-
-    return [].concat(_toConsumableArray(result), [value]);
-  }, []);
+  var flattenData = (0, _flatMap3.default)(data, function (entry) {
+    return getValueByDataKey(entry, key);
+  });
 
   if (type === 'number') {
     var domain = flattenData.filter(_DataUtils.isNumber);
@@ -83713,7 +84036,7 @@ var parseDomainOfCategoryAxis = exports.parseDomainOfCategoryAxis = function par
 
   return specifiedDomain;
 };
-},{"../cartesian/ErrorBar":440,"../cartesian/ReferenceArea":441,"../cartesian/ReferenceDot":442,"../cartesian/ReferenceLine":443,"../component/Legend":453,"./DataUtils":470,"./ReactUtils":475,"d3-scale":137,"d3-shape":138,"lodash/get":307,"lodash/isArray":312,"lodash/isEqual":316,"lodash/isFunction":317,"lodash/isNaN":319,"lodash/isNil":320,"lodash/isString":325,"lodash/max":331,"lodash/min":333,"lodash/sortBy":337,"recharts-scale":433}],468:[function(require,module,exports){
+},{"../cartesian/ErrorBar":403,"../cartesian/ReferenceArea":404,"../cartesian/ReferenceDot":405,"../cartesian/ReferenceLine":406,"../component/Legend":416,"./DataUtils":433,"./ReactUtils":438,"d3-scale":98,"d3-shape":99,"lodash/flatMap":268,"lodash/get":269,"lodash/isArray":274,"lodash/isEqual":278,"lodash/isFunction":279,"lodash/isNaN":281,"lodash/isNil":282,"lodash/isString":287,"lodash/max":294,"lodash/min":296,"lodash/sortBy":300,"recharts-scale":396}],431:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -83742,7 +84065,7 @@ var generatePrefixStyle = exports.generatePrefixStyle = function generatePrefixS
 
   return result;
 };
-},{}],469:[function(require,module,exports){
+},{}],432:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -83823,8 +84146,14 @@ var getStringSize = exports.getStringSize = function getStringSize(text) {
       measurementSpan.setAttribute('id', MEASUREMENT_SPAN_ID);
       document.body.appendChild(measurementSpan);
     }
+    // Need to use CSS Object Model (CSSOM) to be able to comply with Content Security Policy (CSP)
+    // https://en.wikipedia.org/wiki/Content_Security_Policy
+    var measurementSpanStyle = _extends({}, SPAN_STYLE, style);
+    Object.keys(measurementSpanStyle).map(function (styleKey) {
+      measurementSpan.style[styleKey] = measurementSpanStyle[styleKey];
+      return styleKey;
+    });
 
-    measurementSpan.setAttribute('style', getStyleString(_extends({}, SPAN_STYLE, style)));
     measurementSpan.textContent = str;
 
     var rect = measurementSpan.getBoundingClientRect();
@@ -83871,13 +84200,13 @@ var calculateChartCoordinate = exports.calculateChartCoordinate = function calcu
     chartY: Math.round(event.pageY - offset.top)
   };
 };
-},{"./ReactUtils":475}],470:[function(require,module,exports){
+},{"./ReactUtils":438}],433:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.findEntryInArray = exports.interpolateNumber = exports.hasDuplicate = exports.getAnyElementOfObject = exports.getPercentValue = exports.uniqueId = exports.isNumOrStr = exports.isNumber = exports.isPercent = exports.mathSign = undefined;
+exports.getLinearRegression = exports.findEntryInArray = exports.interpolateNumber = exports.hasDuplicate = exports.getAnyElementOfObject = exports.getPercentValue = exports.uniqueId = exports.isNumOrStr = exports.isNumber = exports.isPercent = exports.mathSign = undefined;
 
 var _get2 = require('lodash/get');
 
@@ -84020,7 +84349,44 @@ var findEntryInArray = exports.findEntryInArray = function findEntryInArray(ary,
     return entry && (0, _get3.default)(entry, specifiedKey) === specifiedValue;
   });
 };
-},{"lodash/get":307,"lodash/isArray":312,"lodash/isNaN":319,"lodash/isNumber":321,"lodash/isString":325}],471:[function(require,module,exports){
+
+/**
+ * The least square linear regression
+ * @param {Array} data The array of points
+ * @returns {Object} The domain of x, and the parameter of linear function
+ */
+var getLinearRegression = exports.getLinearRegression = function getLinearRegression(data) {
+  if (!data || !data.length) {
+    return null;
+  }
+
+  var len = data.length;
+  var xsum = 0;
+  var ysum = 0;
+  var xysum = 0;
+  var xxsum = 0;
+  var xmin = Infinity;
+  var xmax = -Infinity;
+
+  for (var i = 0; i < len; i++) {
+    xsum += data[i].cx;
+    ysum += data[i].cy;
+    xysum += data[i].cx * data[i].cy;
+    xxsum += data[i].cx * data[i].cx;
+    xmin = Math.min(xmin, data[i].cx);
+    xmax = Math.max(xmax, data[i].cx);
+  }
+
+  var a = len * xxsum !== xsum * xsum ? (len * xysum - xsum * ysum) / (len * xxsum - xsum * xsum) : 0;
+
+  return {
+    xmin: xmin,
+    xmax: xmax,
+    a: a,
+    b: (ysum - a * xsum) / len
+  };
+};
+},{"lodash/get":269,"lodash/isArray":274,"lodash/isNaN":281,"lodash/isNumber":283,"lodash/isString":287}],434:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -84042,7 +84408,7 @@ if (eventCenter.setMaxListeners) {
 
 exports.eventCenter = eventCenter;
 var SYNC_EVENT = exports.SYNC_EVENT = 'recharts.syncMouseEvents';
-},{"events":141}],472:[function(require,module,exports){
+},{"events":102}],435:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -84073,7 +84439,7 @@ var warn = exports.warn = function warn(condition, format, a, b, c, d, e, f) {
   }
 };
 }).call(this,require('_process'))
-},{"_process":353}],473:[function(require,module,exports){
+},{"_process":316}],436:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -84290,7 +84656,7 @@ var inRangeOfSector = exports.inRangeOfSector = function inRangeOfSector(_ref5, 
 
   return null;
 };
-},{"./ChartUtils":467,"./DataUtils":470,"lodash/isNil":320}],474:[function(require,module,exports){
+},{"./ChartUtils":430,"./DataUtils":433,"lodash/isNil":282}],437:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -84321,7 +84687,7 @@ function pureRenderDecorator(component) {
   // eslint-disable-next-line no-param-reassign
   component.prototype.shouldComponentUpdate = shouldComponentUpdate;
 }
-},{}],475:[function(require,module,exports){
+},{}],438:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -84803,7 +85169,509 @@ var parseChildIndex = exports.parseChildIndex = function parseChildIndex(child, 
 
   return result;
 };
-},{"./DataUtils":470,"./PureRender":474,"lodash/isArray":312,"lodash/isFunction":317,"lodash/isNil":320,"lodash/isObject":322,"lodash/isString":325,"prop-types":357,"react":431}],476:[function(require,module,exports){
+},{"./DataUtils":433,"./PureRender":437,"lodash/isArray":274,"lodash/isFunction":279,"lodash/isNil":282,"lodash/isObject":284,"lodash/isString":287,"prop-types":320,"react":394}],439:[function(require,module,exports){
+require('../modules/es6.math.acosh');
+require('../modules/es6.math.asinh');
+require('../modules/es6.math.atanh');
+require('../modules/es6.math.cbrt');
+require('../modules/es6.math.clz32');
+require('../modules/es6.math.cosh');
+require('../modules/es6.math.expm1');
+require('../modules/es6.math.fround');
+require('../modules/es6.math.hypot');
+require('../modules/es6.math.imul');
+require('../modules/es6.math.log10');
+require('../modules/es6.math.log1p');
+require('../modules/es6.math.log2');
+require('../modules/es6.math.sign');
+require('../modules/es6.math.sinh');
+require('../modules/es6.math.tanh');
+require('../modules/es6.math.trunc');
+module.exports = require('../modules/_core').Math;
+
+},{"../modules/_core":442,"../modules/es6.math.acosh":462,"../modules/es6.math.asinh":463,"../modules/es6.math.atanh":464,"../modules/es6.math.cbrt":465,"../modules/es6.math.clz32":466,"../modules/es6.math.cosh":467,"../modules/es6.math.expm1":468,"../modules/es6.math.fround":469,"../modules/es6.math.hypot":470,"../modules/es6.math.imul":471,"../modules/es6.math.log10":472,"../modules/es6.math.log1p":473,"../modules/es6.math.log2":474,"../modules/es6.math.sign":475,"../modules/es6.math.sinh":476,"../modules/es6.math.tanh":477,"../modules/es6.math.trunc":478}],440:[function(require,module,exports){
+module.exports = function (it) {
+  if (typeof it != 'function') throw TypeError(it + ' is not a function!');
+  return it;
+};
+
+},{}],441:[function(require,module,exports){
+var isObject = require('./_is-object');
+module.exports = function (it) {
+  if (!isObject(it)) throw TypeError(it + ' is not an object!');
+  return it;
+};
+
+},{"./_is-object":452}],442:[function(require,module,exports){
+var core = module.exports = { version: '2.5.1' };
+if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
+
+},{}],443:[function(require,module,exports){
+// optional / simple context binding
+var aFunction = require('./_a-function');
+module.exports = function (fn, that, length) {
+  aFunction(fn);
+  if (that === undefined) return fn;
+  switch (length) {
+    case 1: return function (a) {
+      return fn.call(that, a);
+    };
+    case 2: return function (a, b) {
+      return fn.call(that, a, b);
+    };
+    case 3: return function (a, b, c) {
+      return fn.call(that, a, b, c);
+    };
+  }
+  return function (/* ...args */) {
+    return fn.apply(that, arguments);
+  };
+};
+
+},{"./_a-function":440}],444:[function(require,module,exports){
+// Thank's IE8 for his funny defineProperty
+module.exports = !require('./_fails')(function () {
+  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
+});
+
+},{"./_fails":447}],445:[function(require,module,exports){
+var isObject = require('./_is-object');
+var document = require('./_global').document;
+// typeof document.createElement is 'object' in old IE
+var is = isObject(document) && isObject(document.createElement);
+module.exports = function (it) {
+  return is ? document.createElement(it) : {};
+};
+
+},{"./_global":448,"./_is-object":452}],446:[function(require,module,exports){
+var global = require('./_global');
+var core = require('./_core');
+var hide = require('./_hide');
+var redefine = require('./_redefine');
+var ctx = require('./_ctx');
+var PROTOTYPE = 'prototype';
+
+var $export = function (type, name, source) {
+  var IS_FORCED = type & $export.F;
+  var IS_GLOBAL = type & $export.G;
+  var IS_STATIC = type & $export.S;
+  var IS_PROTO = type & $export.P;
+  var IS_BIND = type & $export.B;
+  var target = IS_GLOBAL ? global : IS_STATIC ? global[name] || (global[name] = {}) : (global[name] || {})[PROTOTYPE];
+  var exports = IS_GLOBAL ? core : core[name] || (core[name] = {});
+  var expProto = exports[PROTOTYPE] || (exports[PROTOTYPE] = {});
+  var key, own, out, exp;
+  if (IS_GLOBAL) source = name;
+  for (key in source) {
+    // contains in native
+    own = !IS_FORCED && target && target[key] !== undefined;
+    // export native or passed
+    out = (own ? target : source)[key];
+    // bind timers to global for call from export context
+    exp = IS_BIND && own ? ctx(out, global) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;
+    // extend global
+    if (target) redefine(target, key, out, type & $export.U);
+    // export
+    if (exports[key] != out) hide(exports, key, exp);
+    if (IS_PROTO && expProto[key] != out) expProto[key] = out;
+  }
+};
+global.core = core;
+// type bitmap
+$export.F = 1;   // forced
+$export.G = 2;   // global
+$export.S = 4;   // static
+$export.P = 8;   // proto
+$export.B = 16;  // bind
+$export.W = 32;  // wrap
+$export.U = 64;  // safe
+$export.R = 128; // real proto method for `library`
+module.exports = $export;
+
+},{"./_core":442,"./_ctx":443,"./_global":448,"./_hide":450,"./_redefine":459}],447:[function(require,module,exports){
+module.exports = function (exec) {
+  try {
+    return !!exec();
+  } catch (e) {
+    return true;
+  }
+};
+
+},{}],448:[function(require,module,exports){
+// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
+var global = module.exports = typeof window != 'undefined' && window.Math == Math
+  ? window : typeof self != 'undefined' && self.Math == Math ? self
+  // eslint-disable-next-line no-new-func
+  : Function('return this')();
+if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
+
+},{}],449:[function(require,module,exports){
+var hasOwnProperty = {}.hasOwnProperty;
+module.exports = function (it, key) {
+  return hasOwnProperty.call(it, key);
+};
+
+},{}],450:[function(require,module,exports){
+var dP = require('./_object-dp');
+var createDesc = require('./_property-desc');
+module.exports = require('./_descriptors') ? function (object, key, value) {
+  return dP.f(object, key, createDesc(1, value));
+} : function (object, key, value) {
+  object[key] = value;
+  return object;
+};
+
+},{"./_descriptors":444,"./_object-dp":457,"./_property-desc":458}],451:[function(require,module,exports){
+module.exports = !require('./_descriptors') && !require('./_fails')(function () {
+  return Object.defineProperty(require('./_dom-create')('div'), 'a', { get: function () { return 7; } }).a != 7;
+});
+
+},{"./_descriptors":444,"./_dom-create":445,"./_fails":447}],452:[function(require,module,exports){
+module.exports = function (it) {
+  return typeof it === 'object' ? it !== null : typeof it === 'function';
+};
+
+},{}],453:[function(require,module,exports){
+// 20.2.2.14 Math.expm1(x)
+var $expm1 = Math.expm1;
+module.exports = (!$expm1
+  // Old FF bug
+  || $expm1(10) > 22025.465794806719 || $expm1(10) < 22025.4657948067165168
+  // Tor Browser bug
+  || $expm1(-2e-17) != -2e-17
+) ? function expm1(x) {
+  return (x = +x) == 0 ? x : x > -1e-6 && x < 1e-6 ? x + x * x / 2 : Math.exp(x) - 1;
+} : $expm1;
+
+},{}],454:[function(require,module,exports){
+// 20.2.2.16 Math.fround(x)
+var sign = require('./_math-sign');
+var pow = Math.pow;
+var EPSILON = pow(2, -52);
+var EPSILON32 = pow(2, -23);
+var MAX32 = pow(2, 127) * (2 - EPSILON32);
+var MIN32 = pow(2, -126);
+
+var roundTiesToEven = function (n) {
+  return n + 1 / EPSILON - 1 / EPSILON;
+};
+
+module.exports = Math.fround || function fround(x) {
+  var $abs = Math.abs(x);
+  var $sign = sign(x);
+  var a, result;
+  if ($abs < MIN32) return $sign * roundTiesToEven($abs / MIN32 / EPSILON32) * MIN32 * EPSILON32;
+  a = (1 + EPSILON32 / EPSILON) * $abs;
+  result = a - (a - $abs);
+  // eslint-disable-next-line no-self-compare
+  if (result > MAX32 || result != result) return $sign * Infinity;
+  return $sign * result;
+};
+
+},{"./_math-sign":456}],455:[function(require,module,exports){
+// 20.2.2.20 Math.log1p(x)
+module.exports = Math.log1p || function log1p(x) {
+  return (x = +x) > -1e-8 && x < 1e-8 ? x - x * x / 2 : Math.log(1 + x);
+};
+
+},{}],456:[function(require,module,exports){
+// 20.2.2.28 Math.sign(x)
+module.exports = Math.sign || function sign(x) {
+  // eslint-disable-next-line no-self-compare
+  return (x = +x) == 0 || x != x ? x : x < 0 ? -1 : 1;
+};
+
+},{}],457:[function(require,module,exports){
+var anObject = require('./_an-object');
+var IE8_DOM_DEFINE = require('./_ie8-dom-define');
+var toPrimitive = require('./_to-primitive');
+var dP = Object.defineProperty;
+
+exports.f = require('./_descriptors') ? Object.defineProperty : function defineProperty(O, P, Attributes) {
+  anObject(O);
+  P = toPrimitive(P, true);
+  anObject(Attributes);
+  if (IE8_DOM_DEFINE) try {
+    return dP(O, P, Attributes);
+  } catch (e) { /* empty */ }
+  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported!');
+  if ('value' in Attributes) O[P] = Attributes.value;
+  return O;
+};
+
+},{"./_an-object":441,"./_descriptors":444,"./_ie8-dom-define":451,"./_to-primitive":460}],458:[function(require,module,exports){
+module.exports = function (bitmap, value) {
+  return {
+    enumerable: !(bitmap & 1),
+    configurable: !(bitmap & 2),
+    writable: !(bitmap & 4),
+    value: value
+  };
+};
+
+},{}],459:[function(require,module,exports){
+var global = require('./_global');
+var hide = require('./_hide');
+var has = require('./_has');
+var SRC = require('./_uid')('src');
+var TO_STRING = 'toString';
+var $toString = Function[TO_STRING];
+var TPL = ('' + $toString).split(TO_STRING);
+
+require('./_core').inspectSource = function (it) {
+  return $toString.call(it);
+};
+
+(module.exports = function (O, key, val, safe) {
+  var isFunction = typeof val == 'function';
+  if (isFunction) has(val, 'name') || hide(val, 'name', key);
+  if (O[key] === val) return;
+  if (isFunction) has(val, SRC) || hide(val, SRC, O[key] ? '' + O[key] : TPL.join(String(key)));
+  if (O === global) {
+    O[key] = val;
+  } else if (!safe) {
+    delete O[key];
+    hide(O, key, val);
+  } else if (O[key]) {
+    O[key] = val;
+  } else {
+    hide(O, key, val);
+  }
+// add fake Function#toString for correct work wrapped methods / constructors with methods like LoDash isNative
+})(Function.prototype, TO_STRING, function toString() {
+  return typeof this == 'function' && this[SRC] || $toString.call(this);
+});
+
+},{"./_core":442,"./_global":448,"./_has":449,"./_hide":450,"./_uid":461}],460:[function(require,module,exports){
+// 7.1.1 ToPrimitive(input [, PreferredType])
+var isObject = require('./_is-object');
+// instead of the ES6 spec version, we didn't implement @@toPrimitive case
+// and the second argument - flag - preferred type is a string
+module.exports = function (it, S) {
+  if (!isObject(it)) return it;
+  var fn, val;
+  if (S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;
+  if (typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it))) return val;
+  if (!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;
+  throw TypeError("Can't convert object to primitive value");
+};
+
+},{"./_is-object":452}],461:[function(require,module,exports){
+var id = 0;
+var px = Math.random();
+module.exports = function (key) {
+  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
+};
+
+},{}],462:[function(require,module,exports){
+// 20.2.2.3 Math.acosh(x)
+var $export = require('./_export');
+var log1p = require('./_math-log1p');
+var sqrt = Math.sqrt;
+var $acosh = Math.acosh;
+
+$export($export.S + $export.F * !($acosh
+  // V8 bug: https://code.google.com/p/v8/issues/detail?id=3509
+  && Math.floor($acosh(Number.MAX_VALUE)) == 710
+  // Tor Browser bug: Math.acosh(Infinity) -> NaN
+  && $acosh(Infinity) == Infinity
+), 'Math', {
+  acosh: function acosh(x) {
+    return (x = +x) < 1 ? NaN : x > 94906265.62425156
+      ? Math.log(x) + Math.LN2
+      : log1p(x - 1 + sqrt(x - 1) * sqrt(x + 1));
+  }
+});
+
+},{"./_export":446,"./_math-log1p":455}],463:[function(require,module,exports){
+// 20.2.2.5 Math.asinh(x)
+var $export = require('./_export');
+var $asinh = Math.asinh;
+
+function asinh(x) {
+  return !isFinite(x = +x) || x == 0 ? x : x < 0 ? -asinh(-x) : Math.log(x + Math.sqrt(x * x + 1));
+}
+
+// Tor Browser bug: Math.asinh(0) -> -0
+$export($export.S + $export.F * !($asinh && 1 / $asinh(0) > 0), 'Math', { asinh: asinh });
+
+},{"./_export":446}],464:[function(require,module,exports){
+// 20.2.2.7 Math.atanh(x)
+var $export = require('./_export');
+var $atanh = Math.atanh;
+
+// Tor Browser bug: Math.atanh(-0) -> 0
+$export($export.S + $export.F * !($atanh && 1 / $atanh(-0) < 0), 'Math', {
+  atanh: function atanh(x) {
+    return (x = +x) == 0 ? x : Math.log((1 + x) / (1 - x)) / 2;
+  }
+});
+
+},{"./_export":446}],465:[function(require,module,exports){
+// 20.2.2.9 Math.cbrt(x)
+var $export = require('./_export');
+var sign = require('./_math-sign');
+
+$export($export.S, 'Math', {
+  cbrt: function cbrt(x) {
+    return sign(x = +x) * Math.pow(Math.abs(x), 1 / 3);
+  }
+});
+
+},{"./_export":446,"./_math-sign":456}],466:[function(require,module,exports){
+// 20.2.2.11 Math.clz32(x)
+var $export = require('./_export');
+
+$export($export.S, 'Math', {
+  clz32: function clz32(x) {
+    return (x >>>= 0) ? 31 - Math.floor(Math.log(x + 0.5) * Math.LOG2E) : 32;
+  }
+});
+
+},{"./_export":446}],467:[function(require,module,exports){
+// 20.2.2.12 Math.cosh(x)
+var $export = require('./_export');
+var exp = Math.exp;
+
+$export($export.S, 'Math', {
+  cosh: function cosh(x) {
+    return (exp(x = +x) + exp(-x)) / 2;
+  }
+});
+
+},{"./_export":446}],468:[function(require,module,exports){
+// 20.2.2.14 Math.expm1(x)
+var $export = require('./_export');
+var $expm1 = require('./_math-expm1');
+
+$export($export.S + $export.F * ($expm1 != Math.expm1), 'Math', { expm1: $expm1 });
+
+},{"./_export":446,"./_math-expm1":453}],469:[function(require,module,exports){
+// 20.2.2.16 Math.fround(x)
+var $export = require('./_export');
+
+$export($export.S, 'Math', { fround: require('./_math-fround') });
+
+},{"./_export":446,"./_math-fround":454}],470:[function(require,module,exports){
+// 20.2.2.17 Math.hypot([value1[, value2[, … ]]])
+var $export = require('./_export');
+var abs = Math.abs;
+
+$export($export.S, 'Math', {
+  hypot: function hypot(value1, value2) { // eslint-disable-line no-unused-vars
+    var sum = 0;
+    var i = 0;
+    var aLen = arguments.length;
+    var larg = 0;
+    var arg, div;
+    while (i < aLen) {
+      arg = abs(arguments[i++]);
+      if (larg < arg) {
+        div = larg / arg;
+        sum = sum * div * div + 1;
+        larg = arg;
+      } else if (arg > 0) {
+        div = arg / larg;
+        sum += div * div;
+      } else sum += arg;
+    }
+    return larg === Infinity ? Infinity : larg * Math.sqrt(sum);
+  }
+});
+
+},{"./_export":446}],471:[function(require,module,exports){
+// 20.2.2.18 Math.imul(x, y)
+var $export = require('./_export');
+var $imul = Math.imul;
+
+// some WebKit versions fails with big numbers, some has wrong arity
+$export($export.S + $export.F * require('./_fails')(function () {
+  return $imul(0xffffffff, 5) != -5 || $imul.length != 2;
+}), 'Math', {
+  imul: function imul(x, y) {
+    var UINT16 = 0xffff;
+    var xn = +x;
+    var yn = +y;
+    var xl = UINT16 & xn;
+    var yl = UINT16 & yn;
+    return 0 | xl * yl + ((UINT16 & xn >>> 16) * yl + xl * (UINT16 & yn >>> 16) << 16 >>> 0);
+  }
+});
+
+},{"./_export":446,"./_fails":447}],472:[function(require,module,exports){
+// 20.2.2.21 Math.log10(x)
+var $export = require('./_export');
+
+$export($export.S, 'Math', {
+  log10: function log10(x) {
+    return Math.log(x) * Math.LOG10E;
+  }
+});
+
+},{"./_export":446}],473:[function(require,module,exports){
+// 20.2.2.20 Math.log1p(x)
+var $export = require('./_export');
+
+$export($export.S, 'Math', { log1p: require('./_math-log1p') });
+
+},{"./_export":446,"./_math-log1p":455}],474:[function(require,module,exports){
+// 20.2.2.22 Math.log2(x)
+var $export = require('./_export');
+
+$export($export.S, 'Math', {
+  log2: function log2(x) {
+    return Math.log(x) / Math.LN2;
+  }
+});
+
+},{"./_export":446}],475:[function(require,module,exports){
+// 20.2.2.28 Math.sign(x)
+var $export = require('./_export');
+
+$export($export.S, 'Math', { sign: require('./_math-sign') });
+
+},{"./_export":446,"./_math-sign":456}],476:[function(require,module,exports){
+// 20.2.2.30 Math.sinh(x)
+var $export = require('./_export');
+var expm1 = require('./_math-expm1');
+var exp = Math.exp;
+
+// V8 near Chromium 38 has a problem with very small numbers
+$export($export.S + $export.F * require('./_fails')(function () {
+  return !Math.sinh(-2e-17) != -2e-17;
+}), 'Math', {
+  sinh: function sinh(x) {
+    return Math.abs(x = +x) < 1
+      ? (expm1(x) - expm1(-x)) / 2
+      : (exp(x - 1) - exp(-x - 1)) * (Math.E / 2);
+  }
+});
+
+},{"./_export":446,"./_fails":447,"./_math-expm1":453}],477:[function(require,module,exports){
+// 20.2.2.33 Math.tanh(x)
+var $export = require('./_export');
+var expm1 = require('./_math-expm1');
+var exp = Math.exp;
+
+$export($export.S, 'Math', {
+  tanh: function tanh(x) {
+    var a = expm1(x = +x);
+    var b = expm1(-x);
+    return a == Infinity ? 1 : b == Infinity ? -1 : (a - b) / (exp(x) + exp(-x));
+  }
+});
+
+},{"./_export":446,"./_math-expm1":453}],478:[function(require,module,exports){
+// 20.2.2.34 Math.trunc(x)
+var $export = require('./_export');
+
+$export($export.S, 'Math', {
+  trunc: function trunc(it) {
+    return (it > 0 ? Math.floor : Math.ceil)(it);
+  }
+});
+
+},{"./_export":446}],479:[function(require,module,exports){
 /**
  * Module dependencies
  */
@@ -84969,7 +85837,7 @@ function getUnitsInExpression(expression) {
   return uniqueUnits
 }
 
-},{"balanced-match":86,"math-expression-evaluator":344,"reduce-function-call":477}],477:[function(require,module,exports){
+},{"balanced-match":87,"math-expression-evaluator":307,"reduce-function-call":480}],480:[function(require,module,exports){
 /*
  * Module dependencies
  */
@@ -85045,7 +85913,7 @@ function evalFunctionCall (string, functionIdentifier, callback, call, functionR
   return callback(reduceFunctionCall(string, functionRE, callback), functionIdentifier, call)
 }
 
-},{"balanced-match":86}],478:[function(require,module,exports){
+},{"balanced-match":87}],481:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -85136,12 +86004,12 @@ var createCookieMiddleware = exports.createCookieMiddleware = function createCoo
 
 exports.default = createCookieMiddleware;
 }).call(this,require('_process'))
-},{"_process":353}],479:[function(require,module,exports){
+},{"_process":316}],482:[function(require,module,exports){
 (function (global){
 !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t(e.reduxLogger=e.reduxLogger||{})}(this,function(e){"use strict";function t(e,t){e.super_=t,e.prototype=Object.create(t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}})}function r(e,t){Object.defineProperty(this,"kind",{value:e,enumerable:!0}),t&&t.length&&Object.defineProperty(this,"path",{value:t,enumerable:!0})}function n(e,t,r){n.super_.call(this,"E",e),Object.defineProperty(this,"lhs",{value:t,enumerable:!0}),Object.defineProperty(this,"rhs",{value:r,enumerable:!0})}function o(e,t){o.super_.call(this,"N",e),Object.defineProperty(this,"rhs",{value:t,enumerable:!0})}function i(e,t){i.super_.call(this,"D",e),Object.defineProperty(this,"lhs",{value:t,enumerable:!0})}function a(e,t,r){a.super_.call(this,"A",e),Object.defineProperty(this,"index",{value:t,enumerable:!0}),Object.defineProperty(this,"item",{value:r,enumerable:!0})}function f(e,t,r){var n=e.slice((r||t)+1||e.length);return e.length=t<0?e.length+t:t,e.push.apply(e,n),e}function u(e){var t="undefined"==typeof e?"undefined":N(e);return"object"!==t?t:e===Math?"math":null===e?"null":Array.isArray(e)?"array":"[object Date]"===Object.prototype.toString.call(e)?"date":"function"==typeof e.toString&&/^\/.*\//.test(e.toString())?"regexp":"object"}function l(e,t,r,c,s,d,p){s=s||[],p=p||[];var g=s.slice(0);if("undefined"!=typeof d){if(c){if("function"==typeof c&&c(g,d))return;if("object"===("undefined"==typeof c?"undefined":N(c))){if(c.prefilter&&c.prefilter(g,d))return;if(c.normalize){var h=c.normalize(g,d,e,t);h&&(e=h[0],t=h[1])}}}g.push(d)}"regexp"===u(e)&&"regexp"===u(t)&&(e=e.toString(),t=t.toString());var y="undefined"==typeof e?"undefined":N(e),v="undefined"==typeof t?"undefined":N(t),b="undefined"!==y||p&&p[p.length-1].lhs&&p[p.length-1].lhs.hasOwnProperty(d),m="undefined"!==v||p&&p[p.length-1].rhs&&p[p.length-1].rhs.hasOwnProperty(d);if(!b&&m)r(new o(g,t));else if(!m&&b)r(new i(g,e));else if(u(e)!==u(t))r(new n(g,e,t));else if("date"===u(e)&&e-t!==0)r(new n(g,e,t));else if("object"===y&&null!==e&&null!==t)if(p.filter(function(t){return t.lhs===e}).length)e!==t&&r(new n(g,e,t));else{if(p.push({lhs:e,rhs:t}),Array.isArray(e)){var w;e.length;for(w=0;w<e.length;w++)w>=t.length?r(new a(g,w,new i(void 0,e[w]))):l(e[w],t[w],r,c,g,w,p);for(;w<t.length;)r(new a(g,w,new o(void 0,t[w++])))}else{var x=Object.keys(e),S=Object.keys(t);x.forEach(function(n,o){var i=S.indexOf(n);i>=0?(l(e[n],t[n],r,c,g,n,p),S=f(S,i)):l(e[n],void 0,r,c,g,n,p)}),S.forEach(function(e){l(void 0,t[e],r,c,g,e,p)})}p.length=p.length-1}else e!==t&&("number"===y&&isNaN(e)&&isNaN(t)||r(new n(g,e,t)))}function c(e,t,r,n){return n=n||[],l(e,t,function(e){e&&n.push(e)},r),n.length?n:void 0}function s(e,t,r){if(r.path&&r.path.length){var n,o=e[t],i=r.path.length-1;for(n=0;n<i;n++)o=o[r.path[n]];switch(r.kind){case"A":s(o[r.path[n]],r.index,r.item);break;case"D":delete o[r.path[n]];break;case"E":case"N":o[r.path[n]]=r.rhs}}else switch(r.kind){case"A":s(e[t],r.index,r.item);break;case"D":e=f(e,t);break;case"E":case"N":e[t]=r.rhs}return e}function d(e,t,r){if(e&&t&&r&&r.kind){for(var n=e,o=-1,i=r.path?r.path.length-1:0;++o<i;)"undefined"==typeof n[r.path[o]]&&(n[r.path[o]]="number"==typeof r.path[o]?[]:{}),n=n[r.path[o]];switch(r.kind){case"A":s(r.path?n[r.path[o]]:n,r.index,r.item);break;case"D":delete n[r.path[o]];break;case"E":case"N":n[r.path[o]]=r.rhs}}}function p(e,t,r){if(r.path&&r.path.length){var n,o=e[t],i=r.path.length-1;for(n=0;n<i;n++)o=o[r.path[n]];switch(r.kind){case"A":p(o[r.path[n]],r.index,r.item);break;case"D":o[r.path[n]]=r.lhs;break;case"E":o[r.path[n]]=r.lhs;break;case"N":delete o[r.path[n]]}}else switch(r.kind){case"A":p(e[t],r.index,r.item);break;case"D":e[t]=r.lhs;break;case"E":e[t]=r.lhs;break;case"N":e=f(e,t)}return e}function g(e,t,r){if(e&&t&&r&&r.kind){var n,o,i=e;for(o=r.path.length-1,n=0;n<o;n++)"undefined"==typeof i[r.path[n]]&&(i[r.path[n]]={}),i=i[r.path[n]];switch(r.kind){case"A":p(i[r.path[n]],r.index,r.item);break;case"D":i[r.path[n]]=r.lhs;break;case"E":i[r.path[n]]=r.lhs;break;case"N":delete i[r.path[n]]}}}function h(e,t,r){if(e&&t){var n=function(n){r&&!r(e,t,n)||d(e,t,n)};l(e,t,n)}}function y(e){return"color: "+F[e].color+"; font-weight: bold"}function v(e){var t=e.kind,r=e.path,n=e.lhs,o=e.rhs,i=e.index,a=e.item;switch(t){case"E":return[r.join("."),n,"→",o];case"N":return[r.join("."),o];case"D":return[r.join(".")];case"A":return[r.join(".")+"["+i+"]",a];default:return[]}}function b(e,t,r,n){var o=c(e,t);try{n?r.groupCollapsed("diff"):r.group("diff")}catch(e){r.log("diff")}o?o.forEach(function(e){var t=e.kind,n=v(e);r.log.apply(r,["%c "+F[t].text,y(t)].concat(P(n)))}):r.log("—— no diff ——");try{r.groupEnd()}catch(e){r.log("—— diff end —— ")}}function m(e,t,r,n){switch("undefined"==typeof e?"undefined":N(e)){case"object":return"function"==typeof e[n]?e[n].apply(e,P(r)):e[n];case"function":return e(t);default:return e}}function w(e){var t=e.timestamp,r=e.duration;return function(e,n,o){var i=["action"];return i.push("%c"+String(e.type)),t&&i.push("%c@ "+n),r&&i.push("%c(in "+o.toFixed(2)+" ms)"),i.join(" ")}}function x(e,t){var r=t.logger,n=t.actionTransformer,o=t.titleFormatter,i=void 0===o?w(t):o,a=t.collapsed,f=t.colors,u=t.level,l=t.diff,c="undefined"==typeof t.titleFormatter;e.forEach(function(o,s){var d=o.started,p=o.startedTime,g=o.action,h=o.prevState,y=o.error,v=o.took,w=o.nextState,x=e[s+1];x&&(w=x.prevState,v=x.started-d);var S=n(g),k="function"==typeof a?a(function(){return w},g,o):a,j=D(p),E=f.title?"color: "+f.title(S)+";":"",A=["color: gray; font-weight: lighter;"];A.push(E),t.timestamp&&A.push("color: gray; font-weight: lighter;"),t.duration&&A.push("color: gray; font-weight: lighter;");var O=i(S,j,v);try{k?f.title&&c?r.groupCollapsed.apply(r,["%c "+O].concat(A)):r.groupCollapsed(O):f.title&&c?r.group.apply(r,["%c "+O].concat(A)):r.group(O)}catch(e){r.log(O)}var N=m(u,S,[h],"prevState"),P=m(u,S,[S],"action"),C=m(u,S,[y,h],"error"),F=m(u,S,[w],"nextState");if(N)if(f.prevState){var L="color: "+f.prevState(h)+"; font-weight: bold";r[N]("%c prev state",L,h)}else r[N]("prev state",h);if(P)if(f.action){var T="color: "+f.action(S)+"; font-weight: bold";r[P]("%c action    ",T,S)}else r[P]("action    ",S);if(y&&C)if(f.error){var M="color: "+f.error(y,h)+"; font-weight: bold;";r[C]("%c error     ",M,y)}else r[C]("error     ",y);if(F)if(f.nextState){var _="color: "+f.nextState(w)+"; font-weight: bold";r[F]("%c next state",_,w)}else r[F]("next state",w);l&&b(h,w,r,k);try{r.groupEnd()}catch(e){r.log("—— log end ——")}})}function S(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},t=Object.assign({},L,e),r=t.logger,n=t.stateTransformer,o=t.errorTransformer,i=t.predicate,a=t.logErrors,f=t.diffPredicate;if("undefined"==typeof r)return function(){return function(e){return function(t){return e(t)}}};if(e.getState&&e.dispatch)return console.error("[redux-logger] redux-logger not installed. Make sure to pass logger instance as middleware:\n// Logger with default options\nimport { logger } from 'redux-logger'\nconst store = createStore(\n  reducer,\n  applyMiddleware(logger)\n)\n// Or you can create your own logger with custom options http://bit.ly/redux-logger-options\nimport createLogger from 'redux-logger'\nconst logger = createLogger({\n  // ...options\n});\nconst store = createStore(\n  reducer,\n  applyMiddleware(logger)\n)\n"),function(){return function(e){return function(t){return e(t)}}};var u=[];return function(e){var r=e.getState;return function(e){return function(l){if("function"==typeof i&&!i(r,l))return e(l);var c={};u.push(c),c.started=O.now(),c.startedTime=new Date,c.prevState=n(r()),c.action=l;var s=void 0;if(a)try{s=e(l)}catch(e){c.error=o(e)}else s=e(l);c.took=O.now()-c.started,c.nextState=n(r());var d=t.diff&&"function"==typeof f?f(r,l):t.diff;if(x(u,Object.assign({},t,{diff:d})),u.length=0,c.error)throw c.error;return s}}}}var k,j,E=function(e,t){return new Array(t+1).join(e)},A=function(e,t){return E("0",t-e.toString().length)+e},D=function(e){return A(e.getHours(),2)+":"+A(e.getMinutes(),2)+":"+A(e.getSeconds(),2)+"."+A(e.getMilliseconds(),3)},O="undefined"!=typeof performance&&null!==performance&&"function"==typeof performance.now?performance:Date,N="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},P=function(e){if(Array.isArray(e)){for(var t=0,r=Array(e.length);t<e.length;t++)r[t]=e[t];return r}return Array.from(e)},C=[];k="object"===("undefined"==typeof global?"undefined":N(global))&&global?global:"undefined"!=typeof window?window:{},j=k.DeepDiff,j&&C.push(function(){"undefined"!=typeof j&&k.DeepDiff===c&&(k.DeepDiff=j,j=void 0)}),t(n,r),t(o,r),t(i,r),t(a,r),Object.defineProperties(c,{diff:{value:c,enumerable:!0},observableDiff:{value:l,enumerable:!0},applyDiff:{value:h,enumerable:!0},applyChange:{value:d,enumerable:!0},revertChange:{value:g,enumerable:!0},isConflict:{value:function(){return"undefined"!=typeof j},enumerable:!0},noConflict:{value:function(){return C&&(C.forEach(function(e){e()}),C=null),c},enumerable:!0}});var F={E:{color:"#2196F3",text:"CHANGED:"},N:{color:"#4CAF50",text:"ADDED:"},D:{color:"#F44336",text:"DELETED:"},A:{color:"#2196F3",text:"ARRAY:"}},L={level:"log",logger:console,logErrors:!0,collapsed:void 0,predicate:void 0,duration:!1,timestamp:!0,stateTransformer:function(e){return e},actionTransformer:function(e){return e},errorTransformer:function(e){return e},colors:{title:function(){return"inherit"},prevState:function(){return"#9E9E9E"},action:function(){return"#03A9F4"},nextState:function(){return"#4CAF50"},error:function(){return"#F20404"}},diff:!1,diffPredicate:void 0,transformer:void 0},T=function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},t=e.dispatch,r=e.getState;return"function"==typeof t||"function"==typeof r?S()({dispatch:t,getState:r}):void console.error("\n[redux-logger v3] BREAKING CHANGE\n[redux-logger v3] Since 3.0.0 redux-logger exports by default logger with default settings.\n[redux-logger v3] Change\n[redux-logger v3] import createLogger from 'redux-logger'\n[redux-logger v3] to\n[redux-logger v3] import { createLogger } from 'redux-logger'\n")};e.defaults=L,e.createLogger=S,e.logger=T,e.default=T,Object.defineProperty(e,"__esModule",{value:!0})});
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],480:[function(require,module,exports){
+},{}],483:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -85175,7 +86043,7 @@ function promiseMiddleware(_ref) {
 }
 
 module.exports = exports['default'];
-},{"flux-standard-action":158}],481:[function(require,module,exports){
+},{"flux-standard-action":119}],484:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -85199,7 +86067,7 @@ var thunk = createThunkMiddleware();
 thunk.withExtraArgument = createThunkMiddleware;
 
 exports['default'] = thunk;
-},{}],482:[function(require,module,exports){
+},{}],485:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -85258,7 +86126,7 @@ function applyMiddleware() {
     };
   };
 }
-},{"./compose":485}],483:[function(require,module,exports){
+},{"./compose":488}],486:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -85310,7 +86178,7 @@ function bindActionCreators(actionCreators, dispatch) {
   }
   return boundActionCreators;
 }
-},{}],484:[function(require,module,exports){
+},{}],487:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -85456,7 +86324,7 @@ function combineReducers(reducers) {
   };
 }
 }).call(this,require('_process'))
-},{"./createStore":486,"./utils/warning":488,"_process":353,"lodash/isPlainObject":324}],485:[function(require,module,exports){
+},{"./createStore":489,"./utils/warning":491,"_process":316,"lodash/isPlainObject":286}],488:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -85493,7 +86361,7 @@ function compose() {
     };
   });
 }
-},{}],486:[function(require,module,exports){
+},{}],489:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -85755,7 +86623,7 @@ var ActionTypes = exports.ActionTypes = {
     replaceReducer: replaceReducer
   }, _ref2[_symbolObservable2['default']] = observable, _ref2;
 }
-},{"lodash/isPlainObject":324,"symbol-observable":490}],487:[function(require,module,exports){
+},{"lodash/isPlainObject":286,"symbol-observable":493}],490:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -85804,7 +86672,7 @@ exports.bindActionCreators = _bindActionCreators2['default'];
 exports.applyMiddleware = _applyMiddleware2['default'];
 exports.compose = _compose2['default'];
 }).call(this,require('_process'))
-},{"./applyMiddleware":482,"./bindActionCreators":483,"./combineReducers":484,"./compose":485,"./createStore":486,"./utils/warning":488,"_process":353}],488:[function(require,module,exports){
+},{"./applyMiddleware":485,"./bindActionCreators":486,"./combineReducers":487,"./compose":488,"./createStore":489,"./utils/warning":491,"_process":316}],491:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -85830,7 +86698,7 @@ function warning(message) {
   } catch (e) {}
   /* eslint-enable no-empty */
 }
-},{}],489:[function(require,module,exports){
+},{}],492:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -85905,10 +86773,7 @@ function resolvePathname(to) {
 
 exports.default = resolvePathname;
 module.exports = exports['default'];
-},{}],490:[function(require,module,exports){
-module.exports = require('./lib/index');
-
-},{"./lib/index":491}],491:[function(require,module,exports){
+},{}],493:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -85940,7 +86805,7 @@ if (typeof self !== 'undefined') {
 var result = (0, _ponyfill2['default'])(root);
 exports['default'] = result;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./ponyfill.js":492}],492:[function(require,module,exports){
+},{"./ponyfill.js":494}],494:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -85964,7 +86829,7 @@ function symbolObservablePonyfill(root) {
 
 	return result;
 };
-},{}],493:[function(require,module,exports){
+},{}],495:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -86105,7 +86970,7 @@ function readCookie(value) {
   return value;
 }
 module.exports = exports['default'];
-},{"./utils":495,"cookie":88,"object-assign":351}],494:[function(require,module,exports){
+},{"./utils":497,"cookie":89,"object-assign":314}],496:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -86120,7 +86985,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 exports.default = _Cookies2.default;
 module.exports = exports['default'];
-},{"./Cookies":493}],495:[function(require,module,exports){
+},{"./Cookies":495}],497:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -86145,7 +87010,7 @@ function cleanCookies() {
     document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
   });
 }
-},{}],496:[function(require,module,exports){
+},{}],498:[function(require,module,exports){
 /**
  * Convert array of 16 byte values to UUID string format of the form:
  * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
@@ -86170,7 +87035,7 @@ function bytesToUuid(buf, offset) {
 
 module.exports = bytesToUuid;
 
-},{}],497:[function(require,module,exports){
+},{}],499:[function(require,module,exports){
 // Unique ID creation requires a high quality random # generator.  In the
 // browser this is a little complicated due to unknown quality of Math.random()
 // and inconsistent support for the `crypto` API.  We do the best we can via
@@ -86204,7 +87069,7 @@ if (getRandomValues) {
   };
 }
 
-},{}],498:[function(require,module,exports){
+},{}],500:[function(require,module,exports){
 var rng = require('./lib/rng');
 var bytesToUuid = require('./lib/bytesToUuid');
 
@@ -86235,7 +87100,7 @@ function v4(options, buf, offset) {
 
 module.exports = v4;
 
-},{"./lib/bytesToUuid":496,"./lib/rng":497}],499:[function(require,module,exports){
+},{"./lib/bytesToUuid":498,"./lib/rng":499}],501:[function(require,module,exports){
 "use strict";
 var rules = require("./rules.json");
 
@@ -86839,7 +87704,7 @@ module.exports = {
     isValidTwitterRuleDelay: isValidTwitterRuleDelay,
     isValidTwitterRuleForm: isValidTwitterRuleForm
 };
-},{"./rules.json":500}],500:[function(require,module,exports){
+},{"./rules.json":502}],502:[function(require,module,exports){
 module.exports={
     "user": {
         "email": "(?:[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])",
@@ -86864,7 +87729,7 @@ module.exports={
         "keyword": "^[^\\s,;]{1,64}$"
     }
 }
-},{}],501:[function(require,module,exports){
+},{}],503:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -86908,7 +87773,7 @@ function valueEqual(a, b) {
 
 exports.default = valueEqual;
 module.exports = exports['default'];
-},{}],502:[function(require,module,exports){
+},{}],504:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -86972,4 +87837,4 @@ if (process.env.NODE_ENV !== 'production') {
 module.exports = warning;
 
 }).call(this,require('_process'))
-},{"_process":353}]},{},[75]);
+},{"_process":316}]},{},[76]);

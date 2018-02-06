@@ -1,14 +1,18 @@
 import { FRENCH } from "../constants/Languages";
 
-export default function getLanguage()
-{
+/**
+ * Return french locale.
+ * @public
+ * @returns {Object<string,string>}
+ */
+const getLanguage = () => {
     return {
         //---MAIN VALUES---
         LANG: FRENCH,
         COMPANY_NAME: "Hubgine",
         REACT_DATETIME_LANGUAGE: "fr",
         GENERIC_ERROR: "Une erreur est survenue.",
-        SESSION_EXPIRED: "La session est expirée.",
+        SESSION_EXPIRED: "La session a expirée.",
         //---HEADER---
         HEADER_SR_ONLY: "Menu",
         HEADER_HOME: "Home",
@@ -158,6 +162,8 @@ export default function getLanguage()
         CAMPAIGNFORM_DELETE_ERROR: "Une erreur est survenue lors de la suppression de la campagne.",
         //---CAMPAIGNLIST---
         CAMPAIGNLIST_NOCAMPAIGN: "Il n'y a pas de campagnes actuellement.",
+        //---RULELIST---
+        RULELIST_NO_RULES: "Il n'y a pas de règles actuellement.",
         //---RULEITEM---
         RULEITEM_EDIT_BUTTON: "Editer cette règle",
         //---TWITTERRULEFORM---
@@ -208,3 +214,5 @@ export default function getLanguage()
         TWITTERRULE_DELETE_SUCCESS: "Cette règle a été supprimée avec succès."
     }
 }
+
+export default getLanguage;

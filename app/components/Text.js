@@ -1,40 +1,22 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import FormGroup from "../FormGroup";
-import Row from "../Row";
-import Tooltip from "../Tooltip";
+import FormGroup from "./FormGroup";
+import Row from "./Row";
+import Tooltip from "./Tooltip";
 
-class Input extends Component {
+class Text extends Component {
     static propTypes = {
         name: PropTypes.string,
         value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        type: PropTypes.string,
+        id: PropTypes.string,
         label: PropTypes.string,
         tooltip: PropTypes.string,
-        onChange: PropTypes.func,
     };
 
     static defaultProps = {
-        name: "input",
-        value: "",
-        type: "text",
-        onChange: () => {}
+        name: "text",
+        value: ""
     };
-
-    constructor(props)
-    {
-        super(props);
-        this.handleChange = this.handleChange.bind(this);
-    }
-
-    handleChange(event)
-    {
-        this.props.onChange({
-            name: this.props.name,
-            value: event.target.value
-        });
-    }
 
     render()
     {
@@ -42,9 +24,9 @@ class Input extends Component {
             id,
             label,
             tooltip,
+            value,
             ...props
         } = this.props;
-        const input = <input id={id} {...props} className="form-control" onChange={this.handleChange}/>;
         return label ? (
             <FormGroup>
                 <Row>
@@ -61,14 +43,14 @@ class Input extends Component {
                         }
                     </label>
                     <div className="col-xs-12 col-sm-9 col-md-10">
-                        {input}
+                        {value}
                     </div>    
                 </Row>
             </FormGroup>
         ) : (
-            input
+            value
         );
     }
 }
 
-export default Input;
+export default Text;

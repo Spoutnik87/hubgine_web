@@ -47,18 +47,17 @@ class CampaignList extends Component {
         const {
             CAMPAIGNLIST_NOCAMPAIGN
         } = this.props.lang;
-        return (
-            this.props.campaigns.length > 0 ? (
-                <div>
-                {
-                    this.props.campaigns.map(campaign => (
-                        <CampaignItem key={campaign.uid} id={campaign.name} onClick={this.handleClick} campaign={campaign} />
-                    ))
-                }
-                </div>
-            ) : (
-                <div>{CAMPAIGNLIST_NOCAMPAIGN}</div>
-            )
+        const { campaigns } = this.props;
+        return campaigns.length > 0 ? (
+            <div>
+            {
+                campaigns.map(campaign => (
+                    <CampaignItem key={campaign.uid} id={campaign.name} onClick={this.handleClick} campaign={campaign}/>
+                ))
+            }
+            </div>
+        ) : (
+            <div>{CAMPAIGNLIST_NOCAMPAIGN}</div>
         );
     }
 }

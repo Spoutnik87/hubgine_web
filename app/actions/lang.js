@@ -1,11 +1,19 @@
 import * as ActionTypes from "../constants/ActionTypes";
+import * as Languages from "../constants/Languages";
 
-export function changeLanguage(lang)
-{
-    return (dispatch) => {
-        return dispatch({
-            type: ActionTypes.LANG_UPDATE,
-            lang: lang
-        });
-    };
+/**
+ * Load language in store.
+ * @public
+ * @param {Languages} lang Language.
+ * @returns {void}
+ */
+const changeLanguage = lang => dispatch => {
+    return dispatch({
+        type: ActionTypes.LANG_UPDATE,
+        lang: lang
+    });
 }
+
+export {
+    changeLanguage
+};

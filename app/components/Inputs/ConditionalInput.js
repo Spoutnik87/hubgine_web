@@ -15,7 +15,9 @@ class ConditionalInput extends Component {
         tooltip: PropTypes.string,
         onChange: PropTypes.func,
         type: PropTypes.string,
-        className: PropTypes.string
+        className: PropTypes.string,
+        autoFocus: PropTypes.bool,
+        disabled: PropTypes.bool
     };
 
     static defaultProps = {
@@ -60,7 +62,7 @@ class ConditionalInput extends Component {
     {
         const { label, tooltip, ...props } = this.props;
         const { value } = this.state;
-        const conditionalInput = <Input {...props} value={value} onChange={this.handleChange} autoFocus />;
+        const conditionalInput = <Input {...props} value={value} onChange={this.handleChange}/>;
         return label ? (
             <FormGroup>
                 <Row>
