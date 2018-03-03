@@ -1,18 +1,17 @@
-import * as ActionTypes from "../constants/ActionTypes";
+import { USER_SET, USER_UPDATE, USER_UPDATE_INFOS, USER_UNSET } from "../constants/ActionTypes";
 import * as RequestTypes from "../constants/RequestTypes";
 import { addMetadata } from "../util/Metadata";
 
 /**
  * User reducer.
  * @public
- * @param {Object<any>} state Object state.
+ * @param {Object<any,any>} state Object state.
  * @param {string} action ActionType
  */
-const user = (state = {}, action) =>
-{
+const user = (state = {}, action) => {
     switch (action.type)
     {
-        case ActionTypes.USER_SET:
+        case USER_SET:
             return addMetadata({
                 ...state,
                 token: action.token,
@@ -20,7 +19,7 @@ const user = (state = {}, action) =>
                 rank: action.rank,
                 lang: action.lang
             }, RequestTypes.USER_BASIC);
-        case ActionTypes.USER_UPDATE:
+        case USER_UPDATE:
             const newState = {};
             if (action.email) newState.email = action.email;
             if (action.firstname) newState.firstname = action.firstname;
@@ -30,7 +29,7 @@ const user = (state = {}, action) =>
                 ...state,
                 ...newState
             };
-        case ActionTypes.USER_UPDATE_INFOS:
+        case USER_UPDATE_INFOS:
             return addMetadata({
                 ...state,
                 email: action.email,
@@ -38,11 +37,11 @@ const user = (state = {}, action) =>
                 lastname: action.lastname,
                 maxAccounts: action.maxAccounts
             }, RequestTypes.USER_FULL);
-        case ActionTypes.USER_UNSET:
+        case USER_UNSET:
             return {};
         default:
             return state;
     }
-}
+};
 
 export default user;

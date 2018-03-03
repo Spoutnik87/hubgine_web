@@ -14,9 +14,9 @@ import * as Languages from "../constants/Languages";
 const serializeRequest = data => {
     let serializedData = "";
     let first = true;
-    for (const key of Object.keys(data))
+    for (const key in data)
     {
-        if (data[key] !== null)
+        if (data[key] != null)
         {
             let element = "";
             if (Array.isArray(data[key]))
@@ -114,7 +114,7 @@ const requestIfNeeded = (method, endpoint, token, data, type, entity) => new Pro
  * @param {Object<string, any>} user Actual user in store.
  * @returns {Promise<any>}
  */
-export const getUserInfos = (token, user) => {
+const getUserInfos = (token, user) => {
     return requestIfNeeded(Methods.GET, Endpoints.USER_GET, token, {}, Types.USER_FULL, user);
 };
 
@@ -124,7 +124,7 @@ export const getUserInfos = (token, user) => {
  * @param {string} email User's email.
  * @returns {Promise<any>}
  */
-export const resetPassword = (email) => {
+const resetPassword = (email) => {
     const data = { email };
 
     return request(Methods.DELETE, Endpoints.TWITTERACCOUNT_DELETE, token, data);
@@ -137,7 +137,7 @@ export const resetPassword = (email) => {
  * @param {Object<string,any>} user User object in store.
  * @returns {Promise<any>}
  */
-export const getUser = (email, password, user) => {
+const getUser = (email, password, user) => {
     const data = { email, password };
 
     return requestIfNeeded(Methods.GET, Endpoints.USER_LOGIN, null, data, Types.USER_BASIC, user);
@@ -153,7 +153,7 @@ export const getUser = (email, password, user) => {
  * @param {Languages} lang User's lang.
  * @returns {Promise<any>}
  */
-export const addUser = (email, password, firstname, lastname, lang) => {
+const addUser = (email, password, firstname, lastname, lang) => {
     const data = { email, password, firstname, lastname, lang };
 
     return request(Methods.POST, Endpoints.USER_CREATE, null, data);
@@ -171,7 +171,7 @@ export const addUser = (email, password, firstname, lastname, lang) => {
  * @param {Languages} new_lang User's new lang.
  * @returns {Promise<any>}
  */
-export const updateUser = (token, new_email, old_password, new_password, new_firstname, new_lastname, new_lang) => new Promise((resolve, reject) => {
+const updateUser = (token, new_email, old_password, new_password, new_firstname, new_lastname, new_lang) => new Promise((resolve, reject) => {
     const data = { new_email, old_password, new_password, new_firstname, new_lastname, new_lang };
 
     if (!(new_email === null && old_password === null && new_password === null && new_firstname === null && new_lastname === null && new_lang === null))
@@ -196,7 +196,7 @@ export const updateUser = (token, new_email, old_password, new_password, new_fir
  * @param {Array<string>} blacklist Account's blacklist.
  * @returns {Promise<any>}
  */
-export const addAccount = (token, name, consumer_key, consumer_secret, access_token_key, access_token_secret, blacklist) => {
+const addAccount = (token, name, consumer_key, consumer_secret, access_token_key, access_token_secret, blacklist) => {
     const data = { name, consumer_key, consumer_secret, access_token_key, access_token_secret, blacklist };
 
     return request(Methods.POST, Endpoints.TWITTERACCOUNT_CREATE, token, data);
@@ -215,7 +215,7 @@ export const addAccount = (token, name, consumer_key, consumer_secret, access_to
  * @param {Array<string>} new_blacklist Account's new blacklist.
  * @returns {Promise<any>}
  */
-export const updateAccount = (token, id, new_name, new_consumer_key, new_consumer_secret, new_access_token_key, new_access_token_secret, new_blacklist) => new Promise((resolve, reject) => {
+const updateAccount = (token, id, new_name, new_consumer_key, new_consumer_secret, new_access_token_key, new_access_token_secret, new_blacklist) => new Promise((resolve, reject) => {
     const data = { id, new_name, new_consumer_key, new_consumer_secret, new_access_token_key, new_access_token_secret, new_blacklist };
 
     if (!(new_name == null && new_consumer_key == null && new_consumer_secret == null && new_access_token_key == null && new_access_token_secret == null && new_blacklist == null))
@@ -235,7 +235,7 @@ export const updateAccount = (token, id, new_name, new_consumer_key, new_consume
  * @param {string} id Account's name.
  * @returns {Promise<any>}
  */
-export const removeAccount = (token, id) => {
+const removeAccount = (token, id) => {
     const data = { id };
 
     return request(Methods.DELETE, Endpoints.TWITTERACCOUNT_DELETE, token, data);
@@ -248,7 +248,7 @@ export const removeAccount = (token, id) => {
  * @param {Array<Object>} accounts Account list in store.
  * @returns {Promise<any>}
  */
-export const getAccountList = (token, accounts) => {
+const getAccountList = (token, accounts) => {
     return requestIfNeeded(Methods.GET, Endpoints.ACCOUNT_GET_LIST, token, {}, Types.ACCOUNT_LIST, accounts);
 };
 
@@ -262,7 +262,7 @@ export const getAccountList = (token, accounts) => {
  * @param {number} date_end Campaign's date end.
  * @returns {Promise<any>}
  */
-export const addCampaign = (token, account_id, name, date_begin, date_end) => {
+const addCampaign = (token, account_id, name, date_begin, date_end) => {
     const data = { account_id, name, date_begin, date_end };
 
     return request(Methods.POST, Endpoints.CAMPAIGN_CREATE, token, data);
@@ -279,7 +279,7 @@ export const addCampaign = (token, account_id, name, date_begin, date_end) => {
  * @param {number} new_date_end Campaign's new date end.
  * @returns {Promise<any>}
  */
-export const updateCampaign = (token, account_id, campaign_id, new_name, new_date_begin, new_date_end) => new Promise((resolve, reject) => {
+const updateCampaign = (token, account_id, campaign_id, new_name, new_date_begin, new_date_end) => new Promise((resolve, reject) => {
     const data = { account_id, campaign_id, new_name, new_date_begin, new_date_end };
 
     if (!(new_name == null && new_date_begin == null && new_date_end == null))
@@ -300,7 +300,7 @@ export const updateCampaign = (token, account_id, campaign_id, new_name, new_dat
  * @param {string} campaign_id Campaign's name.
  * @returns {Promise<any>}
  */
-export const removeCampaign = (token, account_id, campaign_id) => {
+const removeCampaign = (token, account_id, campaign_id) => {
     const data = { account_id, campaign_id };
 
     return request(Methods.DELETE, Endpoints.CAMPAIGN_DELETE, token, data);
@@ -322,7 +322,7 @@ export const removeCampaign = (token, account_id, campaign_id) => {
  * @param {Array<string>} lang Rule's lang.
  * @returns {Promise<any>}
  */
-export const addTwitterRule = (token, account_id, campaign_id, name, type, messages, track, condition, delay, undo, lang) => {
+const addTwitterRule = (token, account_id, campaign_id, name, type, messages, track, condition, delay, undo, lang) => {
     const data = { account_id, campaign_id, name, type, messages, track, condition, delay, undo, lang };
 
     return request(Methods.POST, Endpoints.TWITTERRULE_CREATE, token, data);
@@ -345,7 +345,7 @@ export const addTwitterRule = (token, account_id, campaign_id, name, type, messa
  * @param {Array<string>} new_lang Rule's new lang.
  * @returns {Promise<any>}
  */
-export const updateTwitterRule = (token, account_id, campaign_id, rule_id, new_name, new_type, new_messages, new_track, new_condition, new_delay, new_undo, new_lang) => new Promise ((resolve, reject) => {
+const updateTwitterRule = (token, account_id, campaign_id, rule_id, new_name, new_type, new_messages, new_track, new_condition, new_delay, new_undo, new_lang) => new Promise ((resolve, reject) => {
     const data = { account_id, campaign_id, rule_id, new_name, new_type, new_messages, new_track, new_condition, new_delay, new_undo, new_lang };
     if (!(new_name == null && new_type == null && new_messages == null && new_track == null && new_condition == null && new_delay == null && new_undo == null && new_lang == null))
     {
@@ -366,8 +366,26 @@ export const updateTwitterRule = (token, account_id, campaign_id, rule_id, new_n
  * @param {string} rule_id Rule's name.
  * @returns {Promise<any>} 
  */
-export const removeTwitterRule = (token, account_id, campaign_id, rule_id) => {
+const removeTwitterRule = (token, account_id, campaign_id, rule_id) => {
     const data = { account_id, campaign_id, rule_id };
 
     return request(Methods.DELETE, Endpoints.TWITTERRULE_DELETE, token, data);
+};
+
+export {
+    getUserInfos,
+    resetPassword,
+    getUser,
+    addUser,
+    updateUser,
+    addAccount,
+    updateAccount,
+    removeAccount,
+    getAccountList,
+    addCampaign,
+    updateCampaign,
+    removeCampaign,
+    addTwitterRule,
+    updateTwitterRule,
+    removeTwitterRule
 };

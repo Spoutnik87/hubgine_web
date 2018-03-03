@@ -3,12 +3,11 @@ import getLanguage from "../languages/lang";
 
 /**
  * Lang reducer.
- * @param {Object<any>} state Language store state.
+ * @param {Object<any,any>} state Language store state.
  * @param {string} action ActionType.
  */
 
-const lang = (state = {}, action) =>
-{
+const lang = (state = {}, action) => {
     switch (action.type)
     {
         case ActionTypes.LANG_UPDATE:
@@ -16,6 +15,6 @@ const lang = (state = {}, action) =>
         default:
             return state;
     }
-}
+};
 
 export default lang;

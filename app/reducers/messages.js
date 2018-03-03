@@ -1,15 +1,15 @@
-import * as ActionTypes from "../constants/ActionTypes";
+import { FAILURE_MESSAGE, FAILURE_MESSAGES, SUCCESS_MESSAGE, SUCCESS_MESSAGES,
+    INFO_MESSAGE, INFO_MESSAGES, CLEAR_MESSAGES } from "../constants/ActionTypes";
 
 /**
  * Messages reducer.
- * @param {Object<any>} state Messages store state.
+ * @param {Object<any,any>} state Messages store state.
  * @param {string} action ActionType.
  */
-export default function messages(state = {}, action)
-{
+const messages = (state = {}, action) => {
     switch (action.type)
     {
-        case ActionTypes.FAILURE_MESSAGE:
+        case FAILURE_MESSAGE:
             return {
                 error: [
                     {
@@ -17,11 +17,11 @@ export default function messages(state = {}, action)
                     }
                 ]
             };
-        case ActionTypes.FAILURE_MESSAGES:
+        case FAILURE_MESSAGES:
             return {
                 error: action.messages.map(message => ({ msg: message }))
             };
-        case ActionTypes.SUCCESS_MESSAGE:
+        case SUCCESS_MESSAGE:
             return {
                 success: [
                     {
@@ -29,11 +29,11 @@ export default function messages(state = {}, action)
                     }
                 ]
             };
-        case ActionTypes.SUCCESS_MESSAGES:
+        case SUCCESS_MESSAGES:
             return {
                 success: action.messages.map(message => ({ msg: message }))
             };
-        case ActionTypes.INFO_MESSAGE:
+        case INFO_MESSAGE:
             return {
                 info: [
                     {
@@ -41,13 +41,15 @@ export default function messages(state = {}, action)
                     }
                 ]
             };
-        case ActionTypes.INFO_MESSAGES:
+        case INFO_MESSAGES:
             return {
                 info: action.messages.map(message => ({ msg: message }))
             };
-        case ActionTypes.CLEAR_MESSAGES:
+        case CLEAR_MESSAGES:
             return {};
         default:
             return state;
     }
-}
+};
+
+export default messages;

@@ -3,12 +3,12 @@ import fr from "./fr";
 import * as Languages from "../constants/Languages";
 
 /**
- * Return all language locale.
+ * Return corresponding locale.(default: en)
  * @public
- * @param {string} lang Language.
+ * @param {Languages} lang Language.
  * @returns {Object<string,string>}
  */
-const getLanguage = (lang) => {
+const getLanguage = lang => {
     switch(lang)
     {
         case Languages.FRENCH:

@@ -6,11 +6,10 @@ import { addMetadata } from "../util/Metadata";
 
 /**
  * Accounts reducer.
- * @param {Object<any>} state Accounts store state.
+ * @param {Object<any,any>} state Accounts store state.
  * @param {string} action ActionType.
  */
-const accounts = (state = {}, action) =>
-{
+const accounts = (state = {}, action) => {
     let accountIndex = 0;
     let campaignIndex = 0;
     let ruleIndex = 0;
@@ -148,6 +147,6 @@ const accounts = (state = {}, action) =>
         default:
             return state;
     }
-}
+};
 
 export default accounts;

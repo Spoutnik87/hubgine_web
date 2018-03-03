@@ -2,7 +2,7 @@
 require("newrelic");
 const express = require("express");
 const path = require("path");
-const logger = require("morgan");
+const morganLogger = require("morgan");
 const compression = require("compression");
 const bodyParser = require("body-parser");
 const React = require("react");
@@ -13,6 +13,7 @@ const mime = require("mime");
 const Router = require("react-router-dom");
 const cookiesMiddleware = require("universal-cookie-express");
 const favicon = require("serve-favicon");
+const winston = require("winston");
 
 // ES6 Transpiler
 require("babel-core/register");
@@ -22,18 +23,30 @@ require("babel-polyfill");
 const configureStore = require("./app/store/configureStore").default;
 const lang = require("./app/languages/lang");
 const App = require("./app/components/App").default;
-const Languages = require("./app/constants/Languages");
 const config = require("./server-config.json");
+
+//Winston Logger
+const logger = new winston.Logger({
+    level: config.logger.level,
+    transports: [
+        new winston.transports.Console({
+            colorize: true
+        }),
+        new winston.transports.File({
+            filename: "combined.log"
+        })
+    ]
+});
 
 let app = express();
 const NODE_ENV = process.env.NODE_ENV || "development";
-console.log("Le serveur a été initialisé en mode : " + NODE_ENV);
+logger.info("Le serveur a été initialisé en mode : " + NODE_ENV);
 let server = require("http").Server(app);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
 app.set("port", config.port);
 app.use(compression());
-app.use(logger(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+app.use(morganLogger(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookiesMiddleware());
@@ -59,7 +72,7 @@ app.use((req, res) => {
     };
     const store = configureStore({
         ...initialState,
-        lang: lang.default(user.lang || Languages.ENGLISH)
+        lang: lang.default(user.lang)
     }, req.universalCookies);
     const context = {};
 
@@ -92,13 +105,13 @@ app.use((req, res) => {
 if (NODE_ENV === "production")
 {
     app.use((err, req, res, next) => {
-        console.error(err.stack);
+        logger.error(err.stack);
         res.sendStatus(err.status || 500);
     });
 }
 
 server.listen(app.get("port"), () => {
-    console.log("Le serveur est executé sur le port : " + app.get("port"));
+    logger.info("Le serveur est executé sur le port : " + app.get("port"));
 });
 
 module.exports = app;

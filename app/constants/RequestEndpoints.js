@@ -1,7 +1,7 @@
 export const USER_LOGIN = "login";
 export const USER_GET = "user";
 export const USER_RESET_PASSWORD = "reset_password";
-export const USER_CREATE = "create_user";
+export const USER_CREATE = "register";
 export const USER_UPDATE = "user";
 export const TWITTERACCOUNT_CREATE = "account";
 export const TWITTERACCOUNT_UPDATE = "account";

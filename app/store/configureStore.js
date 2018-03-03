@@ -8,11 +8,10 @@ import rootReducer from "../reducers/index";
 /**
  * Configure default store.
  * @public
- * @param {Object<any>} initialState Initial state.
- * @param {Object<any>} cookie Cookie.
+ * @param {Object<any,any>} initialState Initial state.
+ * @param {Object<any,any>} cookie Cookie.
  */
-export default function configureStore(initialState, cookie)
-{
+const configureStore = (initialState, cookie) => {
     const middlewareModules = [thunk, promise, createCookieMiddleware(cookie)];
     if (process.env.NODE_ENV !== "production")
     {
@@ -25,3 +24,5 @@ export default function configureStore(initialState, cookie)
     );
     return store;
 }
+
+export default configureStore;

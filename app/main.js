@@ -13,7 +13,7 @@ const user = cookies.get("user") || {};
 const store = configureStore({
     ...window.INITIAL_STATE,
     user: user,
-    lang: getLanguage(user.lang || ENGLISH)
+    lang: getLanguage(user.lang)
 }, cookies);
 
 hydrate(
