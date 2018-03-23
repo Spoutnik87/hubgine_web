@@ -1,3 +1,4 @@
+#Web application Dockerfile
 FROM alpine:latest
 
 ENV NODE_ENV=production
@@ -19,6 +20,6 @@ USER 1000
 
 RUN mkdir ~/.ssh
 
-CMD ssh-keyscan -t rsa bitbucket.org >> ~/.ssh/known_hosts && eval $(ssh-agent -s) && ssh-add /run/secrets/access_key && npm install --production && npm start
+CMD npm install --production && npm start
 
 EXPOSE 3000
