@@ -85,6 +85,7 @@ const getLanguage = () => {
         //---ACCOUNTOVERVIEW---
         ACCOUNTOVERVIEW_NO_ACCOUNT: "Ce compte n'existe pas.",
         ACCOUNTOVERVIEW_EDIT_BUTTON: "Modifier ce compte",
+        ACCOUNTOVERVIEW_ADD_CAMPAIGN_BUTTON: "Créer une campagne",
         ACCOUNTOVERVIEW_CAMPAIGNS_TITLE: "Les campagnes :",
         ACCOUNTOVERVIEW_BLACKLIST_TITLE: "La liste noire de mots :",
         //---CAMPAIGNOVERVIEW---
@@ -94,6 +95,9 @@ const getLanguage = () => {
         CAMPAIGNOVERVIEW_ADD_RULE_BUTTON: "Ajouter une règle",
         CAMPAIGNOVERVIEW_TITLE_ACCOUNT: "Compte : ",
         CAMPAIGNOVERVIEW_TITLE_CAMPAIGN: "Campagne : ",
+        CAMPAIGNOVERVIEW_NAME: "Nom",
+        CAMPAIGNOVERVIEW_DATEBEGIN: "Date de début",
+        CAMPAIGNOVERVIEW_DATEEND: "Date de fin",
         //---USERPASSWORDFORM---
         USERPASSWORDFORM_CREATE_TITLE: "Définir un nouveau mot de passe",
         USERPASSWORDFORM_EDIT_TITLE: "Changer de mot de passe",

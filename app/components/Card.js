@@ -9,6 +9,7 @@ class Card extends Component {
 
     static defaultProps = {
         title: null,
+        titleRight: null,
         children: null
     };
     
@@ -21,14 +22,15 @@ class Card extends Component {
     {
         const {
             title,
+            titleRight,
             children
         } = this.props;
         return (
             <div className="card">
                 {
-                    title && (
+                    (title || titleRight) && (
                         <div className="card-header">
-                            <h3 className="card-title">{title}</h3>
+                            <h3 className="card-title">{title}{titleRight && (<span className="right-align">{titleRight}</span>)}</h3>
                         </div>
                     )
                 }

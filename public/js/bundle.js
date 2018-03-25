@@ -1803,18 +1803,24 @@ var Card = function (_Component) {
         value: function render() {
             var _props = this.props,
                 title = _props.title,
+                titleRight = _props.titleRight,
                 children = _props.children;
 
             return _react2.default.createElement(
                 "div",
                 { className: "card" },
-                title && _react2.default.createElement(
+                (title || titleRight) && _react2.default.createElement(
                     "div",
                     { className: "card-header" },
                     _react2.default.createElement(
                         "h3",
                         { className: "card-title" },
-                        title
+                        title,
+                        titleRight && _react2.default.createElement(
+                            "span",
+                            { className: "right-align" },
+                            titleRight
+                        )
                     )
                 ),
                 _react2.default.createElement(
@@ -1835,6 +1841,7 @@ Card.propTypes = {
 };
 Card.defaultProps = {
     title: null,
+    titleRight: null,
     children: null
 };
 exports.default = Card;
@@ -1915,6 +1922,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require("react");
@@ -1971,25 +1980,23 @@ var _SuccessButton = require("../buttons/SuccessButton");
 
 var _SuccessButton2 = _interopRequireDefault(_SuccessButton);
 
-var _TwitterRuleForm = require("../Forms/TwitterRuleForm");
+var _CampaignForm = require("../Forms/CampaignForm");
 
-var _TwitterRuleForm2 = _interopRequireDefault(_TwitterRuleForm);
+var _CampaignForm2 = _interopRequireDefault(_CampaignForm);
 
 var _WordList = require("../WordList");
 
 var _WordList2 = _interopRequireDefault(_WordList);
 
-var _TextInput = require("../Inputs/TextInput");
+var _Input = require("../Inputs/Input");
 
-var _TextInput2 = _interopRequireDefault(_TextInput);
+var _Input2 = _interopRequireDefault(_Input);
 
 var _Text = require("../Text");
 
 var _Text2 = _interopRequireDefault(_Text);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -2005,17 +2012,21 @@ var AccountOverview = function (_Component) {
 
         var _this = _possibleConstructorReturn(this, (AccountOverview.__proto__ || Object.getPrototypeOf(AccountOverview)).call(this, props));
 
-        _this.state = _defineProperty({
+        _this.state = {
             editAccount: false,
             loadingAccountList: true,
             accountId: decodeURI(_this.props.match.params.accountId),
             account: undefined,
-            loadingAccountForm: false
-        }, "editAccount", false);
+            loadingAccountForm: false,
+            displayCampaignCreationForm: false,
+            loadingCampaignForm: false
+        };
         _this.handleAccountEditionSubmit = _this.handleAccountEditionSubmit.bind(_this);
         _this.handleAccountEditionDelete = _this.handleAccountEditionDelete.bind(_this);
         _this.handleAccountEditionCancel = _this.handleAccountEditionCancel.bind(_this);
         _this.handleCampaignSelection = _this.handleCampaignSelection.bind(_this);
+        _this.handleCampaignCreationSubmit = _this.handleCampaignCreationSubmit.bind(_this);
+        _this.handleCampaignCreationCancel = _this.handleCampaignCreationCancel.bind(_this);
         _this.handleClick = _this.handleClick.bind(_this);
         return _this;
     }
@@ -2050,13 +2061,17 @@ var AccountOverview = function (_Component) {
             this.setState({
                 loadingAccountForm: true
             });
-            this.props.actions.updateAccount(event.default.name, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist).then(function () {}).catch(function () {}).finally(function () {
-                _this3.setState({
-                    loadingAccountForm: false,
+            var state = {
+                loadingAccountForm: false
+            };
+            this.props.actions.updateAccount(event.default.name, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist).then(function () {
+                state = _extends({}, state, {
                     editAccount: false,
                     accountId: name,
                     account: _this3.props.accounts[(0, _lodash.findIndex)(_this3.props.accounts, { name: name })]
                 });
+            }).catch(function () {}).finally(function () {
+                _this3.setState(state);
                 _this3.props.history.push(encodeURI("/account/" + name));
             });
         }
@@ -2092,11 +2107,47 @@ var AccountOverview = function (_Component) {
             this.props.history.push(encodeURI("/campaign/" + account + "/" + campaign));
         }
     }, {
+        key: "handleCampaignCreationSubmit",
+        value: function handleCampaignCreationSubmit(event) {
+            var _this5 = this;
+
+            var _event$result2 = event.result,
+                accountId = _event$result2.accountId,
+                name = _event$result2.name,
+                dateBegin = _event$result2.dateBegin,
+                dateEnd = _event$result2.dateEnd;
+
+            this.setState({
+                loadingCampaignForm: true
+            });
+            var state = {
+                loadingCampaignForm: false
+            };
+            this.props.actions.addCampaign(accountId, name, dateBegin, dateEnd).then(function () {
+                state = _extends({}, state, {
+                    displayCampaignCreationForm: false
+                });
+            }).catch(function (error) {}).finally(function () {
+                _this5.setState(state);
+            });
+        }
+    }, {
+        key: "handleCampaignCreationCancel",
+        value: function handleCampaignCreationCancel(event) {
+            this.setState({
+                displayCampaignCreationForm: false
+            });
+        }
+    }, {
         key: "handleClick",
         value: function handleClick(event) {
             if (event.target.id === "editAccount") {
                 this.setState({
                     editAccount: true
+                });
+            } else if (event.target.id === "addCampaign") {
+                this.setState({
+                    displayCampaignCreationForm: true
                 });
             }
         }
@@ -2106,15 +2157,20 @@ var AccountOverview = function (_Component) {
             var _props$lang = this.props.lang,
                 ACCOUNTOVERVIEW_NO_ACCOUNT = _props$lang.ACCOUNTOVERVIEW_NO_ACCOUNT,
                 ACCOUNTOVERVIEW_EDIT_BUTTON = _props$lang.ACCOUNTOVERVIEW_EDIT_BUTTON,
+                ACCOUNTOVERVIEW_ADD_CAMPAIGN_BUTTON = _props$lang.ACCOUNTOVERVIEW_ADD_CAMPAIGN_BUTTON,
                 ACCOUNTOVERVIEW_CAMPAIGNS_TITLE = _props$lang.ACCOUNTOVERVIEW_CAMPAIGNS_TITLE,
                 ACCOUNTOVERVIEW_BLACKLIST_TITLE = _props$lang.ACCOUNTOVERVIEW_BLACKLIST_TITLE;
-            var messages = this.props.messages;
+            var _props = this.props,
+                accounts = _props.accounts,
+                messages = _props.messages;
             var _state = this.state,
                 editAccount = _state.editAccount,
                 loadingAccountList = _state.loadingAccountList,
                 accountId = _state.accountId,
                 account = _state.account,
-                loadingAccountForm = _state.loadingAccountForm;
+                loadingAccountForm = _state.loadingAccountForm,
+                displayCampaignCreationForm = _state.displayCampaignCreationForm,
+                loadingCampaignForm = _state.loadingCampaignForm;
 
             return _react2.default.createElement(
                 _Container2.default,
@@ -2125,15 +2181,10 @@ var AccountOverview = function (_Component) {
                     _react2.default.createElement(_LoadingCog2.default, { center: true })
                 ) : account ? _react2.default.createElement(
                     _Card2.default,
-                    { title: _react2.default.createElement(
-                            "span",
-                            null,
-                            accountId,
-                            !editAccount && _react2.default.createElement(
-                                _PrimaryButton2.default,
-                                { id: "editAccount", style: { float: "right" }, onClick: this.handleClick },
-                                ACCOUNTOVERVIEW_EDIT_BUTTON
-                            )
+                    { title: accountId, titleRight: !editAccount && _react2.default.createElement(
+                            _PrimaryButton2.default,
+                            { id: "editAccount", onClick: this.handleClick },
+                            ACCOUNTOVERVIEW_EDIT_BUTTON
                         ) },
                     editAccount ? _react2.default.createElement(_TwitterAccountForm2.default, { account: account, loading: loadingAccountForm, cancel: true, edit: true, "delete": true, onCancel: this.handleAccountEditionCancel, onDelete: this.handleAccountEditionDelete, onSubmit: this.handleAccountEditionSubmit }) : _react2.default.createElement(
                         _react.Fragment,
@@ -2141,18 +2192,24 @@ var AccountOverview = function (_Component) {
                         _react2.default.createElement(
                             _Card2.default,
                             { title: "Informations" },
-                            _react2.default.createElement(_TextInput2.default, { name: "name", value: account.name, label: "Name" }),
-                            _react2.default.createElement(_TextInput2.default, { name: "consumerKey", value: account.consumerSecret, label: "Consumer Key" }),
-                            _react2.default.createElement(_TextInput2.default, { name: "consumerSecret", value: account.consumerSecret, label: "Consumer Secret" }),
-                            _react2.default.createElement(_TextInput2.default, { name: "accessTokenSecret", value: account.accessTokenKey, label: "Access Token Key" }),
-                            _react2.default.createElement(_TextInput2.default, { name: "accessTokenSecret", value: account.accessTokenSecret, label: "Access Token Secret" }),
+                            _react2.default.createElement(_Input2.default, { name: "name", value: account.name, label: "Name", disabled: true }),
+                            _react2.default.createElement(_Input2.default, { name: "consumerKey", value: account.consumerKey, label: "Consumer Key", disabled: true }),
+                            _react2.default.createElement(_Input2.default, { name: "consumerSecret", value: account.consumerSecret, label: "Consumer Secret", disabled: true }),
+                            _react2.default.createElement(_Input2.default, { name: "accessTokenSecret", value: account.accessTokenKey, label: "Access Token Key", disabled: true }),
+                            _react2.default.createElement(_Input2.default, { name: "accessTokenSecret", value: account.accessTokenSecret, label: "Access Token Secret", disabled: true }),
                             _react2.default.createElement(_Text2.default, { name: "maxCampaigns", value: account.maxCampaigns, label: "Max campaigns" }),
                             _react2.default.createElement(_WordList2.default, { words: account.blacklist })
                         ),
                         _react2.default.createElement(
                             _Card2.default,
-                            { title: ACCOUNTOVERVIEW_CAMPAIGNS_TITLE },
-                            _react2.default.createElement(_CampaignList2.default, { account: account, campaigns: account.campaigns, onClick: this.handleCampaignSelection })
+                            { title: ACCOUNTOVERVIEW_CAMPAIGNS_TITLE, titleRight: !displayCampaignCreationForm && _react2.default.createElement(
+                                    _PrimaryButton2.default,
+                                    { id: "addCampaign", onClick: this.handleClick },
+                                    ACCOUNTOVERVIEW_ADD_CAMPAIGN_BUTTON
+                                ) },
+                            displayCampaignCreationForm ? _react2.default.createElement(_CampaignForm2.default, { accounts: accounts.map(function (account) {
+                                    return account.name;
+                                }), loading: loadingCampaignForm, onSubmit: this.handleCampaignCreationSubmit, onCancel: this.handleCampaignCreationCancel }) : _react2.default.createElement(_CampaignList2.default, { account: account, campaigns: account.campaigns, onClick: this.handleCampaignSelection })
                         ),
                         _react2.default.createElement(
                             _Card2.default,
@@ -2182,6 +2239,7 @@ AccountOverview.propTypes = {
     lang: _propTypes2.default.shape({
         ACCOUNTOVERVIEW_NO_ACCOUNT: _propTypes2.default.string.isRequired,
         ACCOUNTOVERVIEW_EDIT_BUTTON: _propTypes2.default.string.isRequired,
+        ACCOUNTOVERVIEW_ADD_CAMPAIGN_BUTTON: _propTypes2.default.string.isRequired,
         ACCOUNTOVERVIEW_CAMPAIGNS_TITLE: _propTypes2.default.string.isRequired,
         ACCOUNTOVERVIEW_BLACKLIST_TITLE: _propTypes2.default.string.isRequired
     }).isRequired
@@ -2199,14 +2257,15 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
         actions: (0, _redux.bindActionCreators)({
             fetchAccountList: _accounts.fetchAccountList,
             updateAccount: _accounts.updateAccount,
-            removeAccount: _accounts.removeAccount
+            removeAccount: _accounts.removeAccount,
+            addCampaign: _accounts.addCampaign
         }, dispatch)
     };
 };
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _withMessages.withMessages)((0, _withLanguage.withLanguage)((0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(AccountOverview))));
 
-},{"../../actions/accounts":1,"../CampaignList":8,"../Card":9,"../Container":10,"../Forms/TwitterAccountForm":24,"../Forms/TwitterRuleForm":25,"../Inputs/TextInput":40,"../LoadingCog":41,"../Messages":42,"../Text":48,"../WordList":51,"../buttons/PrimaryButton":55,"../buttons/SuccessButton":57,"../withLanguage":61,"../withMessages":62,"lodash":292,"prop-types":320,"react":433,"react-redux":352,"react-router-dom":382,"redux":536}],12:[function(require,module,exports){
+},{"../../actions/accounts":1,"../CampaignList":8,"../Card":9,"../Container":10,"../Forms/CampaignForm":23,"../Forms/TwitterAccountForm":24,"../Inputs/Input":36,"../LoadingCog":41,"../Messages":42,"../Text":48,"../WordList":51,"../buttons/PrimaryButton":55,"../buttons/SuccessButton":57,"../withLanguage":61,"../withMessages":62,"lodash":292,"prop-types":320,"react":433,"react-redux":352,"react-router-dom":382,"redux":536}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2610,9 +2669,9 @@ var _TwitterRuleForm = require("../Forms/TwitterRuleForm");
 
 var _TwitterRuleForm2 = _interopRequireDefault(_TwitterRuleForm);
 
-var _TextInput = require("../Inputs/TextInput");
+var _Input = require("../Inputs/Input");
 
-var _TextInput2 = _interopRequireDefault(_TextInput);
+var _Input2 = _interopRequireDefault(_Input);
 
 var _DateInput = require("../Inputs/DateInput");
 
@@ -2849,7 +2908,10 @@ var CampaignOverview = function (_Component) {
                 CAMPAIGNOVERVIEW_RULES_TITLE = _props$lang.CAMPAIGNOVERVIEW_RULES_TITLE,
                 CAMPAIGNOVERVIEW_ADD_RULE_BUTTON = _props$lang.CAMPAIGNOVERVIEW_ADD_RULE_BUTTON,
                 CAMPAIGNOVERVIEW_TITLE_ACCOUNT = _props$lang.CAMPAIGNOVERVIEW_TITLE_ACCOUNT,
-                CAMPAIGNOVERVIEW_TITLE_CAMPAIGN = _props$lang.CAMPAIGNOVERVIEW_TITLE_CAMPAIGN;
+                CAMPAIGNOVERVIEW_TITLE_CAMPAIGN = _props$lang.CAMPAIGNOVERVIEW_TITLE_CAMPAIGN,
+                CAMPAIGNOVERVIEW_NAME = _props$lang.CAMPAIGNOVERVIEW_NAME,
+                CAMPAIGNOVERVIEW_DATEBEGIN = _props$lang.CAMPAIGNOVERVIEW_DATEBEGIN,
+                CAMPAIGNOVERVIEW_DATEEND = _props$lang.CAMPAIGNOVERVIEW_DATEEND;
             var _props = this.props,
                 messages = _props.messages,
                 accounts = _props.accounts;
@@ -2868,15 +2930,10 @@ var CampaignOverview = function (_Component) {
                 null,
                 _react2.default.createElement(
                     _Card2.default,
-                    { title: _react2.default.createElement(
-                            "span",
-                            null,
-                            CAMPAIGNOVERVIEW_TITLE_ACCOUNT + accountId + " - " + CAMPAIGNOVERVIEW_TITLE_CAMPAIGN + campaignId,
-                            !editCampaign && _react2.default.createElement(
-                                _PrimaryButton2.default,
-                                { id: "editCampaign", style: { float: "right" }, onClick: this.handleClick },
-                                CAMPAIGNOVERVIEW_EDIT_BUTTON
-                            )
+                    { title: CAMPAIGNOVERVIEW_TITLE_ACCOUNT + accountId + " - " + CAMPAIGNOVERVIEW_TITLE_CAMPAIGN + campaignId, titleRight: !editCampaign && _react2.default.createElement(
+                            _PrimaryButton2.default,
+                            { id: "editCampaign", onClick: this.handleClick },
+                            CAMPAIGNOVERVIEW_EDIT_BUTTON
                         ) },
                     loadingAccountList ? _react2.default.createElement(_LoadingCog2.default, { center: true }) : campaign ? editCampaign ? _react2.default.createElement(_CampaignForm2.default, { accounts: this.props.accounts.map(function (account) {
                             return account.name;
@@ -2884,22 +2941,17 @@ var CampaignOverview = function (_Component) {
                         _react.Fragment,
                         null,
                         _react2.default.createElement(_Messages2.default, { messages: messages }),
+                        _react2.default.createElement(_Input2.default, { name: "name", value: campaign.name, label: CAMPAIGNOVERVIEW_NAME, disabled: true }),
+                        _react2.default.createElement(_DateInput2.default, { name: "dateBegin", value: campaign.dateBegin, label: CAMPAIGNOVERVIEW_DATEBEGIN, disabled: true }),
+                        _react2.default.createElement(_DateInput2.default, { name: "dateEnd", value: campaign.dateEnd, label: CAMPAIGNOVERVIEW_DATEEND, disabled: true }),
                         _react2.default.createElement(
                             _Card2.default,
-                            { title: CAMPAIGNOVERVIEW_RULES_TITLE },
-                            creationRuleFormDisplayed ? _react2.default.createElement(_TwitterRuleForm2.default, { cancel: true, loading: loading, onCancel: this.handleRuleCreationCancel, onSubmit: this.handleRuleCreationSubmit }) : _react2.default.createElement(
-                                _react.Fragment,
-                                null,
-                                _react2.default.createElement(_TextInput2.default, { name: "name", value: campaign.name, label: "Name" }),
-                                _react2.default.createElement(_DateInput2.default, { name: "dateBegin", value: campaign.dateBegin, label: "Date begin" }),
-                                _react2.default.createElement(_DateInput2.default, { name: "dateEnd", value: campaign.dateBegin, label: "Date end", disabled: true }),
-                                _react2.default.createElement(_RuleList2.default, { accountId: accountId, campaignId: campaignId, rules: campaign.config.rules, onRuleEditMode: this.handleRuleEditMode, selectedRule: selectedRule, loading: loading, onRuleEditionSubmit: this.handleRuleEditionSubmit, onRuleEditionDelete: this.handleRuleEditionDelete, onRuleEditionCancel: this.handleRuleEditionCancel })
-                            )
-                        ),
-                        !creationRuleFormDisplayed && _react2.default.createElement(
-                            _SuccessButton2.default,
-                            { id: "createRule", onClick: this.handleClick },
-                            CAMPAIGNOVERVIEW_ADD_RULE_BUTTON
+                            { title: CAMPAIGNOVERVIEW_RULES_TITLE, titleRight: !creationRuleFormDisplayed && _react2.default.createElement(
+                                    _SuccessButton2.default,
+                                    { id: "createRule", onClick: this.handleClick },
+                                    CAMPAIGNOVERVIEW_ADD_RULE_BUTTON
+                                ) },
+                            creationRuleFormDisplayed ? _react2.default.createElement(_TwitterRuleForm2.default, { cancel: true, loading: loading, onCancel: this.handleRuleCreationCancel, onSubmit: this.handleRuleCreationSubmit }) : _react2.default.createElement(_RuleList2.default, { accountId: accountId, campaignId: campaignId, rules: campaign.config.rules, onRuleEditMode: this.handleRuleEditMode, selectedRule: selectedRule, loading: loading, onRuleEditionSubmit: this.handleRuleEditionSubmit, onRuleEditionDelete: this.handleRuleEditionDelete, onRuleEditionCancel: this.handleRuleEditionCancel })
                         )
                     ) : _react2.default.createElement(
                         _react.Fragment,
@@ -2928,7 +2980,10 @@ CampaignOverview.propTypes = {
         CAMPAIGNOVERVIEW_RULES_TITLE: _propTypes2.default.string.isRequired,
         CAMPAIGNOVERVIEW_ADD_RULE_BUTTON: _propTypes2.default.string.isRequired,
         CAMPAIGNOVERVIEW_TITLE_ACCOUNT: _propTypes2.default.string.isRequired,
-        CAMPAIGNOVERVIEW_TITLE_CAMPAIGN: _propTypes2.default.string.isRequired
+        CAMPAIGNOVERVIEW_TITLE_CAMPAIGN: _propTypes2.default.string.isRequired,
+        CAMPAIGNOVERVIEW_NAME: _propTypes2.default.string.isRequired,
+        CAMPAIGNOVERVIEW_DATEBEGIN: _propTypes2.default.string.isRequired,
+        CAMPAIGNOVERVIEW_DATEEND: _propTypes2.default.string.isRequired
     }).isRequired
 };
 
@@ -2951,7 +3006,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 
 exports.default = (0, _reactRouterDom.withRouter)((0, _withMessages.withMessages)((0, _withLanguage.withLanguage)((0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(CampaignOverview))));
 
-},{"../../actions/accounts":1,"../Card":9,"../Container":10,"../Forms/CampaignForm":23,"../Forms/TwitterRuleForm":25,"../Inputs/DateInput":35,"../Inputs/TextInput":40,"../LoadingCog":41,"../Messages":42,"../RuleList":47,"../buttons/PrimaryButton":55,"../buttons/SuccessButton":57,"../withLanguage":61,"../withMessages":62,"lodash":292,"prop-types":320,"react":433,"react-redux":352,"react-router-dom":382,"redux":536}],15:[function(require,module,exports){
+},{"../../actions/accounts":1,"../Card":9,"../Container":10,"../Forms/CampaignForm":23,"../Forms/TwitterRuleForm":25,"../Inputs/DateInput":35,"../Inputs/Input":36,"../LoadingCog":41,"../Messages":42,"../RuleList":47,"../buttons/PrimaryButton":55,"../buttons/SuccessButton":57,"../withLanguage":61,"../withMessages":62,"lodash":292,"prop-types":320,"react":433,"react-redux":352,"react-router-dom":382,"redux":536}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3748,8 +3803,7 @@ var UserDashboard = function (_Component) {
                 this.setState({
                     displayCampaignForm: true
                 });
-            } else event.target.id === "displayAccount";
-            {
+            } else if (event.target.id === "displayAccount") {
                 this.props.history.push(encodeURI("/account/" + event.target.getAttribute("data-element")));
             }
         }
@@ -3832,19 +3886,10 @@ var UserDashboard = function (_Component) {
                             }), loading: loadingCampaignForm, cancel: true, messages: messages, onCancel: this.handleCampaignCreationCancel, onSubmit: this.handleCampaignCreationSubmit }) : accounts.map(function (account) {
                             return _react2.default.createElement(
                                 _Card2.default,
-                                { key: account.uid, title: _react2.default.createElement(
-                                        "span",
-                                        null,
-                                        account.name,
-                                        _react2.default.createElement(
-                                            "span",
-                                            { style: { float: "right" } },
-                                            _react2.default.createElement(
-                                                _InfoButton2.default,
-                                                { id: "displayAccount", "data-element": account.name, onClick: _this4.handleClick },
-                                                USERDASHBOARD_DISPLAY_ACCOUNT_BUTTON
-                                            )
-                                        )
+                                { key: account.uid, title: account.name, titleRight: _react2.default.createElement(
+                                        _InfoButton2.default,
+                                        { id: "displayAccount", "data-element": account.name, onClick: _this4.handleClick },
+                                        USERDASHBOARD_DISPLAY_ACCOUNT_BUTTON
                                     ) },
                                 _react2.default.createElement(_CampaignList2.default, { account: account, campaigns: accounts[(0, _lodash.findIndex)(accounts, { name: account.name })].campaigns, onClick: _this4.handleCampaignSelection })
                             );
@@ -6371,7 +6416,7 @@ var ArrayInput = function (_Component) {
                         label,
                         tooltip && _react2.default.createElement(
                             "span",
-                            { style: { float: "right" } },
+                            { className: "right-align" },
                             _react2.default.createElement(
                                 _Tooltip2.default,
                                 null,
@@ -6519,7 +6564,7 @@ var Checkbox = function (_Component) {
                         label,
                         tooltip && _react2.default.createElement(
                             "span",
-                            { style: { float: "right" } },
+                            { className: "right-align" },
                             _react2.default.createElement(
                                 _Tooltip2.default,
                                 null,
@@ -6596,6 +6641,10 @@ var _Tooltip = require("../Tooltip");
 
 var _Tooltip2 = _interopRequireDefault(_Tooltip);
 
+var _Input = require("./Input");
+
+var _Input2 = _interopRequireDefault(_Input);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -6604,7 +6653,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-require('moment/locale/fr');
+require("moment/locale/fr");
 
 var DateInput = function (_Component) {
     _inherits(DateInput, _Component);
@@ -6647,7 +6696,7 @@ var DateInput = function (_Component) {
             var valid = function valid(current) {
                 return current.isAfter(yesterday) && current.isBefore(nextYear);
             };
-            var dateInput = _react2.default.createElement(_reactDatetime2.default, { locale: REACT_DATETIME_LANGUAGE, isValidDate: valid, onChange: this.handleChange, value: value ? new Date(value * 1000) : "", disabled: disabled });
+            var dateInput = !disabled ? _react2.default.createElement(_reactDatetime2.default, { locale: REACT_DATETIME_LANGUAGE, isValidDate: valid, onChange: this.handleChange, value: value ? new Date(value * 1000) : "" }) : _react2.default.createElement(_Input2.default, { value: (0, _moment2.default)(value * 1000).toDate().toLocaleString(), disabled: true });
             return label ? _react2.default.createElement(
                 _FormGroup2.default,
                 null,
@@ -6660,7 +6709,7 @@ var DateInput = function (_Component) {
                         label,
                         tooltip && _react2.default.createElement(
                             "span",
-                            { style: { float: "right" } },
+                            { className: "right-align" },
                             _react2.default.createElement(
                                 _Tooltip2.default,
                                 null,
@@ -6697,7 +6746,7 @@ DateInput.defaultProps = {
 };
 exports.default = (0, _withLanguage.withLanguage)(DateInput);
 
-},{"../FormGroup":22,"../Row":45,"../Tooltip":49,"../withLanguage":61,"moment":313,"moment/locale/fr":312,"prop-types":320,"react":433,"react-datetime":323}],36:[function(require,module,exports){
+},{"../FormGroup":22,"../Row":45,"../Tooltip":49,"../withLanguage":61,"./Input":36,"moment":313,"moment/locale/fr":312,"prop-types":320,"react":433,"react-datetime":323}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6780,7 +6829,7 @@ var Input = function (_Component) {
                         label,
                         tooltip && _react2.default.createElement(
                             "span",
-                            { style: { float: "right" } },
+                            { className: "right-align" },
                             _react2.default.createElement(
                                 _Tooltip2.default,
                                 null,
@@ -6957,7 +7006,7 @@ var ListInput = function (_Component) {
                         label,
                         tooltip && _react2.default.createElement(
                             "span",
-                            { style: { float: "right" } },
+                            { className: "right-align" },
                             _react2.default.createElement(
                                 _Tooltip2.default,
                                 null,
@@ -7130,7 +7179,7 @@ var NumberInput = function (_Component) {
                         label,
                         tooltip && _react2.default.createElement(
                             "span",
-                            { style: { float: "right" } },
+                            { className: "right-align" },
                             _react2.default.createElement(
                                 _Tooltip2.default,
                                 null,
@@ -7275,7 +7324,7 @@ var Switch = function (_Component) {
                         label,
                         tooltip && _react2.default.createElement(
                             "span",
-                            { style: { float: "right" } },
+                            { className: "right-align" },
                             _react2.default.createElement(
                                 _Tooltip2.default,
                                 null,
@@ -7452,7 +7501,7 @@ var TextInput = function (_Component) {
                         label,
                         tooltip && _react2.default.createElement(
                             "span",
-                            { style: { float: "right" } },
+                            { className: "right-align" },
                             _react2.default.createElement(
                                 _Tooltip2.default,
                                 null,
@@ -7929,7 +7978,7 @@ var RuleItem = function (_Component) {
                     null,
                     _react2.default.createElement(
                         "div",
-                        { style: { float: "right" }, onClick: this.handleClick },
+                        { className: "right-align", onClick: this.handleClick },
                         _react2.default.createElement(
                             _PrimaryButton2.default,
                             { onClick: this.handleEditMode },
@@ -8070,22 +8119,26 @@ var RuleList = function (_Component) {
                 onRuleEditionSubmit = _props.onRuleEditionSubmit;
 
             return rules.length > 0 ? _react2.default.createElement(
-                "div",
-                null,
-                rules.map(function (rule) {
-                    return _react2.default.createElement(
-                        "div",
-                        { key: rule.uid },
-                        _react2.default.createElement(_RuleItem2.default, { accountId: accountId, campaignId: campaignId, rule: rule, onEditMode: onRuleEditMode,
-                            edit: rule.name === selectedRule, loading: rule.name === selectedRule && loading, onRuleEditionSubmit: onRuleEditionSubmit,
-                            onRuleEditionDelete: onRuleEditionDelete, onRuleEditionCancel: onRuleEditionCancel })
-                    );
-                })
-            ) : _react2.default.createElement(
-                "div",
-                null,
-                RULELIST_NO_RULES
-            );
+                "table",
+                { className: "table" },
+                _react2.default.createElement(
+                    "tbody",
+                    null,
+                    rules.map(function (rule) {
+                        return _react2.default.createElement(
+                            "tr",
+                            { key: rule.uid },
+                            _react2.default.createElement(
+                                "td",
+                                null,
+                                _react2.default.createElement(_RuleItem2.default, { accountId: accountId, campaignId: campaignId, rule: rule, onEditMode: onRuleEditMode,
+                                    edit: rule.name === selectedRule, loading: rule.name === selectedRule && loading, onRuleEditionSubmit: onRuleEditionSubmit,
+                                    onRuleEditionDelete: onRuleEditionDelete, onRuleEditionCancel: onRuleEditionCancel })
+                            )
+                        );
+                    })
+                )
+            ) : RULELIST_NO_RULES;
         }
     }]);
 
@@ -8195,7 +8248,7 @@ var Text = function (_Component) {
                         label,
                         tooltip && _react2.default.createElement(
                             "span",
-                            { style: { float: "right" } },
+                            { className: "right-align" },
                             _react2.default.createElement(
                                 _Tooltip2.default,
                                 null,
@@ -8304,35 +8357,35 @@ var _react2 = _interopRequireDefault(_react);
 
 require("recharts/lib/polyfill.js");
 
-var _ResponsiveContainer = require("recharts/lib/component/ResponsiveContainer.js");
+var _ResponsiveContainer = require("recharts/lib/component\\ResponsiveContainer.js");
 
 var _ResponsiveContainer2 = _interopRequireDefault(_ResponsiveContainer);
 
-var _Legend = require("recharts/lib/component/Legend.js");
+var _Legend = require("recharts/lib/component\\Legend.js");
 
 var _Legend2 = _interopRequireDefault(_Legend);
 
-var _Tooltip = require("recharts/lib/component/Tooltip.js");
+var _Tooltip = require("recharts/lib/component\\Tooltip.js");
 
 var _Tooltip2 = _interopRequireDefault(_Tooltip);
 
-var _CartesianGrid = require("recharts/lib/cartesian/CartesianGrid.js");
+var _CartesianGrid = require("recharts/lib/cartesian\\CartesianGrid.js");
 
 var _CartesianGrid2 = _interopRequireDefault(_CartesianGrid);
 
-var _YAxis = require("recharts/lib/cartesian/YAxis.js");
+var _YAxis = require("recharts/lib/cartesian\\YAxis.js");
 
 var _YAxis2 = _interopRequireDefault(_YAxis);
 
-var _XAxis = require("recharts/lib/cartesian/XAxis.js");
+var _XAxis = require("recharts/lib/cartesian\\XAxis.js");
 
 var _XAxis2 = _interopRequireDefault(_XAxis);
 
-var _Bar = require("recharts/lib/cartesian/Bar.js");
+var _Bar = require("recharts/lib/cartesian\\Bar.js");
 
 var _Bar2 = _interopRequireDefault(_Bar);
 
-var _BarChart = require("recharts/lib/chart/BarChart.js");
+var _BarChart = require("recharts/lib/chart\\BarChart.js");
 
 var _BarChart2 = _interopRequireDefault(_BarChart);
 
@@ -8393,7 +8446,7 @@ UserSubscriptionChart.propTypes = {
 };
 exports.default = UserSubscriptionChart;
 
-},{"prop-types":320,"react":433,"recharts/lib/cartesian/Bar.js":440,"recharts/lib/cartesian/CartesianGrid.js":443,"recharts/lib/cartesian/XAxis.js":448,"recharts/lib/cartesian/YAxis.js":449,"recharts/lib/chart/BarChart.js":450,"recharts/lib/component/Legend.js":457,"recharts/lib/component/ResponsiveContainer.js":458,"recharts/lib/component/Tooltip.js":460,"recharts/lib/polyfill.js":463}],51:[function(require,module,exports){
+},{"prop-types":320,"react":433,"recharts/lib/cartesian\\Bar.js":440,"recharts/lib/cartesian\\CartesianGrid.js":443,"recharts/lib/cartesian\\XAxis.js":448,"recharts/lib/cartesian\\YAxis.js":449,"recharts/lib/chart\\BarChart.js":450,"recharts/lib/component\\Legend.js":457,"recharts/lib/component\\ResponsiveContainer.js":458,"recharts/lib/component\\Tooltip.js":460,"recharts/lib/polyfill.js":463}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9285,6 +9338,7 @@ var getLanguage = function getLanguage() {
         //---ACCOUNTOVERVIEW---
         ACCOUNTOVERVIEW_NO_ACCOUNT: "This account doesn't exist.",
         ACCOUNTOVERVIEW_EDIT_BUTTON: "Edit this account",
+        ACCOUNTOVERVIEW_ADD_CAMPAIGN_BUTTON: "Create a campaign",
         ACCOUNTOVERVIEW_CAMPAIGNS_TITLE: "Campaigns :",
         ACCOUNTOVERVIEW_BLACKLIST_TITLE: "Blacklist :",
         //---CAMPAIGNOVERVIEW---
@@ -9294,6 +9348,9 @@ var getLanguage = function getLanguage() {
         CAMPAIGNOVERVIEW_ADD_RULE_BUTTON: "Add a rule",
         CAMPAIGNOVERVIEW_TITLE_ACCOUNT: "Account : ",
         CAMPAIGNOVERVIEW_TITLE_CAMPAIGN: "Campaign : ",
+        CAMPAIGNOVERVIEW_NAME: "Name",
+        CAMPAIGNOVERVIEW_DATEBEGIN: "Date begin",
+        CAMPAIGNOVERVIEW_DATEEND: "Date end",
         //---USERPASSWORDFORM---
         USERPASSWORDFORM_CREATE_TITLE: "Set a new password",
         USERPASSWORDFORM_EDIT_TITLE: "Edit password",
@@ -9502,7 +9559,7 @@ var getLanguage = function getLanguage() {
         PROFILE_SUCCESSEDITING_LASTNAME: "Nom édité avec succès.",
         PROFILE_ERROREDITING_LANGUAGE: "La langue selectionné est incorrecte.",
         PROFILE_SUCCESSEDITING_LANGUAGE: "La langue a été éditée avec succès."
-    }, _defineProperty(_ref, "PROFILE_SUCCESSEDITING_LANGUAGE", "Le mot de passe a été édité avec succès."), _defineProperty(_ref, "ACCOUNTSMANAGMENT_ADD_ACCOUNT", "Ajouter un compte"), _defineProperty(_ref, "ADMINDASHBOARD_TITLE", "Tableau de bord de l'administrateur"), _defineProperty(_ref, "USERDASHBOARD_TITLE", "Votre tableau de bord"), _defineProperty(_ref, "USERDASHBOARD_ADD_CAMPAIGN", "Ajouter une campagne"), _defineProperty(_ref, "USERDASHBOARD_NO_ACCOUNTS", "Vous n'avez pas de compte actuellement. Vous pouvez en créer à partir de votre page Profil."), _defineProperty(_ref, "USERDASHBOARD_DISPLAY_ACCOUNT_BUTTON", "VOIR"), _defineProperty(_ref, "ACCOUNTOVERVIEW_NO_ACCOUNT", "Ce compte n'existe pas."), _defineProperty(_ref, "ACCOUNTOVERVIEW_EDIT_BUTTON", "Modifier ce compte"), _defineProperty(_ref, "ACCOUNTOVERVIEW_CAMPAIGNS_TITLE", "Les campagnes :"), _defineProperty(_ref, "ACCOUNTOVERVIEW_BLACKLIST_TITLE", "La liste noire de mots :"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_NO_CAMPAIGN", "Cette campagne n'existe pas."), _defineProperty(_ref, "CAMPAIGNOVERVIEW_EDIT_BUTTON", "Modifier cette campagne"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_RULES_TITLE", "Les règles :"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_ADD_RULE_BUTTON", "Ajouter une règle"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_TITLE_ACCOUNT", "Compte : "), _defineProperty(_ref, "CAMPAIGNOVERVIEW_TITLE_CAMPAIGN", "Campagne : "), _defineProperty(_ref, "USERPASSWORDFORM_CREATE_TITLE", "Définir un nouveau mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_EDIT_TITLE", "Changer de mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_CREATE_BUTTON", "Confirmer"), _defineProperty(_ref, "USERPASSWORDFORM_EDIT_BUTTON", "Editer"), _defineProperty(_ref, "USERPASSWORDFORM_CANCEL_BUTTON", "Annuler"), _defineProperty(_ref, "USERPASSWORDFORM_OLDPASSWORD", "Ancien mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_PASSWORD", "Nouveau mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_CPASSWORD", "Confirmation du nouveau mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_EDIT_ERROR", "L'ancien mot de passe est invalide"), _defineProperty(_ref, "FORGOTPASSWORD_TITLE", "Réinitialiser le mot de passe"), _defineProperty(_ref, "FORGOTPASSWORD_SUBMIT", "Réinitialiser le mot de passe"), _defineProperty(_ref, "FORGOTPASSWORD_EMAIL", "Email"), _defineProperty(_ref, "TWITTERACCOUNTFORM_NAME", "Nom"), _defineProperty(_ref, "TWITTERACCOUNTFORM_CONSUMERKEY", "Consumer key"), _defineProperty(_ref, "TWITTERACCOUNTFORM_CONSUMERSECRET", "Consumer secret"), _defineProperty(_ref, "TWITTERACCOUNTFORM_ACCESSTOKENKEY", "Access token key"), _defineProperty(_ref, "TWITTERACCOUNTFORM_ACCESSTOKENSECRET", "Access token secret"), _defineProperty(_ref, "TWITTERACCOUNTFORM_BLACKLIST", "Liste noire de mots"), _defineProperty(_ref, "TWITTERACCOUNTFORM_NAME_INCORRECT", "Un nom valide est requis."), _defineProperty(_ref, "TWITTERACCOUNTFORM_NAME_NOT_UNIQUE", "Ce nom existe déjà."), _defineProperty(_ref, "TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT", "Votre \"consumer key\" est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT", "Votre \"consumer secret\" est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT", "Votre \"access token key\" est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT", "Votre \"access token secret\" est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT", " n'est pas un mot valide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_BLACKLIST_INCORRECT", "Votre liste noire de mots est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_GENERIC_ERROR", "Une erreur est survenue."), _defineProperty(_ref, "TWITTERACCOUNTFORM_CREATE_SUCCESS", "Un compte a été créé avec succès."), _defineProperty(_ref, "TWITTERACCOUNTFORM_CREATE_TITLE", "Créer un compte"), _defineProperty(_ref, "TWITTERACCOUNTFORM_EDIT_TITLE", "Editer un compte"), _defineProperty(_ref, "TWITTERACCOUNTFORM_CREATE_BUTTON", "Créer un compte"), _defineProperty(_ref, "TWITTERACCOUNTFORM_EDIT_BUTTON", "Editer un compte"), _defineProperty(_ref, "TWITTERACCOUNTFORM_CANCEL_BUTTON", "Annuler"), _defineProperty(_ref, "TWITTERACCOUNTFORM_EDIT_SUCCESS", "Ce compte a été mis à jour."), _defineProperty(_ref, "TWITTERACCOUNTFORM_EDIT_ERROR", "Une erreur est survenue lors de la mise à jour du compte."), _defineProperty(_ref, "TWITTERACCOUNTFORM_DELETE_SUCCESS", "Ce compte a été supprimé avec succès."), _defineProperty(_ref, "TWITTERACCOUNTFORM_DELETE_ERROR", "Une errreur est survenue lors de la suppression du compte."), _defineProperty(_ref, "TWITTERACCOUNTFORM_DELETE_BUTTON", "Supprimer un compte"), _defineProperty(_ref, "CAMPAIGNFORM_CREATE_TITLE", "Créer un campagne"), _defineProperty(_ref, "CAMPAIGNFORM_EDIT_TITLE", "Editer une campagne"), _defineProperty(_ref, "CAMPAIGNFORM_CREATE_BUTTON", "Créer une campagne"), _defineProperty(_ref, "CAMPAIGNFORM_EDIT_BUTTON", "Editer la campagne"), _defineProperty(_ref, "CAMPAIGNFORM_CANCEL_BUTTON", "Annuler"), _defineProperty(_ref, "CAMPAIGNFORM_DELETE_BUTTON", "Supprimer la campagne"), _defineProperty(_ref, "CAMPAIGNFORM_NAME", "Nom"), _defineProperty(_ref, "CAMPAIGNFORM_ACCOUNT", "Compte"), _defineProperty(_ref, "CAMPAIGNFORM_DATEBEGIN", "Date de début"), _defineProperty(_ref, "CAMPAIGNFORM_DATEEND", "Date de fin"), _defineProperty(_ref, "CAMPAIGNFORM_NAME_TOOLTIP", "Les caractères spéciaux ne sont pas autorisés."), _defineProperty(_ref, "CAMPAIGNFORM_DATEBEGIN_TOOLTIP", "La campagne va démarrer a cette heure. Votre fuseau horaire est UTC"), _defineProperty(_ref, "CAMPAIGNFORM_NAME_INCORRECT", "Un nom valide est requis."), _defineProperty(_ref, "CAMPAIGNFORM_NAME_NOT_UNIQUE", "Ce nom est déjà utilisé."), _defineProperty(_ref, "CAMPAIGNFORM_ACCOUNT_INCORRECT", "Un compte valide est requis."), _defineProperty(_ref, "CAMPAIGNFORM_DATEBEGIN_INCORRECT", "Une date valide est requise."), _defineProperty(_ref, "CAMPAIGNFORM_DATEEND_INCORRECT", "Une date valide est requise."), _defineProperty(_ref, "CAMPAIGNFORM_DATES_INCORRECT", "Les dates sont invalides."), _defineProperty(_ref, "CAMPAIGNFORM_GENERIC_ERROR", "Une erreur est survenue."), _defineProperty(_ref, "CAMPAIGNFORM_CREATE_SUCCESS", "Une campagne a été créée avec succès."), _defineProperty(_ref, "CAMPAIGNFORM_EDIT_SUCCESS", "Cette campagne a été mise à jour."), _defineProperty(_ref, "CAMPAIGNFORM_EDIT_ERROR", "Une erreur est survenue lors de la mise à jour de la campagne."), _defineProperty(_ref, "CAMPAIGNFORM_DELETE_SUCCESS", "Cette campagne a été supprimée avec succès."), _defineProperty(_ref, "CAMPAIGNFORM_DELETE_ERROR", "Une erreur est survenue lors de la suppression de la campagne."), _defineProperty(_ref, "CAMPAIGNLIST_NOCAMPAIGN", "Il n'y a pas de campagnes actuellement."), _defineProperty(_ref, "RULELIST_NO_RULES", "Il n'y a pas de règles actuellement."), _defineProperty(_ref, "RULEITEM_EDIT_BUTTON", "Editer cette règle"), _defineProperty(_ref, "TWITTERRULEFORM_CREATE_TITLE", "Créer une règle twitter"), _defineProperty(_ref, "TWITTERRULEFORM_EDIT_TITLE", "Editer une règle"), _defineProperty(_ref, "TWITTERRULEFORM_CREATE_BUTTON", "Créer une règle"), _defineProperty(_ref, "TWITTERRULEFORM_EDIT_BUTTON", "Editier la règle"), _defineProperty(_ref, "TWITTERRULEFORM_CANCEL_BUTTON", "Annuler"), _defineProperty(_ref, "TWITTERRULEFORM_DELETE_BUTTON", "Supprimer la règle"), _defineProperty(_ref, "TWITTERRULEFORM_NAME", "Nom"), _defineProperty(_ref, "TWITTERRULEFORM_ACTION", "Action"), _defineProperty(_ref, "TWITTERRULEFORM_MESSAGES", "Messages"), _defineProperty(_ref, "TWITTERRULEFORM_CONDITION", "Condition"), _defineProperty(_ref, "TWITTERRULEFORM_KEYWORDS", "Mots-clés"), _defineProperty(_ref, "TWITTERRULEFORM_LANGUAGES", "Langages"), _defineProperty(_ref, "TWITTERRULEFORM_DELAY", "Délai"), _defineProperty(_ref, "TWITTERRULEFORM_LANG_TOOLTIP", "Si vous ne selectionnez pas de langage, ce filtre sera ignoré, dans le cas contraire les tweets seront filtrés en fonction des langues selectionnées."), _defineProperty(_ref, "TWITTERRULEFORM_DELAY_TOOLTIP", "Temps entre le traitement de deux tweets. Le valeur minimale est de 60 secondes."), _defineProperty(_ref, "ARRAYINPUT_ADD_BUTTON", "Ajouter"), _defineProperty(_ref, "ARRAYINPUT_DELETE_BUTTON", "Supprimer"), _defineProperty(_ref, "USER_EMAIL_INCORRECT", "L'adresse mail est incorrecte."), _defineProperty(_ref, "USER_EMAIL_NOT_UNIQUE", "L'adresse mail est déjà utilisée."), _defineProperty(_ref, "USER_PASSWORD_INCORRECT", "Le mot de passe doit avoir une longueur minimale de 6 caractères."), _defineProperty(_ref, "USER_PASSWORD_NOT_MATCH", "Les mots de passe ne sont pas identiques."), _defineProperty(_ref, "USER_FIRSTNAME_INCORRECT", "Le prénom est invalide."), _defineProperty(_ref, "USER_LASTNAME_INCORRECT", "Le nom est invalide."), _defineProperty(_ref, "USER_LANGUAGE_INCORRECT", "Une langue valide est requise."), _defineProperty(_ref, "USER_EDIT_SUCCESS", "Votre profil a été mis à jour."), _defineProperty(_ref, "TWITTERRULE_NAME_INCORRECT", "Un nom valide est requis."), _defineProperty(_ref, "TWITTERRULE_NAME_NOT_UNIQUE", "Ce nom est déjà utilisé."), _defineProperty(_ref, "TWITTERRULE_ACTION_INCORRECT", "Une action valide est requise."), _defineProperty(_ref, "TWITTERRULE_MESSAGE_INCORRECT", " n'est pas un message valide."), _defineProperty(_ref, "TWITTERRULE_MESSAGES_INCORRECT", "La liste des messages n'est pas valide."), _defineProperty(_ref, "TWITTERRULE_TRACK_INCORRECT", "Une liste de mots clés valides est requise."), _defineProperty(_ref, "TWITTERRULE_KEYWORD_INCORRECT", " n'est pas un mot clé valide."), _defineProperty(_ref, "TWITTERRULE_CONDITION_INCORRECT", "Une condition valide est requise."), _defineProperty(_ref, "TWITTERRULE_DELAY_INCORRECT", "Un délai valide est requis."), _defineProperty(_ref, "TWITTERRULE_UNDO_INCORRECT", "Une date d'annulation valide est requise."), _defineProperty(_ref, "TWITTERRULE_LANGUAGE_INCORRECT", "Une langue valide est requise."), _defineProperty(_ref, "TWITTERRULE_CREATE_SUCCESS", "Une règle a été créée avec succès."), _defineProperty(_ref, "TWITTERRULE_CREATE_ERROR", "Une erreur est survenue lors de la creation de la règle."), _defineProperty(_ref, "TWITTERRULE_EDIT_ERROR", "Une erreur est survenue lors de la mise à jour de la règle."), _defineProperty(_ref, "TWITTERRULE_EDIT_SUCCESS", "Cette règle a été mise à jour."), _defineProperty(_ref, "TWITTERRULE_DELETE_ERROR", "Une erreur est survenue lors de la suppression de la règle."), _defineProperty(_ref, "TWITTERRULE_DELETE_SUCCESS", "Cette règle a été supprimée avec succès."), _ref;
+    }, _defineProperty(_ref, "PROFILE_SUCCESSEDITING_LANGUAGE", "Le mot de passe a été édité avec succès."), _defineProperty(_ref, "ACCOUNTSMANAGMENT_ADD_ACCOUNT", "Ajouter un compte"), _defineProperty(_ref, "ADMINDASHBOARD_TITLE", "Tableau de bord de l'administrateur"), _defineProperty(_ref, "USERDASHBOARD_TITLE", "Votre tableau de bord"), _defineProperty(_ref, "USERDASHBOARD_ADD_CAMPAIGN", "Ajouter une campagne"), _defineProperty(_ref, "USERDASHBOARD_NO_ACCOUNTS", "Vous n'avez pas de compte actuellement. Vous pouvez en créer à partir de votre page Profil."), _defineProperty(_ref, "USERDASHBOARD_DISPLAY_ACCOUNT_BUTTON", "VOIR"), _defineProperty(_ref, "ACCOUNTOVERVIEW_NO_ACCOUNT", "Ce compte n'existe pas."), _defineProperty(_ref, "ACCOUNTOVERVIEW_EDIT_BUTTON", "Modifier ce compte"), _defineProperty(_ref, "ACCOUNTOVERVIEW_ADD_CAMPAIGN_BUTTON", "Créer une campagne"), _defineProperty(_ref, "ACCOUNTOVERVIEW_CAMPAIGNS_TITLE", "Les campagnes :"), _defineProperty(_ref, "ACCOUNTOVERVIEW_BLACKLIST_TITLE", "La liste noire de mots :"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_NO_CAMPAIGN", "Cette campagne n'existe pas."), _defineProperty(_ref, "CAMPAIGNOVERVIEW_EDIT_BUTTON", "Modifier cette campagne"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_RULES_TITLE", "Les règles :"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_ADD_RULE_BUTTON", "Ajouter une règle"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_TITLE_ACCOUNT", "Compte : "), _defineProperty(_ref, "CAMPAIGNOVERVIEW_TITLE_CAMPAIGN", "Campagne : "), _defineProperty(_ref, "CAMPAIGNOVERVIEW_NAME", "Nom"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_DATEBEGIN", "Date de début"), _defineProperty(_ref, "CAMPAIGNOVERVIEW_DATEEND", "Date de fin"), _defineProperty(_ref, "USERPASSWORDFORM_CREATE_TITLE", "Définir un nouveau mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_EDIT_TITLE", "Changer de mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_CREATE_BUTTON", "Confirmer"), _defineProperty(_ref, "USERPASSWORDFORM_EDIT_BUTTON", "Editer"), _defineProperty(_ref, "USERPASSWORDFORM_CANCEL_BUTTON", "Annuler"), _defineProperty(_ref, "USERPASSWORDFORM_OLDPASSWORD", "Ancien mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_PASSWORD", "Nouveau mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_CPASSWORD", "Confirmation du nouveau mot de passe"), _defineProperty(_ref, "USERPASSWORDFORM_EDIT_ERROR", "L'ancien mot de passe est invalide"), _defineProperty(_ref, "FORGOTPASSWORD_TITLE", "Réinitialiser le mot de passe"), _defineProperty(_ref, "FORGOTPASSWORD_SUBMIT", "Réinitialiser le mot de passe"), _defineProperty(_ref, "FORGOTPASSWORD_EMAIL", "Email"), _defineProperty(_ref, "TWITTERACCOUNTFORM_NAME", "Nom"), _defineProperty(_ref, "TWITTERACCOUNTFORM_CONSUMERKEY", "Consumer key"), _defineProperty(_ref, "TWITTERACCOUNTFORM_CONSUMERSECRET", "Consumer secret"), _defineProperty(_ref, "TWITTERACCOUNTFORM_ACCESSTOKENKEY", "Access token key"), _defineProperty(_ref, "TWITTERACCOUNTFORM_ACCESSTOKENSECRET", "Access token secret"), _defineProperty(_ref, "TWITTERACCOUNTFORM_BLACKLIST", "Liste noire de mots"), _defineProperty(_ref, "TWITTERACCOUNTFORM_NAME_INCORRECT", "Un nom valide est requis."), _defineProperty(_ref, "TWITTERACCOUNTFORM_NAME_NOT_UNIQUE", "Ce nom existe déjà."), _defineProperty(_ref, "TWITTERACCOUNTFORM_CONSUMERKEY_INCORRECT", "Votre \"consumer key\" est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_CONSUMERSECRET_INCORRECT", "Votre \"consumer secret\" est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_ACCESSTOKENKEY_INCORRECT", "Votre \"access token key\" est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_ACCESSTOKENSECRET_INCORRECT", "Votre \"access token secret\" est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_BLACKLIST_WORD_INCORRECT", " n'est pas un mot valide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_BLACKLIST_INCORRECT", "Votre liste noire de mots est invalide."), _defineProperty(_ref, "TWITTERACCOUNTFORM_GENERIC_ERROR", "Une erreur est survenue."), _defineProperty(_ref, "TWITTERACCOUNTFORM_CREATE_SUCCESS", "Un compte a été créé avec succès."), _defineProperty(_ref, "TWITTERACCOUNTFORM_CREATE_TITLE", "Créer un compte"), _defineProperty(_ref, "TWITTERACCOUNTFORM_EDIT_TITLE", "Editer un compte"), _defineProperty(_ref, "TWITTERACCOUNTFORM_CREATE_BUTTON", "Créer un compte"), _defineProperty(_ref, "TWITTERACCOUNTFORM_EDIT_BUTTON", "Editer un compte"), _defineProperty(_ref, "TWITTERACCOUNTFORM_CANCEL_BUTTON", "Annuler"), _defineProperty(_ref, "TWITTERACCOUNTFORM_EDIT_SUCCESS", "Ce compte a été mis à jour."), _defineProperty(_ref, "TWITTERACCOUNTFORM_EDIT_ERROR", "Une erreur est survenue lors de la mise à jour du compte."), _defineProperty(_ref, "TWITTERACCOUNTFORM_DELETE_SUCCESS", "Ce compte a été supprimé avec succès."), _defineProperty(_ref, "TWITTERACCOUNTFORM_DELETE_ERROR", "Une errreur est survenue lors de la suppression du compte."), _defineProperty(_ref, "TWITTERACCOUNTFORM_DELETE_BUTTON", "Supprimer un compte"), _defineProperty(_ref, "CAMPAIGNFORM_CREATE_TITLE", "Créer un campagne"), _defineProperty(_ref, "CAMPAIGNFORM_EDIT_TITLE", "Editer une campagne"), _defineProperty(_ref, "CAMPAIGNFORM_CREATE_BUTTON", "Créer une campagne"), _defineProperty(_ref, "CAMPAIGNFORM_EDIT_BUTTON", "Editer la campagne"), _defineProperty(_ref, "CAMPAIGNFORM_CANCEL_BUTTON", "Annuler"), _defineProperty(_ref, "CAMPAIGNFORM_DELETE_BUTTON", "Supprimer la campagne"), _defineProperty(_ref, "CAMPAIGNFORM_NAME", "Nom"), _defineProperty(_ref, "CAMPAIGNFORM_ACCOUNT", "Compte"), _defineProperty(_ref, "CAMPAIGNFORM_DATEBEGIN", "Date de début"), _defineProperty(_ref, "CAMPAIGNFORM_DATEEND", "Date de fin"), _defineProperty(_ref, "CAMPAIGNFORM_NAME_TOOLTIP", "Les caractères spéciaux ne sont pas autorisés."), _defineProperty(_ref, "CAMPAIGNFORM_DATEBEGIN_TOOLTIP", "La campagne va démarrer a cette heure. Votre fuseau horaire est UTC"), _defineProperty(_ref, "CAMPAIGNFORM_NAME_INCORRECT", "Un nom valide est requis."), _defineProperty(_ref, "CAMPAIGNFORM_NAME_NOT_UNIQUE", "Ce nom est déjà utilisé."), _defineProperty(_ref, "CAMPAIGNFORM_ACCOUNT_INCORRECT", "Un compte valide est requis."), _defineProperty(_ref, "CAMPAIGNFORM_DATEBEGIN_INCORRECT", "Une date valide est requise."), _defineProperty(_ref, "CAMPAIGNFORM_DATEEND_INCORRECT", "Une date valide est requise."), _defineProperty(_ref, "CAMPAIGNFORM_DATES_INCORRECT", "Les dates sont invalides."), _defineProperty(_ref, "CAMPAIGNFORM_GENERIC_ERROR", "Une erreur est survenue."), _defineProperty(_ref, "CAMPAIGNFORM_CREATE_SUCCESS", "Une campagne a été créée avec succès."), _defineProperty(_ref, "CAMPAIGNFORM_EDIT_SUCCESS", "Cette campagne a été mise à jour."), _defineProperty(_ref, "CAMPAIGNFORM_EDIT_ERROR", "Une erreur est survenue lors de la mise à jour de la campagne."), _defineProperty(_ref, "CAMPAIGNFORM_DELETE_SUCCESS", "Cette campagne a été supprimée avec succès."), _defineProperty(_ref, "CAMPAIGNFORM_DELETE_ERROR", "Une erreur est survenue lors de la suppression de la campagne."), _defineProperty(_ref, "CAMPAIGNLIST_NOCAMPAIGN", "Il n'y a pas de campagnes actuellement."), _defineProperty(_ref, "RULELIST_NO_RULES", "Il n'y a pas de règles actuellement."), _defineProperty(_ref, "RULEITEM_EDIT_BUTTON", "Editer cette règle"), _defineProperty(_ref, "TWITTERRULEFORM_CREATE_TITLE", "Créer une règle twitter"), _defineProperty(_ref, "TWITTERRULEFORM_EDIT_TITLE", "Editer une règle"), _defineProperty(_ref, "TWITTERRULEFORM_CREATE_BUTTON", "Créer une règle"), _defineProperty(_ref, "TWITTERRULEFORM_EDIT_BUTTON", "Editier la règle"), _defineProperty(_ref, "TWITTERRULEFORM_CANCEL_BUTTON", "Annuler"), _defineProperty(_ref, "TWITTERRULEFORM_DELETE_BUTTON", "Supprimer la règle"), _defineProperty(_ref, "TWITTERRULEFORM_NAME", "Nom"), _defineProperty(_ref, "TWITTERRULEFORM_ACTION", "Action"), _defineProperty(_ref, "TWITTERRULEFORM_MESSAGES", "Messages"), _defineProperty(_ref, "TWITTERRULEFORM_CONDITION", "Condition"), _defineProperty(_ref, "TWITTERRULEFORM_KEYWORDS", "Mots-clés"), _defineProperty(_ref, "TWITTERRULEFORM_LANGUAGES", "Langages"), _defineProperty(_ref, "TWITTERRULEFORM_DELAY", "Délai"), _defineProperty(_ref, "TWITTERRULEFORM_LANG_TOOLTIP", "Si vous ne selectionnez pas de langage, ce filtre sera ignoré, dans le cas contraire les tweets seront filtrés en fonction des langues selectionnées."), _defineProperty(_ref, "TWITTERRULEFORM_DELAY_TOOLTIP", "Temps entre le traitement de deux tweets. Le valeur minimale est de 60 secondes."), _defineProperty(_ref, "ARRAYINPUT_ADD_BUTTON", "Ajouter"), _defineProperty(_ref, "ARRAYINPUT_DELETE_BUTTON", "Supprimer"), _defineProperty(_ref, "USER_EMAIL_INCORRECT", "L'adresse mail est incorrecte."), _defineProperty(_ref, "USER_EMAIL_NOT_UNIQUE", "L'adresse mail est déjà utilisée."), _defineProperty(_ref, "USER_PASSWORD_INCORRECT", "Le mot de passe doit avoir une longueur minimale de 6 caractères."), _defineProperty(_ref, "USER_PASSWORD_NOT_MATCH", "Les mots de passe ne sont pas identiques."), _defineProperty(_ref, "USER_FIRSTNAME_INCORRECT", "Le prénom est invalide."), _defineProperty(_ref, "USER_LASTNAME_INCORRECT", "Le nom est invalide."), _defineProperty(_ref, "USER_LANGUAGE_INCORRECT", "Une langue valide est requise."), _defineProperty(_ref, "USER_EDIT_SUCCESS", "Votre profil a été mis à jour."), _defineProperty(_ref, "TWITTERRULE_NAME_INCORRECT", "Un nom valide est requis."), _defineProperty(_ref, "TWITTERRULE_NAME_NOT_UNIQUE", "Ce nom est déjà utilisé."), _defineProperty(_ref, "TWITTERRULE_ACTION_INCORRECT", "Une action valide est requise."), _defineProperty(_ref, "TWITTERRULE_MESSAGE_INCORRECT", " n'est pas un message valide."), _defineProperty(_ref, "TWITTERRULE_MESSAGES_INCORRECT", "La liste des messages n'est pas valide."), _defineProperty(_ref, "TWITTERRULE_TRACK_INCORRECT", "Une liste de mots clés valides est requise."), _defineProperty(_ref, "TWITTERRULE_KEYWORD_INCORRECT", " n'est pas un mot clé valide."), _defineProperty(_ref, "TWITTERRULE_CONDITION_INCORRECT", "Une condition valide est requise."), _defineProperty(_ref, "TWITTERRULE_DELAY_INCORRECT", "Un délai valide est requis."), _defineProperty(_ref, "TWITTERRULE_UNDO_INCORRECT", "Une date d'annulation valide est requise."), _defineProperty(_ref, "TWITTERRULE_LANGUAGE_INCORRECT", "Une langue valide est requise."), _defineProperty(_ref, "TWITTERRULE_CREATE_SUCCESS", "Une règle a été créée avec succès."), _defineProperty(_ref, "TWITTERRULE_CREATE_ERROR", "Une erreur est survenue lors de la creation de la règle."), _defineProperty(_ref, "TWITTERRULE_EDIT_ERROR", "Une erreur est survenue lors de la mise à jour de la règle."), _defineProperty(_ref, "TWITTERRULE_EDIT_SUCCESS", "Cette règle a été mise à jour."), _defineProperty(_ref, "TWITTERRULE_DELETE_ERROR", "Une erreur est survenue lors de la suppression de la règle."), _defineProperty(_ref, "TWITTERRULE_DELETE_SUCCESS", "Cette règle a été supprimée avec succès."), _ref;
 };
 
 exports.default = getLanguage;

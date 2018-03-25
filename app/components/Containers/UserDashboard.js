@@ -58,7 +58,7 @@ class UserDashboard extends Component {
                 displayCampaignForm: true
             });
         }
-        else (event.target.id === "displayAccount")
+        else if (event.target.id === "displayAccount")
         {
             this.props.history.push(encodeURI("/account/" + event.target.getAttribute("data-element")));
         }
@@ -107,8 +107,15 @@ class UserDashboard extends Component {
             USERDASHBOARD_NO_ACCOUNTS,
             USERDASHBOARD_DISPLAY_ACCOUNT_BUTTON
         } = this.props.lang;
-        const { messages, accounts } = this.props;
-        const { loadingCampaignForm, loadingAccountList, displayCampaignForm } = this.state;
+        const {
+            messages,
+            accounts
+        } = this.props;
+        const {
+            loadingCampaignForm,
+            loadingAccountList,
+            displayCampaignForm
+        } = this.state;
         return (
             <Container>
                 <Card title={USERDASHBOARD_TITLE}>
@@ -127,7 +134,7 @@ class UserDashboard extends Component {
                                     }).map(account => account.name)} loading={loadingCampaignForm} cancel messages={messages} onCancel={this.handleCampaignCreationCancel} onSubmit={this.handleCampaignCreationSubmit}/>
                                 ) : (
                                     accounts.map(account => (
-                                        <Card key={account.uid} title={<span>{account.name}<span style={{ float: "right" }}><InfoButton id="displayAccount" data-element={account.name} onClick={this.handleClick}>{USERDASHBOARD_DISPLAY_ACCOUNT_BUTTON}</InfoButton></span></span>}>
+                                        <Card key={account.uid} title={account.name} titleRight={<InfoButton id="displayAccount" data-element={account.name} onClick={this.handleClick}>{USERDASHBOARD_DISPLAY_ACCOUNT_BUTTON}</InfoButton>}>
                                             <CampaignList account={account} campaigns={accounts[findIndex(accounts, { name: account.name })].campaigns} onClick={this.handleCampaignSelection}/>
                                         </Card>
                                     ))

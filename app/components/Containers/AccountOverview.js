@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
 import { findIndex, isEqual } from "lodash";
-import { fetchAccountList, updateAccount, removeAccount } from "../../actions/accounts";
+import { fetchAccountList, updateAccount, removeAccount, addCampaign } from "../../actions/accounts";
 import { withLanguage } from "../withLanguage";
 import { withMessages } from "../withMessages";
 import TwitterAccountForm from "../Forms/TwitterAccountForm";
@@ -15,9 +15,9 @@ import Container from "../Container";
 import Card from "../Card";
 import PrimaryButton from "../buttons/PrimaryButton";
 import SuccessButton from "../buttons/SuccessButton";
-import TwitterRuleForm from "../Forms/TwitterRuleForm";
+import CampaignForm from "../Forms/CampaignForm";
 import WordList from "../WordList";
-import TextInput from "../Inputs/TextInput"
+import Input from "../Inputs/Input"
 import Text from "../Text";
 
 class AccountOverview extends Component {
@@ -30,6 +30,7 @@ class AccountOverview extends Component {
         lang: PropTypes.shape({
             ACCOUNTOVERVIEW_NO_ACCOUNT: PropTypes.string.isRequired,
             ACCOUNTOVERVIEW_EDIT_BUTTON: PropTypes.string.isRequired,
+            ACCOUNTOVERVIEW_ADD_CAMPAIGN_BUTTON: PropTypes.string.isRequired,
             ACCOUNTOVERVIEW_CAMPAIGNS_TITLE: PropTypes.string.isRequired,
             ACCOUNTOVERVIEW_BLACKLIST_TITLE: PropTypes.string.isRequired
         }).isRequired
@@ -44,12 +45,15 @@ class AccountOverview extends Component {
             accountId: decodeURI(this.props.match.params.accountId),
             account: undefined,
             loadingAccountForm: false,
-            editAccount: false
+            displayCampaignCreationForm: false,
+            loadingCampaignForm: false
         };
         this.handleAccountEditionSubmit = this.handleAccountEditionSubmit.bind(this);
         this.handleAccountEditionDelete = this.handleAccountEditionDelete.bind(this);
         this.handleAccountEditionCancel = this.handleAccountEditionCancel.bind(this);
         this.handleCampaignSelection = this.handleCampaignSelection.bind(this);
+        this.handleCampaignCreationSubmit = this.handleCampaignCreationSubmit.bind(this);
+        this.handleCampaignCreationCancel = this.handleCampaignCreationCancel.bind(this);
         this.handleClick = this.handleClick.bind(this);
     }
 
@@ -79,13 +83,18 @@ class AccountOverview extends Component {
         this.setState({
             loadingAccountForm: true
         });
-        this.props.actions.updateAccount(event.default.name, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist).then(() => {}).catch(() => {}).finally(() => {
-            this.setState({
-                loadingAccountForm: false,
+        let state = {
+            loadingAccountForm: false
+        };
+        this.props.actions.updateAccount(event.default.name, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist).then(() => {
+            state = {
+                ...state,
                 editAccount: false,
                 accountId: name,
                 account: this.props.accounts[findIndex(this.props.accounts, { name: name })]
-            });
+            }
+        }).catch(() => {}).finally(() => {
+            this.setState(state);
             this.props.history.push(encodeURI("/account/" + name));
         });
     }
@@ -116,12 +125,49 @@ class AccountOverview extends Component {
         this.props.history.push(encodeURI("/campaign/" + account + "/" + campaign));
     }
 
+    handleCampaignCreationSubmit(event)
+    {
+        const {
+            accountId,
+            name,
+            dateBegin,
+            dateEnd
+        } = event.result;
+        this.setState({
+            loadingCampaignForm: true
+        });
+        let state = {
+            loadingCampaignForm: false
+        };
+        this.props.actions.addCampaign(accountId, name, dateBegin, dateEnd).then(() => {
+            state = {
+                ...state,
+                displayCampaignCreationForm: false
+            };
+        }).catch(error => {}).finally(() => {
+            this.setState(state);
+        });
+    }
+
+    handleCampaignCreationCancel(event)
+    {
+        this.setState({
+            displayCampaignCreationForm: false
+        });
+    }
+
     handleClick(event)
     {
         if (event.target.id === "editAccount")
         {
             this.setState({
                 editAccount: true
+            });
+        }
+        else if (event.target.id === "addCampaign")
+        {
+            this.setState({
+                displayCampaignCreationForm: true
             });
         }
     }
@@ -131,50 +177,62 @@ class AccountOverview extends Component {
         const {
             ACCOUNTOVERVIEW_NO_ACCOUNT,
             ACCOUNTOVERVIEW_EDIT_BUTTON,
+            ACCOUNTOVERVIEW_ADD_CAMPAIGN_BUTTON,
             ACCOUNTOVERVIEW_CAMPAIGNS_TITLE,
             ACCOUNTOVERVIEW_BLACKLIST_TITLE
         } = this.props.lang;
-        const { messages } = this.props;
+        const {
+            accounts,
+            messages
+        } = this.props;
         const {
             editAccount,
             loadingAccountList,
             accountId,
             account,
-            loadingAccountForm
+            loadingAccountForm,
+            displayCampaignCreationForm,
+            loadingCampaignForm
         } = this.state;
         return (
             <Container>
                 {
                     loadingAccountList ? (
                         <Card title={accountId}>
-                            <LoadingCog center />
+                            <LoadingCog center/>
                         </Card>
                     ) : (
                         account ? (
-                            <Card title={<span>{accountId}{!editAccount && <PrimaryButton id="editAccount" style={{ float: "right" }} onClick={this.handleClick}>{ACCOUNTOVERVIEW_EDIT_BUTTON}</PrimaryButton>}</span>}>
-                                {
-                                    editAccount ? (
-                                        <TwitterAccountForm account={account} loading={loadingAccountForm} cancel edit delete onCancel={this.handleAccountEditionCancel} onDelete={this.handleAccountEditionDelete} onSubmit={this.handleAccountEditionSubmit}/>
-                                    ) : (
-                                        <Fragment>
-                                            <Card title="Informations">
-                                                <TextInput name="name" value={account.name} label="Name"/>
-                                                <TextInput name="consumerKey" value={account.consumerSecret} label="Consumer Key"/>
-                                                <TextInput name="consumerSecret" value={account.consumerSecret} label="Consumer Secret"/>
-                                                <TextInput name="accessTokenSecret" value={account.accessTokenKey} label="Access Token Key"/>
-                                                <TextInput name="accessTokenSecret" value={account.accessTokenSecret} label="Access Token Secret"/>
-                                                <Text name="maxCampaigns" value={account.maxCampaigns} label="Max campaigns"/>
-                                                <WordList words={account.blacklist}/>
-                                            </Card>
-                                            <Card title={ACCOUNTOVERVIEW_CAMPAIGNS_TITLE}>
+                            <Card title={accountId} titleRight={!editAccount && <PrimaryButton id="editAccount" onClick={this.handleClick}>{ACCOUNTOVERVIEW_EDIT_BUTTON}</PrimaryButton>}>
+                            {
+                                editAccount ? (
+                                    <TwitterAccountForm account={account} loading={loadingAccountForm} cancel edit delete onCancel={this.handleAccountEditionCancel} onDelete={this.handleAccountEditionDelete} onSubmit={this.handleAccountEditionSubmit}/>
+                                ) : (
+                                    <Fragment>
+                                        <Card title="Informations">
+                                            <Input name="name" value={account.name} label="Name" disabled/>
+                                            <Input name="consumerKey" value={account.consumerKey} label="Consumer Key" disabled/>
+                                            <Input name="consumerSecret" value={account.consumerSecret} label="Consumer Secret" disabled/>
+                                            <Input name="accessTokenSecret" value={account.accessTokenKey} label="Access Token Key" disabled/>
+                                            <Input name="accessTokenSecret" value={account.accessTokenSecret} label="Access Token Secret" disabled/>
+                                            <Text name="maxCampaigns" value={account.maxCampaigns} label="Max campaigns"/>
+                                            <WordList words={account.blacklist}/>
+                                        </Card>
+                                        <Card title={ACCOUNTOVERVIEW_CAMPAIGNS_TITLE} titleRight={!displayCampaignCreationForm && <PrimaryButton id="addCampaign" onClick={this.handleClick}>{ACCOUNTOVERVIEW_ADD_CAMPAIGN_BUTTON}</PrimaryButton>}>
+                                        {
+                                            displayCampaignCreationForm ? (
+                                                <CampaignForm accounts={accounts.map(account => account.name)} loading={loadingCampaignForm} onSubmit={this.handleCampaignCreationSubmit} onCancel={this.handleCampaignCreationCancel}/>
+                                            ) : (
                                                 <CampaignList account={account} campaigns={account.campaigns} onClick={this.handleCampaignSelection}/>
-                                            </Card>
-                                            <Card title={ACCOUNTOVERVIEW_BLACKLIST_TITLE}>
-                                                <WordList words={account.blacklist}/>
-                                            </Card>
-                                        </Fragment>
-                                    )
-                                }
+                                            )
+                                        }
+                                        </Card>
+                                        <Card title={ACCOUNTOVERVIEW_BLACKLIST_TITLE}>
+                                            <WordList words={account.blacklist}/>
+                                        </Card>
+                                    </Fragment>
+                                )
+                            }
                             </Card>
                         ) : (
                             <Card title={accountId}>
@@ -200,7 +258,8 @@ const mapDispatchToProps = (dispatch) => {
         actions: bindActionCreators({
             fetchAccountList,
             updateAccount,
-            removeAccount
+            removeAccount,
+            addCampaign
         }, dispatch)
     };
 };

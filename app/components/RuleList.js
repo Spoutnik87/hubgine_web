@@ -57,21 +57,25 @@ class RuleList extends Component {
         } = this.props;
         return (
             rules.length > 0 ? (
-                <div>
-                {
-                    rules.map(rule => (
-                        <div key={rule.uid}>
-                        {
-                            <RuleItem accountId={accountId} campaignId={campaignId} rule={rule} onEditMode={onRuleEditMode} 
-                                edit={rule.name === selectedRule} loading={rule.name === selectedRule && loading} onRuleEditionSubmit={onRuleEditionSubmit} 
-                                    onRuleEditionDelete={onRuleEditionDelete} onRuleEditionCancel={onRuleEditionCancel}/>
-                        }
-                        </div>
-                    ))
-                }
-                </div>
+                <table className="table">
+                    <tbody>
+                    {
+                        rules.map(rule => (
+                            <tr key={rule.uid}>
+                                <td>
+                                {
+                                    <RuleItem accountId={accountId} campaignId={campaignId} rule={rule} onEditMode={onRuleEditMode} 
+                                        edit={rule.name === selectedRule} loading={rule.name === selectedRule && loading} onRuleEditionSubmit={onRuleEditionSubmit} 
+                                            onRuleEditionDelete={onRuleEditionDelete} onRuleEditionCancel={onRuleEditionCancel}/>
+                                }
+                                </td>
+                            </tr>
+                        ))
+                    }
+                    </tbody>
+                </table>
             ) : (
-                <div>{RULELIST_NO_RULES}</div>
+                RULELIST_NO_RULES
             )
         );
     }

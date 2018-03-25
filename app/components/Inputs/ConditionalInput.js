@@ -70,7 +70,7 @@ class ConditionalInput extends Component {
                         {label}
                         {
                             tooltip && (
-                                <span style={{ float: "right" }}>
+                                <span className="right-align">
                                     <Tooltip>
                                         {tooltip}
                                     </Tooltip>

@@ -83,7 +83,7 @@ class RuleItem extends Component {
                     )
                 ) : (
                     <div>
-                        <div style={{ float: "right" }} onClick={this.handleClick}>
+                        <div className="right-align" onClick={this.handleClick}>
                             <PrimaryButton onClick={this.handleEditMode}>{RULEITEM_EDIT_BUTTON}</PrimaryButton>
                         </div>
                         Name : {name}<br/>
