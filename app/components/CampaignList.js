@@ -47,7 +47,9 @@ class CampaignList extends Component {
         const {
             CAMPAIGNLIST_NOCAMPAIGN
         } = this.props.lang;
-        const { campaigns } = this.props;
+        const {
+            campaigns
+        } = this.props;
         return campaigns.length > 0 ? (
             <div>
             {

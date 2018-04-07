@@ -1,14 +1,14 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { register } from "../../actions/user";
+import PropTypes from "prop-types";
+import { contact } from "../../actions/contact";
+import ContactForm from "../Forms/ContactForm";
 import { withMessages } from "../withMessages";
-import UserRegisterForm from "../Forms/UserRegisterForm";
 import Container from "../Container";
-import LoadingCog from "../LoadingCog";
+import Card from "../Card";
 
-class Register extends Component {
+class Contact extends Component {
     static propTypes = {
         messages: PropTypes.object.isRequired
     };
@@ -25,32 +25,33 @@ class Register extends Component {
     handleSubmit(event)
     {
         const {
+            reason,
             email,
-            password,
-            cpassword,
-            firstname,
-            lastname,
-            lang,
-            useterms,
-            recaptcha
+            message
         } = event.result;
         this.setState({
             loading: true
         });
-        this.props.actions.register(email, password, cpassword, firstname, lastname, lang, useterms, recaptcha).catch(error => {
+        this.props.actions.contact(reason, email, message).catch(() => {
             this.setState({
                 loading: false
             });
         });
     }
-
+    
     render()
     {
-        const { messages } = this.props;
-        const { loading } = this.state;
+        const {
+            messages
+        } = this.props;
+        const {
+            loading
+        } = this.state;
         return (
             <Container>
-                <UserRegisterForm onSubmit={this.handleSubmit} loading={loading} messages={messages}/>
+                <Card>
+                    <ContactForm onSubmit={this.handleSubmit} loading={loading} messages={messages}/>
+                </Card>
             </Container>
         );
     }
@@ -59,9 +60,9 @@ class Register extends Component {
 const mapDispatchToProps = (dispatch) => {
     return {
         actions: bindActionCreators({
-            register
+            contact
         }, dispatch)
     };
 };
 
-export default withMessages(connect(undefined, mapDispatchToProps)(Register));
+export default withMessages(connect(undefined, mapDispatchToProps)(Contact));

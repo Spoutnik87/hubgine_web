@@ -140,7 +140,7 @@ const resetPassword = (email) => {
 const getUser = (email, password, user) => {
     const data = { email, password };
 
-    return requestIfNeeded(Methods.GET, Endpoints.USER_LOGIN, null, data, Types.USER_BASIC, user);
+    return requestIfNeeded(Methods.GET, Endpoints.USER_LOGIN, undefined, data, Types.USER_BASIC, user);
 };
 
 /**
@@ -156,7 +156,7 @@ const getUser = (email, password, user) => {
 const addUser = (email, password, firstname, lastname, lang) => {
     const data = { email, password, firstname, lastname, lang };
 
-    return request(Methods.POST, Endpoints.USER_CREATE, null, data);
+    return request(Methods.POST, Endpoints.USER_CREATE, undefined, data);
 };
 
 /**
@@ -372,6 +372,19 @@ const removeTwitterRule = (token, account_id, campaign_id, rule_id) => {
     return request(Methods.DELETE, Endpoints.TWITTERRULE_DELETE, token, data);
 };
 
+/**
+ * Contact request.
+ * @public
+ * @param {number} reason
+ * @param {string} email
+ * @param {string} message
+ */
+const contact = (reason, email, message) => {
+    const data = { reason, email, message };
+
+    return request(Methods.POST, Endpoints.CONTACT_POST, undefined, data);
+};
+
 export {
     getUserInfos,
     resetPassword,
@@ -387,5 +400,6 @@ export {
     removeCampaign,
     addTwitterRule,
     updateTwitterRule,
-    removeTwitterRule
+    removeTwitterRule,
+    contact
 };

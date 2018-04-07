@@ -134,7 +134,7 @@ class UserDashboard extends Component {
                                     }).map(account => account.name)} loading={loadingCampaignForm} cancel messages={messages} onCancel={this.handleCampaignCreationCancel} onSubmit={this.handleCampaignCreationSubmit}/>
                                 ) : (
                                     accounts.map(account => (
-                                        <Card key={account.uid} title={account.name} titleRight={<InfoButton id="displayAccount" data-element={account.name} onClick={this.handleClick}>{USERDASHBOARD_DISPLAY_ACCOUNT_BUTTON}</InfoButton>}>
+                                        <Card key={account.uid} title={account.name} rightTitle={<InfoButton id="displayAccount" data-element={account.name} onClick={this.handleClick}>{USERDASHBOARD_DISPLAY_ACCOUNT_BUTTON}</InfoButton>}>
                                             <CampaignList account={account} campaigns={accounts[findIndex(accounts, { name: account.name })].campaigns} onClick={this.handleCampaignSelection}/>
                                         </Card>
                                     ))

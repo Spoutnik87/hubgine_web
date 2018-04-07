@@ -9,7 +9,7 @@ class Container extends Component {
     };
 
     static defaultProps = {
-        children: null,
+        children: undefined,
         center: false
     };
     

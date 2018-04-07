@@ -12,9 +12,9 @@ import FormGroup from "../FormGroup";
 class UserForgotPasswordForm extends Component {
     static propTypes = {
         lang: PropTypes.shape({
-            FORGOTPASSWORD_TITLE: PropTypes.string.isRequired,
-            FORGOTPASSWORD_SUBMIT: PropTypes.string.isRequired,
-            FORGOTPASSWORD_EMAIL: PropTypes.string.isRequired
+            USERFORGOTPASSWORDFORM_TITLE: PropTypes.string.isRequired,
+            USERFORGOTPASSWORDFORM_SUBMIT: PropTypes.string.isRequired,
+            USERFORGOTPASSWORDFORM_EMAIL: PropTypes.string.isRequired
         }).isRequired,
         name: PropTypes.string,
         onSubmit: PropTypes.func,
@@ -79,23 +79,23 @@ class UserForgotPasswordForm extends Component {
     render()
     {
         const {
-            FORGOTPASSWORD_TITLE,
-            FORGOTPASSWORD_EMAIL,
-            FORGOTPASSWORD_SUBMIT
+            USERFORGOTPASSWORDFORM_TITLE,
+            USERFORGOTPASSWORDFORM_EMAIL,
+            USERFORGOTPASSWORDFORM_SUBMIT
         } = this.props.lang;
         const { loading, title, messages, children } = this.props;
         const { email, recaptcha } = this.state;
         return (
-            <Form title={title ? FORGOTPASSWORD_TITLE : undefined}>
+            <Form title={title ? USERFORGOTPASSWORDFORM_TITLE : undefined}>
                 {
                     messages && (
                         <Messages messages={messages}/>
                     )
                 }
-                <Input name="email" id="email" value={email} label={FORGOTPASSWORD_EMAIL} onChange={this.handleChange} autoFocus/>
+                <Input name="email" value={email} label={USERFORGOTPASSWORDFORM_EMAIL} onChange={this.handleChange} autoFocus/>
                 <FormGroup>
                     <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-2">
-                        <Recaptcha verifyCallback={this.handleRecaptchaVerify} expiredCallback={this.handleRecaptchaExpired} />
+                        <Recaptcha verifyCallback={this.handleRecaptchaVerify} expiredCallback={this.handleRecaptchaExpired}/>
                     </div>
                 </FormGroup>
                 <FormGroup>
@@ -104,7 +104,7 @@ class UserForgotPasswordForm extends Component {
                         <LoadingCog/>
                     ) : (
                         <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-10">
-                            <SuccessButton className="form-button" onClick={this.handleClick} disabled={recaptcha === ""}>{FORGOTPASSWORD_SUBMIT}</SuccessButton>
+                            <SuccessButton className="form-button" onClick={this.handleClick} disabled={recaptcha === ""}>{USERFORGOTPASSWORDFORM_SUBMIT}</SuccessButton>
                         </div>
                     )
                 }

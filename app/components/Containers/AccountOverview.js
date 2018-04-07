@@ -19,6 +19,7 @@ import CampaignForm from "../Forms/CampaignForm";
 import WordList from "../WordList";
 import Input from "../Inputs/Input"
 import Text from "../Text";
+import AccountStats from "../AccountStats";
 
 class AccountOverview extends Component {
     static propTypes = {
@@ -178,8 +179,7 @@ class AccountOverview extends Component {
             ACCOUNTOVERVIEW_NO_ACCOUNT,
             ACCOUNTOVERVIEW_EDIT_BUTTON,
             ACCOUNTOVERVIEW_ADD_CAMPAIGN_BUTTON,
-            ACCOUNTOVERVIEW_CAMPAIGNS_TITLE,
-            ACCOUNTOVERVIEW_BLACKLIST_TITLE
+            ACCOUNTOVERVIEW_CAMPAIGNS_TITLE
         } = this.props.lang;
         const {
             accounts,
@@ -203,32 +203,22 @@ class AccountOverview extends Component {
                         </Card>
                     ) : (
                         account ? (
-                            <Card title={accountId} titleRight={!editAccount && <PrimaryButton id="editAccount" onClick={this.handleClick}>{ACCOUNTOVERVIEW_EDIT_BUTTON}</PrimaryButton>}>
+                            <Card title={accountId} rightTitle={!editAccount && <PrimaryButton id="editAccount" onClick={this.handleClick}>{ACCOUNTOVERVIEW_EDIT_BUTTON}</PrimaryButton>}>
                             {
                                 editAccount ? (
                                     <TwitterAccountForm account={account} loading={loadingAccountForm} cancel edit delete onCancel={this.handleAccountEditionCancel} onDelete={this.handleAccountEditionDelete} onSubmit={this.handleAccountEditionSubmit}/>
                                 ) : (
                                     <Fragment>
-                                        <Card title="Informations">
-                                            <Input name="name" value={account.name} label="Name" disabled/>
-                                            <Input name="consumerKey" value={account.consumerKey} label="Consumer Key" disabled/>
-                                            <Input name="consumerSecret" value={account.consumerSecret} label="Consumer Secret" disabled/>
-                                            <Input name="accessTokenSecret" value={account.accessTokenKey} label="Access Token Key" disabled/>
-                                            <Input name="accessTokenSecret" value={account.accessTokenSecret} label="Access Token Secret" disabled/>
-                                            <Text name="maxCampaigns" value={account.maxCampaigns} label="Max campaigns"/>
-                                            <WordList words={account.blacklist}/>
-                                        </Card>
-                                        <Card title={ACCOUNTOVERVIEW_CAMPAIGNS_TITLE} titleRight={!displayCampaignCreationForm && <PrimaryButton id="addCampaign" onClick={this.handleClick}>{ACCOUNTOVERVIEW_ADD_CAMPAIGN_BUTTON}</PrimaryButton>}>
+                                        <AccountStats account={account}/>
+                                        <br/>
+                                        <Card title={ACCOUNTOVERVIEW_CAMPAIGNS_TITLE} rightTitle={!displayCampaignCreationForm && <PrimaryButton id="addCampaign" onClick={this.handleClick}>{ACCOUNTOVERVIEW_ADD_CAMPAIGN_BUTTON}</PrimaryButton>}>
                                         {
                                             displayCampaignCreationForm ? (
-                                                <CampaignForm accounts={accounts.map(account => account.name)} loading={loadingCampaignForm} onSubmit={this.handleCampaignCreationSubmit} onCancel={this.handleCampaignCreationCancel}/>
+                                                <CampaignForm accounts={accounts.map(account => account.name)} loading={loadingCampaignForm} onSubmit={this.handleCampaignCreationSubmit} cancel onCancel={this.handleCampaignCreationCancel}/>
                                             ) : (
                                                 <CampaignList account={account} campaigns={account.campaigns} onClick={this.handleCampaignSelection}/>
                                             )
                                         }
-                                        </Card>
-                                        <Card title={ACCOUNTOVERVIEW_BLACKLIST_TITLE}>
-                                            <WordList words={account.blacklist}/>
                                         </Card>
                                     </Fragment>
                                 )

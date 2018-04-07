@@ -18,12 +18,17 @@ class Messages extends Component {
 
     shouldComponentUpdate(nextProps, nextState)
     {
-        return nextProps.messages !== this.props.messages;
+        const {
+            messages
+        } = this.props;
+        return nextProps.messages !== messages;
     }
 
     render()
     {
-        const { messages } = this.props;
+        const {
+            messages
+        } = this.props;
         return messages.success ? (
             <div role="alert" className="alert alert-success">
                 {messages.success.map((message, index) => <div key={index}>{message.msg}</div>)}

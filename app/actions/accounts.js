@@ -44,7 +44,8 @@ const fetchAccountList = () => (dispatch, getState) => new Promise((resolve, rej
                             undoFollow: campaign.config.undo_follow,
                             rules: campaign.config.rules
                         }
-                    }))
+                    })),
+                    stats: account.stats
             }))
         });
         resolve();

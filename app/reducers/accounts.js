@@ -46,7 +46,10 @@ const accounts = (state = {}, action) => {
                 accessTokenSecret: action.accessTokenSecret,
                 maxCampaigns: action.maxCampaigns,
                 blacklist: action.blacklist,
-                campaigns: []
+                campaigns: [],
+                stats: {
+                    interactions_per_day: {}
+                }
             });
             return state;
         case ActionTypes.ACCOUNT_DELETE:

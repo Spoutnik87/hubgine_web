@@ -13,3 +13,4 @@ export const CAMPAIGN_UPDATE = "campaign";
 export const TWITTERRULE_CREATE = "rule";
 export const TWITTERRULE_UPDATE = "rule";
 export const TWITTERRULE_DELETE = "rule";
+export const CONTACT_POST = "contact";

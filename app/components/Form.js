@@ -9,14 +9,17 @@ class Form extends Component {
     };
 
     static defaultProps = {
-        title: null,
-        children: null
+        title: undefined,
+        children: undefined
     };
 
-    
     shouldComponentUpdate(nextProps, nextState)
     {
-        return nextProps.title !== this.props.title || nextProps.children !== this.props.children;
+        const {
+            title,
+            children
+        } = this.props;
+        return nextProps.title !== title || nextProps.children !== children;
     }
 
     render()
@@ -27,9 +30,7 @@ class Form extends Component {
         } = this.props;
         return (
             <Card title={title}>
-                <div className="form-horizontal">
-                    {children}
-                </div>
+                <div className="form-horizontal">{children}</div>
             </Card>
         );
     }

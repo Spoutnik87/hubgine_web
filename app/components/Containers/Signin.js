@@ -75,4 +75,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default withMessages(withLanguage(connect(null, mapDispatchToProps)(Signin)));
+export default withMessages(withLanguage(connect(undefined, mapDispatchToProps)(Signin)));

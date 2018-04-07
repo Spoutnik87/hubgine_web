@@ -14,7 +14,6 @@ const getLanguage = () => {
         GENERIC_ERROR: "An error happened.",
         SESSION_EXPIRED: "Your session has expired.",
         //---HEADER---
-        HEADER_SR_ONLY: "Toggle navigation",
         HEADER_HOME: "Home",
         HEADER_ADMIN_DASHBOARD: "Admin Dashboard",
         HEADER_USER_DASHBOARD: "User Dashboard",
@@ -22,6 +21,7 @@ const getLanguage = () => {
         HEADER_DISCONNECT: "Disconnect",
         HEADER_SIGNIN: "Sign In",
         HEADER_REGISTER: "Register",
+        HEADER_CONTACT: "Contact us",
         //---FOOTER---
         FOOTER_TITLE: "© 2018 Company, Inc. All Rights Reserved.",
         //---NOTFOUND---
@@ -108,10 +108,21 @@ const getLanguage = () => {
         USERPASSWORDFORM_PASSWORD: "New password",
         USERPASSWORDFORM_CPASSWORD: "Confirm new password",
         USERPASSWORDFORM_EDIT_ERROR: "Your old password is not valid",
-        //---FORGOTPASSWORD---
-        FORGOTPASSWORD_TITLE: "Reset password",
-        FORGOTPASSWORD_SUBMIT: "Reset password",
-        FORGOTPASSWORD_EMAIL: "Email",
+        //---USERFORGOTPASSWORDFORM---
+        USERFORGOTPASSWORDFORM_TITLE: "Reset password",
+        USERFORGOTPASSWORDFORM_SUBMIT: "Reset",
+        USERFORGOTPASSWORDFORM_EMAIL: "Email",
+        //---CONTACTFORM---
+        CONTACTFORM_TITLE: "Contact us",
+        CONTACTFORM_REASON: "Reason",
+        CONTACTFORM_EMAIL: "Email (optional)",
+        CONTACTFORM_MESSAGE: "Message",
+        CONTACTFORM_SUBMIT: "Send",
+        CONTACTFORM_REASON_GENERAL: "General",
+        CONTACTFORM_REASON_PROPOSITION: "Proposition",
+        CONTACTFORM_REASON_BUG: "Bug/Issue",
+        CONTACTFORM_REASON_INFORMATION: "Information",
+        CONTACTFORM_REASON_OTHER: "Other",
         //---TWITTERACCOUNTFORM---
         TWITTERACCOUNTFORM_NAME: "Name",
         TWITTERACCOUNTFORM_CONSUMERKEY: "Consumer key",

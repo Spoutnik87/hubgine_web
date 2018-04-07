@@ -14,7 +14,6 @@ const getLanguage = () => {
         GENERIC_ERROR: "Une erreur est survenue.",
         SESSION_EXPIRED: "La session a expirée.",
         //---HEADER---
-        HEADER_SR_ONLY: "Menu",
         HEADER_HOME: "Home",
         HEADER_ADMIN_DASHBOARD: "Tableau de bord de l'admin",
         HEADER_USER_DASHBOARD: "Tableau de bord de l'utilisateur",
@@ -22,6 +21,7 @@ const getLanguage = () => {
         HEADER_DISCONNECT: "Se deconnecter",
         HEADER_SIGNIN: "Se connecter",
         HEADER_REGISTER: "S'inscrire",
+        HEADER_CONTACT: "Nous contacter",
         //---FOOTER---
         FOOTER_TITLE: "© 2018 Company, Inc. Tous droits résérvés.",
         //---NOTFOUND---
@@ -108,10 +108,21 @@ const getLanguage = () => {
         USERPASSWORDFORM_PASSWORD: "Nouveau mot de passe",
         USERPASSWORDFORM_CPASSWORD: "Confirmation du nouveau mot de passe",
         USERPASSWORDFORM_EDIT_ERROR: "L'ancien mot de passe est invalide",
-        //---FORGOTPASSWORD---
-        FORGOTPASSWORD_TITLE: "Réinitialiser le mot de passe",
-        FORGOTPASSWORD_SUBMIT: "Réinitialiser le mot de passe",
-        FORGOTPASSWORD_EMAIL: "Email",
+        //---USERFORGOTPASSWORDFORM---
+        USERFORGOTPASSWORDFORM_TITLE: "Réinitialiser le mot de passe",
+        USERFORGOTPASSWORDFORM_SUBMIT: "Réinitialiser",
+        USERFORGOTPASSWORDFORM_EMAIL: "Email",
+        //---CONTACTFORM---
+        CONTACTFORM_TITLE: "Nous contacter",
+        CONTACTFORM_REASON: "Motif",
+        CONTACTFORM_EMAIL: "Email (optionnel)",
+        CONTACTFORM_MESSAGE: "Message",
+        CONTACTFORM_SUBMIT: "Envoyer",
+        CONTACTFORM_REASON_GENERAL: "General",
+        CONTACTFORM_REASON_PROPOSITION: "Proposition",
+        CONTACTFORM_REASON_BUG: "Erreur/bug",
+        CONTACTFORM_REASON_INFORMATION: "Information",
+        CONTACTFORM_REASON_OTHER: "Autre",
         //---TWITTERACCOUNTFORM---
         TWITTERACCOUNTFORM_NAME: "Nom",
         TWITTERACCOUNTFORM_CONSUMERKEY: "Consumer key",
@@ -140,7 +151,7 @@ const getLanguage = () => {
         TWITTERACCOUNTFORM_DELETE_ERROR: "Une errreur est survenue lors de la suppression du compte.",
         TWITTERACCOUNTFORM_DELETE_BUTTON: "Supprimer un compte",
         //---CAMPAIGNFORM---
-        CAMPAIGNFORM_CREATE_TITLE: "Créer un campagne",
+        CAMPAIGNFORM_CREATE_TITLE: "Créer une campagne",
         CAMPAIGNFORM_EDIT_TITLE: "Editer une campagne",
         CAMPAIGNFORM_CREATE_BUTTON: "Créer une campagne",
         CAMPAIGNFORM_EDIT_BUTTON: "Editer la campagne",

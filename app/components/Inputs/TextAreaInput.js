@@ -1,43 +1,39 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
-import Input from "./Input";
 import FormGroup from "../FormGroup";
 import Row from "../Row";
 import Tooltip from "../Tooltip";
 
-class Switch extends Component {
+class TextAreaInput extends Component {
     static propTypes = {
         name: PropTypes.string,
-        options: PropTypes.array.isRequired,
-        defaultOption: PropTypes.string,
-        id: PropTypes.string,
+        value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        type: PropTypes.string,
         label: PropTypes.string,
         tooltip: PropTypes.string,
-        onChange: PropTypes.func
+        rows: PropTypes.number,
+        onChange: PropTypes.func,
     };
 
     static defaultProps = {
-        name: "switch",
+        name: "textareainput",
+        value: "",
+        type: "text",
         onChange: () => {}
     };
 
     constructor(props)
     {
         super(props);
-        this.state = {
-            selectedOption: this.props.defaultOption || this.props.options[0]
-        };
         this.handleChange = this.handleChange.bind(this);
     }
 
     handleChange(event)
     {
-        this.setState({
-            selectedOption: event.value
-        });
         this.props.onChange({
             name: this.props.name,
-            value: event.value
+            value: event.target.value
         });
     }
 
@@ -47,24 +43,9 @@ class Switch extends Component {
             id,
             label,
             tooltip,
-            name,
-            options
+            ...props
         } = this.props;
-        const {
-            selectedOption
-        } = this.state;
-        const switchInput = (
-            <div className="switch">
-                {
-                    options.map((value, index) => (
-                        <Fragment key={name + index}>
-                            <Input type="radio" id={index} name={name} value={value} onChange={this.handleChange} checked={selectedOption === value} />
-                            <label htmlFor={index}>{value}</label>
-                        </Fragment>
-                    ))
-                }
-            </div>
-        );
+        const input = <textarea id={id} {...props} className="form-control" onChange={this.handleChange}/>;
         return label ? (
             <FormGroup>
                 <Row>
@@ -81,14 +62,14 @@ class Switch extends Component {
                         }
                     </label>
                     <div className="col-xs-12 col-sm-9 col-md-10">
-                        {switchInput}
+                        {input}
                     </div>
                 </Row>
             </FormGroup>
         ) : (
-            switchInput
-        )
+            input
+        );
     }
 }
 
-export default Switch;
+export default TextAreaInput;

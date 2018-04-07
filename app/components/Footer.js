@@ -11,14 +11,10 @@ class Footer extends Component {
 
     shouldComponentUpdate(nextProps, nextState)
     {
-        if (nextProps.lang !== this.props.lang)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        const {
+            lang
+        } = this.props;
+        return nextProps.lang !== lang;
     }
 
     render()

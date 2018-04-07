@@ -17,10 +17,11 @@ class LoadingCog extends Component {
 
     render()
     {
+        const {
+            center
+        } = this.props;
         const cog = <i className="fas fa-cog fa-spin fa-3x fa-fw" style={{ color: "#35B729" }}></i>;
-        return (
-            this.props.center ? <div className="center">{cog}</div> : cog
-        );
+        return center ? <div className="center">{cog}</div> : <div>{cog}</div>;
     }
 }
 

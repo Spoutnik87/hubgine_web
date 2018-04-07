@@ -68,17 +68,20 @@ class CampaignOverview extends Component {
     componentDidMount()
     {
         const {
+            accounts
+        } = this.props;
+        const {
             accountId,
             campaignId
         } = this.state;
         this.props.actions.fetchAccountList().then(() => {
-            const accountIndex = findIndex(this.props.accounts, { name: accountId });
+            const accountIndex = findIndex(accounts, { name: accountId });
             const state = {
                 loadingAccountList: false
             };
             if (accountIndex !== -1)
             {
-                state.campaign = this.props.accounts[accountIndex].campaigns[findIndex(this.props.accounts[accountIndex].campaigns, { name: campaignId })];
+                state.campaign = accounts[accountIndex].campaigns[findIndex(accounts[accountIndex].campaigns, { name: campaignId })];
             }
             this.setState(state);
         }).catch(error => {});
@@ -259,25 +262,37 @@ class CampaignOverview extends Component {
             CAMPAIGNOVERVIEW_DATEBEGIN,
             CAMPAIGNOVERVIEW_DATEEND
         } = this.props.lang;
-        const { messages, accounts } = this.props;
-        const { loadingAccountList, accountId, campaignId, editCampaign, loading, campaign, creationRuleFormDisplayed, selectedRule } = this.state;
+        const {
+            messages,
+            accounts
+        } = this.props;
+        const {
+            loadingAccountList,
+            accountId,
+            campaignId,
+            editCampaign,
+            loading,
+            campaign,
+            creationRuleFormDisplayed,
+            selectedRule
+        } = this.state;
         return (
             <Container>
-                <Card title={CAMPAIGNOVERVIEW_TITLE_ACCOUNT + accountId + " - " + CAMPAIGNOVERVIEW_TITLE_CAMPAIGN + campaignId} titleRight={!editCampaign && <PrimaryButton id="editCampaign" onClick={this.handleClick}>{CAMPAIGNOVERVIEW_EDIT_BUTTON}</PrimaryButton>}>
+                <Card title={CAMPAIGNOVERVIEW_TITLE_ACCOUNT + accountId + " - " + CAMPAIGNOVERVIEW_TITLE_CAMPAIGN + campaignId} rightTitle={!editCampaign && <PrimaryButton id="editCampaign" onClick={this.handleClick}>{CAMPAIGNOVERVIEW_EDIT_BUTTON}</PrimaryButton>}>
                 {
                     loadingAccountList ? (
                         <LoadingCog center/>
                     ) : (
                         campaign ? (
                             editCampaign ? (
-                                <CampaignForm accounts={this.props.accounts.map(account => account.name)} accountId={accountId} campaign={campaign} messages={this.props.messages} edit cancel delete onCancel={this.handleCampaignEditionCancel} onDelete={this.handleCampaignEditionDelete} onSubmit={this.handleCampaignEditionSubmit}/>
+                                <CampaignForm accounts={accounts.map(account => account.name)} accountId={accountId} campaign={campaign} messages={messages} edit cancel delete onCancel={this.handleCampaignEditionCancel} onDelete={this.handleCampaignEditionDelete} onSubmit={this.handleCampaignEditionSubmit}/>
                             ) : (
                                 <Fragment>
                                     <Messages messages={messages}/>
                                     <Input name="name" value={campaign.name} label={CAMPAIGNOVERVIEW_NAME} disabled/>
                                     <DateInput name="dateBegin" value={campaign.dateBegin} label={CAMPAIGNOVERVIEW_DATEBEGIN} disabled/>
                                     <DateInput name="dateEnd" value={campaign.dateEnd} label={CAMPAIGNOVERVIEW_DATEEND} disabled/>
-                                    <Card title={CAMPAIGNOVERVIEW_RULES_TITLE} titleRight={!creationRuleFormDisplayed && <SuccessButton id="createRule" onClick={this.handleClick}>{CAMPAIGNOVERVIEW_ADD_RULE_BUTTON}</SuccessButton>}>
+                                    <Card title={CAMPAIGNOVERVIEW_RULES_TITLE} rightTitle={!creationRuleFormDisplayed && <SuccessButton id="createRule" onClick={this.handleClick}>{CAMPAIGNOVERVIEW_ADD_RULE_BUTTON}</SuccessButton>}>
                                     {
                                         creationRuleFormDisplayed ? (
                                             <TwitterRuleForm cancel loading={loading} onCancel={this.handleRuleCreationCancel} onSubmit={this.handleRuleCreationSubmit}/>
@@ -302,13 +317,13 @@ class CampaignOverview extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
     return {
         accounts: state.accounts.data
     };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
     return {
         actions: bindActionCreators({
             fetchAccountList,

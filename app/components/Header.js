@@ -15,14 +15,14 @@ class Header extends Component {
           }).isRequired,
           lang: PropTypes.shape({
             COMPANY_NAME: PropTypes.string.isRequired,
-            HEADER_SR_ONLY: PropTypes.string.isRequired,
             HEADER_HOME: PropTypes.string.isRequired,
             HEADER_ADMIN_DASHBOARD: PropTypes.string.isRequired,
             HEADER_USER_DASHBOARD: PropTypes.string.isRequired,
             HEADER_PROFILE: PropTypes.string.isRequired,
             HEADER_DISCONNECT: PropTypes.string.isRequired,
             HEADER_SIGNIN: PropTypes.string.isRequired,
-            HEADER_REGISTER: PropTypes.string.isRequired
+            HEADER_REGISTER: PropTypes.string.isRequired,
+            HEADER_CONTACT: PropTypes.string.isRequired
           }).isRequired,
           onDisconnect: PropTypes.func
     };
@@ -36,13 +36,13 @@ class Header extends Component {
         const isLoggedIn = this.props.user.token != null;
         const isAdmin = this.props.user.rank === Ranks.ADMIN;
         const {
-            HEADER_SR_ONLY,
             HEADER_ADMIN_DASHBOARD,
             HEADER_USER_DASHBOARD,
             HEADER_PROFILE,
             HEADER_DISCONNECT,
             HEADER_SIGNIN,
             HEADER_REGISTER,
+            HEADER_CONTACT,
             COMPANY_NAME,
             HEADER_HOME
         } = this.props.lang;
@@ -71,10 +71,11 @@ class Header extends Component {
                                 ) : (
                                     <Fragment>
                                         <li><NavLink className="nav-link" to="/signin">{HEADER_SIGNIN}</NavLink></li>
-                                        <li><NavLink className="nav-link" to="/register">{HEADER_REGISTER}</NavLink></li>                                                            
+                                        <li><NavLink className="nav-link" to="/register">{HEADER_REGISTER}</NavLink></li>
                                     </Fragment>
                                 )
                             }
+                            <li><NavLink className="nav-link" to="/contact">{HEADER_CONTACT}</NavLink></li>
                         </ul>
                     </div>
                 </nav>

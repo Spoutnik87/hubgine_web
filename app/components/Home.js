@@ -5,6 +5,8 @@ import UserSubscriptionChart from "./UserSubscriptionChart";
 import Container from "./Container";
 import Card from "./Card";
 import Row from "./Row";
+import LineChart from "./charts/LineChart";
+import PieChart from "./charts/PieChart";
 
 class Home extends Component {
     static propTypes = {
@@ -20,7 +22,22 @@ class Home extends Component {
             {index: '04/05', value: 50},
             {index: '05/05', value: 60},
             {index: '06/05', value: 72},
-            {index: '07/05', value: 84},
+            {index: '07/05', value: 84}
+        ];
+        const dataa = [
+            {name: '01/05', value: 10},
+            {name: '02/05', value: 15},
+            {name: '03/05', value: 25},
+            {name: '04/05', value: 50},
+            {name: '05/05', value: 60},
+            {name: '06/05', value: 72},
+            {name: '07/05', value: 84}
+        ];
+        const datab = [
+            {name: '04/05', value: 50},
+            {name: '05/05', value: 60},
+            {name: '06/05', value: 72},
+            {name: '07/05', value: 84}
         ];
         return (
             <Container fluid>
@@ -28,6 +45,8 @@ class Home extends Component {
                     <div className="col-sm-4">
                         <Card>
                             <UserSubscriptionChart data={data} />
+                            <LineChart data={dataa} label="OUI"/>
+                            <PieChart data={datab}/>
                             <h3>Heading</h3>
                             <p>
                                 Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor

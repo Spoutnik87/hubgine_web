@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Switch, Route, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
@@ -16,6 +16,7 @@ import AdminDashboard from "./Containers/AdminDashboard";
 import AccountOverview from "./Containers/AccountOverview";
 import CampaignOverview from "./Containers/CampaignOverview";
 import Profile from "./Containers/Profile";
+import Contact from "./Containers/Contact";
 import NotFound from "./NotFound";
 import NotLoggedInRoute from "./routes/NotLoggedInRoute";
 import LoggedInRoute from "./routes/LoggedInRoute";
@@ -39,11 +40,14 @@ class App extends Component {
 
     render()
     {
-        const isLoggedIn = this.props.user.token !== undefined;
-        const isAdmin = this.props.user.rank === Ranks.ADMIN;
+        const {
+            user
+        } = this.props;
+        const isLoggedIn = user.token !== undefined;
+        const isAdmin = user.rank === Ranks.ADMIN;
         return (
-            <div>
-                <Header user={this.props.user} onDisconnect={this.handleDisconnect}/>
+            <Fragment>
+                <Header user={user} onDisconnect={this.handleDisconnect}/>
                 <Switch>
                     <Route path="/" exact component={Home}/>
                     <LoggedInRoute path="/user-dashboard" component={UserDashboard} isLoggedIn={isLoggedIn}/>
@@ -54,10 +58,11 @@ class App extends Component {
                     <NotLoggedInRoute path="/signin" component={Signin} isNotLoggedIn={!isLoggedIn}/>
                     <NotLoggedInRoute path="/register" component={Register} isNotLoggedIn={!isLoggedIn}/>
                     <NotLoggedInRoute path="/forgot-password" component={ForgotPassword} isNotLoggedIn={!isLoggedIn}/>
-                    <Route component={NotFound} />
+                    <Route path="/contact" component={Contact}/>
+                    <Route component={NotFound}/>
                 </Switch>
                 <Footer/>
-            </div>
+            </Fragment>
         );
     }
 }
