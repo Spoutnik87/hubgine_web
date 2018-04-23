@@ -1,5 +1,5 @@
-import { USER_SET, USER_UPDATE, USER_UPDATE_INFOS, USER_UNSET } from "../constants/ActionTypes";
-import * as RequestTypes from "../constants/RequestTypes";
+import { USER_SET, USER_UPDATE, USER_UPDATE_INFOS, USER_UNSET } from "../constants/ActionType";
+import * as RequestType from "../constants/RequestType";
 import { addMetadata } from "../util/Metadata";
 
 /**
@@ -18,7 +18,7 @@ const user = (state = {}, action) => {
                 email: action.email,
                 rank: action.rank,
                 lang: action.lang
-            }, RequestTypes.USER_BASIC);
+            }, RequestType.USER_BASIC);
         case USER_UPDATE:
             const newState = {};
             if (action.email) newState.email = action.email;
@@ -36,7 +36,7 @@ const user = (state = {}, action) => {
                 firstname: action.firstname,
                 lastname: action.lastname,
                 maxAccounts: action.maxAccounts
-            }, RequestTypes.USER_FULL);
+            }, RequestType.USER_FULL);
         case USER_UNSET:
             return {};
         default:

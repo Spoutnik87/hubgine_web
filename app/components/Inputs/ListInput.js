@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import v4 from "uuid/v4";
+import { findIndex } from "lodash";
 import LoadingCog from "../LoadingCog";
 import FormGroup from "../FormGroup";
 import Row from "../Row";
@@ -9,8 +10,13 @@ import Tooltip from "../Tooltip";
 class ListInput extends Component {
     static propTypes = {
         name: PropTypes.string,
-        options: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
-        defaultOption: PropTypes.string,
+        options: PropTypes.oneOfType([
+            PropTypes.arrayOf(PropTypes.any),
+            PropTypes.arrayOf(PropTypes.shape({
+            name: PropTypes.string.isRequired,
+            value: PropTypes.any.isRequired
+        }))]).isRequired,
+        defaultOption: PropTypes.any,
         disabled: PropTypes.bool,
         loading: PropTypes.bool,
         label: PropTypes.string,
@@ -31,12 +37,27 @@ class ListInput extends Component {
     constructor(props)
     {
         super(props);
+        const {
+            options,
+            defaultOption
+        } = this.props;
+        let selectedOption;
+        if (defaultOption != null)
+        {
+            const optionsIndex = findIndex(options, { value: defaultOption });
+            selectedOption = optionsIndex !== -1 ? options[optionsIndex].name || options[optionsIndex] : undefined;
+        }
+        else
+        {
+            selectedOption = options.length > 0 ? options[0].name || options[0] : undefined;
+        }
         this.state = {
             options: this.props.options.map(option => ({
                 key: v4(),
-                value: option
+                name: option.name != null ? option.name : option,
+                value: option.value != null ? option.value : option
             })),
-            value: this.props.defaultOption || this.props.options[0]
+            selectedOption: selectedOption
         };
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -49,14 +70,9 @@ class ListInput extends Component {
             this.setState({
                 options: nextProps.options.map(option => ({
                     key: v4(),
-                    value: option
+                    name: option.name != null ? option.name : option,
+                    value: option.value != null ? option.value : option
                 }))
-            });
-        }
-        if (nextProps.value != null && this.state.value !== nextProps.value)
-        {
-            this.setState({
-                value: nextProps.value
             });
         }
     }
@@ -68,28 +84,45 @@ class ListInput extends Component {
 
     handleChange(event)
     {
+        const {
+            name
+        } = this.props;
+        const {
+            options
+        } = this.state;
+        const optionsIndex = findIndex(options, { name: event.target.value });
         this.setState({
-            value: event.target.value
+            selectedOption: event.target.value
         });
         this.props.onChange({
-            name: this.props.name,
-            value: event.target.value
+            name: name,
+            value: optionsIndex !== -1 ? options[optionsIndex].value != null ? options[optionsIndex].value : options[optionsIndex] : undefined
         });
     }
 
     render()
     {
-        const { id, name, disabled, loading, label, tooltip } = this.props;
-        const { options, value } = this.state;
+        const {
+            id,
+            name,
+            disabled,
+            loading,
+            label,
+            tooltip
+        } = this.props;
+        const {
+            options,
+            selectedOption
+        } = this.state;
         const select = loading ? (
             <LoadingCog/>
         ) : (
-            <select id={id} name={name} className="form-control listinput" value={value} onClick={this.handleClick} onChange={this.handleChange} disabled={disabled}>
-                {
-                    options.map(option => (
-                        <option key={option.key} value={option.value}>{option.value}</option>
-                    ))
-                }
+            <select id={id} name={name} className="form-control listinput" value={selectedOption} onClick={this.handleClick} onChange={this.handleChange} disabled={disabled}>
+            {
+                options.map(option => (
+                    <option key={option.key} value={option.name}>{option.name}</option>
+                ))
+            }
             </select>
         );
         return label ? (

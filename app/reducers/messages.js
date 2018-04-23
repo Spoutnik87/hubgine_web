@@ -1,5 +1,5 @@
 import { FAILURE_MESSAGE, FAILURE_MESSAGES, SUCCESS_MESSAGE, SUCCESS_MESSAGES,
-    INFO_MESSAGE, INFO_MESSAGES, CLEAR_MESSAGES } from "../constants/ActionTypes";
+    INFO_MESSAGE, INFO_MESSAGES, CLEAR_MESSAGES } from "../constants/ActionType";
 
 /**
  * Messages reducer.

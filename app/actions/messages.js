@@ -1,4 +1,4 @@
-import * as ActionTypes from "../constants/ActionTypes";
+import * as ActionType from "../constants/ActionType";
 
 /**
  * Delete all messages from store.
@@ -7,7 +7,7 @@ import * as ActionTypes from "../constants/ActionTypes";
  */
 const clearMessages = () => dispatch => {
     return dispatch({
-        type: ActionTypes.CLEAR_MESSAGES
+        type: ActionType.CLEAR_MESSAGES
     });
 }
 
@@ -19,7 +19,7 @@ const clearMessages = () => dispatch => {
  */
 const sendFailureMessage = message => dispatch => {
     return dispatch({
-        type: ActionTypes.FAILURE_MESSAGE,
+        type: ActionType.FAILURE_MESSAGE,
         message: message
     });
 }
@@ -32,7 +32,7 @@ const sendFailureMessage = message => dispatch => {
  */
 const sendFailureMessages = messages => dispatch => {
     return dispatch({
-        type: ActionTypes.FAILURE_MESSAGES,
+        type: ActionType.FAILURE_MESSAGES,
         messages: messages
     });
 }
@@ -45,7 +45,7 @@ const sendFailureMessages = messages => dispatch => {
  */
 const sendSuccessMessage = message => dispatch => {
     return dispatch({
-        type: ActionTypes.SUCCESS_MESSAGE,
+        type: ActionType.SUCCESS_MESSAGE,
         message: message
     });
 }
@@ -58,7 +58,7 @@ const sendSuccessMessage = message => dispatch => {
  */
 const sendSuccessMessages = messages => dispatch => {
     return dispatch({
-        type: ActionTypes.SUCCESS_MESSAGES,
+        type: ActionType.SUCCESS_MESSAGES,
         messages: messages
     });
 }
@@ -71,7 +71,7 @@ const sendSuccessMessages = messages => dispatch => {
  */
 const sendInfoMessage = message => dispatch => {
     return dispatch({
-        type: ActionTypes.INFO_MESSAGE,
+        type: ActionType.INFO_MESSAGE,
         message: message
     });
 }
@@ -84,7 +84,7 @@ const sendInfoMessage = message => dispatch => {
  */
 const sendInfoMessages = messages => dispatch => {
     return dispatch({
-        type: ActionTypes.INFO_MESSAGES,
+        type: ActionType.INFO_MESSAGES,
         messages: messages
     });
 }

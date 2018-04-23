@@ -1,10 +1,10 @@
 import { api as config } from "../../client-config.json";
-import * as Methods from "../constants/RequestMethods";
-import * as Endpoints from "../constants/RequestEndpoints";
-import * as Types from "../constants/RequestTypes";
+import * as Method from "../constants/RequestMethod";
+import * as Endpoint from "../constants/RequestEndpoint";
+import * as Type from "../constants/RequestType";
 import * as Status from "../constants/RequestStatus";
 import { isCached } from "../util/Metadata";
-import * as Languages from "../constants/Languages";
+import * as Language from "../constants/Language";
 /**
  * Serialize request's data.
  * @public
@@ -39,7 +39,7 @@ const serializeRequest = data => {
 
 /**
  * @public
- * @param {Endpoints} endpoint Endpoint.
+ * @param {Endpoint} endpoint Endpoint.
  * @param {string} serializedData Serialized data.
  * @returns {String} Request url.
  */
@@ -49,8 +49,8 @@ const buildURL = (endpoint, serializedData) => {
 
 /**
  * @public
- * @param {Methods} method Method.
- * @param {Endpoints} endpoint Endpoint.
+ * @param {Method} method Method.
+ * @param {Endpoint} endpoint Endpoint.
  * @param {string} token Token.
  * @param {Object<string,any>} data Data.
  * @returns {Promise<Object<string,any>>} Received data.
@@ -88,11 +88,11 @@ const request = (method, endpoint, token, data) => new Promise((resolve, reject)
 
 /**
  * @public
- * @param {Methods} method Method.
- * @param {Endpoints} endpoint Endpoint.
+ * @param {Method} method Method.
+ * @param {Endpoint} endpoint Endpoint.
  * @param {string} token Token.
  * @param {Object<string,any>} data Data.
- * @param {Types} type Type.
+ * @param {Type} type Type.
  * @param {Object<string,any>} entity Entity.
  * @returns {Promise<Object<string,any>>} Received data.
  */
@@ -115,7 +115,7 @@ const requestIfNeeded = (method, endpoint, token, data, type, entity) => new Pro
  * @returns {Promise<any>}
  */
 const getUserInfos = (token, user) => {
-    return requestIfNeeded(Methods.GET, Endpoints.USER_GET, token, {}, Types.USER_FULL, user);
+    return requestIfNeeded(Method.GET, Endpoint.USER_GET, token, {}, Type.USER_FULL, user);
 };
 
 /**
@@ -127,7 +127,7 @@ const getUserInfos = (token, user) => {
 const resetPassword = (email) => {
     const data = { email };
 
-    return request(Methods.DELETE, Endpoints.TWITTERACCOUNT_DELETE, token, data);
+    return request(Method.DELETE, Endpoint.TWITTERACCOUNT_DELETE, token, data);
 };
 
 /**
@@ -140,7 +140,7 @@ const resetPassword = (email) => {
 const getUser = (email, password, user) => {
     const data = { email, password };
 
-    return requestIfNeeded(Methods.GET, Endpoints.USER_LOGIN, undefined, data, Types.USER_BASIC, user);
+    return requestIfNeeded(Method.GET, Endpoint.USER_LOGIN, undefined, data, Type.USER_BASIC, user);
 };
 
 /**
@@ -150,13 +150,13 @@ const getUser = (email, password, user) => {
  * @param {string} password User's password (clear).
  * @param {string} firstname User's firstname.
  * @param {string} lastname User's lastname.
- * @param {Languages} lang User's lang.
+ * @param {Language} lang User's lang.
  * @returns {Promise<any>}
  */
 const addUser = (email, password, firstname, lastname, lang) => {
     const data = { email, password, firstname, lastname, lang };
 
-    return request(Methods.POST, Endpoints.USER_CREATE, undefined, data);
+    return request(Method.POST, Endpoint.USER_CREATE, undefined, data);
 };
 
 /**
@@ -168,7 +168,7 @@ const addUser = (email, password, firstname, lastname, lang) => {
  * @param {string} new_password User's new password. (clear)
  * @param {string} new_firstname User's new firstname.
  * @param {string} new_lastname User's new lastname.
- * @param {Languages} new_lang User's new lang.
+ * @param {Language} new_lang User's new lang.
  * @returns {Promise<any>}
  */
 const updateUser = (token, new_email, old_password, new_password, new_firstname, new_lastname, new_lang) => new Promise((resolve, reject) => {
@@ -176,7 +176,7 @@ const updateUser = (token, new_email, old_password, new_password, new_firstname,
 
     if (!(new_email === null && old_password === null && new_password === null && new_firstname === null && new_lastname === null && new_lang === null))
     {
-        request(Methods.PUT, Endpoints.USER_UPDATE, token, data).then(result => resolve(result)).catch(error => reject(error));
+        request(Method.PUT, Endpoint.USER_UPDATE, token, data).then(result => resolve(result)).catch(error => reject(error));
     }
     else
     {
@@ -199,7 +199,7 @@ const updateUser = (token, new_email, old_password, new_password, new_firstname,
 const addAccount = (token, name, consumer_key, consumer_secret, access_token_key, access_token_secret, blacklist) => {
     const data = { name, consumer_key, consumer_secret, access_token_key, access_token_secret, blacklist };
 
-    return request(Methods.POST, Endpoints.TWITTERACCOUNT_CREATE, token, data);
+    return request(Method.POST, Endpoint.TWITTERACCOUNT_CREATE, token, data);
 };
 
 /**
@@ -220,7 +220,7 @@ const updateAccount = (token, id, new_name, new_consumer_key, new_consumer_secre
 
     if (!(new_name == null && new_consumer_key == null && new_consumer_secret == null && new_access_token_key == null && new_access_token_secret == null && new_blacklist == null))
     {
-        request(Methods.PUT, Endpoints.TWITTERACCOUNT_UPDATE, token, data).then(result => resolve(result)).catch(error => reject(error));
+        request(Method.PUT, Endpoint.TWITTERACCOUNT_UPDATE, token, data).then(result => resolve(result)).catch(error => reject(error));
     }
     else
     {
@@ -238,7 +238,7 @@ const updateAccount = (token, id, new_name, new_consumer_key, new_consumer_secre
 const removeAccount = (token, id) => {
     const data = { id };
 
-    return request(Methods.DELETE, Endpoints.TWITTERACCOUNT_DELETE, token, data);
+    return request(Method.DELETE, Endpoint.TWITTERACCOUNT_DELETE, token, data);
 };
 
 /**
@@ -249,7 +249,7 @@ const removeAccount = (token, id) => {
  * @returns {Promise<any>}
  */
 const getAccountList = (token, accounts) => {
-    return requestIfNeeded(Methods.GET, Endpoints.ACCOUNT_GET_LIST, token, {}, Types.ACCOUNT_LIST, accounts);
+    return requestIfNeeded(Method.GET, Endpoint.ACCOUNT_GET_LIST, token, {}, Type.ACCOUNT_LIST, accounts);
 };
 
 /**
@@ -265,7 +265,7 @@ const getAccountList = (token, accounts) => {
 const addCampaign = (token, account_id, name, date_begin, date_end) => {
     const data = { account_id, name, date_begin, date_end };
 
-    return request(Methods.POST, Endpoints.CAMPAIGN_CREATE, token, data);
+    return request(Method.POST, Endpoint.CAMPAIGN_CREATE, token, data);
 };
 
 /**
@@ -284,7 +284,7 @@ const updateCampaign = (token, account_id, campaign_id, new_name, new_date_begin
 
     if (!(new_name == null && new_date_begin == null && new_date_end == null))
     {
-        request(Methods.PUT, Endpoints.CAMPAIGN_UPDATE, token, data).then(result => resolve(result)).catch(error => reject(error));
+        request(Method.PUT, Endpoint.CAMPAIGN_UPDATE, token, data).then(result => resolve(result)).catch(error => reject(error));
     }
     else
     {
@@ -303,7 +303,7 @@ const updateCampaign = (token, account_id, campaign_id, new_name, new_date_begin
 const removeCampaign = (token, account_id, campaign_id) => {
     const data = { account_id, campaign_id };
 
-    return request(Methods.DELETE, Endpoints.CAMPAIGN_DELETE, token, data);
+    return request(Method.DELETE, Endpoint.CAMPAIGN_DELETE, token, data);
 };
 
 /**
@@ -325,7 +325,7 @@ const removeCampaign = (token, account_id, campaign_id) => {
 const addTwitterRule = (token, account_id, campaign_id, name, type, messages, track, condition, delay, undo, lang) => {
     const data = { account_id, campaign_id, name, type, messages, track, condition, delay, undo, lang };
 
-    return request(Methods.POST, Endpoints.TWITTERRULE_CREATE, token, data);
+    return request(Method.POST, Endpoint.TWITTERRULE_CREATE, token, data);
 };
 
 /**
@@ -349,7 +349,7 @@ const updateTwitterRule = (token, account_id, campaign_id, rule_id, new_name, ne
     const data = { account_id, campaign_id, rule_id, new_name, new_type, new_messages, new_track, new_condition, new_delay, new_undo, new_lang };
     if (!(new_name == null && new_type == null && new_messages == null && new_track == null && new_condition == null && new_delay == null && new_undo == null && new_lang == null))
     {
-        request(Methods.PUT, Endpoints.TWITTERRULE_UPDATE, token, data).then(result => resolve(result)).catch(error => reject(error));
+        request(Method.PUT, Endpoint.TWITTERRULE_UPDATE, token, data).then(result => resolve(result)).catch(error => reject(error));
     }
     else
     {
@@ -369,7 +369,7 @@ const updateTwitterRule = (token, account_id, campaign_id, rule_id, new_name, ne
 const removeTwitterRule = (token, account_id, campaign_id, rule_id) => {
     const data = { account_id, campaign_id, rule_id };
 
-    return request(Methods.DELETE, Endpoints.TWITTERRULE_DELETE, token, data);
+    return request(Method.DELETE, Endpoint.TWITTERRULE_DELETE, token, data);
 };
 
 /**
@@ -378,11 +378,12 @@ const removeTwitterRule = (token, account_id, campaign_id, rule_id) => {
  * @param {number} reason
  * @param {string} email
  * @param {string} message
+ * @param {string} recaptcha
  */
-const contact = (reason, email, message) => {
-    const data = { reason, email, message };
+const contact = (reason, email, message, recaptcha) => {
+    const data = { reason, email, message, recaptcha };
 
-    return request(Methods.POST, Endpoints.CONTACT_POST, undefined, data);
+    return request(Method.POST, Endpoint.CONTACT_POST, undefined, data);
 };
 
 export {

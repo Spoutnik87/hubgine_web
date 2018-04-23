@@ -1,4 +1,4 @@
-import { FRENCH } from "../constants/Languages";
+import { FRENCH } from "../constants/Language";
 
 /**
  * Return french locale.
@@ -9,8 +9,8 @@ const getLanguage = () => {
     return {
         //---MAIN VALUES---
         LANG: FRENCH,
+        LOCALE: "fr",
         COMPANY_NAME: "Hubgine",
-        REACT_DATETIME_LANGUAGE: "fr",
         GENERIC_ERROR: "Une erreur est survenue.",
         SESSION_EXPIRED: "La session a expirée.",
         //---HEADER---
@@ -27,24 +27,16 @@ const getLanguage = () => {
         //---NOTFOUND---
         NOTFOUND_TITLE: "Page introuvable",
         //---SIGNIN---
-        SIGNIN_TITLE: "Se connecter",
-        SIGNIN_EMAIL: "Email",
-        SIGNIN_PASSWORD: "Mot de passe",
         SIGNIN_FORGOTPASSWORD: "Mot de passe oublié ?",
-        SIGNIN_SUBMIT: "Se connecter",
         SIGNIN_EMAIL_INCORRECT: "L'adresse email est invalide.",
         SIGNIN_PASSWORD_INCORRECT: "Le mot de passe doit avoir une longueur minimale de 6 caractères.",
         SIGNIN_CREDENTIALS_INCORRECT: "Vos identifiants sont incorrects. Reessayez ou changez votre mot de passe.",
+        //---USERSIGNINFORM---
+        USERSIGNINFORM_TITLE: "Se connecter",
+        USERSIGNINFORM_EMAIL: "Email",
+        USERSIGNINFORM_PASSWORD: "Mot de passe",
+        USERSIGNINFORM_SUBMIT: "Se connecter",
         //---REGISTER---
-        REGISTER_TITLE: "Inscription",
-        REGISTER_SUBMIT: "S'inscrire",
-        REGISTER_FIRSTNAME: "Prénom",
-        REGISTER_LASTNAME: "Nom",
-        REGISTER_EMAIL: "Email",
-        REGISTER_PASSWORD: "Mot de passe",
-        REGISTER_CONFIRMPASSWORD: "Confirmation du mot de passe",
-        REGISTER_LANGUAGE: "Langue préférée",
-        REGISTER_USETERMS: "Accepter les conditions d'utilisations",
         REGISTER_FIRSTNAME_INCORRECT: "Vous devez saisir un prénom valide.",
         REGISTER_LASTNAME_INCORRECT: "Vous devez saisir un nom valide.",
         REGISTER_EMAIL_INCORRECT: "L'adresse email est invalide.",
@@ -53,6 +45,18 @@ const getLanguage = () => {
         REGISTER_USETERMS_INCORRECT: "Vous devez accepter les conditions d'utilisations.",
         REGISTER_LANG_INCORRECT: "Vous devez rentrer une langue valide.",
         REGISTER_ERROR: "Une erreur est survenue lors de l'inscription.",
+        //---USERREGISTERFORM---
+        USERREGISTERFORM_TITLE: "Inscription",
+        USERREGISTERFORM_SUBMIT: "S'inscrire",
+        USERREGISTERFORM_FIRSTNAME: "Prénom",
+        USERREGISTERFORM_LASTNAME: "Nom",
+        USERREGISTERFORM_EMAIL: "Email",
+        USERREGISTERFORM_PASSWORD: "Mot de passe",
+        USERREGISTERFORM_CONFIRMPASSWORD: "Confirmation du mot de passe",
+        USERREGISTERFORM_LANGUAGE: "Langue préférée",
+        USERREGISTERFORM_USETERMS: "Accepter les conditions d'utilisations",
+        USERREGISTERFORM_LANGUAGE_ENGLISH: "ENGLISH",
+        USERREGISTERFORM_LANGUAGE_FRENCH: "FRANCAIS",
         //---PROFILE---
         PROFILE_TITLE: "Profil",
         PROFILE_ACCOUNT_LIST: "Vos comptes",
@@ -73,6 +77,8 @@ const getLanguage = () => {
         PROFILE_ERROREDITING_LANGUAGE: "La langue selectionné est incorrecte.",
         PROFILE_SUCCESSEDITING_LANGUAGE: "La langue a été éditée avec succès.",
         PROFILE_SUCCESSEDITING_LANGUAGE: "Le mot de passe a été édité avec succès.",
+        PROFILE_LANGUAGE_ENGLISH: "ENGLISH",
+        PROFILE_LANGUAGE_FRENCH: "FRANCAIS",
         //---ACCOUNTSMANAGMENT---
         ACCOUNTSMANAGMENT_ADD_ACCOUNT: "Ajouter un compte",
         //---ADMINDASHBOARD---
@@ -185,7 +191,7 @@ const getLanguage = () => {
         TWITTERRULEFORM_CREATE_TITLE: "Créer une règle twitter",
         TWITTERRULEFORM_EDIT_TITLE: "Editer une règle",
         TWITTERRULEFORM_CREATE_BUTTON: "Créer une règle",
-        TWITTERRULEFORM_EDIT_BUTTON: "Editier la règle",
+        TWITTERRULEFORM_EDIT_BUTTON: "Editer la règle",
         TWITTERRULEFORM_CANCEL_BUTTON: "Annuler",
         TWITTERRULEFORM_DELETE_BUTTON: "Supprimer la règle",
         TWITTERRULEFORM_NAME: "Nom",
@@ -197,6 +203,11 @@ const getLanguage = () => {
         TWITTERRULEFORM_DELAY: "Délai",
         TWITTERRULEFORM_LANG_TOOLTIP: "Si vous ne selectionnez pas de langage, ce filtre sera ignoré, dans le cas contraire les tweets seront filtrés en fonction des langues selectionnées.",
         TWITTERRULEFORM_DELAY_TOOLTIP: "Temps entre le traitement de deux tweets. Le valeur minimale est de 60 secondes.",
+        TWITTERRULEFORM_AND_SWITCH: "ET",
+        TWITTERRULEFORM_OR_SWITCH: "OU",
+        TWITTERRULEFORM_TWEET_SWITCH: "TWEET",
+        TWITTERRULEFORM_RETWEET_SWITCH: "RETWEET",
+        TWITTERRULEFORM_FAVORITE_SWITCH: "FAVORIS",
         //---ARRAYINPUT---
         ARRAYINPUT_ADD_BUTTON: "Ajouter",
         ARRAYINPUT_DELETE_BUTTON: "Supprimer",
@@ -226,7 +237,40 @@ const getLanguage = () => {
         TWITTERRULE_EDIT_ERROR: "Une erreur est survenue lors de la mise à jour de la règle.",
         TWITTERRULE_EDIT_SUCCESS: "Cette règle a été mise à jour.",
         TWITTERRULE_DELETE_ERROR: "Une erreur est survenue lors de la suppression de la règle.",
-        TWITTERRULE_DELETE_SUCCESS: "Cette règle a été supprimée avec succès."
+        TWITTERRULE_DELETE_SUCCESS: "Cette règle a été supprimée avec succès.",
+        //---TWITTERACCOUNTSTATS---
+        TWITTERACCOUNTSTATS_TITLE: "Statistiques",
+        TWITTERACCOUNTSTATS_NOSTATS: "Les statistiques ne sont pas disponibles actuellement.",
+        //---TWITTERFOLLOWERSSTATS---
+        TWITTERFOLLOWERSSTATS_TITLE: "Nouveaux abonnés",
+        TWITTERFOLLOWERSSTATS_LASTDAY_PILL: "24 heures",
+        TWITTERFOLLOWERSSTATS_LASTWEEK_PILL: "7 jours",
+        TWITTERFOLLOWERSSTATS_LASTMONTH_PILL: "1 mois",
+        TWITTERFOLLOWERSSTATS_LASTQUARTER_PILL: "3 mois",
+        TWITTERFOLLOWERSSTATS_LASTSEMESTER_PILL: "6 mois",
+        TWITTERFOLLOWERSSTATS_LASTYEAR_PILL: "1 année",
+        TWITTERFOLLOWERSSTATS_YLABEL: "Nouveaux abonnés",
+        TWITTERFOLLOWERSSTATS_LASTRECORD: "Dernier enregistrement : ",
+        //---TWITTERACTIONSSTATS---
+        TWITTERACTIONSSTATS_TITLE: "Activité",
+        TWITTERACTIONSSTATS_LASTDAY_PILL: "24 heures",
+        TWITTERACTIONSSTATS_LASTWEEK_PILL: "7 jours",
+        TWITTERACTIONSSTATS_LASTMONTH_PILL: "1 mois",
+        TWITTERACTIONSSTATS_LASTQUARTER_PILL: "3 mois",
+        TWITTERACTIONSSTATS_LASTSEMESTER_PILL: "6 mois",
+        TWITTERACTIONSSTATS_LASTYEAR_PILL: "1 an",
+        TWITTERACTIONSSTATS_ACTIONS_YLABEL: "Activité",
+        TWITTERACTIONSSTATS_TWEETS_YLABEL: "Tweets",
+        TWITTERACTIONSSTATS_RETWEETS_YLABEL: "Retweets",
+        TWITTERACTIONSSTATS_FAVORITES_YLABEL: "Favoris",
+        TWITTERACTIONSSTATS_ACTIONS_OPTION: "Tout",
+        TWITTERACTIONSSTATS_TWEETS_OPTION: "Tweets",
+        TWITTERACTIONSSTATS_RETWEETS_OPTIONS: "Retweets",
+        TWITTERACTIONSSTATS_FAVORITES_OPTIONS: "Favoris",
+        TWITTERACTIONSSTATS_LASTRECORD: "Dernier enregistrement : ",
+        //---CONTACT---
+        CONTACT_ERROR: "Une erreur est survenue.",
+        CONTACT_SUCCESS: "Votre message a été envoyé avec succès."
     }
 }
 

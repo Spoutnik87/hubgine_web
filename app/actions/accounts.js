@@ -3,11 +3,11 @@ import { isValidTwitterAccountName, isUniqueTwitterAccountName, isValidTwitterAc
     isValidTwitterAccountAccessTokenKey, isValidTwitterAccountAccessTokenSecret, isValidTwitterAccountBlacklistWord, isValidCampaignName, isUniqueCampaignName, isValidCampaignAccount, isValidCampaignDateBegin, isValidCampaignDateEnd,
     isValidTwitterRuleName, isUniqueTwitterRuleName, isValidTwitterRuleAction, isValidTwitterRuleMessage, isValidTwitterRuleCondition, isValidTwitterRuleKeyword, isValidTwitterRuleLanguages, isValidTwitterRuleDelay, isValidTwitterRuleUndo, 
     isValidCampaignForm, isValidTwitterAccountForm, isValidTwitterRuleForm } from "validator";
-import * as ActionTypes from "../constants/ActionTypes";
+import * as ActionType from "../constants/ActionType";
 import * as Status from "../constants/RequestStatus";
-import * as TwitterRuleTypes from "../constants/TwitterRuleTypes";
-import * as TwitterRuleConditions from "../constants/TwitterRuleConditions";
-import * as TwitterRuleLangs from "../constants/TwitterRuleLangs";
+import * as TwitterRuleType from "../constants/TwitterRuleType";
+import * as TwitterRuleCondition from "../constants/TwitterRuleCondition";
+import * as TwitterRuleLang from "../constants/TwitterRuleLang";
 import { getAccountList, updateAccount as updateAccountAPI, addAccount as addAccountAPI, removeAccount as removeAccountAPI, 
     addCampaign as addCampaignAPI, removeCampaign as removeCampaignAPI, updateCampaign as updateCampaignAPI, getCampaign,
     addTwitterRule as addTwitterRuleAPI, updateTwitterRule as updateTwitterRuleAPI, removeTwitterRule as removeTwitterRuleAPI } from "../net/Requests";
@@ -24,7 +24,7 @@ const fetchAccountList = () => (dispatch, getState) => new Promise((resolve, rej
     const { token } = state.user;
     getAccountList(token, state.accounts).then(result => {
         dispatch({
-            type: ActionTypes.ACCOUNT_UPDATE_LIST,
+            type: ActionType.ACCOUNT_UPDATE_LIST,
             accounts: result.accounts.map(account => ({
                     name: account.name,
                     consumerKey: account.consumer_key,
@@ -106,7 +106,7 @@ const addAccount = (name, consumerKey, consumerSecret, accessTokenKey, accessTok
         const { token } = state.user;
         addAccountAPI(token, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist).then(result => {
             dispatch({
-                type: ActionTypes.ACCOUNT_ADD,
+                type: ActionType.ACCOUNT_ADD,
                 name: name,
                 consumerKey: consumerKey,
                 consumerSecret: consumerSecret,
@@ -218,7 +218,7 @@ const updateAccount = (accountId, name, consumerKey, consumerSecret, accessToken
         const { token } = state.user;
         updateAccountAPI(token, initialName, newName, newConsumerKey, newConsumerSecret, newAccessTokenKey, newAccessTokenSecret, newBlacklist).then(result => {
             dispatch({
-                type: ActionTypes.ACCOUNT_UPDATE,
+                type: ActionType.ACCOUNT_UPDATE,
                 accountId: accountId,
                 name: name,
                 consumerKey: consumerKey,
@@ -263,7 +263,7 @@ const removeAccount = accountId => (dispatch, getState) => new Promise((resolve,
     } = state.lang;
     removeAccountAPI(token, accountId).then(result => {
         dispatch({
-            type: ActionTypes.ACCOUNT_DELETE,
+            type: ActionType.ACCOUNT_DELETE,
             accountId: accountId
         });
         dispatch(sendSuccessMessage(TWITTERACCOUNTFORM_DELETE_SUCCESS));
@@ -315,7 +315,7 @@ const addCampaign = (accountId, name, dateBegin, dateEnd) => (dispatch, getState
         const { token } = state.user;
         addCampaignAPI(token, accountId, name, dateBegin, dateEnd).then(result => {
             dispatch({
-                type: ActionTypes.CAMPAIGN_ADD,
+                type: ActionType.CAMPAIGN_ADD,
                 accountId,
                 name,
                 dateBegin,
@@ -399,7 +399,7 @@ const updateCampaign = (accountId, campaignId, name, dateBegin, dateEnd) => (dis
         const { token } = state.user;
         updateCampaignAPI(token, accountId, campaignId, newName, newDateBegin, newDateEnd).then(result => {
             dispatch({
-                type: ActionTypes.CAMPAIGN_UPDATE,
+                type: ActionType.CAMPAIGN_UPDATE,
                 accountId,
                 campaignId,
                 name,
@@ -443,7 +443,7 @@ const removeCampaign = (accountId, campaignId) => (dispatch, getState) => new Pr
     const { token } = state.user;
     removeCampaignAPI(token, accountId, campaignId).then(result => {
         dispatch({
-            type: ActionTypes.CAMPAIGN_DELETE,
+            type: ActionType.CAMPAIGN_DELETE,
             accountId,
             campaignId
         });
@@ -461,13 +461,13 @@ const removeCampaign = (accountId, campaignId) => (dispatch, getState) => new Pr
  * @param {string} accountId Rule's account name.
  * @param {string} campaignId Rule's campaign name.
  * @param {string} name Rule's name.
- * @param {TwitterRuleTypes} type Rule's type.
+ * @param {TwitterRuleType} type Rule's type.
  * @param {Object<string, Array<string>>} tweetMessages Rule's messages.
  * @param {Array<string>} track Rule's keyword list.
- * @param {TwitterRuleConditions} condition Rule's condition.
+ * @param {TwitterRuleCondition} condition Rule's condition.
  * @param {number} delay Rule's delay.
  * @param {number} undo Rule's undo.
- * @param {Array<TwitterRuleLangs>} lang Rule's languages.
+ * @param {Array<TwitterRuleLang>} lang Rule's languages.
  * @returns {Promise<void>}
  */
 const addTwitterRule = (accountId, campaignId, name, type, tweetMessages, track, condition, delay, undo, lang) => (dispatch, getState) => new Promise((resolve, reject) => {
@@ -496,7 +496,7 @@ const addTwitterRule = (accountId, campaignId, name, type, tweetMessages, track,
         {
             let messages = [];
             const names = state.accounts.data[accountIndex].campaigns[campaignIndex].config.rules.map(rule => rule.name);
-            const result = isValidTwitterRuleForm(name, names, type, Object.values(TwitterRuleTypes), tweetMessages, 10, condition, Object.values(TwitterRuleConditions), track, 10, undo, 0, 7, lang, Object.values(TwitterRuleLangs), 10, delay, 60, 300,
+            const result = isValidTwitterRuleForm(name, names, type, Object.values(TwitterRuleType), tweetMessages, 10, condition, Object.values(TwitterRuleCondition), track, 10, undo, 0, 7, lang, Object.values(TwitterRuleLang), 10, delay, 60, 300,
                 TWITTERRULE_NAME_INCORRECT, TWITTERRULE_NAME_NOT_UNIQUE, TWITTERRULE_ACTION_INCORRECT, TWITTERRULE_MESSAGES_INCORRECT, TWITTERRULE_MESSAGE_INCORRECT, TWITTERRULE_CONDITION_INCORRECT, TWITTERRULE_TRACK_INCORRECT, 
                 TWITTERRULE_KEYWORD_INCORRECT, TWITTERRULE_UNDO_INCORRECT, TWITTERRULE_LANGUAGE_INCORRECT, TWITTERRULE_DELAY_INCORRECT, true, false);
             if (Array.isArray(result))
@@ -524,7 +524,7 @@ const addTwitterRule = (accountId, campaignId, name, type, tweetMessages, track,
                     }
                     dispatch({
                         ...rule,
-                        type: ActionTypes.TWITTERRULE_ADD
+                        type: ActionType.TWITTERRULE_ADD
                     });
                     dispatch(sendSuccessMessage(TWITTERRULE_CREATE_SUCCESS));
                     resolve();
@@ -559,13 +559,13 @@ const addTwitterRule = (accountId, campaignId, name, type, tweetMessages, track,
  * @param {string} campaignId Rule's campaign name.
  * @param {string} ruleId Rule's name.
  * @param {string} name Rule's new name.
- * @param {TwitterRuleTypes} type Rule's new type.
+ * @param {TwitterRuleType} type Rule's new type.
  * @param {Object<string, Array<string>>} tweetMessages Rule's new tweet messages.
  * @param {Array<string>} track Rule's new track.
- * @param {TwitterRuleConditions} condition Rule's new condition.
+ * @param {TwitterRuleCondition} condition Rule's new condition.
  * @param {number} delay Rule's new delay.
  * @param {number} undo Relay's new undo.
- * @param {Array<TwitterRuleLangs>} lang Rule's new languages.
+ * @param {Array<TwitterRuleLang>} lang Rule's new languages.
  * @returns {Promise<void>}
  */
 const updateTwitterRule = (accountId, campaignId, ruleId, name, type, tweetMessages, track, condition, delay, undo, lang) => (dispatch, getState) => new Promise((resolve, reject) => {
@@ -612,11 +612,11 @@ const updateTwitterRule = (accountId, campaignId, ruleId, name, type, tweetMessa
             {
                 messages.push(TWITTERRULE_NAME_NOT_UNIQUE);
             }
-            if (type != null && !isValidTwitterRuleAction(type, Object.values(TwitterRuleTypes)))
+            if (type != null && !isValidTwitterRuleAction(type, Object.values(TwitterRuleType)))
             {
                 messages.push(TWITTERRULE_ACTION_INCORRECT);
             }
-            if (type === TwitterRuleTypes.TWEET && tweetMessages != null)
+            if (type === TwitterRuleType.TWEET && tweetMessages != null)
             {
                 if (Array.isArray(tweetMessages))
                 {
@@ -650,7 +650,7 @@ const updateTwitterRule = (accountId, campaignId, ruleId, name, type, tweetMessa
                     messages.push(TWITTERRULE_TRACK_INCORRECT);
                 }
             }
-            if (condition != null && !isValidTwitterRuleCondition(condition, Object.values(TwitterRuleConditions)))
+            if (condition != null && !isValidTwitterRuleCondition(condition, Object.values(TwitterRuleCondition)))
             {
                 messages.push(TWITTERRULE_CONDITION_INCORRECT);
             }
@@ -662,7 +662,7 @@ const updateTwitterRule = (accountId, campaignId, ruleId, name, type, tweetMessa
             {
                 messages.push(TWITTERRULE_UNDO_INCORRECT);
             }
-            if (lang != null && !isValidTwitterRuleLanguages(lang, Object.values(TwitterRuleLangs)))
+            if (lang != null && !isValidTwitterRuleLanguages(lang, Object.values(TwitterRuleLang)))
             {
                 messages.push(TWITTERRULE_LANGUAGE_INCORRECT);
             }
@@ -679,7 +679,7 @@ const updateTwitterRule = (accountId, campaignId, ruleId, name, type, tweetMessa
                 const { token } = state.user;
                 updateTwitterRuleAPI(token, accountId, campaignId, ruleId, newName, newType, newMessages, newTrack, newCondition, newDelay, newUndo, newLang).then(result => {
                     dispatch({
-                        type: ActionTypes.TWITTERRULE_UPDATE,
+                        type: ActionType.TWITTERRULE_UPDATE,
                         accountId,
                         campaignId,
                         ruleId,
@@ -742,7 +742,7 @@ const removeTwitterRule = (accountId, campaignId, ruleId) => (dispatch, getState
     const { token } = state.user;
     removeTwitterRuleAPI(token, accountId, campaignId, ruleId).then(result => {
         dispatch({
-            type: ActionTypes.TWITTERRULE_DELETE,
+            type: ActionType.TWITTERRULE_DELETE,
             accountId: accountId,
             campaignId: campaignId,
             ruleId: ruleId

@@ -14,14 +14,7 @@ class Signin extends Component {
     static propTypes = {
         messages: PropTypes.object.isRequired,
         lang: PropTypes.shape({
-            SIGNIN_EMAIL_INCORRECT: PropTypes.string.isRequired,
-            SIGNIN_PASSWORD_INCORRECT: PropTypes.string.isRequired,
-            SIGNIN_CREDENTIALS_INCORRECT: PropTypes.string.isRequired,
-            SIGNIN_TITLE: PropTypes.string.isRequired,
-            SIGNIN_EMAIL: PropTypes.string.isRequired,
-            SIGNIN_PASSWORD: PropTypes.string.isRequired,
-            SIGNIN_FORGOTPASSWORD: PropTypes.string.isRequired,
-            SIGNIN_SUBMIT: PropTypes.string.isRequired
+            SIGNIN_FORGOTPASSWORD: PropTypes.string.isRequired
         }).isRequired
     };
 
@@ -55,8 +48,12 @@ class Signin extends Component {
         const {
             SIGNIN_FORGOTPASSWORD
         } = this.props.lang;
-        const { messages } = this.props;
-        const { loading } = this.state;
+        const {
+            messages
+        } = this.props;
+        const {
+            loading
+        } = this.state;
         return (
             <Container>
                 <UserSigninForm onSubmit={this.handleSubmit} loading={loading} messages={messages}>

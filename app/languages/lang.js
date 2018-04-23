@@ -1,19 +1,19 @@
 import en from "./en";
 import fr from "./fr";
-import * as Languages from "../constants/Languages";
+import * as Language from "../constants/Language";
 
 /**
  * Return corresponding locale.(default: en)
  * @public
- * @param {Languages} lang Language.
+ * @param {Language} lang Language.
  * @returns {Object<string,string>}
  */
 const getLanguage = lang => {
     switch(lang)
     {
-        case Languages.FRENCH:
+        case Language.FRENCH:
             return fr();
-        case Languages.ENGLISH:
+        case Language.ENGLISH:
             return en();
         default:
             return en();

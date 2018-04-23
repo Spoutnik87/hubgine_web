@@ -68,13 +68,13 @@ class CampaignOverview extends Component {
     componentDidMount()
     {
         const {
-            accounts
-        } = this.props;
-        const {
             accountId,
             campaignId
         } = this.state;
         this.props.actions.fetchAccountList().then(() => {
+            const {
+                accounts
+            } = this.props;    
             const accountIndex = findIndex(accounts, { name: accountId });
             const state = {
                 loadingAccountList: false

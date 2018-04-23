@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import * as Headings from "../constants/Headings";
+import * as Heading from "../constants/Heading";
 
 class Card extends Component {
     static propTypes = {
@@ -14,7 +14,7 @@ class Card extends Component {
     static defaultProps = {
         title: undefined,
         rightTitle: undefined,
-        heading: Headings.H3,
+        heading: Heading.H3,
         footer: undefined,
         children: undefined
     };
@@ -44,25 +44,25 @@ class Card extends Component {
         if (title || rightTitle) {
             cardTitle = <Fragment>{title}{rightTitle && <span className="right-align">{rightTitle}</span>}</Fragment>;
             switch(heading) {
-                case Headings.NONE:
+                case Heading.NONE:
                     cardTitle = <div className="card-title">{cardTitle}</div>
                     break;
-                case Headings.H1:
+                case Heading.H1:
                     cardTitle = <h1 className="card-title">{cardTitle}</h1>;
                     break;
-                case Headings.H2:
+                case Heading.H2:
                     cardTitle = <h2 className="card-title">{cardTitle}</h2>;
                     break;
-                case Headings.H3:
+                case Heading.H3:
                     cardTitle = <h3 className="card-title">{cardTitle}</h3>;
                     break;
-                case Headings.H4:
+                case Heading.H4:
                     cardTitle = <h4 className="card-title">{cardTitle}</h4>;
                     break;
-                case Headings.H5:
+                case Heading.H5:
                     cardTitle = <h5 className="card-title">{cardTitle}</h5>;
                     break;
-                case Headings.H6:
+                case Heading.H6:
                     cardTitle = <h6 className="card-title">{cardTitle}</h6>;
                     break;
                 default:

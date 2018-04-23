@@ -11,10 +11,10 @@ import FormGroup from "../FormGroup";
 class UserSigninForm extends Component {
     static propTypes = {
         lang: PropTypes.shape({
-            SIGNIN_TITLE: PropTypes.string.isRequired,
-            SIGNIN_EMAIL: PropTypes.string.isRequired,
-            SIGNIN_PASSWORD: PropTypes.string.isRequired,
-            SIGNIN_SUBMIT: PropTypes.string.isRequired
+            USERSIGNINFORM_TITLE: PropTypes.string.isRequired,
+            USERSIGNINFORM_EMAIL: PropTypes.string.isRequired,
+            USERSIGNINFORM_PASSWORD: PropTypes.string.isRequired,
+            USERSIGNINFORM_SUBMIT: PropTypes.string.isRequired
         }).isRequired,
         name: PropTypes.string,
         onSubmit: PropTypes.func,
@@ -63,29 +63,29 @@ class UserSigninForm extends Component {
     render()
     {
         const {
-            SIGNIN_TITLE,
-            SIGNIN_EMAIL,
-            SIGNIN_PASSWORD,
-            SIGNIN_SUBMIT
+            USERSIGNINFORM_TITLE,
+            USERSIGNINFORM_EMAIL,
+            USERSIGNINFORM_PASSWORD,
+            USERSIGNINFORM_SUBMIT
         } = this.props.lang;
         const { title, messages, loading } = this.props;
         const { email, password } = this.state;
         return (
-            <Form title={title ? SIGNIN_TITLE : undefined}>
+            <Form title={title ? USERSIGNINFORM_TITLE : undefined}>
                 {
                     messages && (
                         <Messages messages={messages}/>
                     )
                 }
-                <Input id="email" name="email" value={email} label={SIGNIN_EMAIL} onChange={this.handleChange} autoFocus/>
-                <Input id="password" type="password" name="password" value={password} label={SIGNIN_PASSWORD} onChange={this.handleChange}/>
+                <Input id="email" name="email" value={email} label={USERSIGNINFORM_EMAIL} onChange={this.handleChange} autoFocus/>
+                <Input id="password" type="password" name="password" value={password} label={USERSIGNINFORM_PASSWORD} onChange={this.handleChange}/>
                 <FormGroup>
                     <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-10">
                     {
                         loading ? (
                             <LoadingCog/>
                         ) : (
-                            <SuccessButton className="form-button" onClick={this.handleClick}>{SIGNIN_SUBMIT}</SuccessButton>
+                            <SuccessButton className="form-button" onClick={this.handleClick}>{USERSIGNINFORM_SUBMIT}</SuccessButton>
                         )
                     }
                     </div>

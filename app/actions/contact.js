@@ -1,33 +1,27 @@
 import { contact as contactAPI } from "../net/Requests";
-import * as ActionTypes from "../constants/ActionTypes";
-import * as ContactTypes from "../constants/ContactTypes";
+import * as ActionType from "../constants/ActionType";
+import * as ContactType from "../constants/ContactType";
 
 /**
  * Contact admins.
  * @public
- * @param {ContactTypes} reason Reason.
+ * @param {ContactType} reason Reason.
  * @param {string} email Optional email.
  * @param {string} message Message.
+ * @param {string} recaptcha Recaptcha.
  * @returns {Promise<void>}
  */
-const contact = (reason, email, message) => (dispatch, getState) => new Promise((resolve, reject) => {
+const contact = (reason, email, message, recaptcha) => (dispatch, getState) => new Promise((resolve, reject) => {
     const state = getState();
     const {
-        TWITTERRULE_DELETE_ERROR,
-        TWITTERRULE_DELETE_SUCCESS
+        CONTACT_ERROR,
+        CONTACT_SUCCESS
     } = state.lang;
-    const { token } = state.user;
-    contactAPI(token, accountId, campaignId, ruleId).then(result => {
-        dispatch({
-            type: ActionTypes.TWITTERRULE_DELETE,
-            accountId: accountId,
-            campaignId: campaignId,
-            ruleId: ruleId
-        });
-        dispatch(sendSuccessMessage(TWITTERRULE_DELETE_SUCCESS));
+    contactAPI(reason, email, message, recaptcha).then(result => {
+        dispatch(sendSuccessMessage(CONTACT_SUCCESS));
         resolve();
     }).catch(error => {
-        dispatch(sendFailureMessage(TWITTERRULE_DELETE_ERROR));
+        dispatch(sendFailureMessage(CONTACT_ERROR));
         reject(error);
     });
 });

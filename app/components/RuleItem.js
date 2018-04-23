@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { invert } from "lodash";
-import * as TwitterRuleTypes from "../constants/TwitterRuleTypes";
-import * as TwitterRuleConditions from "../constants/TwitterRuleConditions";
-import * as TwitterRuleLangs from "../constants/TwitterRuleLangs";
+import * as TwitterRuleType from "../constants/TwitterRuleType";
+import * as TwitterRuleCondition from "../constants/TwitterRuleCondition";
+import * as TwitterRuleLang from "../constants/TwitterRuleLang";
 import PrimaryButton from "./buttons/PrimaryButton";
 import TwitterRuleForm from "./Forms/TwitterRuleForm";
 import LoadingCog from "./LoadingCog";
@@ -87,17 +87,17 @@ class RuleItem extends Component {
                             <PrimaryButton onClick={this.handleEditMode}>{RULEITEM_EDIT_BUTTON}</PrimaryButton>
                         </div>
                         Name : {name}<br/>
-                        Type : {invert(TwitterRuleTypes)[type]}<br/>
+                        Type : {invert(TwitterRuleType)[type]}<br/>
                         Track : {track.map((elem,index) => (
                             <div key={index}>
                                 {elem}
                             </div>
                         ))}
-                        Condition : {invert(TwitterRuleConditions)[condition]}<br/>
+                        Condition : {invert(TwitterRuleCondition)[condition]}<br/>
                         Delay : {delay}<br/>
                         Lang : {lang.map((elem, index) => (
                             <div key={index}>
-                                {invert(TwitterRuleLangs)[elem]}
+                                {invert(TwitterRuleLang)[elem]}
                             </div>
                         ))}
                     </div>

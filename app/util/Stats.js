@@ -1,5 +1,6 @@
+import moment from "moment";
 import * as TimeScale from "../constants/StatsTimeScale";
-import * as StatsTypes from "../constants/StatsTypes";
+import * as StatsType from "../constants/StatsType";
 import { parseDate } from "./Date";
 
 /**
@@ -8,9 +9,9 @@ import { parseDate } from "./Date";
  * @param {TimeScale} timeScale 
  * @returns Interval
  */
-const getInterval = (date, timeScale = TimeScale.MONTHLY) => {
+const getInterval = (date, timeScale = TimeScale.MONTHLY, utc = true) => {
     let keys = [];
-    const unixDate = date.getTime();
+    const unixDate = utc ? date.getTime() : moment(date).local();
     switch(timeScale)
     {
         case TimeScale.DAILY:
@@ -35,7 +36,7 @@ const getInterval = (date, timeScale = TimeScale.MONTHLY) => {
                 keys.push(parseDate(new Date(unixDate - i * 86400000)));
             }
             break;
-        case TimeScale.QUATERLY:
+        case TimeScale.QUARTERLY:
             for (let i = 90; i >= 0; i--)
             {
                 keys.push(parseDate(new Date(unixDate - i * 86400000)));
@@ -53,6 +54,16 @@ const getInterval = (date, timeScale = TimeScale.MONTHLY) => {
                 keys.push(parseDate(new Date(unixDate - i * 86400000)));
             }
             break;
+        case TimeScale.DATE:
+            for (let i = 24; i >= 0; i--)
+            {
+                const d = new Date(unixDate - i * 3600000);
+                keys.push({
+                    date: parseDate(d),
+                    hour: d.getHours()
+                });
+            }
+            break;
     }
     return keys;
 };
@@ -60,7 +71,7 @@ const getInterval = (date, timeScale = TimeScale.MONTHLY) => {
 /**
  * @public
  * @param {object} interactions_per_day 
- * @param {StatsTypes} statsType 
+ * @param {StatsType} statsType 
  * @param {boolean} now 
  * @returns Last record date. If there is no record return undefined or current date if now is set.
  */
@@ -79,25 +90,25 @@ const getLastRecord = (interactions_per_day, statsType, now = false) => {
                 const entry = interactions_per_day[day][hour];
                 switch(statsType)
                 {
-                    case StatsTypes.ACTION:
+                    case StatsType.ACTION:
                         if (entry.tweets != null || entry.retweets != null || entry.favorites != null || entry.follows != null)
                         {
                             lastRecord = new Date(Date.parse(day) + 3600000 * hour);
                         }
                         break;
-                    case StatsTypes.TWEET:
+                    case StatsType.TWEET:
                         if (entry.tweets != null) lastRecord = new Date(Date.parse(day) + 3600000 * hour);
                         break;
-                    case StatsTypes.RETWEET:
+                    case StatsType.RETWEET:
                         if (entry.retweets != null) lastRecord = new Date(Date.parse(day) + 3600000 * hour);
                         break;
-                    case StatsTypes.FAVORITE:
+                    case StatsType.FAVORITE:
                         if (entry.favorites != null) lastRecord = new Date(Date.parse(day) + 3600000 * hour);
                         break;
-                    case StatsTypes.FOLLOWS:
+                    case StatsType.FOLLOWS:
                         if (entry.follows != null) lastRecord = new Date(Date.parse(day) + 3600000 * hour);
                         break;
-                    case StatsTypes.FOLLOWERS:
+                    case StatsType.FOLLOWERS:
                         if (entry.followers != null) lastRecord = new Date(Date.parse(day) + 3600000 * hour);
                         break;
                 }
@@ -126,16 +137,25 @@ const getLastRecord = (interactions_per_day, statsType, now = false) => {
     return lastRecord;
 };
 
+const toLocalTimezone = data => {
+    data.map(element => ({
+        name: moment(element.name).local(),
+        value: element.value
+    }));
+    return data;
+};
+
 /**
  * @public
  * @param {object} interactions_per_day Account interactions per day object.
- * @param {StatsTypes} statsType Stats type.
+ * @param {StatsType} statsType Stats type.
  * @param {TimeScale} timeScale StatsTimeScale constant.
+ * @param {boolean} lastRecord End at last record.
  * @returns Data object to generate line chart.
  */
-const processAccountStats = (interactions_per_day, statsType, timeScale = TimeScale.MONTHLY) => {
+const processAccountStats = (interactions_per_day, statsType, timeScale = TimeScale.MONTHLY, lastRecord = true, date = undefined) => {
     let data = [];
-    const lastDay = getLastRecord(interactions_per_day, statsType, true).getTime();
+    const lastDay = lastRecord ? getLastRecord(interactions_per_day, statsType, true).getTime() : new Date().getTime();
     const interval = getInterval(new Date(lastDay), timeScale);
     switch (timeScale)
     {
@@ -147,7 +167,7 @@ const processAccountStats = (interactions_per_day, statsType, timeScale = TimeSc
                 let value = 0;
                 switch(statsType)
                 {
-                    case StatsTypes.ACTION:
+                    case StatsType.ACTION:
                         value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
                             (interactions_per_day[date][hour].tweets || 0)
                             + (interactions_per_day[date][hour].retweets || 0)
@@ -155,27 +175,27 @@ const processAccountStats = (interactions_per_day, statsType, timeScale = TimeSc
                             + (interactions_per_day[date][hour].follows || 0)
                         ) : 0 : 0);
                         break;
-                    case StatsTypes.TWEET:
+                    case StatsType.TWEET:
                         value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
                             interactions_per_day[date][hour].tweets || 0
                         ) : 0 : 0);
                         break;
-                    case StatsTypes.RETWEET:
+                    case StatsType.RETWEET:
                         value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
                             interactions_per_day[date][hour].retweets || 0
                         ) : 0 : 0);
                         break;
-                    case StatsTypes.FAVORITE:
+                    case StatsType.FAVORITE:
                         value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
                             interactions_per_day[date][hour].favorites || 0
                         ) : 0 : 0);
                         break;
-                    case StatsTypes.FOLLOWS:
+                    case StatsType.FOLLOWS:
                         value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
                             interactions_per_day[date][hour].follows || 0
                         ) : 0 : 0);
                         break;
-                    case StatsTypes.FOLLOWERS:
+                    case StatsType.FOLLOWERS:
                         value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
                             interactions_per_day[date][hour].followers || 0
                         ) : 0 : 0);
@@ -186,6 +206,12 @@ const processAccountStats = (interactions_per_day, statsType, timeScale = TimeSc
                     name: key["hour"],
                     value: value
                 });
+            }
+            break;
+        case TimeScale.DATE:
+            if (interactions_per_day[date] != null)
+            {
+                
             }
             break;
         default:
@@ -199,25 +225,25 @@ const processAccountStats = (interactions_per_day, statsType, timeScale = TimeSc
                         {
                             switch(statsType)
                             {
-                                case StatsTypes.ACTION:
+                                case StatsType.ACTION:
                                     value += ((interactions_per_day[day][hour].tweets || 0) 
-                                    + (interactions_per_day[day][hour].retweets || 0)
-                                    + (interactions_per_day[day][hour].favorites || 0)
-                                    + (interactions_per_day[day][hour].follows || 0));
+                                            + (interactions_per_day[day][hour].retweets || 0)
+                                            + (interactions_per_day[day][hour].favorites || 0)
+                                            + (interactions_per_day[day][hour].follows || 0));
                                     break;
-                                case StatsTypes.TWEET:
+                                case StatsType.TWEET:
                                     value += (interactions_per_day[day][hour].tweets || 0);
                                     break;
-                                case StatsTypes.RETWEET:
+                                case StatsType.RETWEET:
                                     value += (interactions_per_day[day][hour].retweets || 0);
                                     break;
-                                case StatsTypes.FAVORITE:
+                                case StatsType.FAVORITE:
                                     value += (interactions_per_day[day][hour].favorites || 0);
                                     break;
-                                case StatsTypes.FOLLOWS:
+                                case StatsType.FOLLOWS:
                                     value += (interactions_per_day[day][hour].follows || 0);
                                     break;
-                                case StatsTypes.FOLLOWERS:
+                                case StatsType.FOLLOWERS:
                                     value += (interactions_per_day[day][hour].followers || 0);
                                     break;
                             }
@@ -233,9 +259,8 @@ const processAccountStats = (interactions_per_day, statsType, timeScale = TimeSc
     return data;
 };
 
-const processAccountActionTypesStats = (interactions_per_day, timeScale = TimeScale.MONTHLY) => {
-    const days = Object.keys(interactions_per_day);
-    const lastDay = days.length === 0 ? new Date().getTime() : Date.parse(days[days.length-1]);
+const processAccountActionTypesStats = (interactions_per_day, timeScale = TimeScale.MONTHLY, lastRecord = true) => {
+    const lastDay = lastRecord ? getLastRecord(interactions_per_day, StatsType.ACTION, true).getTime() : new Date().getTime();
     let interval;
     let tweets = 0;
     let retweets = 0;
@@ -248,14 +273,19 @@ const processAccountActionTypesStats = (interactions_per_day, timeScale = TimeSc
             interval = getInterval(new Date(lastDay), TimeScale.DAILY);
             for (const key of interval)
             {
-                if (interactions_per_day[key["date"]] != null)
+                const day = key["date"];
+                const hour = key["hour"];
+                if (interactions_per_day[day] != null && interactions_per_day[day][hour] != null)
                 {
-                    
+                    tweets += (interactions_per_day[day][hour].tweets || 0);
+                    retweets += (interactions_per_day[day][hour].retweets || 0);
+                    favorites += (interactions_per_day[day][hour].favorites || 0);
+                    follows += (interactions_per_day[day][hour].follows || 0);
                 }
             }
             break;
-        case TimeScale.MONTHLY:
-            interval = getInterval(new Date(lastDay), TimeScale.MONTHLY);
+        default:
+            interval = getInterval(new Date(lastDay), timeScale);
             for (const day of interval)
             {
                 if (interactions_per_day[day] != null)
@@ -291,5 +321,6 @@ const processAccountActionTypesStats = (interactions_per_day, timeScale = TimeSc
 
 export {
     processAccountStats,
-    processAccountActionTypesStats
+    processAccountActionTypesStats,
+    getLastRecord
 };

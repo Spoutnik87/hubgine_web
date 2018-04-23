@@ -167,8 +167,24 @@ class TwitterAccountForm extends Component {
             TWITTERACCOUNTFORM_ACCESSTOKENSECRET,
             TWITTERACCOUNTFORM_BLACKLIST
         } = this.props.lang;
-        const { title, edit, children, loading, cancel, messages, delete: hasDeleteButton } = this.props;
-        const { deleteMode, name, consumerKey, consumerSecret, accessTokenKey, accessTokenSecret, blacklist } = this.state;
+        const {
+            title,
+            edit,
+            children,
+            loading,
+            cancel,
+            messages,
+            delete: hasDeleteButton
+        } = this.props;
+        const {
+            deleteMode,
+            name,
+            consumerKey,
+            consumerSecret,
+            accessTokenKey,
+            accessTokenSecret,
+            blacklist
+        } = this.state;
         return (
             <Form title={title ? edit ? TWITTERACCOUNTFORM_EDIT_TITLE : TWITTERACCOUNTFORM_CREATE_TITLE : null}>
                 {
@@ -181,7 +197,7 @@ class TwitterAccountForm extends Component {
                 <Input id="consumerSecret" name="consumerSecret" value={consumerSecret} label={TWITTERACCOUNTFORM_CONSUMERSECRET} onChange={this.handleChange}/>
                 <Input id="accessTokenKey" name="accessTokenKey" value={accessTokenKey} label={TWITTERACCOUNTFORM_ACCESSTOKENKEY} onChange={this.handleChange}/>
                 <Input id="accessTokenSecret" name="accessTokenSecret" value={accessTokenSecret} label={TWITTERACCOUNTFORM_ACCESSTOKENSECRET} onChange={this.handleChange}/>
-                <ArrayInput id="blacklist" name="blacklist" label={TWITTERACCOUNTFORM_BLACKLIST} onChange={this.handleChange} values={blacklist} unique />
+                <ArrayInput id="blacklist" name="blacklist" label={TWITTERACCOUNTFORM_BLACKLIST} onChange={this.handleChange} values={blacklist} unique/>
                 <FormGroup>
                 {
                     deleteMode ? (

@@ -4,14 +4,14 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withLanguage } from "./withLanguage";
 import Container from "./Container";
-import * as Ranks from "../constants/Ranks";
+import * as Rank from "../constants/Rank";
 
 class Header extends Component {
     static propTypes = {
         user: PropTypes.shape({
             email: PropTypes.string,
             token: PropTypes.string,
-            rank: PropTypes.oneOf(Object.values(Ranks))
+            rank: PropTypes.oneOf(Object.values(Rank))
           }).isRequired,
           lang: PropTypes.shape({
             COMPANY_NAME: PropTypes.string.isRequired,
@@ -33,8 +33,6 @@ class Header extends Component {
 
     render()
     {
-        const isLoggedIn = this.props.user.token != null;
-        const isAdmin = this.props.user.rank === Ranks.ADMIN;
         const {
             HEADER_ADMIN_DASHBOARD,
             HEADER_USER_DASHBOARD,
@@ -46,6 +44,12 @@ class Header extends Component {
             COMPANY_NAME,
             HEADER_HOME
         } = this.props.lang;
+        const {
+            token,
+            rank
+        } = this.props.user;
+        const isLoggedIn = token != null;
+        const isAdmin = rank === Rank.ADMIN;
         return (
             <Container>
                 <nav className="navbar navbar-expand-md navbar-light">

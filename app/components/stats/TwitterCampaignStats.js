@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withLanguage } from "./withLanguage";
-import Card from "./Card";
-import LineChart from "./charts/LineChart";
-import PieChart from "./charts/PieChart";
+import { withLanguage } from "../withLanguage";
+import Card from "../Card";
+import LineChart from "../charts/LineChart";
+import PieChart from "../charts/PieChart";
 
-class CampaignStats extends Component {
+class TwitterCampaignStats extends Component {
     static propTypes = {
         campaign: PropTypes.shape({
             
@@ -27,4 +27,4 @@ class CampaignStats extends Component {
     }
 }
 
-export default withLanguage(CampaignStats);
+export default withLanguage(TwitterCampaignStats);

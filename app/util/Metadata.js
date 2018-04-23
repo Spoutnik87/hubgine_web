@@ -15,21 +15,21 @@ Patern :
 }
  * @public
  * @param {string} state Store object.
- * @returns {Object<any>} Metadata.
+ * @returns {Object<string,any>} Metadata.
  */
-export const getMetadata = (state) => {
+const getMetadata = (state) => {
     return state._metadata ? state._metadata : [];
 };
 
 /**
  * Add metadata to store object.
  * @public
- * @param {Object<any>} state Store object.
+ * @param {Object<string,any>} state Store object.
  * @param {string} requestType Request type.
  * @param {number} date Date.
- * @returns {Object<any>} Store object.
+ * @returns {Object<string,any>} Store object.
  */
-export const addMetadata = (state, requestType, date = getUnixTimestamp()) => {
+const addMetadata = (state, requestType, date = getUnixTimestamp()) => {
     let newState = state;
     if (newState._metadata)
     {
@@ -70,7 +70,7 @@ export const addMetadata = (state, requestType, date = getUnixTimestamp()) => {
  * @param {string} requestType Request type.
  * @returns {boolean} Store object is cached.
  */
-export const isCached =  (state, requestType) => {
+const isCached =  (state, requestType) => {
     if (state._metadata)
     {
         for (let i = 0; i < state._metadata.length; i++)
@@ -86,4 +86,10 @@ export const isCached =  (state, requestType) => {
         }
     }
     return false;
+};
+
+export {
+    getMetadata,
+    addMetadata,
+    isCached
 };

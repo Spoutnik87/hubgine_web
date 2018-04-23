@@ -1,15 +1,17 @@
-import * as ActionTypes from "../constants/ActionTypes";
-import * as Languages from "../constants/Languages";
+import moment from "moment";
+import * as ActionType from "../constants/ActionType";
+import * as Language from "../constants/Language";
 
 /**
  * Load language in store.
  * @public
- * @param {Languages} lang Language.
+ * @param {Language} lang Language.
  * @returns {void}
  */
 const changeLanguage = lang => dispatch => {
+    moment.locale(lang);
     return dispatch({
-        type: ActionTypes.LANG_UPDATE,
+        type: ActionType.LANG_UPDATE,
         lang: lang
     });
 }

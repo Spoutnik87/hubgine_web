@@ -34,7 +34,7 @@ class LineChart extends Component {
                 <LineChartRechart data={data}>
                     <CartesianGrid strokeDasharray="3 3"/>
                     <XAxis dataKey="name" label={xLabel ? { value: xLabel, offset: 0, position: "insideBottom" } : undefined}/>
-                    <YAxis label={yLabel ? { value: yLabel, angle: -90, position: "insideLeft" } : undefined}/>
+                    <YAxis label={yLabel ? { value: yLabel, angle: -90, position: "insideBottomLeft" } : undefined}/>
                     <Line name={label} type="monotone" dataKey="value" fill={color} dot={false}/>
                     <Tooltip/>
                 </LineChartRechart>

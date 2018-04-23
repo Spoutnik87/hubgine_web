@@ -8,8 +8,11 @@ import Tooltip from "../Tooltip";
 class Switch extends Component {
     static propTypes = {
         name: PropTypes.string,
-        options: PropTypes.array.isRequired,
-        defaultOption: PropTypes.string,
+        options: PropTypes.arrayOf(PropTypes.shape({
+            name: PropTypes.string.isRequired,
+            value: PropTypes.any.isRequired
+        })).isRequired,
+        defaultOption: PropTypes.any,
         id: PropTypes.string,
         label: PropTypes.string,
         tooltip: PropTypes.string,
@@ -25,18 +28,21 @@ class Switch extends Component {
     {
         super(props);
         this.state = {
-            selectedOption: this.props.defaultOption || this.props.options[0]
+            selectedOption: this.props.defaultOption || (this.props.options.length > 0 ? this.props.options[0].value : undefined)
         };
         this.handleChange = this.handleChange.bind(this);
     }
 
     handleChange(event)
     {
+        const {
+            name
+        } = this.props;
         this.setState({
             selectedOption: event.value
         });
         this.props.onChange({
-            name: this.props.name,
+            name: name,
             value: event.value
         });
     }
@@ -56,10 +62,10 @@ class Switch extends Component {
         const switchInput = (
             <div className="switch">
                 {
-                    options.map((value, index) => (
+                    options.map((option, index) => (
                         <Fragment key={name + index}>
-                            <Input type="radio" id={index} name={name} value={value} onChange={this.handleChange} checked={selectedOption === value} />
-                            <label htmlFor={index}>{value}</label>
+                            <Input type="radio" id={index} name={name} value={option.value} onChange={this.handleChange} checked={selectedOption === option.value} />
+                            <label htmlFor={index}>{option.name}</label>
                         </Fragment>
                     ))
                 }

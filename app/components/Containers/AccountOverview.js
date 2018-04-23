@@ -19,7 +19,7 @@ import CampaignForm from "../Forms/CampaignForm";
 import WordList from "../WordList";
 import Input from "../Inputs/Input"
 import Text from "../Text";
-import AccountStats from "../AccountStats";
+import TwitterAccountStats from "../stats/TwitterAccountStats";
 
 class AccountOverview extends Component {
     static propTypes = {
@@ -209,7 +209,7 @@ class AccountOverview extends Component {
                                     <TwitterAccountForm account={account} loading={loadingAccountForm} cancel edit delete onCancel={this.handleAccountEditionCancel} onDelete={this.handleAccountEditionDelete} onSubmit={this.handleAccountEditionSubmit}/>
                                 ) : (
                                     <Fragment>
-                                        <AccountStats account={account}/>
+                                        <TwitterAccountStats account={account}/>
                                         <br/>
                                         <Card title={ACCOUNTOVERVIEW_CAMPAIGNS_TITLE} rightTitle={!displayCampaignCreationForm && <PrimaryButton id="addCampaign" onClick={this.handleClick}>{ACCOUNTOVERVIEW_ADD_CAMPAIGN_BUTTON}</PrimaryButton>}>
                                         {

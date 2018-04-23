@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { disconnect } from "../actions/user";
-import * as Ranks from "../constants/Ranks";
+import * as Rank from "../constants/Rank";
 import Header from "./Header";
 import Footer from "./Footer";
 import Home from "./Home";
@@ -44,7 +44,7 @@ class App extends Component {
             user
         } = this.props;
         const isLoggedIn = user.token !== undefined;
-        const isAdmin = user.rank === Ranks.ADMIN;
+        const isAdmin = user.rank === Rank.ADMIN;
         return (
             <Fragment>
                 <Header user={user} onDisconnect={this.handleDisconnect}/>
@@ -82,4 +82,3 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
-  

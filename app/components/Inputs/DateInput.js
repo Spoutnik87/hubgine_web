@@ -7,7 +7,6 @@ import FormGroup from "../FormGroup";
 import Row from "../Row";
 import Tooltip from "../Tooltip";
 import Input from "./Input";
-require("moment/locale/fr");
 
 class DateInput extends Component {
     static propTypes = {
@@ -47,9 +46,6 @@ class DateInput extends Component {
     render()
     {
         const {
-            REACT_DATETIME_LANGUAGE
-        } = this.props.lang;
-        const {
             id,
             label,
             value,
@@ -61,7 +57,7 @@ class DateInput extends Component {
             return current.isAfter(yesterday) && current.isBefore(nextYear);
         };
         const dateInput = !disabled ? (
-            <Datetime locale={REACT_DATETIME_LANGUAGE} isValidDate={valid} onChange={this.handleChange} value={value ? new Date(value*1000) : ""}/>
+            <Datetime isValidDate={valid} onChange={this.handleChange} value={value ? new Date(value*1000) : ""}/>
         ) : (
             <Input value={moment(value*1000).toDate().toLocaleString()} disabled/>
         );

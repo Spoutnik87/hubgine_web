@@ -9065,6 +9065,14 @@ td.rdtYear:hover {
   transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
   color: #555555; }
 
+.nav-link-pointer {
+  cursor: pointer; }
+
+.nav-link-pill {
+  display: block;
+  padding: 0.5rem 1rem;
+  cursor: pointer; }
+
 html {
   position: relative;
   min-height: 100%; }

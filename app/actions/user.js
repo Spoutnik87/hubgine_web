@@ -1,9 +1,9 @@
 import { setCookie, removeCookie } from "redux-cookie";
 import { isValidEmail, isValidPassword, isValidFirstname, isValidLastname, isValidLanguage, isValidSignupForm, isValidSigninForm } from "validator";
 import { getUser, addUser, getMaxAccounts, getUserInfos, updateUser as updateUserAPI } from "../net/Requests";
-import * as ActionTypes from "../constants/ActionTypes";
+import * as ActionType from "../constants/ActionType";
 import * as Status from "../constants/RequestStatus";
-import * as Languages from "../constants/Languages";
+import * as Language from "../constants/Language";
 import { sendFailureMessage, sendFailureMessages, sendSuccessMessage } from "./messages";
 import { changeLanguage } from "./lang";
 
@@ -31,7 +31,7 @@ const connect = (email, password) => (dispatch, getState) => new Promise((resolv
 	{
 		getUser(email, password).then(result => {
 			dispatch({
-				type: ActionTypes.USER_SET,
+				type: ActionType.USER_SET,
 				token: result.token,
 				email: email,
 				rank: result.rank,
@@ -70,7 +70,7 @@ const connect = (email, password) => (dispatch, getState) => new Promise((resolv
  * @param {string} cpassword User's confirm password. (clear)
  * @param {string} firstname User's firstname.
  * @param {string} lastname User's lastname.
- * @param {Languages} lang User's lang.
+ * @param {Language} lang User's lang.
  * @param {boolean} useterms User's userterms.
  * @param {string} recaptcha User's recaptcha.
  * @returns {Promise<void>}
@@ -88,7 +88,7 @@ const register = (email, password, cpassword, firstname, lastname, lang, useterm
 		REGISTER_ERROR
 	} = getState().lang;
 	let messages = [];
-	const result = isValidSignupForm(email, password, cpassword, firstname, lastname, lang, Object.values(Languages), 
+	const result = isValidSignupForm(email, password, cpassword, firstname, lastname, lang, Object.values(Language), 
 		REGISTER_EMAIL_INCORRECT, REGISTER_PASSWORD_INCORRECT, REGISTER_PASSWORD_NOT_MATCH, REGISTER_FIRSTNAME_INCORRECT, REGISTER_LASTNAME_INCORRECT, REGISTER_LANG_INCORRECT, true, false);
 	if (Array.isArray(result))
 	{
@@ -102,7 +102,7 @@ const register = (email, password, cpassword, firstname, lastname, lang, useterm
 	{
 		addUser(email, password, firstname, lastname, lang, recaptcha).then(result => {
 			dispatch({
-				type: ActionTypes.USER_SET,
+				type: ActionType.USER_SET,
 				token: result.token,
 				email: email,
 				rank: result.rank,
@@ -143,7 +143,7 @@ const fetchUser = () => (dispatch, getState) => new Promise((resolve, reject) =>
 	const { token } = state.user;
 	getUserInfos(token, state.user).then(result => {
 		dispatch({
-			type: ActionTypes.USER_UPDATE_INFOS,
+			type: ActionType.USER_UPDATE_INFOS,
 			email: result.email,
 			firstname: result.firstname,
 			lastname: result.lastname,
@@ -176,10 +176,10 @@ const fetchUser = () => (dispatch, getState) => new Promise((resolve, reject) =>
  */
 const disconnect = () => dispatch => new Promise((resolve, reject) => {
 	dispatch({
-		type: ActionTypes.USER_UNSET
+		type: ActionType.USER_UNSET
 	});
 	dispatch({
-		type: ActionTypes.ACCOUNTS_UNSET
+		type: ActionType.ACCOUNTS_UNSET
 	});
 	dispatch(removeCookie("user", {
 		path: "/"
@@ -196,7 +196,7 @@ const disconnect = () => dispatch => new Promise((resolve, reject) => {
  * @param {string} cpassword User's new confirm password. (clear)
  * @param {string} firstname User's new firstname.
  * @param {string} lastname User's new lastname.
- * @param {Languages} lang User's new language.
+ * @param {Language} lang User's new language.
  * @returns {Promise<void>}
  */
 const updateUser = (email, oldpassword, password, cpassword, firstname, lastname, lang) => (dispatch, getState) => new Promise((resolve, reject) => {
@@ -236,7 +236,7 @@ const updateUser = (email, oldpassword, password, cpassword, firstname, lastname
 	{
 		messages.push(USER_LASTNAME_INCORRECT);
 	}
-	if (lang != null && !isValidLanguage(lang, Object.values(Languages)))
+	if (lang != null && !isValidLanguage(lang, Object.values(Language)))
 	{
 		messages.push(USER_LANGUAGE_INCORRECT);
 	}
@@ -258,7 +258,7 @@ const updateUser = (email, oldpassword, password, cpassword, firstname, lastname
 		const newLang = lang !== initialLang ? lang : null;
 		updateUserAPI(initialToken, newEmail, oldPassword, newPassword, newFirstname, newLastname, newLang).then(result => {
 			dispatch({
-				type: ActionTypes.USER_UPDATE,
+				type: ActionType.USER_UPDATE,
 				email,
 				firstname,
 				lastname,

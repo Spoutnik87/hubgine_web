@@ -1,4 +1,4 @@
-import * as ActionTypes from "../constants/ActionTypes";
+import * as ActionType from "../constants/ActionType";
 import getLanguage from "../languages/lang";
 
 /**
@@ -10,7 +10,7 @@ import getLanguage from "../languages/lang";
 const lang = (state = {}, action) => {
     switch (action.type)
     {
-        case ActionTypes.LANG_UPDATE:
+        case ActionType.LANG_UPDATE:
             return getLanguage(action.lang);
         default:
             return state;

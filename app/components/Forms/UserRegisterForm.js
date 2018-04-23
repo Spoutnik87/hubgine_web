@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { invert } from "lodash";
 import { withLanguage } from "../withLanguage";
-import * as Languages from "../../constants/Languages";
+import * as Language from "../../constants/Language";
 import Form from "../Form";
 import SuccessButton from "../buttons/SuccessButton";
 import Recaptcha from "../Recaptcha";
@@ -16,15 +15,17 @@ import FormGroup from "../FormGroup";
 class UserRegisterForm extends Component {
     static propTypes = {
         lang: PropTypes.shape({
-            REGISTER_TITLE: PropTypes.string.isRequired,
-            REGISTER_SUBMIT: PropTypes.string.isRequired,
-            REGISTER_FIRSTNAME: PropTypes.string.isRequired,
-            REGISTER_LASTNAME: PropTypes.string.isRequired,
-            REGISTER_EMAIL: PropTypes.string.isRequired,
-            REGISTER_PASSWORD: PropTypes.string.isRequired,
-            REGISTER_CONFIRMPASSWORD: PropTypes.string.isRequired,
-            REGISTER_LANGUAGE: PropTypes.string.isRequired,
-            REGISTER_USETERMS: PropTypes.string.isRequired
+            USERREGISTERFORM_TITLE: PropTypes.string.isRequired,
+            USERREGISTERFORM_SUBMIT: PropTypes.string.isRequired,
+            USERREGISTERFORM_FIRSTNAME: PropTypes.string.isRequired,
+            USERREGISTERFORM_LASTNAME: PropTypes.string.isRequired,
+            USERREGISTERFORM_EMAIL: PropTypes.string.isRequired,
+            USERREGISTERFORM_PASSWORD: PropTypes.string.isRequired,
+            USERREGISTERFORM_CONFIRMPASSWORD: PropTypes.string.isRequired,
+            USERREGISTERFORM_LANGUAGE: PropTypes.string.isRequired,
+            USERREGISTERFORM_USETERMS: PropTypes.string.isRequired,
+            USERREGISTERFORM_LANGUAGE_ENGLISH: PropTypes.string.isRequired,
+            USERREGISTERFORM_LANGUAGE_FRENCH: PropTypes.string.isRequired
         }).isRequired,
         name: PropTypes.string,
         onSubmit: PropTypes.func,
@@ -50,7 +51,7 @@ class UserRegisterForm extends Component {
             cpassword: "",
             firstname: "",
             lastname: "",
-            lang: Object.keys(Languages)[1],
+            lang: Language.ENGLISH,
             useterms: false,
             recaptcha: ""
         };
@@ -70,7 +71,7 @@ class UserRegisterForm extends Component {
                 cpassword: this.state.cpassword,
                 firstname: this.state.firstname,
                 lastname: this.state.lastname,
-                lang: Languages[this.state.lang],
+                lang: this.state.lang,
                 useterms: this.state.useterms,
                 recaptcha: this.state.recaptcha
             }
@@ -101,32 +102,58 @@ class UserRegisterForm extends Component {
     render()
     {
         const {
-            REGISTER_SUBMIT,
-            REGISTER_TITLE,
-            REGISTER_FIRSTNAME,
-            REGISTER_LASTNAME,
-            REGISTER_EMAIL,
-            REGISTER_PASSWORD,
-            REGISTER_CONFIRMPASSWORD,
-            REGISTER_LANGUAGE,
-            REGISTER_USETERMS
+            USERREGISTERFORM_TITLE,
+            USERREGISTERFORM_SUBMIT,
+            USERREGISTERFORM_FIRSTNAME,
+            USERREGISTERFORM_LASTNAME,
+            USERREGISTERFORM_EMAIL,
+            USERREGISTERFORM_PASSWORD,
+            USERREGISTERFORM_CONFIRMPASSWORD,
+            USERREGISTERFORM_LANGUAGE,
+            USERREGISTERFORM_USETERMS,
+            USERREGISTERFORM_LANGUAGE_ENGLISH,
+            USERREGISTERFORM_LANGUAGE_FRENCH
         } = this.props.lang;
-        const { messages, title, loading, children } = this.props;
-        const { firstname, lastname, email, password, cpassword, lang, useterms, recaptcha } = this.state;
+        const {
+            messages,
+            title,
+            loading,
+            children
+        } = this.props;
+        const {
+            firstname,
+            lastname,
+            email,
+            password,
+            cpassword,
+            lang,
+            useterms,
+            recaptcha
+        } = this.state;
+        const languages = [
+            {
+                name: USERREGISTERFORM_LANGUAGE_ENGLISH,
+                value: Language.ENGLISH
+            },
+            {
+                name: USERREGISTERFORM_LANGUAGE_FRENCH,
+                value: Language.FRENCH
+            }
+        ];
         return (
-            <Form title={title ? REGISTER_TITLE : undefined}>
+            <Form title={title ? USERREGISTERFORM_TITLE : undefined}>
                 {
                     messages && (
                         <Messages messages={messages}/>
                     )
                 }
-                <Input name="firstname" id="firstname" value={firstname} label={REGISTER_FIRSTNAME} onChange={this.handleChange} autoFocus/>
-                <Input name="lastname" id="lastname" value={lastname} label={REGISTER_LASTNAME} onChange={this.handleChange}/>
-                <Input name="email" id="email" value={email} label={REGISTER_EMAIL} onChange={this.handleChange}/>
-                <Input type="password" name="password" id="password" value={password} label={REGISTER_PASSWORD} onChange={this.handleChange}/>
-                <Input type="password" name="cpassword" id="cpassword" value={cpassword} label={REGISTER_CONFIRMPASSWORD} onChange={this.handleChange}/>
-                <ListInput name="lang" id="lang" options={Object.keys(Languages)} defaultOption="ENGLISH" label={REGISTER_LANGUAGE} onChange={this.handleChange}/>
-                <Checkbox id="useterms" name="useterms" label={REGISTER_USETERMS} onChange={this.handleChange}/>
+                <Input name="firstname" id="firstname" value={firstname} label={USERREGISTERFORM_FIRSTNAME} onChange={this.handleChange} autoFocus/>
+                <Input name="lastname" id="lastname" value={lastname} label={USERREGISTERFORM_LASTNAME} onChange={this.handleChange}/>
+                <Input name="email" id="email" value={email} label={USERREGISTERFORM_EMAIL} onChange={this.handleChange}/>
+                <Input type="password" name="password" id="password" value={password} label={USERREGISTERFORM_PASSWORD} onChange={this.handleChange}/>
+                <Input type="password" name="cpassword" id="cpassword" value={cpassword} label={USERREGISTERFORM_CONFIRMPASSWORD} onChange={this.handleChange}/>
+                <ListInput name="lang" id="lang" options={languages} label={USERREGISTERFORM_LANGUAGE} onChange={this.handleChange}/>
+                <Checkbox id="useterms" name="useterms" label={USERREGISTERFORM_USETERMS} onChange={this.handleChange}/>
                 <FormGroup>
                     <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-2">
                         <Recaptcha verifyCallback={this.handleRecaptchaVerify} expiredCallback={this.handleRecaptchaExpired}/>
@@ -138,7 +165,7 @@ class UserRegisterForm extends Component {
                         loading ? (
                             <LoadingCog/>
                         ) : (
-                            <SuccessButton className="form-button" onClick={this.handleClick} disabled={recaptcha === ""}>{REGISTER_SUBMIT}</SuccessButton>
+                            <SuccessButton className="form-button" onClick={this.handleClick} disabled={recaptcha === ""}>{USERREGISTERFORM_SUBMIT}</SuccessButton>
                         )
                     }
                     </div>

@@ -27,12 +27,13 @@ class Contact extends Component {
         const {
             reason,
             email,
-            message
+            message,
+            recaptcha
         } = event.result;
         this.setState({
             loading: true
         });
-        this.props.actions.contact(reason, email, message).catch(() => {
+        this.props.actions.contact(reason, email, message, recaptcha).catch(() => {
             this.setState({
                 loading: false
             });

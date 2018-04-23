@@ -1,7 +1,7 @@
 import v4 from "uuid/v4";
 import { findIndex, unset } from "lodash";
-import * as ActionTypes from "../constants/ActionTypes";
-import * as RequestTypes from "../constants/RequestTypes";
+import * as ActionType from "../constants/ActionType";
+import * as RequestType from "../constants/RequestType";
 import { addMetadata } from "../util/Metadata";
 
 /**
@@ -15,9 +15,9 @@ const accounts = (state = {}, action) => {
     let ruleIndex = 0;
     switch (action.type)
     {
-        case ActionTypes.ACCOUNT_UPDATE_LIST:
+        case ActionType.ACCOUNT_UPDATE_LIST:
             return {
-                ...addMetadata(state, RequestTypes.ACCOUNT_LIST),
+                ...addMetadata(state, RequestType.ACCOUNT_LIST),
                 data: action.accounts.map(account => {
                     return {
                         ...account,
@@ -36,7 +36,7 @@ const accounts = (state = {}, action) => {
                     };
                 })
         };
-        case ActionTypes.ACCOUNT_ADD:
+        case ActionType.ACCOUNT_ADD:
             state.data.push({
                 uid: v4(),
                 name: action.name,
@@ -52,12 +52,12 @@ const accounts = (state = {}, action) => {
                 }
             });
             return state;
-        case ActionTypes.ACCOUNT_DELETE:
+        case ActionType.ACCOUNT_DELETE:
             state.data = state.data.filter(account => {
                 return account.name !== action.accountId;
             });
             return state;
-        case ActionTypes.ACCOUNT_UPDATE:
+        case ActionType.ACCOUNT_UPDATE:
             accountIndex = findIndex(state.data, { name: action.accountId });
             state.data[accountIndex] = {
                 ...state.data[accountIndex],
@@ -70,7 +70,7 @@ const accounts = (state = {}, action) => {
             };
             return state;
         //CAMPAIGNS
-        case ActionTypes.CAMPAIGN_ADD:
+        case ActionType.CAMPAIGN_ADD:
             accountIndex = findIndex(state.data, { name: action.accountId });
             state.data[accountIndex].campaigns.push({
                 uid: v4(),
@@ -80,7 +80,7 @@ const accounts = (state = {}, action) => {
                 config: action.config
             });
             return state;
-        case ActionTypes.CAMPAIGN_UPDATE:
+        case ActionType.CAMPAIGN_UPDATE:
             accountIndex = findIndex(state.data, { name: action.accountId });
             campaignIndex = findIndex(state.data[accountIndex].campaigns, { name: action.campaignId });
             state.data[accountIndex].campaigns[campaignIndex] = {
@@ -90,11 +90,11 @@ const accounts = (state = {}, action) => {
                 dateEnd: action.dateEnd
             };
             return state;
-        case ActionTypes.CAMPAIGN_DELETE:
+        case ActionType.CAMPAIGN_DELETE:
             accountIndex = findIndex(state.data, { name: action.accountId });
             state.data[accountIndex].campaigns = state.data[accountIndex].campaigns.filter(campaign => campaign.name !== action.campaignId);
             return state;
-        case ActionTypes.TWITTERRULE_ADD:
+        case ActionType.TWITTERRULE_ADD:
             accountIndex = findIndex(state.data, { name: action.accountId });
             campaignIndex = findIndex(state.data[accountIndex].campaigns, { name: action.campaignId });
             if (accountIndex !== -1 && campaignIndex !== -1)
@@ -112,7 +112,7 @@ const accounts = (state = {}, action) => {
                 });
             }
             return state;
-        case ActionTypes.TWITTERRULE_UPDATE:
+        case ActionType.TWITTERRULE_UPDATE:
             accountIndex = findIndex(state.data, { name: action.accountId });
             campaignIndex = findIndex(state.data[accountIndex].campaigns, { name: action.campaignId });
             ruleIndex = findIndex(state.data[accountIndex].campaigns[campaignIndex].config.rules, { name: action.ruleId });
@@ -135,7 +135,7 @@ const accounts = (state = {}, action) => {
                 state.data[accountIndex].campaigns[campaignIndex].config.rules[ruleIndex] = rule;
             }
             return state;
-        case ActionTypes.TWITTERRULE_DELETE:
+        case ActionType.TWITTERRULE_DELETE:
             accountIndex = findIndex(state.data, { name: action.accountId });
             campaignIndex = findIndex(state.data[accountIndex].campaigns, { name: action.campaignId });
             if (accountIndex !== -1 && campaignIndex !== -1)
@@ -143,7 +143,7 @@ const accounts = (state = {}, action) => {
                 state.data[accountIndex].campaigns[campaignIndex].config.rules = state.data[accountIndex].campaigns[campaignIndex].config.rules.filter(rule => rule.name !== action.ruleId);
             }
             return state;
-        case ActionTypes.ACCOUNTS_UNSET:
+        case ActionType.ACCOUNTS_UNSET:
             return {
                 data: []
             };

@@ -1,4 +1,4 @@
-import { ENGLISH } from "../constants/Languages";
+import { ENGLISH } from "../constants/Language";
 
 /**
  * Return english locale.
@@ -9,8 +9,8 @@ const getLanguage = () => {
     return {
         //---MAIN VALUES---
         LANG: ENGLISH,
+        LOCALE: "en",
         COMPANY_NAME: "Hubgine",
-        REACT_DATETIME_LANGUAGE: "en",
         GENERIC_ERROR: "An error happened.",
         SESSION_EXPIRED: "Your session has expired.",
         //---HEADER---
@@ -27,24 +27,16 @@ const getLanguage = () => {
         //---NOTFOUND---
         NOTFOUND_TITLE: "Page Not Found",
         //---SIGNIN---
-        SIGNIN_TITLE: "Sign In",
-        SIGNIN_EMAIL: "Email",
-        SIGNIN_PASSWORD: "Password",
         SIGNIN_FORGOTPASSWORD: "Forgot password?",
-        SIGNIN_SUBMIT: "Sign In",
         SIGNIN_EMAIL_INCORRECT: "Email is not valid.",
         SIGNIN_PASSWORD_INCORRECT: "Password length must be at least 6 characters.",
         SIGNIN_CREDENTIALS_INCORRECT: "Your credentials are incorrect. Please try again or reset your password.",
+        //---USERSIGNINFORM---
+        USERSIGNINFORM_TITLE: "Sign In",
+        USERSIGNINFORM_EMAIL: "Email",
+        USERSIGNINFORM_PASSWORD: "Password",        
+        USERSIGNINFORM_SUBMIT: "Sign In",
         //---REGISTER---
-        REGISTER_TITLE: "Register",
-        REGISTER_SUBMIT: "Register",
-        REGISTER_FIRSTNAME: "First name",
-        REGISTER_LASTNAME: "Last name",
-        REGISTER_EMAIL: "Email",
-        REGISTER_PASSWORD: "Password",
-        REGISTER_CONFIRMPASSWORD: "Confirm password",
-        REGISTER_LANGUAGE: "Preferred language",
-        REGISTER_USETERMS: "Accept use terms",
         REGISTER_FIRSTNAME_INCORRECT: "A valid first name is required.",
         REGISTER_LASTNAME_INCORRECT: "A valid last name is required.",
         REGISTER_EMAIL_INCORRECT: "Email is not valid.",
@@ -53,6 +45,18 @@ const getLanguage = () => {
         REGISTER_USETERMS_INCORRECT: "You need to accept the terms of use.",
         REGISTER_LANG_INCORRECT: "You need to enter a valid language.",
         REGISTER_ERROR: "An error happened during the subscription.",
+        //---USERREGISTERFORM---
+        USERREGISTERFORM_TITLE: "Register",
+        USERREGISTERFORM_SUBMIT: "Register",
+        USERREGISTERFORM_FIRSTNAME: "First name",
+        USERREGISTERFORM_LASTNAME: "Last name",
+        USERREGISTERFORM_EMAIL: "Email",
+        USERREGISTERFORM_PASSWORD: "Password",
+        USERREGISTERFORM_CONFIRMPASSWORD: "Confirm password",
+        USERREGISTERFORM_LANGUAGE: "Preferred language",
+        USERREGISTERFORM_USETERMS: "Accept use terms",
+        USERREGISTERFORM_LANGUAGE_ENGLISH: "ENGLISH",
+        USERREGISTERFORM_LANGUAGE_FRENCH: "FRANCAIS",
         //---PROFILE---
         PROFILE_TITLE: "Profile",
         PROFILE_ACCOUNT_LIST: "Your accounts",
@@ -73,6 +77,8 @@ const getLanguage = () => {
         PROFILE_ERROREDITING_LANGUAGE: "Selected language is incorrect.",
         PROFILE_SUCCESSEDITING_LANGUAGE: "You edited your preferred language successfully.",
         PROFILE_SUCCESSEDITING_PASSWORD: "You edited your preferred password successfully.",
+        PROFILE_LANGUAGE_ENGLISH: "ENGLISH",
+        PROFILE_LANGUAGE_FRENCH: "FRANCAIS",
         //---ACCOUNTSMANAGMENT---
         ACCOUNTSMANAGMENT_ADD_ACCOUNT: "Add account",
         //---USERDASHBOARD---
@@ -197,6 +203,11 @@ const getLanguage = () => {
         TWITTERRULEFORM_DELAY: "Delay",
         TWITTERRULEFORM_LANG_TOOLTIP: "If you don't select a language, this filter will be ignored, else tweets will be filtered by selected languages.",
         TWITTERRULEFORM_DELAY_TOOLTIP: "Time between processing two tweets. The minimal value is 60 seconds.",
+        TWITTERRULEFORM_AND_SWITCH: "AND",
+        TWITTERRULEFORM_OR_SWITCH: "OR",
+        TWITTERRULEFORM_TWEET_SWITCH: "TWEET",
+        TWITTERRULEFORM_RETWEET_SWITCH: "RETWEET",
+        TWITTERRULEFORM_FAVORITE_SWITCH: "FAVORITE",
         //---ARRAYINPUT---
         ARRAYINPUT_ADD_BUTTON: "Add",
         ARRAYINPUT_DELETE_BUTTON: "Remove",
@@ -226,7 +237,40 @@ const getLanguage = () => {
         TWITTERRULE_EDIT_ERROR: "An error happened during rule update.",
         TWITTERRULE_EDIT_SUCCESS: "This rule was edited successfully.",
         TWITTERRULE_DELETE_ERROR: "An error happened during rule deletion.",
-        TWITTERRULE_DELETE_SUCCESS: "This rule was deleted successfully."
+        TWITTERRULE_DELETE_SUCCESS: "This rule was deleted successfully.",
+        //---TWITTERACCOUNTSTATS---
+        TWITTERACCOUNTSTATS_TITLE: "Statistics",
+        TWITTERACCOUNTSTATS_NOSTATS: "No statistics currently available.",
+        //---TWITTERFOLLOWERSSTATS---
+        TWITTERFOLLOWERSSTATS_TITLE: "New followers",
+        TWITTERFOLLOWERSSTATS_LASTDAY_PILL: "24 hours",
+        TWITTERFOLLOWERSSTATS_LASTWEEK_PILL: "1 week",
+        TWITTERFOLLOWERSSTATS_LASTMONTH_PILL: "1 month",
+        TWITTERFOLLOWERSSTATS_LASTQUARTER_PILL: "3 months",
+        TWITTERFOLLOWERSSTATS_LASTSEMESTER_PILL: "6 months",
+        TWITTERFOLLOWERSSTATS_LASTYEAR_PILL: "1 year",
+        TWITTERFOLLOWERSSTATS_YLABEL: "New followers",
+        TWITTERFOLLOWERSSTATS_LASTRECORD: "Last record: ",
+        //---TWITTERACTIONSSTATS---
+        TWITTERACTIONSSTATS_TITLE: "Actions",
+        TWITTERACTIONSSTATS_LASTDAY_PILL: "24 hours",
+        TWITTERACTIONSSTATS_LASTWEEK_PILL: "1 week",
+        TWITTERACTIONSSTATS_LASTMONTH_PILL: "1 month",
+        TWITTERACTIONSSTATS_LASTQUARTER_PILL: "3 months",
+        TWITTERACTIONSSTATS_LASTSEMESTER_PILL: "6 months",
+        TWITTERACTIONSSTATS_LASTYEAR_PILL: "1 year",
+        TWITTERACTIONSSTATS_ACTIONS_YLABEL: "Actions",
+        TWITTERACTIONSSTATS_TWEETS_YLABEL: "Tweets",
+        TWITTERACTIONSSTATS_RETWEETS_YLABEL: "Retweets",
+        TWITTERACTIONSSTATS_FAVORITES_YLABEL: "Favorites",
+        TWITTERACTIONSSTATS_ACTIONS_OPTION: "All",
+        TWITTERACTIONSSTATS_TWEETS_OPTION: "Tweets",
+        TWITTERACTIONSSTATS_RETWEETS_OPTIONS: "Retweets",
+        TWITTERACTIONSSTATS_FAVORITES_OPTIONS: "Favorites",
+        TWITTERACTIONSSTATS_LASTRECORD: "Last record: ",
+        //---CONTACT---
+        CONTACT_ERROR: "An error happened.",
+        CONTACT_SUCCESS: "Your message was sent successfully."
     }
 }
 

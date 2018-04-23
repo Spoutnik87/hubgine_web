@@ -6,8 +6,8 @@ import { withLanguage } from "../withLanguage";
 import { withMessages } from "../withMessages";
 import { fetchUser, updateUser } from "../../actions/user";
 import { addAccount } from "../../actions/accounts";
-import * as Ranks from "../../constants/Ranks";
-import * as Languages from "../../constants/Languages";
+import * as Rank from "../../constants/Rank";
+import * as Language from "../../constants/Language";
 import Messages from "../Messages";
 import TextInput from "../Inputs/TextInput";
 import ListInput from "../Inputs/ListInput";
@@ -28,8 +28,8 @@ class Profile extends Component {
         user: PropTypes.shape({
             email: PropTypes.string.isRequired,
             token: PropTypes.string.isRequired,
-            rank: PropTypes.oneOf(Object.values(Ranks)).isRequired,
-            lang: PropTypes.oneOf(Object.values(Languages)).isRequired,
+            rank: PropTypes.oneOf(Object.values(Rank)).isRequired,
+            lang: PropTypes.oneOf(Object.values(Language)).isRequired,
             firstname: PropTypes.string,
             lastname: PropTypes.string
         }).isRequired,
@@ -40,7 +40,9 @@ class Profile extends Component {
             PROFILE_FIRSTNAME: PropTypes.string.isRequired,
             PROFILE_LASTNAME: PropTypes.string.isRequired,
             PROFILE_LANGUAGE: PropTypes.string.isRequired,
-            PROFILE_EDIT_PASSWORD: PropTypes.string.isRequired
+            PROFILE_EDIT_PASSWORD: PropTypes.string.isRequired,
+            PROFILE_LANGUAGE_ENGLISH: PropTypes.string.isRequired,
+            PROFILE_LANGUAGE_FRENCH: PropTypes.string.isRequired
         }).isRequired
     };
 
@@ -204,10 +206,33 @@ class Profile extends Component {
             PROFILE_LASTNAME,
             PROFILE_LANGUAGE,
             PROFILE_EDIT_PASSWORD,
-            PROFILE_ACCOUNT_LIST
+            PROFILE_ACCOUNT_LIST,
+            PROFILE_LANGUAGE_ENGLISH,
+            PROFILE_LANGUAGE_FRENCH
         } = this.props.lang;
-        const { messages, user } = this.props;
-        const { isLoaded, loadingPassword, isPasswordEditionFormDisplayed, loadingEmail, loadingFirstname, loadingLastname, loadingLanguage } = this.state;
+        const {
+            messages,
+            user
+        } = this.props;
+        const {
+            isLoaded,
+            loadingPassword,
+            isPasswordEditionFormDisplayed,
+            loadingEmail,
+            loadingFirstname,
+            loadingLastname,
+            loadingLanguage
+        } = this.state;
+        const languages = [
+            {
+                name: PROFILE_LANGUAGE_ENGLISH,
+                value: Language.ENGLISH
+            },
+            {
+                name: PROFILE_LANGUAGE_FRENCH,
+                value: Language.FRENCH
+            }
+        ];
         return (
             <Container>
             {
@@ -218,7 +243,7 @@ class Profile extends Component {
                             <TextInput name="email" value={user.email} id="email" label={PROFILE_EMAIL} onSubmit={this.handleSubmit} loading={loadingEmail}/>
                             <TextInput name="firstname" value={user.firstname} id="firstname" label={PROFILE_FIRSTNAME} onSubmit={this.handleSubmit} loading={loadingFirstname}/>
                             <TextInput name="lastname" value={user.lastname} id="lastname" label={PROFILE_LASTNAME} onSubmit={this.handleSubmit} loading={loadingLastname}/>
-                            <ListInput name="language" id="language" label={PROFILE_LANGUAGE} options={Object.values(Languages)} defaultOption={user.lang} loading={loadingLanguage} onChange={this.handleLanguageChange}/>
+                            <ListInput name="language" id="language" label={PROFILE_LANGUAGE} options={languages} defaultOption={user.lang} loading={loadingLanguage} onChange={this.handleLanguageChange}/>
                             {
                                 loadingPassword ? (
                                     <LoadingCog/>

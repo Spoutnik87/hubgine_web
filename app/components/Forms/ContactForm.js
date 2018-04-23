@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { invert } from "lodash";
 import { withLanguage } from "../withLanguage";
 import Recaptcha from "../Recaptcha";
 import Messages from "../Messages";
@@ -11,7 +10,7 @@ import Form from "../Form";
 import FormGroup from "../FormGroup";
 import ListInput from "../Inputs/ListInput";
 import TextAreaInput from "../Inputs/TextAreaInput";
-import * as ContactTypes from "../../constants/ContactTypes";
+import * as ContactType from "../../constants/ContactType";
 
 class ContactForm extends Component {
     static propTypes = {
@@ -46,7 +45,7 @@ class ContactForm extends Component {
     {
         super(props);
         this.state = {
-            reason: this.props.lang.CONTACTFORM_REASON_GENERAL,
+            reason: ContactType.GENERAL,
             email: "",
             message: "",
             recaptcha: ""
@@ -80,13 +79,9 @@ class ContactForm extends Component {
             CONTACTFORM_REASON_INFORMATION,
             CONTACTFORM_REASON_OTHER
         } = this.props.lang;
-        const invertedReasons = invert({
-            CONTACTFORM_REASON_GENERAL,
-            CONTACTFORM_REASON_PROPOSITION,
-            CONTACTFORM_REASON_BUG,
-            CONTACTFORM_REASON_INFORMATION,
-            CONTACTFORM_REASON_OTHER
-        });
+        const {
+            name
+        } = this.props;
         const {
             reason,
             email,
@@ -94,9 +89,9 @@ class ContactForm extends Component {
             recaptcha
         } = this.state;
         this.props.onSubmit({
-            name: this.props.name,
+            name: name,
             result: {
-                reason: ContactTypes[invertedReasons[reason].substr("CONTACTFORM_REASON_".length)],
+                reason: reason,
                 email: email,
                 message: message,
                 recaptcha: recaptcha
@@ -118,7 +113,12 @@ class ContactForm extends Component {
             CONTACTFORM_REASON,
             CONTACTFORM_EMAIL,
             CONTACTFORM_MESSAGE,
-            CONTACTFORM_SUBMIT
+            CONTACTFORM_SUBMIT,
+            CONTACTFORM_REASON_GENERAL,
+            CONTACTFORM_REASON_PROPOSITION,
+            CONTACTFORM_REASON_BUG,
+            CONTACTFORM_REASON_INFORMATION,
+            CONTACTFORM_REASON_OTHER
         } = this.props.lang;
         const {
             loading,
@@ -132,6 +132,28 @@ class ContactForm extends Component {
             message,
             recaptcha
         } = this.state;
+        const reasons = [
+            {
+                name: CONTACTFORM_REASON_GENERAL,
+                value: ContactType.GENERAL
+            },
+            {
+                name: CONTACTFORM_REASON_PROPOSITION,
+                value: ContactType.PROPOSITION
+            },
+            {
+                name: CONTACTFORM_REASON_BUG,
+                value: ContactType.BUG
+            },
+            {
+                name: CONTACTFORM_REASON_INFORMATION,
+                value: ContactType.INFORMATION
+            },
+            {
+                name: CONTACTFORM_REASON_OTHER,
+                value: ContactType.OTHER
+            }
+        ];
         return (
             <Form title={title ? CONTACTFORM_TITLE : undefined}>
                 {
@@ -139,7 +161,7 @@ class ContactForm extends Component {
                         <Messages messages={messages}/>
                     )
                 }
-                <ListInput name="reason" value={reason} options={Object.keys(ContactTypes).map(key => (this.props.lang["CONTACTFORM_REASON_" + key]))} label={CONTACTFORM_REASON} onChange={this.handleChange} autoFocus/>
+                <ListInput name="reason" value={reason} options={reasons} label={CONTACTFORM_REASON} onChange={this.handleChange} autoFocus/>
                 <Input name="email" value={email} label={CONTACTFORM_EMAIL} onChange={this.handleChange}/>
                 <TextAreaInput name="message" value={message} label={CONTACTFORM_MESSAGE} rows={10} onChange={this.handleChange}/>
                 <FormGroup>
@@ -153,7 +175,7 @@ class ContactForm extends Component {
                         <LoadingCog/>
                     ) : (
                         <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-10">
-                            <SuccessButton className="form-button" onClick={this.handleClick} disabled={false/*recaptcha === ""*/}>{CONTACTFORM_SUBMIT}</SuccessButton>
+                            <SuccessButton className="form-button" onClick={this.handleClick} disabled={recaptcha === ""}>{CONTACTFORM_SUBMIT}</SuccessButton>
                         </div>
                     )
                 }

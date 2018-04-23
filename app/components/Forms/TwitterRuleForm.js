@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { invert } from "lodash";
 import { withLanguage } from "../withLanguage";
 import LoadingCog from "../LoadingCog";
 import ArrayInput from "../Inputs/ArrayInput";
@@ -13,9 +12,9 @@ import Input from "../Inputs/Input";
 import SuccessButton from "../buttons/SuccessButton";
 import DangerButton from "../buttons/DangerButton";
 import SecondaryButton from "../buttons/SecondaryButton";
-import * as TwitterRuleTypes from "../../constants/TwitterRuleTypes";
-import * as TwitterRuleConditions from "../../constants/TwitterRuleConditions";
-import * as TwitterRuleLangs from "../../constants/TwitterRuleLangs";
+import * as TwitterRuleType from "../../constants/TwitterRuleType";
+import * as TwitterRuleCondition from "../../constants/TwitterRuleCondition";
+import * as TwitterRuleLang from "../../constants/TwitterRuleLang";
 import FormGroup from "../FormGroup";
 
 class TwitterRuleForm extends Component {
@@ -34,7 +33,12 @@ class TwitterRuleForm extends Component {
             TWITTERRULEFORM_LANGUAGES: PropTypes.string.isRequired,
             TWITTERRULEFORM_DELAY: PropTypes.string.isRequired,
             TWITTERRULEFORM_LANG_TOOLTIP: PropTypes.string.isRequired,
-            TWITTERRULEFORM_DELAY_TOOLTIP: PropTypes.string.isRequired
+            TWITTERRULEFORM_DELAY_TOOLTIP: PropTypes.string.isRequired,
+            TWITTERRULEFORM_AND_SWITCH: PropTypes.string.isRequired,
+            TWITTERRULEFORM_OR_SWITCH: PropTypes.string.isRequired,
+            TWITTERRULEFORM_TWEET_SWITCH: PropTypes.string.isRequired,
+            TWITTERRULEFORM_RETWEET_SWITCH: PropTypes.string.isRequired,
+            TWITTERRULEFORM_FAVORITE_SWITCH: PropTypes.string.isRequired
         }).isRequired,
         name: PropTypes.string,
         onSubmit: PropTypes.func,
@@ -76,18 +80,18 @@ class TwitterRuleForm extends Component {
         super(props);
         this.state = this.props.rule ? {
             name: this.props.rule.name,
-            type: invert(TwitterRuleTypes)[this.props.rule.type],
+            type: this.props.rule.type,
             messages: this.props.rule.messages,
-            condition: invert(TwitterRuleConditions)[this.props.rule.condition],
+            condition: this.props.rule.condition,
             track: this.props.rule.track,
-            lang: this.props.rule.lang.map(l => invert(TwitterRuleLangs)[l]),
+            lang: this.props.rule.lang,
             delay: this.props.rule.delay,
             deleteMode: false
         } : {
             name: "",
-            type: Object.keys(TwitterRuleTypes)[0],
+            type: TwitterRuleType.TWEET,
             messages: [],
-            condition: Object.keys(TwitterRuleConditions)[0],
+            condition: TwitterRuleCondition.AND,
             track: [],
             lang: [],
             delay: 0,
@@ -103,12 +107,12 @@ class TwitterRuleForm extends Component {
             name: this.props.name,
             result: {
                 name: this.state.name,
-                type: TwitterRuleTypes[this.state.type],
-                messages: TwitterRuleTypes[this.state.type] === TwitterRuleTypes.TWEET ? this.state.messages : null,
+                type: this.state.type,
+                messages: this.state.type === TwitterRuleType.TWEET ? this.state.messages : undefined,
                 track: this.state.track,
-                condition: TwitterRuleConditions[this.state.condition],
+                condition: this.state.condition,
                 delay: this.state.delay,
-                lang: this.state.lang.map(elem => TwitterRuleLangs[elem])
+                lang: this.state.lang
             }
         };
         if (this.props.rule != null)
@@ -144,7 +148,7 @@ class TwitterRuleForm extends Component {
     handleChange(event)
     {
         this.setState({
-            [event.name]: event.value || event.values
+            [event.name]: event.value != null ? event.value : event.values
         });
     }
 
@@ -165,25 +169,71 @@ class TwitterRuleForm extends Component {
             TWITTERRULEFORM_LANGUAGES,
             TWITTERRULEFORM_DELAY,
             TWITTERRULEFORM_LANG_TOOLTIP,
-            TWITTERRULEFORM_DELAY_TOOLTIP
+            TWITTERRULEFORM_DELAY_TOOLTIP,
+            TWITTERRULEFORM_AND_SWITCH,
+            TWITTERRULEFORM_OR_SWITCH,
+            TWITTERRULEFORM_TWEET_SWITCH,
+            TWITTERRULEFORM_RETWEET_SWITCH,
+            TWITTERRULEFORM_FAVORITE_SWITCH
         } = this.props.lang;
-        const { title, edit, children, loading, cancel, messages, delete: hasDeleteButton } = this.props;
-        const { deleteMode, name, type, condition, track, lang, delay, messages: ruleMessages } = this.state;
+        const {
+            title,
+            edit,
+            children,
+            loading,
+            cancel,
+            messages,
+            delete: hasDeleteButton
+        } = this.props;
+        const {
+            deleteMode,
+            name,
+            type,
+            condition,
+            track,
+            lang,
+            delay,
+            messages: ruleMessages
+        } = this.state;
+        const switchOptions = [
+            {
+                name: TWITTERRULEFORM_AND_SWITCH,
+                value: TwitterRuleCondition.AND
+            },
+            {
+                name: TWITTERRULEFORM_OR_SWITCH,
+                value: TwitterRuleCondition.OR
+            }
+        ];
+        const ruleTypes = [
+            {
+                name: TWITTERRULEFORM_TWEET_SWITCH,
+                value: TwitterRuleType.TWEET
+            },
+            {
+                name: TWITTERRULEFORM_RETWEET_SWITCH,
+                value: TwitterRuleType.RETWEET
+            },
+            {
+                name: TWITTERRULEFORM_FAVORITE_SWITCH,
+                value: TwitterRuleType.FAVORITE
+            }
+        ];
         return (
             <Form title={title ? edit ? TWITTERRULEFORM_EDIT_TITLE : TWITTERRULEFORM_CREATE_TITLE : undefined}>
                 {
                     messages && <Messages messages={messages}/>
                 }
                 <Input id="name" name="name" value={name} label={TWITTERRULEFORM_NAME} onChange={this.handleChange} autoFocus/>
-                <ListInput id="type" name="type" options={Object.keys(TwitterRuleTypes)} label={TWITTERRULEFORM_ACTION} onChange={this.handleChange} defaultOption={type}/>
+                <ListInput id="type" name="type" options={ruleTypes} label={TWITTERRULEFORM_ACTION} onChange={this.handleChange} defaultOption={type}/>
                 {
-                    TwitterRuleTypes[type] === TwitterRuleTypes.TWEET && (
-                        <ArrayInput id="messages" name="messages" values={ruleMessages} label={TWITTERRULEFORM_MESSAGES} onChange={this.handleChange} unique />
+                    type === TwitterRuleType.TWEET && (
+                        <ArrayInput id="messages" name="messages" values={ruleMessages} label={TWITTERRULEFORM_MESSAGES} onChange={this.handleChange} unique/>
                     )
                 }
-                <Switch id="condition" name="condition" options={Object.keys(TwitterRuleConditions)} label={TWITTERRULEFORM_CONDITION} onChange={this.handleChange} defaultOption={condition}/>
+                <Switch id="condition" name="condition" options={switchOptions} label={TWITTERRULEFORM_CONDITION} onChange={this.handleChange} defaultOption={condition}/>
                 <ArrayInput id="track" name="track" label={TWITTERRULEFORM_KEYWORDS} values={track} onChange={this.handleChange} unique/>
-                <ArrayInput id="lang" name="lang" options={Object.keys(TwitterRuleLangs)} values={lang} label={TWITTERRULEFORM_LANGUAGES} tooltip={TWITTERRULEFORM_LANG_TOOLTIP} onChange={this.handleChange} unique/>
+                <ArrayInput id="lang" name="lang" options={Object.keys(TwitterRuleLang).map(lang => ({ name: lang, value: TwitterRuleLang[lang] }))} values={lang.map(l => ({ name: l, value: l }))} label={TWITTERRULEFORM_LANGUAGES} tooltip={TWITTERRULEFORM_LANG_TOOLTIP} onChange={this.handleChange} unique/>
                 <NumberInput id="delay" name="delay" label={TWITTERRULEFORM_DELAY} value={parseInt(delay)} tooltip={TWITTERRULEFORM_DELAY_TOOLTIP} onChange={this.handleChange}/>
                 <FormGroup>
                 {
