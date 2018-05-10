@@ -28,13 +28,15 @@ class ForgotPassword extends Component {
     
     render()
     {
-        const { messages } = this.props;
-        const { loading } = this.state;
+        const {
+            messages
+        } = this.props;
+        const {
+            loading
+        } = this.state;
         return (
             <Container>
-                <Card>
-                    <UserForgotPasswordForm onSubmit={this.handleSubmit} loading={loading} messages={messages}/>
-                </Card>
+                <UserForgotPasswordForm onSubmit={this.handleSubmit} loading={loading} messages={messages} clientSide={true}/>
             </Container>
         );
     }

@@ -99,11 +99,11 @@ const getLanguage = () => {
         CAMPAIGNOVERVIEW_EDIT_BUTTON: "Edit this campaign",
         CAMPAIGNOVERVIEW_RULES_TITLE: "Rules :",
         CAMPAIGNOVERVIEW_ADD_RULE_BUTTON: "Add a rule",
-        CAMPAIGNOVERVIEW_TITLE_ACCOUNT: "Account : ",
-        CAMPAIGNOVERVIEW_TITLE_CAMPAIGN: "Campaign : ",
+        CAMPAIGNOVERVIEW_ACCOUNTNAME: "Account",
         CAMPAIGNOVERVIEW_NAME: "Name",
         CAMPAIGNOVERVIEW_DATEBEGIN: "Date begin",
         CAMPAIGNOVERVIEW_DATEEND: "Date end",
+        CAMPAIGNOVERVIEW_DISPLAY_ACCOUNT_BUTTON: "Show account",
         //---USERPASSWORDFORM---
         USERPASSWORDFORM_CREATE_TITLE: "Set a new password",
         USERPASSWORDFORM_EDIT_TITLE: "Edit password",
@@ -183,6 +183,9 @@ const getLanguage = () => {
         CAMPAIGNFORM_DELETE_ERROR: "An error happened during campaign deletion.",
         //---CAMPAIGNLIST---
         CAMPAIGNLIST_NOCAMPAIGN: "There is no campaign yet.",
+        //---CAMPAIGNITEM---
+        CAMPAIGNITEM_RUNNING: "Running",
+        CAMPAIGNITEM_NOTRUNNING: "Not running",
         //---RULELIST---
         RULELIST_NO_RULES: "There is no rule yet.",
         //---RULEITEM---
@@ -270,7 +273,10 @@ const getLanguage = () => {
         TWITTERACTIONSSTATS_LASTRECORD: "Last record: ",
         //---CONTACT---
         CONTACT_ERROR: "An error happened.",
-        CONTACT_SUCCESS: "Your message was sent successfully."
+        CONTACT_SUCCESS: "Your message was sent successfully.",
+        CONTACT_REASON_INCORRECT: "A valid reason is required.",
+        CONTACT_EMAIL_INCORRECT: "A valid email is required, leave this field empty if you don't want to be recontacted.",
+        CONTACT_MESSAGE_INCORRECT: "A valid message is required."
     }
 }
 

@@ -11,6 +11,7 @@ import Checkbox from "../Inputs/Checkbox";
 import Input from "../Inputs/Input";
 import ListInput from "../Inputs/ListInput";
 import FormGroup from "../FormGroup";
+import Card from "../Card";
 
 class UserRegisterForm extends Component {
     static propTypes = {
@@ -31,7 +32,8 @@ class UserRegisterForm extends Component {
         onSubmit: PropTypes.func,
         title: PropTypes.bool,
         loading: PropTypes.bool,
-        messages: PropTypes.object
+        messages: PropTypes.object,
+        clientSide: PropTypes.bool
     };
 
     static defaultProps = {
@@ -39,13 +41,18 @@ class UserRegisterForm extends Component {
         onSubmit: () => {},
         title: true,
         loading: false,
-        messages: undefined
+        messages: undefined,
+        clientSide: false
     };
 
     constructor(props)
     {
         super(props);
+        const {
+            clientSide
+        } = this.props;
         this.state = {
+            loading: clientSide,
             email: "",
             password: "",
             cpassword: "",
@@ -59,6 +66,19 @@ class UserRegisterForm extends Component {
         this.handleRecaptchaExpired = this.handleRecaptchaExpired.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
+    }
+    
+    componentDidMount()
+    {
+        const {
+            loading
+        } = this.state;
+        if (loading)
+        {
+            this.setState({
+                loading: false
+            });
+        }
     }
 
     handleClick(event)
@@ -121,6 +141,7 @@ class UserRegisterForm extends Component {
             children
         } = this.props;
         const {
+            loading: mainLoading,
             firstname,
             lastname,
             email,
@@ -140,7 +161,11 @@ class UserRegisterForm extends Component {
                 value: Language.FRENCH
             }
         ];
-        return (
+        return mainLoading ? (
+            <Card>
+                <LoadingCog center/>
+            </Card>
+        ) : (
             <Form title={title ? USERREGISTERFORM_TITLE : undefined}>
                 {
                     messages && (

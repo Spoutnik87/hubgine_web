@@ -1,4 +1,5 @@
 import moment from "moment";
+import { findIndex } from "lodash";
 import * as TimeScale from "../constants/StatsTimeScale";
 import * as StatsType from "../constants/StatsType";
 import { parseDate } from "./Date";
@@ -11,7 +12,7 @@ import { parseDate } from "./Date";
  */
 const getInterval = (date, timeScale = TimeScale.MONTHLY, utc = true) => {
     let keys = [];
-    const unixDate = utc ? date.getTime() : moment(date).local();
+    const unixDate = date.getTime();
     switch(timeScale)
     {
         case TimeScale.DAILY:
@@ -20,38 +21,58 @@ const getInterval = (date, timeScale = TimeScale.MONTHLY, utc = true) => {
                 const d = new Date(unixDate - i * 3600000);
                 keys.push({
                     date: parseDate(d),
-                    hour: d.getHours()
+                    hour: d.getUTCHours()
                 });
             }
             break;
         case TimeScale.WEEKLY:
-            for (let i = 7; i >= 0; i--)
+            for (let i = 7*24; i >= 0; i--)
             {
-                keys.push(parseDate(new Date(unixDate - i * 86400000)));
+                const d = new Date(unixDate - i * 3600000);
+                keys.push({
+                    date: parseDate(d),
+                    hour: d.getUTCHours()
+                });
             }
             break;
         case TimeScale.MONTHLY:
-            for (let i = 30; i >= 0; i--)
+            for (let i = 30*24; i >= 0; i--)
             {
-                keys.push(parseDate(new Date(unixDate - i * 86400000)));
+                const d = new Date(unixDate - i * 3600000);
+                keys.push({
+                    date: parseDate(d),
+                    hour: d.getUTCHours()
+                });
             }
             break;
         case TimeScale.QUARTERLY:
-            for (let i = 90; i >= 0; i--)
+            for (let i = 90*24; i >= 0; i--)
             {
-                keys.push(parseDate(new Date(unixDate - i * 86400000)));
+                const d = new Date(unixDate - i * 3600000);
+                keys.push({
+                    date: parseDate(d),
+                    hour: d.getUTCHours()
+                });
             }
             break;
         case TimeScale.SEMESTRIAL:
-            for (let i = 180; i >= 0; i--)
+            for (let i = 180*24; i >= 0; i--)
             {
-                keys.push(parseDate(new Date(unixDate - i * 86400000)));
+                const d = new Date(unixDate - i * 3600000);
+                keys.push({
+                    date: parseDate(d),
+                    hour: d.getUTCHours()
+                });
             }
             break;
         case TimeScale.YEARLY:
-            for (let i = 360; i >= 0; i--)
+            for (let i = 360*24; i >= 0; i--)
             {
-                keys.push(parseDate(new Date(unixDate - i * 86400000)));
+                const d = new Date(unixDate - i * 3600000);
+                keys.push({
+                    date: parseDate(d),
+                    hour: d.getUTCHours()
+                });
             }
             break;
         case TimeScale.DATE:
@@ -60,7 +81,7 @@ const getInterval = (date, timeScale = TimeScale.MONTHLY, utc = true) => {
                 const d = new Date(unixDate - i * 3600000);
                 keys.push({
                     date: parseDate(d),
-                    hour: d.getHours()
+                    hour: d.getUTCHours()
                 });
             }
             break;
@@ -137,12 +158,48 @@ const getLastRecord = (interactions_per_day, statsType, now = false) => {
     return lastRecord;
 };
 
-const toLocalTimezone = data => {
-    data.map(element => ({
-        name: moment(element.name).local(),
-        value: element.value
-    }));
-    return data;
+const toLocalTimezone = (data, timeScale) => {
+    let newData = [];
+    let currentDay;
+    for (const element of data)
+    {
+        switch (timeScale)
+        {
+            case TimeScale.MONTHLY:
+            case TimeScale.QUARTERLY:
+            case TimeScale.SEMESTRIAL:
+            case TimeScale.YEARLY:
+                const day = moment(element.name*1000).local().format("L");
+                if (currentDay === day && element.value === 0)
+                {
+                    break;
+                }
+                else if (currentDay !== day)
+                {
+                    currentDay = day;
+                }
+                let index;
+                if ((index = findIndex(newData, elem => elem.name === day)) === -1)
+                {
+                    newData.push({
+                        name: day,
+                        value: element.value
+                    });
+                }
+                else
+                {
+                    newData[index].value += element.value;
+                }
+                break;
+            default:
+                newData.push({
+                    name: moment.utc(element.name*1000).local().format("LLL"),
+                    value: element.value
+                });
+                break;
+        }
+    }
+    return newData;
 };
 
 /**
@@ -157,106 +214,82 @@ const processAccountStats = (interactions_per_day, statsType, timeScale = TimeSc
     let data = [];
     const lastDay = lastRecord ? getLastRecord(interactions_per_day, statsType, true).getTime() : new Date().getTime();
     const interval = getInterval(new Date(lastDay), timeScale);
-    switch (timeScale)
+    let currentDay;
+    for (const key of interval)
     {
-        case TimeScale.DAILY:
-            for (const key of interval)
-            {
-                const date = key["date"];
-                const hour = key["hour"];
-                let value = 0;
-                switch(statsType)
-                {
-                    case StatsType.ACTION:
-                        value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
-                            (interactions_per_day[date][hour].tweets || 0)
-                            + (interactions_per_day[date][hour].retweets || 0)
-                            + (interactions_per_day[date][hour].favorites || 0)
-                            + (interactions_per_day[date][hour].follows || 0)
-                        ) : 0 : 0);
-                        break;
-                    case StatsType.TWEET:
-                        value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
-                            interactions_per_day[date][hour].tweets || 0
-                        ) : 0 : 0);
-                        break;
-                    case StatsType.RETWEET:
-                        value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
-                            interactions_per_day[date][hour].retweets || 0
-                        ) : 0 : 0);
-                        break;
-                    case StatsType.FAVORITE:
-                        value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
-                            interactions_per_day[date][hour].favorites || 0
-                        ) : 0 : 0);
-                        break;
-                    case StatsType.FOLLOWS:
-                        value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
-                            interactions_per_day[date][hour].follows || 0
-                        ) : 0 : 0);
-                        break;
-                    case StatsType.FOLLOWERS:
-                        value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
-                            interactions_per_day[date][hour].followers || 0
-                        ) : 0 : 0);
-                        break;
+        const date = key["date"];
+        const hour = key["hour"];
+        let value = 0;
+        switch(statsType)
+        {
+            case StatsType.ACTION:
+                value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
+                    (interactions_per_day[date][hour].tweets || 0)
+                    + (interactions_per_day[date][hour].retweets || 0)
+                    + (interactions_per_day[date][hour].favorites || 0)
+                    + (interactions_per_day[date][hour].follows || 0)
+                ) : 0 : 0);
+                break;
+            case StatsType.TWEET:
+                value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
+                    interactions_per_day[date][hour].tweets || 0
+                ) : 0 : 0);
+                break;
+            case StatsType.RETWEET:
+                value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
+                    interactions_per_day[date][hour].retweets || 0
+                ) : 0 : 0);
+                break;
+            case StatsType.FAVORITE:
+                value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
+                    interactions_per_day[date][hour].favorites || 0
+                ) : 0 : 0);
+                break;
+            case StatsType.FOLLOWS:
+                value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
+                    interactions_per_day[date][hour].follows || 0
+                ) : 0 : 0);
+                break;
+            case StatsType.FOLLOWERS:
+                value = (interactions_per_day[date] != null ? interactions_per_day[date][hour] != null ? (
+                    interactions_per_day[date][hour].followers || 0
+                ) : 0 : 0);
+                break;
 
-                }
+        }
+        switch(timeScale)
+        {
+            case TimeScale.DAILY:
+            case TimeScale.WEEKLY:
                 data.push({
-                    name: key["hour"],
+                    name: moment(Date.parse(key["date"] + " " + key["hour"] + ":00:00 UTC")).format("X"),
                     value: value
                 });
-            }
-            break;
-        case TimeScale.DATE:
-            if (interactions_per_day[date] != null)
-            {
-                
-            }
-            break;
-        default:
-            for (const day of interval)
-            {
-                let value = 0;
-                if (interactions_per_day[day] != null)
+                break;
+            default:
+                const date = moment(Date.parse(key["date"] + " " + key["hour"] + ":00:00 UTC"));
+                const day = date.local().format("L");
+                if (currentDay === day)
                 {
-                    for (const hour in interactions_per_day[day]) {
-                        if (interactions_per_day[day].hasOwnProperty(hour))
-                        {
-                            switch(statsType)
-                            {
-                                case StatsType.ACTION:
-                                    value += ((interactions_per_day[day][hour].tweets || 0) 
-                                            + (interactions_per_day[day][hour].retweets || 0)
-                                            + (interactions_per_day[day][hour].favorites || 0)
-                                            + (interactions_per_day[day][hour].follows || 0));
-                                    break;
-                                case StatsType.TWEET:
-                                    value += (interactions_per_day[day][hour].tweets || 0);
-                                    break;
-                                case StatsType.RETWEET:
-                                    value += (interactions_per_day[day][hour].retweets || 0);
-                                    break;
-                                case StatsType.FAVORITE:
-                                    value += (interactions_per_day[day][hour].favorites || 0);
-                                    break;
-                                case StatsType.FOLLOWS:
-                                    value += (interactions_per_day[day][hour].follows || 0);
-                                    break;
-                                case StatsType.FOLLOWERS:
-                                    value += (interactions_per_day[day][hour].followers || 0);
-                                    break;
-                            }
-                        }
-                    }
+                    if (value !== 0)
+                    {
+                        data.push({
+                            name: date.format("X"),
+                            value: value
+                        });
+                    }    
                 }
-                data.push({
-                    name: day,
-                    value: value
-                });
-            }
+                else
+                {
+                    currentDay = day;
+                    data.push({
+                        name: date.format("X"),
+                        value: value
+                    });
+                }
+        }
     }
-    return data;
+    return toLocalTimezone(data, timeScale);
 };
 
 const processAccountActionTypesStats = (interactions_per_day, timeScale = TimeScale.MONTHLY, lastRecord = true) => {
@@ -267,10 +300,25 @@ const processAccountActionTypesStats = (interactions_per_day, timeScale = TimeSc
     let favorites = 0;
     let follows = 0;
 
-    switch(timeScale)
+    interval = getInterval(new Date(lastDay), timeScale);
+    for (const key of interval)
+    {
+        const day = key["date"];
+        const hour = key["hour"];
+        if (interactions_per_day[day] != null && interactions_per_day[day][hour] != null)
+        {
+            tweets += (interactions_per_day[day][hour].tweets || 0);
+            retweets += (interactions_per_day[day][hour].retweets || 0);
+            favorites += (interactions_per_day[day][hour].favorites || 0);
+            follows += (interactions_per_day[day][hour].follows || 0);
+        }
+    }
+
+    /*switch(timeScale)
     {
         case TimeScale.DAILY:
-            interval = getInterval(new Date(lastDay), TimeScale.DAILY);
+        case TimeScale.WEEKLY:
+            interval = getInterval(new Date(lastDay), timeScale);
             for (const key of interval)
             {
                 const day = key["date"];
@@ -290,7 +338,8 @@ const processAccountActionTypesStats = (interactions_per_day, timeScale = TimeSc
             {
                 if (interactions_per_day[day] != null)
                 {
-                    for (const hour in interactions_per_day[day]) {
+                    for (const hour in interactions_per_day[day])
+                    {
                         if (interactions_per_day[day].hasOwnProperty(hour))
                         {
                             tweets += (interactions_per_day[day][hour].tweets || 0);
@@ -302,7 +351,7 @@ const processAccountActionTypesStats = (interactions_per_day, timeScale = TimeSc
                 }
             }
             break;
-    }
+    }*/
     return [
         {
             name: "Tweets",
@@ -316,7 +365,7 @@ const processAccountActionTypesStats = (interactions_per_day, timeScale = TimeSc
             name: "Favorites",
             value: favorites
         }
-    ]
+    ];
 };
 
 export {

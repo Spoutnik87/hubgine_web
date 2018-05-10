@@ -4,6 +4,10 @@ import { withLanguage } from "./withLanguage";
 
 class CampaignItem extends Component {
     static propTypes = {
+        lang: PropTypes.shape({
+            CAMPAIGNITEM_RUNNING: PropTypes.string.isRequired,
+            CAMPAIGNITEM_NOTRUNNING: PropTypes.string.isRequired
+        }).isRequired,
         campaign: PropTypes.shape({
             uid: PropTypes.string.isRequired,
             name: PropTypes.string.isRequired,
@@ -25,15 +29,35 @@ class CampaignItem extends Component {
 
     handleClick(event)
     {
-        this.props.onClick(event);
+        const {
+            campaign
+        } = this.props;
+        this.props.onClick({
+            name: campaign.name
+        });
     }
 
     render()
     {
-        const { campaign } = this.props;
+        const {
+            CAMPAIGNITEM_RUNNING,
+            CAMPAIGNITEM_NOTRUNNING
+        } = this.props.lang;
+        const {
+            campaign
+        } = this.props;
+        const now = Math.round(Date.now()/1000);
+        const running = now >= campaign.dateBegin && now <= campaign.dateEnd;
         return (
-            <div id={campaign.name} className="campaignitem col-md-4 col-sm-6 col-xs-12" onClick={this.handleClick}>
+            <div className={(running ? "campaignitem-running" : "campaignitem-notrunning") + " campaignitem col-md-4 col-sm-6 col-xs-12"} onClick={this.handleClick}>
                 {campaign.name}
+                {
+                    running ? (
+                        <span className="right-align">{CAMPAIGNITEM_RUNNING}</span>
+                    ) : (
+                        <span className="right-align">{CAMPAIGNITEM_NOTRUNNING}</span>
+                    )
+                }
             </div>
         );
     }

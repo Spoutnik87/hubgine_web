@@ -8,7 +8,7 @@ class Input extends Component {
     static propTypes = {
         name: PropTypes.string,
         value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        id: PropTypes.string,
         type: PropTypes.string,
         label: PropTypes.string,
         tooltip: PropTypes.string,
@@ -18,6 +18,7 @@ class Input extends Component {
     static defaultProps = {
         name: "input",
         value: "",
+        id: "input",
         type: "text",
         onChange: () => {}
     };
@@ -40,11 +41,13 @@ class Input extends Component {
     {
         const {
             id,
+            name,
             label,
             tooltip,
+            value,
             ...props
         } = this.props;
-        const input = <input id={id} {...props} className="form-control" onChange={this.handleChange}/>;
+        const input = <input {...props} id={id} name={name} value={value} className="form-control" onChange={this.handleChange}/>
         return label ? (
             <FormGroup>
                 <Row>

@@ -7,6 +7,7 @@ import LoadingCog from "../LoadingCog";
 import Form from "../Form";
 import SuccessButton from "../buttons/SuccessButton";
 import FormGroup from "../FormGroup";
+import Card from "../Card";
 
 class UserSigninForm extends Component {
     static propTypes = {
@@ -20,7 +21,8 @@ class UserSigninForm extends Component {
         onSubmit: PropTypes.func,
         title: PropTypes.bool,
         loading: PropTypes.bool,
-        messages: PropTypes.object
+        messages: PropTypes.object,
+        clientSide: PropTypes.bool
     };
 
     static defaultProps = {
@@ -28,19 +30,37 @@ class UserSigninForm extends Component {
         onSubmit: () => {},
         title: true,
         loading: false,
-        messages: undefined
+        messages: undefined,
+        clientSide: false
     };
 
     constructor(props)
     {
         super(props);
+        const {
+            clientSide
+        } = this.props;
         this.state = {
+            loading: clientSide,
             email: "",
             password: ""
         };
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
     }
+
+    componentDidMount()
+    {
+        const {
+            loading
+        } = this.state;
+        if (loading)
+        {
+            this.setState({
+                loading: false
+            });
+        }
+    }    
 
     handleClick(event)
     {
@@ -68,9 +88,21 @@ class UserSigninForm extends Component {
             USERSIGNINFORM_PASSWORD,
             USERSIGNINFORM_SUBMIT
         } = this.props.lang;
-        const { title, messages, loading } = this.props;
-        const { email, password } = this.state;
-        return (
+        const {
+            title,
+            messages,
+            loading
+        } = this.props;
+        const {
+            loading: mainLoading,
+            email,
+            password
+        } = this.state;
+        return mainLoading ? (
+            <Card>
+                <LoadingCog center/>
+            </Card>
+        ) : (
             <Form title={title ? USERSIGNINFORM_TITLE : undefined}>
                 {
                     messages && (

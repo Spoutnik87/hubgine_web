@@ -23,7 +23,11 @@ class Recaptcha extends Component {
 
     render()
     {
-        const { loadCallback, verifyCallback, expiredCallback } = this.props;
+        const {
+            loadCallback,
+            verifyCallback,
+            expiredCallback
+        } = this.props;
         return (
             <RecaptchaModule sitekey={config.key} onloadCallback={loadCallback} verifyCallback={verifyCallback} expiredCallback={expiredCallback} render="explicit"/>
         );

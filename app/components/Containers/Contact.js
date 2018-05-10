@@ -7,6 +7,7 @@ import ContactForm from "../Forms/ContactForm";
 import { withMessages } from "../withMessages";
 import Container from "../Container";
 import Card from "../Card";
+import Messages from "../Messages";
 
 class Contact extends Component {
     static propTypes = {
@@ -17,6 +18,7 @@ class Contact extends Component {
     {
         super(props);
         this.state = {
+            displayContactForm: true,
             loading: false
         };
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -33,7 +35,11 @@ class Contact extends Component {
         this.setState({
             loading: true
         });
-        this.props.actions.contact(reason, email, message, recaptcha).catch(() => {
+        this.props.actions.contact(reason, email, message, recaptcha).then(() => {
+            this.setState({
+                displayContactForm: false
+            });
+        }).catch(() => {
             this.setState({
                 loading: false
             });
@@ -46,13 +52,20 @@ class Contact extends Component {
             messages
         } = this.props;
         const {
+            displayContactForm,
             loading
         } = this.state;
         return (
             <Container>
-                <Card>
-                    <ContactForm onSubmit={this.handleSubmit} loading={loading} messages={messages}/>
-                </Card>
+            {
+                displayContactForm ? (
+                    <ContactForm onSubmit={this.handleSubmit} loading={loading} messages={messages} clientSide={true}/>
+                ) : (
+                    <Card>
+                        <Messages messages={messages}/>
+                    </Card>
+                )
+            }
             </Container>
         );
     }

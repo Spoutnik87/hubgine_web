@@ -56,7 +56,7 @@ class Signin extends Component {
         } = this.state;
         return (
             <Container>
-                <UserSigninForm onSubmit={this.handleSubmit} loading={loading} messages={messages}>
+                <UserSigninForm onSubmit={this.handleSubmit} loading={loading} messages={messages} clientSide={true}>
                     <Link to="/forgot-password">{SIGNIN_FORGOTPASSWORD}</Link>
                 </UserSigninForm>
             </Container>
@@ -64,7 +64,7 @@ class Signin extends Component {
     }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
     return {
         actions: bindActionCreators({
             signin

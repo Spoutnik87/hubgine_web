@@ -8,6 +8,7 @@ import LoadingCog from "../LoadingCog";
 import SuccessButton from "../buttons/SuccessButton";
 import Form from "../Form";
 import FormGroup from "../FormGroup";
+import Card from "../Card";
 
 class UserForgotPasswordForm extends Component {
     static propTypes = {
@@ -20,7 +21,8 @@ class UserForgotPasswordForm extends Component {
         onSubmit: PropTypes.func,
         title: PropTypes.bool,
         loading: PropTypes.bool,
-        messages: PropTypes.object
+        messages: PropTypes.object,
+        clientSide: PropTypes.bool
     };
 
     static defaultProps = {
@@ -28,13 +30,18 @@ class UserForgotPasswordForm extends Component {
         onSubmit: () => {},
         title: true,
         loading: false,
-        messages: undefined
+        messages: undefined,
+        clientSide: false
     };
 
     constructor(props)
     {
         super(props);
+        const {
+            clientSide
+        } = this.props;
         this.state = {
+            loading: clientSide,
             email: "",
             recaptcha: ""
         };
@@ -42,6 +49,19 @@ class UserForgotPasswordForm extends Component {
         this.handleRecaptchaExpired = this.handleRecaptchaExpired.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
+    }
+
+    componentDidMount()
+    {
+        const {
+            loading
+        } = this.state;
+        if (loading)
+        {
+            this.setState({
+                loading: false
+            });
+        }
     }
 
     handleRecaptchaVerify(response)
@@ -83,9 +103,22 @@ class UserForgotPasswordForm extends Component {
             USERFORGOTPASSWORDFORM_EMAIL,
             USERFORGOTPASSWORDFORM_SUBMIT
         } = this.props.lang;
-        const { loading, title, messages, children } = this.props;
-        const { email, recaptcha } = this.state;
-        return (
+        const {
+            loading,
+            title,
+            messages,
+            children
+        } = this.props;
+        const {
+            loading: mainLoading,
+            email,
+            recaptcha
+        } = this.state;
+        return mainLoading ? (
+            <Card>
+                <LoadingCog center/>
+            </Card>
+        ) : (
             <Form title={title ? USERFORGOTPASSWORDFORM_TITLE : undefined}>
                 {
                     messages && (

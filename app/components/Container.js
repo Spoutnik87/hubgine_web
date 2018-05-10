@@ -26,7 +26,7 @@ class Container extends Component {
             fluid
         } = this.props;
         return (
-            <div className={"container" + (fluid ? "-fluid " : " ") + (center ? " text-center" : "")}>
+            <div className={"container" + (fluid ? "-fluid " : "") + (center ? " text-center" : "")}>
                 {children}
             </div>
         );

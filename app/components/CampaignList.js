@@ -36,9 +36,12 @@ class CampaignList extends Component {
 
     handleClick(event)
     {
+        const {
+            account
+        } = this.props;
         this.props.onClick({
-            account: this.props.account.name,
-            campaign: event.target.id
+            account: account.name,
+            campaign: event.name
         });
     }
 
@@ -54,7 +57,7 @@ class CampaignList extends Component {
             <div>
             {
                 campaigns.map(campaign => (
-                    <CampaignItem key={campaign.uid} id={campaign.name} onClick={this.handleClick} campaign={campaign}/>
+                    <CampaignItem key={campaign.uid} campaign={campaign} onClick={this.handleClick}/>
                 ))
             }
             </div>
