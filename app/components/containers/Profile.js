@@ -9,13 +9,13 @@ import { addAccount } from "../../actions/accounts";
 import * as Rank from "../../constants/Rank";
 import * as Language from "../../constants/Language";
 import Messages from "../Messages";
-import TextInput from "../Inputs/TextInput";
-import ListInput from "../Inputs/ListInput";
+import TextInput from "../inputs/TextInput";
+import ListInput from "../inputs/ListInput";
 import AccountsManagment from "./AccountsManagment";
 import Container from "../Container";
 import Card from "../Card";
 import Form from "../Form";
-import UserPasswordForm from "../Forms/UserPasswordForm";
+import UserPasswordForm from "../forms/UserPasswordForm";
 import LoadingCog from "../LoadingCog";
 import PrimaryButton from "../buttons/PrimaryButton";
 

@@ -7,7 +7,7 @@ import { findIndex } from "lodash";
 import { fetchAccountList, removeCampaign, updateCampaign, addTwitterRule, updateTwitterRule, removeTwitterRule } from "../../actions/accounts";
 import { withLanguage } from "../withLanguage";
 import { withMessages } from "../withMessages";
-import CampaignForm from "../Forms/CampaignForm";
+import CampaignForm from "../forms/CampaignForm";
 import RuleList from "../RuleList";
 import Messages from "../Messages";
 import LoadingCog from "../LoadingCog";
@@ -15,9 +15,9 @@ import Container from "../Container";
 import Card from "../Card";
 import PrimaryButton from "../buttons/PrimaryButton";
 import SuccessButton from "../buttons/SuccessButton";
-import TwitterRuleForm from "../Forms/TwitterRuleForm";
-import Input from "../Inputs/Input";
-import DateInput from "../Inputs/DateInput";
+import TwitterRuleForm from "../forms/TwitterRuleForm";
+import Input from "../inputs/Input";
+import DateInput from "../inputs/DateInput";
 
 class CampaignOverview extends Component {
     static propTypes = {

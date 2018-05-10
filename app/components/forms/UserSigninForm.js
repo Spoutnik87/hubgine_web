@@ -1,21 +1,21 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { withLanguage } from "../withLanguage";
-import Recaptcha from "../Recaptcha";
+import Input from "../inputs/Input";
 import Messages from "../Messages";
-import Input from "../Inputs/Input";
 import LoadingCog from "../LoadingCog";
-import SuccessButton from "../buttons/SuccessButton";
 import Form from "../Form";
+import SuccessButton from "../buttons/SuccessButton";
 import FormGroup from "../FormGroup";
 import Card from "../Card";
 
-class UserForgotPasswordForm extends Component {
+class UserSigninForm extends Component {
     static propTypes = {
         lang: PropTypes.shape({
-            USERFORGOTPASSWORDFORM_TITLE: PropTypes.string.isRequired,
-            USERFORGOTPASSWORDFORM_SUBMIT: PropTypes.string.isRequired,
-            USERFORGOTPASSWORDFORM_EMAIL: PropTypes.string.isRequired
+            USERSIGNINFORM_TITLE: PropTypes.string.isRequired,
+            USERSIGNINFORM_EMAIL: PropTypes.string.isRequired,
+            USERSIGNINFORM_PASSWORD: PropTypes.string.isRequired,
+            USERSIGNINFORM_SUBMIT: PropTypes.string.isRequired
         }).isRequired,
         name: PropTypes.string,
         onSubmit: PropTypes.func,
@@ -26,7 +26,7 @@ class UserForgotPasswordForm extends Component {
     };
 
     static defaultProps = {
-        name: "userforgotpassword",
+        name: "signin",
         onSubmit: () => {},
         title: true,
         loading: false,
@@ -43,10 +43,8 @@ class UserForgotPasswordForm extends Component {
         this.state = {
             loading: clientSide,
             email: "",
-            recaptcha: ""
+            password: ""
         };
-        this.handleRecaptchaVerify = this.handleRecaptchaVerify.bind(this);
-        this.handleRecaptchaExpired = this.handleRecaptchaExpired.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
     }
@@ -62,21 +60,7 @@ class UserForgotPasswordForm extends Component {
                 loading: false
             });
         }
-    }
-
-    handleRecaptchaVerify(response)
-    {
-        this.setState({
-            recaptcha: response
-        });
-    }
-
-    handleRecaptchaExpired()
-    {
-        this.setState({
-            recaptcha: ""
-        });
-    }
+    }    
 
     handleClick(event)
     {
@@ -84,7 +68,7 @@ class UserForgotPasswordForm extends Component {
             name: this.props.name,
             result: {
                 email: this.state.email,
-                recaptcha: this.state.recaptcha
+                password: this.state.password
             }
         });
     }
@@ -99,53 +83,49 @@ class UserForgotPasswordForm extends Component {
     render()
     {
         const {
-            USERFORGOTPASSWORDFORM_TITLE,
-            USERFORGOTPASSWORDFORM_EMAIL,
-            USERFORGOTPASSWORDFORM_SUBMIT
+            USERSIGNINFORM_TITLE,
+            USERSIGNINFORM_EMAIL,
+            USERSIGNINFORM_PASSWORD,
+            USERSIGNINFORM_SUBMIT
         } = this.props.lang;
         const {
-            loading,
             title,
             messages,
-            children
+            loading
         } = this.props;
         const {
             loading: mainLoading,
             email,
-            recaptcha
+            password
         } = this.state;
         return mainLoading ? (
             <Card>
                 <LoadingCog center/>
             </Card>
         ) : (
-            <Form title={title ? USERFORGOTPASSWORDFORM_TITLE : undefined}>
+            <Form title={title ? USERSIGNINFORM_TITLE : undefined}>
                 {
                     messages && (
                         <Messages messages={messages}/>
                     )
                 }
-                <Input name="email" value={email} label={USERFORGOTPASSWORDFORM_EMAIL} onChange={this.handleChange} autoFocus/>
+                <Input id="email" name="email" value={email} label={USERSIGNINFORM_EMAIL} onChange={this.handleChange} autoFocus/>
+                <Input id="password" type="password" name="password" value={password} label={USERSIGNINFORM_PASSWORD} onChange={this.handleChange}/>
                 <FormGroup>
-                    <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-2">
-                        <Recaptcha verifyCallback={this.handleRecaptchaVerify} expiredCallback={this.handleRecaptchaExpired}/>
+                    <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-10">
+                    {
+                        loading ? (
+                            <LoadingCog/>
+                        ) : (
+                            <SuccessButton className="form-button" onClick={this.handleClick}>{USERSIGNINFORM_SUBMIT}</SuccessButton>
+                        )
+                    }
                     </div>
                 </FormGroup>
-                <FormGroup>
-                {
-                    loading ? (
-                        <LoadingCog/>
-                    ) : (
-                        <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-10">
-                            <SuccessButton className="form-button" onClick={this.handleClick} disabled={recaptcha === ""}>{USERFORGOTPASSWORDFORM_SUBMIT}</SuccessButton>
-                        </div>
-                    )
-                }
-                </FormGroup>
-                {children}
+                {this.props.children}
             </Form>
         );
     }
 }
 
-export default withLanguage(UserForgotPasswordForm);
+export default withLanguage(UserSigninForm);

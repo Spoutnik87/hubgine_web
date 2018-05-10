@@ -10,7 +10,7 @@ import { withMessages } from "../withMessages";
 import { withLanguage } from "../withLanguage";
 import CampaignOverview from "./CampaignOverview";
 import CampaignList from "../CampaignList";
-import CampaignForm from "../Forms/CampaignForm";
+import CampaignForm from "../forms/CampaignForm";
 import Container from "../Container";
 import Card from "../Card";
 import LoadingCog from "../LoadingCog";

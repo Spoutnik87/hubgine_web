@@ -7,7 +7,7 @@ import { findIndex, isEqual } from "lodash";
 import { fetchAccountList, updateAccount, removeAccount, addCampaign } from "../../actions/accounts";
 import { withLanguage } from "../withLanguage";
 import { withMessages } from "../withMessages";
-import TwitterAccountForm from "../Forms/TwitterAccountForm";
+import TwitterAccountForm from "../forms/TwitterAccountForm";
 import CampaignList from "../CampaignList";
 import Messages from "../Messages";
 import LoadingCog from "../LoadingCog";
@@ -15,9 +15,9 @@ import Container from "../Container";
 import Card from "../Card";
 import PrimaryButton from "../buttons/PrimaryButton";
 import SuccessButton from "../buttons/SuccessButton";
-import CampaignForm from "../Forms/CampaignForm";
+import CampaignForm from "../forms/CampaignForm";
 import WordList from "../WordList";
-import Input from "../Inputs/Input"
+import Input from "../inputs/Input"
 import Text from "../Text";
 import TwitterAccountStats from "../stats/TwitterAccountStats";
 

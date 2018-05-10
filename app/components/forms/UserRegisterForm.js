@@ -7,9 +7,9 @@ import SuccessButton from "../buttons/SuccessButton";
 import Recaptcha from "../Recaptcha";
 import LoadingCog from "../LoadingCog";
 import Messages from "../Messages";
-import Checkbox from "../Inputs/Checkbox";
-import Input from "../Inputs/Input";
-import ListInput from "../Inputs/ListInput";
+import Checkbox from "../inputs/Checkbox";
+import Input from "../inputs/Input";
+import ListInput from "../inputs/ListInput";
 import FormGroup from "../FormGroup";
 import Card from "../Card";
 

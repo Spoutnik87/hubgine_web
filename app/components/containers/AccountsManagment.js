@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
 import { withLanguage } from "../withLanguage";
 import { fetchAccountList, addAccount, updateAccount, removeAccount } from "../../actions/accounts";
-import TwitterAccountForm from "../Forms/TwitterAccountForm";
+import TwitterAccountForm from "../forms/TwitterAccountForm";
 import AccountItem from "../AccountItem";
 import SuccessButton from "../buttons/SuccessButton";
 import LoadingCog from "../LoadingCog";

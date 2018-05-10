@@ -5,7 +5,7 @@ import * as TwitterRuleType from "../constants/TwitterRuleType";
 import * as TwitterRuleCondition from "../constants/TwitterRuleCondition";
 import * as TwitterRuleLang from "../constants/TwitterRuleLang";
 import PrimaryButton from "./buttons/PrimaryButton";
-import TwitterRuleForm from "./Forms/TwitterRuleForm";
+import TwitterRuleForm from "./forms/TwitterRuleForm";
 import LoadingCog from "./LoadingCog";
 import { withLanguage } from "./withLanguage";
 

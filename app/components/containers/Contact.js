@@ -1,14 +1,15 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { register } from "../../actions/user";
+import PropTypes from "prop-types";
+import { contact } from "../../actions/contact";
+import ContactForm from "../forms/ContactForm";
 import { withMessages } from "../withMessages";
-import UserRegisterForm from "../Forms/UserRegisterForm";
 import Container from "../Container";
-import LoadingCog from "../LoadingCog";
+import Card from "../Card";
+import Messages from "../Messages";
 
-class Register extends Component {
+class Contact extends Component {
     static propTypes = {
         messages: PropTypes.object.isRequired
     };
@@ -17,6 +18,7 @@ class Register extends Component {
     {
         super(props);
         this.state = {
+            displayContactForm: true,
             loading: false
         };
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -25,36 +27,45 @@ class Register extends Component {
     handleSubmit(event)
     {
         const {
+            reason,
             email,
-            password,
-            cpassword,
-            firstname,
-            lastname,
-            lang,
-            useterms,
+            message,
             recaptcha
         } = event.result;
         this.setState({
             loading: true
         });
-        this.props.actions.register(email, password, cpassword, firstname, lastname, lang, useterms, recaptcha).catch(error => {
+        this.props.actions.contact(reason, email, message, recaptcha).then(() => {
+            this.setState({
+                displayContactForm: false
+            });
+        }).catch(() => {
             this.setState({
                 loading: false
             });
         });
     }
-
+    
     render()
     {
         const {
             messages
         } = this.props;
         const {
+            displayContactForm,
             loading
         } = this.state;
         return (
             <Container>
-                <UserRegisterForm onSubmit={this.handleSubmit} loading={loading} messages={messages} clientSide={true}/>
+            {
+                displayContactForm ? (
+                    <ContactForm onSubmit={this.handleSubmit} loading={loading} messages={messages} clientSide={true}/>
+                ) : (
+                    <Card>
+                        <Messages messages={messages}/>
+                    </Card>
+                )
+            }
             </Container>
         );
     }
@@ -63,9 +74,9 @@ class Register extends Component {
 const mapDispatchToProps = (dispatch) => {
     return {
         actions: bindActionCreators({
-            register
+            contact
         }, dispatch)
     };
 };
 
-export default withMessages(connect(undefined, mapDispatchToProps)(Register));
+export default withMessages(connect(undefined, mapDispatchToProps)(Contact));

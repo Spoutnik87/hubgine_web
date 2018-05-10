@@ -4,13 +4,13 @@ import { withLanguage } from "../withLanguage";
 import * as ContactType from "../../constants/ContactType";
 import Recaptcha from "../Recaptcha";
 import Messages from "../Messages";
-import Input from "../Inputs/Input";
+import Input from "../inputs/Input";
 import LoadingCog from "../LoadingCog";
 import SuccessButton from "../buttons/SuccessButton";
 import Form from "../Form";
 import FormGroup from "../FormGroup";
-import ListInput from "../Inputs/ListInput";
-import TextAreaInput from "../Inputs/TextAreaInput";
+import ListInput from "../inputs/ListInput";
+import TextAreaInput from "../inputs/TextAreaInput";
 import Card from "../Card";
 
 class ContactForm extends Component {

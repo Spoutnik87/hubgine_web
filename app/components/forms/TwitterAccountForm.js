@@ -1,10 +1,10 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { withLanguage } from "../withLanguage";
-import ArrayInput from "../Inputs/ArrayInput";
+import ArrayInput from "../inputs/ArrayInput";
 import Messages from "../Messages";
 import LoadingCog from "../LoadingCog";
-import Input from "../Inputs/Input";
+import Input from "../inputs/Input";
 import Form from "../Form";
 import SuccessButton from "../buttons/SuccessButton";
 import DangerButton from "../buttons/DangerButton";

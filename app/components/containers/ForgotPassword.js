@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import UserForgotPasswordForm from "../Forms/UserForgotPasswordForm";
+import UserForgotPasswordForm from "../forms/UserForgotPasswordForm";
 import { withMessages } from "../withMessages";
 import Container from "../Container";
 import Card from "../Card";

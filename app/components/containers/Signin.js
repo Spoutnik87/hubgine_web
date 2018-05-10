@@ -7,7 +7,7 @@ import Container from "../Container";
 import { withLanguage } from "../withLanguage";
 import { withMessages } from "../withMessages";
 import { connect as signin } from "../../actions/user";
-import UserSigninForm from "../Forms/UserSigninForm";
+import UserSigninForm from "../forms/UserSigninForm";
 import LoadingCog from "../LoadingCog";
 
 class Signin extends Component {

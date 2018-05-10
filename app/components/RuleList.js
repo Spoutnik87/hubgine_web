@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { withLanguage } from "./withLanguage";
 import RuleItem from "./RuleItem";
 import LoadingCog from "./LoadingCog";
-import TwitterRuleForm from "./Forms/TwitterRuleForm";
+import TwitterRuleForm from "./forms/TwitterRuleForm";
 
 class RuleList extends Component {
     static propTypes = {

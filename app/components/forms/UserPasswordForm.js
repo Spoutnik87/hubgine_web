@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { withLanguage } from "../withLanguage";
 import Recaptcha from "../Recaptcha";
 import Messages from "../Messages";
-import Input from "../Inputs/Input";
+import Input from "../inputs/Input";
 import LoadingCog from "../LoadingCog";
 import SuccessButton from "../buttons/SuccessButton";
 import SecondaryButton from "../buttons/SecondaryButton";
