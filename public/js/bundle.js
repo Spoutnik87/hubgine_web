@@ -93251,10 +93251,10 @@ module.exports = {
     isValidTwitterRuleDelay: isValidTwitterRuleDelay,
     isValidTwitterRuleForm: isValidTwitterRuleForm,
     //Contact
-    isValidContactReason,
-    isValidContactEmail,
-    isValidContactMessage,
-    isValidContactForm
+    isValidContactReason: isValidContactReason,
+    isValidContactEmail: isValidContactEmail,
+    isValidContactMessage: isValidContactMessage,
+    isValidContactForm: isValidContactForm
 };
 },{"./rules.json":703}],703:[function(require,module,exports){
 module.exports={

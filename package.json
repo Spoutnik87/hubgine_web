@@ -60,7 +60,7 @@
         "uglify-js": "^3.3.24",
         "universal-cookie-express": "^2.1.2",
         "uuid": "^3.2.1",
-        "validator": "git+ssh://git@bitbucket.org/TWEET-BOT/validator.git#V1.2.5",
+        "validator": "git+ssh://git@bitbucket.org/TWEET-BOT/validator.git#V1.2.6",
         "watchify": "^3.11.0",
         "winston": "^2.4.2"
     }

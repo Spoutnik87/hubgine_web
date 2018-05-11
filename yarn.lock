@@ -5491,9 +5491,9 @@ validate-npm-package-license@^3.0.1:
     spdx-correct "~1.0.0"
     spdx-expression-parse "~1.0.0"
 
-"validator@git+ssh://git@bitbucket.org/TWEET-BOT/validator.git#V1.2.5":
-  version "1.2.5"
-  resolved "git+ssh://git@bitbucket.org/TWEET-BOT/validator.git#6685d7204ea4828e5800d0dfd9e3e126be87d371"
+"validator@git+ssh://git@bitbucket.org/TWEET-BOT/validator.git#V1.2.6":
+  version "1.2.6"
+  resolved "git+ssh://git@bitbucket.org/TWEET-BOT/validator.git#9ed9f820c3181a20a99f71b1e0ca40e2474a0308"
 
 value-equal@^0.4.0:
   version "0.4.0"
