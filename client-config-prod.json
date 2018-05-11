@@ -3,7 +3,7 @@
         "key": "6Le-wvkSAAAAAPBMRTvw0Q4Muexq9bi0DJwx_mJ-"
     },
     "api": {
-        "host": "https://rest.hubgine.com",
+        "host": "https://api.hubgine.com",
         "port": 443
     },
     "store": {
