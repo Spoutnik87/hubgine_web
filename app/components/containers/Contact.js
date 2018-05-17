@@ -4,7 +4,8 @@ import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
 import { contact } from "../../actions/contact";
 import ContactForm from "../forms/ContactForm";
-import { withMessages } from "../withMessages";
+import { withData } from "../withData";
+import * as Data from "../../constants/Data";
 import Container from "../Container";
 import Card from "../Card";
 import Messages from "../Messages";
@@ -71,7 +72,7 @@ class Contact extends Component {
     }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
     return {
         actions: bindActionCreators({
             contact
@@ -79,4 +80,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default withMessages(connect(undefined, mapDispatchToProps)(Contact));
+export default withData(connect(undefined, mapDispatchToProps)(Contact), [ Data.MESSAGES ]);

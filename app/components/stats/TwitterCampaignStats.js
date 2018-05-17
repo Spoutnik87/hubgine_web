@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withLanguage } from "../withLanguage";
+import { withData } from "../withData";
+import * as Data from "../../constants/Data";
 import Card from "../Card";
 import LineChart from "../charts/LineChart";
 import PieChart from "../charts/PieChart";
@@ -27,4 +28,4 @@ class TwitterCampaignStats extends Component {
     }
 }
 
-export default withLanguage(TwitterCampaignStats);
+export default withData(TwitterCampaignStats, [ Data.LANG ]);

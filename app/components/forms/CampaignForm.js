@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
-import { withLanguage } from "../withLanguage";
+import { withData } from "../withData";
+import * as Data from "../../constants/Data";
 import Form from "../Form";
 import DateInput from "../inputs/DateInput";
 import ListInput from "../inputs/ListInput";
@@ -150,8 +151,24 @@ class CampaignForm extends Component {
             CAMPAIGNFORM_NAME_TOOLTIP,
             CAMPAIGNFORM_DATEBEGIN_TOOLTIP
         } = this.props.lang;
-        const { title, edit, children, loading, cancel, messages, delete: hasDeleteButton, accounts, campaign, accountId } = this.props;
-        const { deleteMode, name, dateBegin, dateEnd } = this.state;
+        const {
+            title,
+            edit,
+            children,
+            loading,
+            cancel,
+            messages,
+            delete: hasDeleteButton,
+            accounts,
+            campaign,
+            accountId
+        } = this.props;
+        const {
+            deleteMode,
+            name,
+            dateBegin,
+            dateEnd
+        } = this.state;
         return (
             <Form title={title ? edit ? CAMPAIGNFORM_EDIT_TITLE : CAMPAIGNFORM_CREATE_TITLE : undefined}>
                 {
@@ -215,4 +232,4 @@ class CampaignForm extends Component {
     }
 }
 
-export default withLanguage(CampaignForm);
+export default withData(CampaignForm, [ Data.LANG ]);

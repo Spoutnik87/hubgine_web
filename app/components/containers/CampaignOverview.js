@@ -4,13 +4,12 @@ import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
 import { findIndex } from "lodash";
-import { fetchAccountList, removeCampaign, updateCampaign, addTwitterRule, updateTwitterRule, removeTwitterRule } from "../../actions/accounts";
-import { withLanguage } from "../withLanguage";
-import { withMessages } from "../withMessages";
+import { removeCampaign, updateCampaign, addTwitterRule, updateTwitterRule, removeTwitterRule } from "../../actions/accounts";
+import { withData } from "../withData";
+import * as Data from "../../constants/Data";
 import CampaignForm from "../forms/CampaignForm";
 import RuleList from "../RuleList";
 import Messages from "../Messages";
-import LoadingCog from "../LoadingCog";
 import Container from "../Container";
 import Card from "../Card";
 import PrimaryButton from "../buttons/PrimaryButton";
@@ -43,13 +42,20 @@ class CampaignOverview extends Component {
     constructor(props)
     {
         super(props);
+
+        const accountId = decodeURI(this.props.match.params.accountId);
+        const campaignId = decodeURI(this.props.match.params.campaignId);
+        const {
+            accounts
+        } = this.props;    
+        const accountIndex = findIndex(accounts, { name: accountId });
+        const campaign = accountIndex !== -1 ? accounts[accountIndex].campaigns[findIndex(accounts[accountIndex].campaigns, { name: campaignId })] : null;
         this.state = {
             creationRuleFormDisplayed: false,
-            loadingAccountList: true,
             editCampaign: false,
-            accountId: decodeURI(this.props.match.params.accountId),
-            campaignId: decodeURI(this.props.match.params.campaignId),
-            campaign: null,
+            accountId: accountId,
+            campaignId: campaignId,
+            campaign: campaign,
             selectedRule: null,
             loading: false
         };
@@ -63,28 +69,6 @@ class CampaignOverview extends Component {
         this.handleCampaignEditionSubmit = this.handleCampaignEditionSubmit.bind(this);
         this.handleCampaignEditionDelete = this.handleCampaignEditionDelete.bind(this);
         this.handleCampaignEditionCancel = this.handleCampaignEditionCancel.bind(this);
-    }
-
-    componentDidMount()
-    {
-        const {
-            accountId,
-            campaignId
-        } = this.state;
-        this.props.actions.fetchAccountList().then(() => {
-            const {
-                accounts
-            } = this.props;    
-            const accountIndex = findIndex(accounts, { name: accountId });
-            const state = {
-                loadingAccountList: false
-            };
-            if (accountIndex !== -1)
-            {
-                state.campaign = accounts[accountIndex].campaigns[findIndex(accounts[accountIndex].campaigns, { name: campaignId })];
-            }
-            this.setState(state);
-        }).catch(error => {});
     }
 
     handleClick(event)
@@ -278,7 +262,6 @@ class CampaignOverview extends Component {
             accounts
         } = this.props;
         const {
-            loadingAccountList,
             accountId,
             campaignId,
             editCampaign,
@@ -294,27 +277,23 @@ class CampaignOverview extends Component {
                         <PrimaryButton id="displayAccount" onClick={this.handleClick}>{CAMPAIGNOVERVIEW_DISPLAY_ACCOUNT_BUTTON}</PrimaryButton> {!editCampaign && <PrimaryButton id="editCampaign" onClick={this.handleClick}>{CAMPAIGNOVERVIEW_EDIT_BUTTON}</PrimaryButton>}
                     </Fragment>}>
                 {
-                    loadingAccountList ? (
-                        <LoadingCog center/>
-                    ) : (
-                        campaign ? (
-                            editCampaign ? (
-                                <CampaignForm accounts={accounts.map(account => account.name)} accountId={accountId} campaign={campaign} messages={messages} edit cancel delete onCancel={this.handleCampaignEditionCancel} onDelete={this.handleCampaignEditionDelete} onSubmit={this.handleCampaignEditionSubmit}/>
-                            ) : (
-                                <Fragment>
-                                    <Messages messages={messages}/>
-                                    <Input value={accountId} label={CAMPAIGNOVERVIEW_ACCOUNTNAME} disabled/>
-                                    <Input name="name" value={campaign.name} label={CAMPAIGNOVERVIEW_NAME} disabled/>
-                                    <DateInput name="dateBegin" value={campaign.dateBegin} label={CAMPAIGNOVERVIEW_DATEBEGIN} disabled/>
-                                    <DateInput name="dateEnd" value={campaign.dateEnd} label={CAMPAIGNOVERVIEW_DATEEND} disabled/>
-                                </Fragment>
-                            )
+                    campaign ? (
+                        editCampaign ? (
+                            <CampaignForm accounts={accounts.map(account => account.name)} accountId={accountId} campaign={campaign} messages={messages} edit cancel delete onCancel={this.handleCampaignEditionCancel} onDelete={this.handleCampaignEditionDelete} onSubmit={this.handleCampaignEditionSubmit}/>
                         ) : (
                             <Fragment>
                                 <Messages messages={messages}/>
-                                {CAMPAIGNOVERVIEW_NO_CAMPAIGN}
+                                <Input value={accountId} label={CAMPAIGNOVERVIEW_ACCOUNTNAME} disabled/>
+                                <Input name="name" value={campaign.name} label={CAMPAIGNOVERVIEW_NAME} disabled/>
+                                <DateInput name="dateBegin" value={campaign.dateBegin} label={CAMPAIGNOVERVIEW_DATEBEGIN} disabled/>
+                                <DateInput name="dateEnd" value={campaign.dateEnd} label={CAMPAIGNOVERVIEW_DATEEND} disabled/>
                             </Fragment>
                         )
+                    ) : (
+                        <Fragment>
+                            <Messages messages={messages}/>
+                            {CAMPAIGNOVERVIEW_NO_CAMPAIGN}
+                        </Fragment>
                     )
                 }
                 </Card>
@@ -336,20 +315,13 @@ class CampaignOverview extends Component {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        accounts: state.accounts.data
-    };
-};
-
 const mapDispatchToProps = dispatch => {
     return {
         actions: bindActionCreators({
-            fetchAccountList,
             removeCampaign, updateCampaign,
             addTwitterRule, updateTwitterRule, removeTwitterRule
         }, dispatch)
     };
 };
 
-export default withRouter(withMessages(withLanguage(connect(mapStateToProps, mapDispatchToProps)(CampaignOverview))));
+export default withRouter(withData(connect(undefined, mapDispatchToProps)(CampaignOverview), [ Data.ACCOUNTS, Data.LANG, Data.MESSAGES ]));

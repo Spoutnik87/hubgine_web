@@ -4,11 +4,10 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { bindActionCreators } from "redux";
 import Container from "../Container";
-import { withLanguage } from "../withLanguage";
-import { withMessages } from "../withMessages";
+import { withData } from "../withData";
+import * as Data from "../../constants/Data";
 import { connect as signin } from "../../actions/user";
 import UserSigninForm from "../forms/UserSigninForm";
-import LoadingCog from "../LoadingCog";
 
 class Signin extends Component {
     static propTypes = {
@@ -72,4 +71,4 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default withMessages(withLanguage(connect(undefined, mapDispatchToProps)(Signin)));
+export default withData(connect(undefined, mapDispatchToProps)(Signin), [ Data.LANG, Data.MESSAGES ]);

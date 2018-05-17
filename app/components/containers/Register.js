@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { register } from "../../actions/user";
-import { withMessages } from "../withMessages";
+import { withData } from "../withData";
+import * as Data from "../../constants/Data";
 import UserRegisterForm from "../forms/UserRegisterForm";
 import Container from "../Container";
-import LoadingCog from "../LoadingCog";
 
 class Register extends Component {
     static propTypes = {
@@ -60,7 +60,7 @@ class Register extends Component {
     }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
     return {
         actions: bindActionCreators({
             register
@@ -68,4 +68,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default withMessages(connect(undefined, mapDispatchToProps)(Register));
+export default withData(connect(undefined, mapDispatchToProps)(Register), [ Data.MESSAGES ]);

@@ -4,13 +4,11 @@ import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
 import { findIndex, isEqual } from "lodash";
-import { fetchAccountList, updateAccount, removeAccount, addCampaign } from "../../actions/accounts";
-import { withLanguage } from "../withLanguage";
-import { withMessages } from "../withMessages";
+import { updateAccount, removeAccount, addCampaign } from "../../actions/accounts";
+import { withData } from "../withData";
 import TwitterAccountForm from "../forms/TwitterAccountForm";
 import CampaignList from "../CampaignList";
 import Messages from "../Messages";
-import LoadingCog from "../LoadingCog";
 import Container from "../Container";
 import Card from "../Card";
 import PrimaryButton from "../buttons/PrimaryButton";
@@ -20,6 +18,7 @@ import WordList from "../WordList";
 import Input from "../inputs/Input"
 import Text from "../Text";
 import TwitterAccountStats from "../stats/TwitterAccountStats";
+import * as Data from "../../constants/Data";
 
 class AccountOverview extends Component {
     static propTypes = {
@@ -40,11 +39,11 @@ class AccountOverview extends Component {
     constructor(props)
     {
         super(props);
+        const accountId = decodeURI(this.props.match.params.accountId);
         this.state = {
             editAccount: false,
-            loadingAccountList: true,
-            accountId: decodeURI(this.props.match.params.accountId),
-            account: undefined,
+            accountId: accountId,
+            account: this.props.accounts[findIndex(this.props.accounts, { name: accountId })],
             loadingAccountForm: false,
             displayCampaignCreationForm: false,
             loadingCampaignForm: false
@@ -56,19 +55,6 @@ class AccountOverview extends Component {
         this.handleCampaignCreationSubmit = this.handleCampaignCreationSubmit.bind(this);
         this.handleCampaignCreationCancel = this.handleCampaignCreationCancel.bind(this);
         this.handleClick = this.handleClick.bind(this);
-    }
-
-    componentDidMount()
-    {
-        const {
-            accountId
-        } = this.state;
-        this.props.actions.fetchAccountList().then(() => {
-            this.setState({
-                loadingAccountList: false,
-                account: this.props.accounts[findIndex(this.props.accounts, { name: this.state.accountId })]
-            });
-        }).catch(error => {});
     }
 
     handleAccountEditionSubmit(event)
@@ -183,11 +169,10 @@ class AccountOverview extends Component {
         } = this.props.lang;
         const {
             accounts,
-            messages
+            messages,
         } = this.props;
         const {
             editAccount,
-            loadingAccountList,
             accountId,
             account,
             loadingAccountForm,
@@ -197,39 +182,33 @@ class AccountOverview extends Component {
         return (
             <Container>
                 {
-                    loadingAccountList ? (
-                        <Card title={accountId}>
-                            <LoadingCog center/>
+                    account ? (
+                        <Card title={accountId} rightTitle={!editAccount && <PrimaryButton id="editAccount" onClick={this.handleClick}>{ACCOUNTOVERVIEW_EDIT_BUTTON}</PrimaryButton>}>
+                        {
+                            editAccount ? (
+                                <TwitterAccountForm account={account} loading={loadingAccountForm} cancel edit delete onCancel={this.handleAccountEditionCancel} onDelete={this.handleAccountEditionDelete} onSubmit={this.handleAccountEditionSubmit}/>
+                            ) : (
+                                <Fragment>
+                                    <TwitterAccountStats account={account}/>
+                                    <br/>
+                                    <Card title={ACCOUNTOVERVIEW_CAMPAIGNS_TITLE} rightTitle={!displayCampaignCreationForm && <PrimaryButton id="addCampaign" onClick={this.handleClick}>{ACCOUNTOVERVIEW_ADD_CAMPAIGN_BUTTON}</PrimaryButton>}>
+                                    {
+                                        displayCampaignCreationForm ? (
+                                            <CampaignForm accounts={accounts.map(account => account.name)} loading={loadingCampaignForm} onSubmit={this.handleCampaignCreationSubmit} cancel onCancel={this.handleCampaignCreationCancel}/>
+                                        ) : (
+                                            <CampaignList account={account} campaigns={account.campaigns} onClick={this.handleCampaignSelection}/>
+                                        )
+                                    }
+                                    </Card>
+                                </Fragment>
+                            )
+                        }
                         </Card>
                     ) : (
-                        account ? (
-                            <Card title={accountId} rightTitle={!editAccount && <PrimaryButton id="editAccount" onClick={this.handleClick}>{ACCOUNTOVERVIEW_EDIT_BUTTON}</PrimaryButton>}>
-                            {
-                                editAccount ? (
-                                    <TwitterAccountForm account={account} loading={loadingAccountForm} cancel edit delete onCancel={this.handleAccountEditionCancel} onDelete={this.handleAccountEditionDelete} onSubmit={this.handleAccountEditionSubmit}/>
-                                ) : (
-                                    <Fragment>
-                                        <TwitterAccountStats account={account}/>
-                                        <br/>
-                                        <Card title={ACCOUNTOVERVIEW_CAMPAIGNS_TITLE} rightTitle={!displayCampaignCreationForm && <PrimaryButton id="addCampaign" onClick={this.handleClick}>{ACCOUNTOVERVIEW_ADD_CAMPAIGN_BUTTON}</PrimaryButton>}>
-                                        {
-                                            displayCampaignCreationForm ? (
-                                                <CampaignForm accounts={accounts.map(account => account.name)} loading={loadingCampaignForm} onSubmit={this.handleCampaignCreationSubmit} cancel onCancel={this.handleCampaignCreationCancel}/>
-                                            ) : (
-                                                <CampaignList account={account} campaigns={account.campaigns} onClick={this.handleCampaignSelection}/>
-                                            )
-                                        }
-                                        </Card>
-                                    </Fragment>
-                                )
-                            }
-                            </Card>
-                        ) : (
-                            <Card title={accountId}>
-                                <Messages messages={messages}/>
-                                {ACCOUNTOVERVIEW_NO_ACCOUNT}
-                            </Card>
-                        )
+                        <Card title={accountId}>
+                            <Messages messages={messages}/>
+                            {ACCOUNTOVERVIEW_NO_ACCOUNT}
+                        </Card>
                     )
                 }
             </Container>
@@ -237,16 +216,9 @@ class AccountOverview extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        accounts: state.accounts.data
-    };
-};
-
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
     return {
         actions: bindActionCreators({
-            fetchAccountList,
             updateAccount,
             removeAccount,
             addCampaign
@@ -254,4 +226,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default withRouter(withMessages(withLanguage(connect(mapStateToProps, mapDispatchToProps)(AccountOverview))));
+export default withRouter(withData(connect(undefined, mapDispatchToProps)(AccountOverview), [ Data.ACCOUNTS, Data.MESSAGES, Data.LANG ]));

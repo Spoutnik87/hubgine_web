@@ -2,9 +2,9 @@ import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
-import { withLanguage } from "../withLanguage";
-import { withMessages } from "../withMessages";
-import { fetchUser, updateUser } from "../../actions/user";
+import { withData } from "../withData";
+import * as Data from "../../constants/Data";
+import { updateUser } from "../../actions/user";
 import { addAccount } from "../../actions/accounts";
 import * as Rank from "../../constants/Rank";
 import * as Language from "../../constants/Language";
@@ -22,9 +22,7 @@ import PrimaryButton from "../buttons/PrimaryButton";
 class Profile extends Component {
     static propTypes = {
         messages: PropTypes.object.isRequired,
-        accounts: PropTypes.shape({
-            data: PropTypes.array.isRequired
-        }).isRequired,
+        accounts: PropTypes.array.isRequired,
         user: PropTypes.shape({
             email: PropTypes.string.isRequired,
             token: PropTypes.string.isRequired,
@@ -49,15 +47,22 @@ class Profile extends Component {
     constructor(props)
     {
         super(props);
+        const {
+            email,
+            firstname,
+            lastname
+        } = this.props.user;
         this.state = {
-            isLoaded: false,
             isAccountCreationFormDisplayed: false,
             isPasswordEditionFormDisplayed: false,
             loadingEmail: false,
             loadingFirstname: false,
             loadingLastname: false,
             loadingLanguage: false,
-            loadingPassword: false
+            loadingPassword: false,
+            email: email,
+            firstname: firstname,
+            lastname: lastname
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleClick = this.handleClick.bind(this);
@@ -65,19 +70,6 @@ class Profile extends Component {
         this.handleLanguageChange = this.handleLanguageChange.bind(this);
         this.handleUserPasswordEditionSubmit = this.handleUserPasswordEditionSubmit.bind(this);
         this.handleUserPasswordEditionCancel = this.handleUserPasswordEditionCancel.bind(this);
-    }
-
-    componentDidMount()
-    {
-        const { PROFILE_ERRORLOADING_USER, PROFILE_ERRORLOADING_ACCOUNTLIST } = this.props.lang;
-        this.props.actions.fetchUser().then(() => {
-            this.setState({
-                isLoaded: true,
-                email: this.props.user.email,
-                firstname: this.props.user.firstname,
-                lastname: this.props.user.lastname
-            });
-        });
     }
 
     handleSubmit(input)
@@ -215,7 +207,6 @@ class Profile extends Component {
             user
         } = this.props;
         const {
-            isLoaded,
             loadingPassword,
             isPasswordEditionFormDisplayed,
             loadingEmail,
@@ -235,58 +226,40 @@ class Profile extends Component {
         ];
         return (
             <Container>
-            {
-                isLoaded ? (
-                    <Fragment>
-                        <Form title={PROFILE_TITLE}>
-                            <Messages messages={messages}/>
-                            <TextInput name="email" value={user.email} id="email" label={PROFILE_EMAIL} onSubmit={this.handleSubmit} loading={loadingEmail}/>
-                            <TextInput name="firstname" value={user.firstname} id="firstname" label={PROFILE_FIRSTNAME} onSubmit={this.handleSubmit} loading={loadingFirstname}/>
-                            <TextInput name="lastname" value={user.lastname} id="lastname" label={PROFILE_LASTNAME} onSubmit={this.handleSubmit} loading={loadingLastname}/>
-                            <ListInput name="language" id="language" label={PROFILE_LANGUAGE} options={languages} defaultOption={user.lang} loading={loadingLanguage} onChange={this.handleLanguageChange}/>
-                            {
-                                loadingPassword ? (
-                                    <LoadingCog/>
-                                ) : (
-                                    isPasswordEditionFormDisplayed ? (
-                                        <UserPasswordForm cancel edit title onSubmit={this.handleUserPasswordEditionSubmit} onCancel={this.handleUserPasswordEditionCancel}/>
-                                    ) : (
-                                        <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-10">
-                                            <PrimaryButton id="buttonPasswordEdition" style={{ width: "100%" }} onClick={this.handleClick}>{PROFILE_EDIT_PASSWORD}</PrimaryButton>
-                                        </div>
-                                    )
-                                )
-                            }
-                        </Form>
-                        <Card title={PROFILE_ACCOUNT_LIST}>
-                            <AccountsManagment />
-                        </Card>
-                    </Fragment>
-                ) : (
-                    <Card title={PROFILE_TITLE}>
-                        <Messages messages={messages}/>
-                        <LoadingCog center/>
-                    </Card>
-                )
-            }
+                <Form title={PROFILE_TITLE}>
+                    <Messages messages={messages}/>
+                    <TextInput name="email" value={user.email} id="email" label={PROFILE_EMAIL} onSubmit={this.handleSubmit} loading={loadingEmail}/>
+                    <TextInput name="firstname" value={user.firstname} id="firstname" label={PROFILE_FIRSTNAME} onSubmit={this.handleSubmit} loading={loadingFirstname}/>
+                    <TextInput name="lastname" value={user.lastname} id="lastname" label={PROFILE_LASTNAME} onSubmit={this.handleSubmit} loading={loadingLastname}/>
+                    <ListInput name="language" id="language" label={PROFILE_LANGUAGE} options={languages} defaultOption={user.lang} loading={loadingLanguage} onChange={this.handleLanguageChange}/>
+                    {
+                        loadingPassword ? (
+                            <LoadingCog/>
+                        ) : (
+                            isPasswordEditionFormDisplayed ? (
+                                <UserPasswordForm cancel edit title onSubmit={this.handleUserPasswordEditionSubmit} onCancel={this.handleUserPasswordEditionCancel}/>
+                            ) : (
+                                <div className="col-xs-12 offset-sm-3 col-sm-9 offset-md-2 col-md-10">
+                                    <PrimaryButton id="buttonPasswordEdition" style={{ width: "100%" }} onClick={this.handleClick}>{PROFILE_EDIT_PASSWORD}</PrimaryButton>
+                                </div>
+                            )
+                        )
+                    }
+                </Form>
+                <Card title={PROFILE_ACCOUNT_LIST}>
+                    <AccountsManagment/>
+                </Card>
             </Container>
         );
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        user: state.user,
-        accounts: state.accounts
-    };
-};
-
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
     return {
         actions: bindActionCreators({
-            fetchUser, addAccount, updateUser
+            addAccount, updateUser
         }, dispatch)
     };
 };
 
-export default withMessages(withLanguage(connect(mapStateToProps, mapDispatchToProps)(Profile)));
+export default withData(connect(undefined, mapDispatchToProps)(Profile), [ Data.USER, Data.ACCOUNTS, Data.MESSAGES, Data.LANG ]);

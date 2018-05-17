@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import v4 from "uuid/v4";
 import { findIndex } from "lodash";
-import { withLanguage } from "../withLanguage";
+import { withData } from "../withData";
+import * as Data from "../../constants/Data";
 import Input from "./Input";
 import ListInput from "./ListInput";
 import SuccessButton from "../buttons/SuccessButton";
@@ -276,4 +277,4 @@ class ArrayInput extends Component {
     }
 }
 
-export default withLanguage(ArrayInput);
+export default withData(ArrayInput, [ Data.LANG ]);

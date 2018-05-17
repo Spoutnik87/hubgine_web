@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { withLanguage } from "../withLanguage";
+import { withData } from "../withData";
+import * as Data from "../../constants/Data";
 import Recaptcha from "../Recaptcha";
 import Messages from "../Messages";
 import Input from "../inputs/Input";
@@ -125,4 +126,4 @@ class UserPasswordForm extends Component {
     }
 }
 
-export default withLanguage(UserPasswordForm);
+export default withData(UserPasswordForm, [ Data.LANG ]);

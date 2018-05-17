@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withLanguage } from "./withLanguage";
+import { withData } from "./withData";
+import * as Data from "../constants/Data";
 
 class Footer extends Component {
     static propTypes = {
@@ -30,4 +31,4 @@ class Footer extends Component {
     }
 }
 
-export default withLanguage(Footer);
+export default withData(Footer, [ Data.LANG ]);

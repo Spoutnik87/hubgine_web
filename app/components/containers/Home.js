@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withMessages } from "./withMessages";
-import Container from "./Container";
-import Card from "./Card";
-import Row from "./Row";
+import { withData } from "../withData";
+import * as Data from "../../constants/Data";
+import Container from "../Container";
+import Card from "../Card";
+import Row from "../Row";
 
 class Home extends Component {
     static propTypes = {
@@ -28,4 +29,4 @@ class Home extends Component {
     }
 }
 
-export default withMessages(Home);
+export default withData(Home, [ Data.MESSAGES ]);

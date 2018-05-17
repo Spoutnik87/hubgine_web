@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Datetime from "react-datetime";
 import moment from "moment";
-import { withLanguage } from "../withLanguage";
+import { withData } from "../withData";
+import * as Data from "../../constants/Data";
 import FormGroup from "../FormGroup";
 import Row from "../Row";
 import Tooltip from "../Tooltip";
@@ -87,4 +88,4 @@ class DateInput extends Component {
     }
 }
 
-export default withLanguage(DateInput);
+export default withData(DateInput, [ Data.LANG ]);

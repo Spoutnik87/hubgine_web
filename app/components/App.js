@@ -7,7 +7,7 @@ import { disconnect } from "../actions/user";
 import * as Rank from "../constants/Rank";
 import Header from "./Header";
 import Footer from "./Footer";
-import Home from "./Home";
+import Home from "./containers/Home";
 import Signin from "./containers/Signin";
 import Register from "./containers/Register";
 import ForgotPassword from "./containers/ForgotPassword";
@@ -17,6 +17,7 @@ import AccountOverview from "./containers/AccountOverview";
 import CampaignOverview from "./containers/CampaignOverview";
 import Profile from "./containers/Profile";
 import Contact from "./containers/Contact";
+import Useterms from "./containers/Useterms";
 import NotFound from "./NotFound";
 import NotLoggedInRoute from "./routes/NotLoggedInRoute";
 import LoggedInRoute from "./routes/LoggedInRoute";
@@ -59,6 +60,7 @@ class App extends Component {
                     <NotLoggedInRoute path="/register" component={Register} isNotLoggedIn={!isLoggedIn}/>
                     <NotLoggedInRoute path="/forgot-password" component={ForgotPassword} isNotLoggedIn={!isLoggedIn}/>
                     <Route path="/contact" component={Contact}/>
+                    <Route path="/useterms" component={Useterms}/>
                     <Route component={NotFound}/>
                 </Switch>
                 <Footer/>
@@ -67,13 +69,13 @@ class App extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
     return {
         user: state.user
     };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
     return {
         actions: bindActionCreators({
             disconnect

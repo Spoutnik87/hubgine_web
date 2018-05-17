@@ -16,14 +16,14 @@ const getLanguage = () => {
         //---HEADER---
         HEADER_HOME: "Home",
         HEADER_ADMIN_DASHBOARD: "Admin Dashboard",
-        HEADER_USER_DASHBOARD: "User Dashboard",
+        HEADER_USER_DASHBOARD: "Dashboard",
         HEADER_PROFILE: "Profile",
         HEADER_DISCONNECT: "Disconnect",
         HEADER_SIGNIN: "Sign In",
         HEADER_REGISTER: "Register",
         HEADER_CONTACT: "Contact us",
         //---FOOTER---
-        FOOTER_TITLE: "© 2018 Company, Inc. All Rights Reserved.",
+        FOOTER_TITLE: "© 2018 Hubgine, Inc. All Rights Reserved.",
         //---NOTFOUND---
         NOTFOUND_TITLE: "Page Not Found",
         //---SIGNIN---
@@ -276,7 +276,12 @@ const getLanguage = () => {
         CONTACT_SUCCESS: "Your message was sent successfully.",
         CONTACT_REASON_INCORRECT: "A valid reason is required.",
         CONTACT_EMAIL_INCORRECT: "A valid email is required, leave this field empty if you don't want to be recontacted.",
-        CONTACT_MESSAGE_INCORRECT: "A valid message is required."
+        CONTACT_MESSAGE_INCORRECT: "A valid message is required.",
+        //---USETERMS---
+        USETERMS_TITLE: "Use terms",
+        USETERMS_CONTENT: "Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor\
+            mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna\
+            mollis euismod. Donec sed odio dui."
     }
 }
 

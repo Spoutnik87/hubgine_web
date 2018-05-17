@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withLanguage } from "./withLanguage";
+import { withData } from "./withData";
+import * as Data from "../constants/Data";
 
 class CampaignItem extends Component {
     static propTypes = {
@@ -63,4 +64,4 @@ class CampaignItem extends Component {
     }
 }
 
-export default withLanguage(CampaignItem);
+export default withData(CampaignItem, [ Data.LANG ]);

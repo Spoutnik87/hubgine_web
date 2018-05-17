@@ -2,7 +2,8 @@ import React, { Component, Fragment } from "react";
 import { withRouter, Link, NavLink } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { withLanguage } from "./withLanguage";
+import { withData } from "./withData";
+import * as Data from "../constants/Data";
 import Container from "./Container";
 import * as Rank from "../constants/Rank";
 
@@ -88,5 +89,4 @@ class Header extends Component {
     }
 }
 
-export default withRouter(withLanguage(Header));
-  
+export default withRouter(withData(Header, [ Data.LANG ]));

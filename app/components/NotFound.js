@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Container from "./Container";
-import { withLanguage } from "./withLanguage";
+import { withData } from "./withData";
+import * as Data from "../constants/Data";
 
 class NotFound extends Component {
     static propTypes = {
@@ -29,4 +30,4 @@ class NotFound extends Component {
     }
 }
 
-export default withLanguage(NotFound);
+export default withData(NotFound, [ Data.LANG ]);

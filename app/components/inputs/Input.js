@@ -8,7 +8,7 @@ class Input extends Component {
     static propTypes = {
         name: PropTypes.string,
         value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        id: PropTypes.string,
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         type: PropTypes.string,
         label: PropTypes.string,
         tooltip: PropTypes.string,

@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { invert } from "lodash";
+import { withData } from "./withData";
+import * as Data from "../constants/Data";
 import * as TwitterRuleType from "../constants/TwitterRuleType";
 import * as TwitterRuleCondition from "../constants/TwitterRuleCondition";
 import * as TwitterRuleLang from "../constants/TwitterRuleLang";
 import PrimaryButton from "./buttons/PrimaryButton";
 import TwitterRuleForm from "./forms/TwitterRuleForm";
 import LoadingCog from "./LoadingCog";
-import { withLanguage } from "./withLanguage";
 
 class RuleItem extends Component {
     static propTypes = {
@@ -108,4 +109,4 @@ class RuleItem extends Component {
     }
 }
 
-export default withLanguage(RuleItem);
+export default withData(RuleItem, [ Data.LANG ]);
