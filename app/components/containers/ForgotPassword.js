@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import UserForgotPasswordForm from "../forms/UserForgotPasswordForm";
-import { withData } from "../withData";
-import * as Data from "../../constants/Data";
+import { withProps } from "../withProps";
+import * as Props from "../../constants/Props";
 import Container from "../Container";
 import Card from "../Card";
 
@@ -43,4 +43,4 @@ class ForgotPassword extends Component {
     }
 }
 
-export default withData(ForgotPassword, [ Data.MESSAGES ]);
+export default withProps(ForgotPassword, [ Props.MESSAGES ]);

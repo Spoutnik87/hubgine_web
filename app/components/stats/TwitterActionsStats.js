@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
-import { withData } from "../withData";
-import * as Data from "../../constants/Data";
+import { withProps } from "../withProps";
+import * as Props from "../../constants/Props";
 import * as StatsTimeScale from "../../constants/StatsTimeScale";
 import * as StatsType from "../../constants/StatsType";
 import * as Heading from "../../constants/Heading";
@@ -187,4 +187,4 @@ class TwitterActionsStats extends Component {
     };
 }
 
-export default withData(TwitterActionsStats, [ Data.LANG ]);
+export default withProps(TwitterActionsStats, [ Props.LANG ]);

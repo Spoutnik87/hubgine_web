@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { invert } from "lodash";
-import { withData } from "./withData";
-import * as Data from "../constants/Data";
+import { withProps } from "./withProps";
+import * as Props from "../constants/Props";
 import * as TwitterRuleType from "../constants/TwitterRuleType";
 import * as TwitterRuleCondition from "../constants/TwitterRuleCondition";
 import * as TwitterRuleLang from "../constants/TwitterRuleLang";
@@ -109,4 +109,4 @@ class RuleItem extends Component {
     }
 }
 
-export default withData(RuleItem, [ Data.LANG ]);
+export default withProps(RuleItem, [ Props.LANG ]);

@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { register } from "../../actions/user";
-import { withData } from "../withData";
-import * as Data from "../../constants/Data";
+import { withProps } from "../withProps";
+import * as Props from "../../constants/Props";
 import UserRegisterForm from "../forms/UserRegisterForm";
 import Container from "../Container";
 
@@ -68,4 +68,4 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default withData(connect(undefined, mapDispatchToProps)(Register), [ Data.MESSAGES ]);
+export default withProps(connect(undefined, mapDispatchToProps)(Register), [ Props.MESSAGES ]);

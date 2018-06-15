@@ -2,8 +2,8 @@ import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
-import { withData } from "../withData";
-import * as Data from "../../constants/Data";
+import { withProps } from "../withProps";
+import * as Props from "../../constants/Props";
 import { addAccount, updateAccount, removeAccount } from "../../actions/accounts";
 import TwitterAccountForm from "../forms/TwitterAccountForm";
 import AccountItem from "../AccountItem";
@@ -180,4 +180,4 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default withData(connect(undefined, mapDispatchToProps)(AccountsManagment), [ Data.LANG, Data.ACCOUNTS ]);
+export default withProps(connect(undefined, mapDispatchToProps)(AccountsManagment), [ Props.LANG, Props.ACCOUNTS ]);

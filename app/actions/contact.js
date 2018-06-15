@@ -6,7 +6,7 @@ import * as ContactType from "../constants/ContactType";
 import { sendFailureMessage, sendFailureMessages, sendSuccessMessage } from "./messages";
 
 /**
- * Contact admins.
+ * Send a contact message.
  * @public
  * @param {ContactType} reason Reason.
  * @param {string} email Optional email.

@@ -28,7 +28,10 @@ class AdminRoute extends Component {
 
     render()
     {
-        const { isAdmin, ...props } = this.props;
+        const {
+            isAdmin, 
+            ...props
+        } = this.props;
         return isAdmin ? <Route {...props}/> : <Redirect to="/"/>;
     }
 }

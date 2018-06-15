@@ -5,8 +5,8 @@ import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
 import { findIndex } from "lodash";
 import { removeCampaign, updateCampaign, addTwitterRule, updateTwitterRule, removeTwitterRule } from "../../actions/accounts";
-import { withData } from "../withData";
-import * as Data from "../../constants/Data";
+import { withProps } from "../withProps";
+import * as Props from "../../constants/Props";
 import CampaignForm from "../forms/CampaignForm";
 import RuleList from "../RuleList";
 import Messages from "../Messages";
@@ -324,4 +324,4 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default withRouter(withData(connect(undefined, mapDispatchToProps)(CampaignOverview), [ Data.ACCOUNTS, Data.LANG, Data.MESSAGES ]));
+export default withRouter(withProps(connect(undefined, mapDispatchToProps)(CampaignOverview), [ Props.ACCOUNTS, Props.LANG, Props.MESSAGES ]));

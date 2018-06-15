@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
 import { findIndex, isEqual } from "lodash";
 import { updateAccount, removeAccount, addCampaign } from "../../actions/accounts";
-import { withData } from "../withData";
+import { withProps } from "../withProps";
 import TwitterAccountForm from "../forms/TwitterAccountForm";
 import CampaignList from "../CampaignList";
 import Messages from "../Messages";
@@ -18,7 +18,7 @@ import WordList from "../WordList";
 import Input from "../inputs/Input"
 import Text from "../Text";
 import TwitterAccountStats from "../stats/TwitterAccountStats";
-import * as Data from "../../constants/Data";
+import * as Props from "../../constants/Props";
 
 class AccountOverview extends Component {
     static propTypes = {
@@ -226,4 +226,4 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default withRouter(withData(connect(undefined, mapDispatchToProps)(AccountOverview), [ Data.ACCOUNTS, Data.MESSAGES, Data.LANG ]));
+export default withRouter(withProps(connect(undefined, mapDispatchToProps)(AccountOverview), [ Props.ACCOUNTS, Props.MESSAGES, Props.LANG ]));

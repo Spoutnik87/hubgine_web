@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withData } from "../withData";
-import * as Data from "../../constants/Data";
+import { withProps } from "../withProps";
+import * as Props from "../../constants/Props";
 import Input from "../inputs/Input";
 import Messages from "../Messages";
 import LoadingCog from "../LoadingCog";
@@ -129,4 +129,4 @@ class UserSigninForm extends Component {
     }
 }
 
-export default withData(UserSigninForm, [ Data.LANG ]);
+export default withProps(UserSigninForm, [ Props.LANG ]);

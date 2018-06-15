@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { withData } from "../withData";
-import * as Data from "../../constants/Data";
+import { withProps } from "../withProps";
+import * as Props from "../../constants/Props";
 import Card from "../Card";
 import TwitterFollowersStats from "./TwitterFollowersStats";
 import TwitterActionsStats from "./TwitterActionsStats";
@@ -52,4 +52,4 @@ class TwitterAccountStats extends Component {
     }
 }
 
-export default withData(TwitterAccountStats, [ Data.LANG ]);
+export default withProps(TwitterAccountStats, [ Props.LANG ]);

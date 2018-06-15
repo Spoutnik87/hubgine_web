@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withData } from "./withData";
-import * as Data from "../constants/Data";
+import { withProps } from "./withProps";
+import * as Props from "../constants/Props";
 import CampaignItem from "./CampaignItem";
 
 class CampaignList extends Component {
@@ -67,4 +67,4 @@ class CampaignList extends Component {
     }
 }
 
-export default withData(CampaignList, [ Data.LANG ]);
+export default withProps(CampaignList, [ Props.LANG ]);

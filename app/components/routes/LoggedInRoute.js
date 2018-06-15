@@ -28,7 +28,10 @@ class LoggedInRoute extends Component {
 
     render()
     {
-        const { isLoggedIn, ...props } = this.props;
+        const {
+            isLoggedIn,
+            ...props
+        } = this.props;
         return isLoggedIn ? <Route {...props}/> : <Redirect to="/signin"/>;
     }
 }

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withData } from "../withData";
-import * as Data from "../../constants/Data";
+import { withProps } from "../withProps";
+import * as Props from "../../constants/Props";
 import * as ContactType from "../../constants/ContactType";
 import Recaptcha from "../Recaptcha";
 import Messages from "../Messages";
@@ -212,4 +212,4 @@ class ContactForm extends Component {
     }
 }
 
-export default withData(ContactForm, [ Data.LANG ]);
+export default withProps(ContactForm, [ Props.LANG ]);

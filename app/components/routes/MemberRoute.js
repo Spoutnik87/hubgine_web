@@ -28,7 +28,10 @@ class MemberRoute extends Component {
 
     render()
     {
-        const { isMember, ...props } = this.props;
+        const {
+            isMember,
+            ...props
+        } = this.props;
         return isMember ? <Route {...props}/> : <Redirect to="/"/>;
     }
 }

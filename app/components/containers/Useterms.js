@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withData } from "../withData";
-import * as Data from "../../constants/Data";
+import { withProps } from "../withProps";
+import * as Props from "../../constants/Props";
 import Container from "../Container";
 import Card from "../Card";
 
@@ -30,4 +30,4 @@ class Useterms extends Component {
     }
 }
 
-export default withData(Useterms, [ Data.LANG ]);
+export default withProps(Useterms, [ Props.LANG ]);

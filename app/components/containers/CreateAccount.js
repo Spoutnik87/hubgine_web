@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withData } from "../withData";
-import * as Data from "../../constants/Data";
+import { withProps } from "../withProps";
+import * as Props from "../../constants/Props";
 import Container from "../Container";
 import Card from "../Card";
 import TwitterAccountForm from "../forms/TwitterAccountForm";
@@ -29,4 +29,4 @@ class CreateAccount extends Component {
     }
 }
 
-export default withData(CreateAccount, [ Data.LANG ]);
+export default withProps(CreateAccount, [ Props.LANG ]);

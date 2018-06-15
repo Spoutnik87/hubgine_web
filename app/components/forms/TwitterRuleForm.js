@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { withData } from "../withData";
-import * as Data from "../../constants/Data";
+import { withProps } from "../withProps";
+import * as Props from "../../constants/Props";
 import LoadingCog from "../LoadingCog";
 import ArrayInput from "../inputs/ArrayInput";
 import ListInput from "../inputs/ListInput";
@@ -288,4 +288,4 @@ class TwitterRuleForm extends Component {
     }
 }
 
-export default withData(TwitterRuleForm, [ Data.LANG ]);
+export default withProps(TwitterRuleForm, [ Props.LANG ]);

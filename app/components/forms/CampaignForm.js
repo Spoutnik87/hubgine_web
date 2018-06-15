@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
-import { withData } from "../withData";
-import * as Data from "../../constants/Data";
+import { withProps } from "../withProps";
+import * as Props from "../../constants/Props";
 import Form from "../Form";
 import DateInput from "../inputs/DateInput";
 import ListInput from "../inputs/ListInput";
@@ -232,4 +232,4 @@ class CampaignForm extends Component {
     }
 }
 
-export default withData(CampaignForm, [ Data.LANG ]);
+export default withProps(CampaignForm, [ Props.LANG ]);

@@ -5,8 +5,8 @@ import { bindActionCreators } from "redux";
 import { withRouter } from "react-router-dom";
 import { findIndex, filter } from "lodash";
 import { addCampaign } from "../../actions/accounts";
-import { withData } from "../withData";
-import * as Data from "../../constants/Data";
+import { withProps } from "../withProps";
+import * as Props from "../../constants/Props";
 import CampaignOverview from "./CampaignOverview";
 import CampaignList from "../CampaignList";
 import CampaignForm from "../forms/CampaignForm";
@@ -141,4 +141,4 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default withRouter(withData(connect(undefined, mapDispatchToProps)(UserDashboard), [ Data.LANG, Data.MESSAGES, Data.ACCOUNTS ]));
+export default withRouter(withProps(connect(undefined, mapDispatchToProps)(UserDashboard), [ Props.LANG, Props.MESSAGES, Props.ACCOUNTS ]));

@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { withData } from "../withData";
-import * as Data from "../../constants/Data";
+import { withProps } from "../withProps";
+import * as Props from "../../constants/Props";
 import ArrayInput from "../inputs/ArrayInput";
 import Messages from "../Messages";
 import LoadingCog from "../LoadingCog";
@@ -251,4 +251,4 @@ class TwitterAccountForm extends Component {
     }
 }
 
-export default withData(TwitterAccountForm, [ Data.LANG ]);
+export default withProps(TwitterAccountForm, [ Props.LANG ]);

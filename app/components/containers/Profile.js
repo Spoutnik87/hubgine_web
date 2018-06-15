@@ -2,8 +2,8 @@ import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
-import { withData } from "../withData";
-import * as Data from "../../constants/Data";
+import { withProps } from "../withProps";
+import * as Props from "../../constants/Props";
 import { updateUser } from "../../actions/user";
 import { addAccount } from "../../actions/accounts";
 import * as Rank from "../../constants/Rank";
@@ -262,4 +262,4 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default withData(connect(undefined, mapDispatchToProps)(Profile), [ Data.USER, Data.ACCOUNTS, Data.MESSAGES, Data.LANG ]);
+export default withProps(connect(undefined, mapDispatchToProps)(Profile), [ Props.USER, Props.ACCOUNTS, Props.MESSAGES, Props.LANG ]);

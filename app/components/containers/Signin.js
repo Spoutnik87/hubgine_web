@@ -4,8 +4,8 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { bindActionCreators } from "redux";
 import Container from "../Container";
-import { withData } from "../withData";
-import * as Data from "../../constants/Data";
+import { withProps } from "../withProps";
+import * as Props from "../../constants/Props";
 import { connect as signin } from "../../actions/user";
 import UserSigninForm from "../forms/UserSigninForm";
 
@@ -71,4 +71,4 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default withData(connect(undefined, mapDispatchToProps)(Signin), [ Data.LANG, Data.MESSAGES ]);
+export default withProps(connect(undefined, mapDispatchToProps)(Signin), [ Props.LANG, Props.MESSAGES ]);

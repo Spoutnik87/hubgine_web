@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withData } from "./withData";
-import * as Data from "../constants/Data";
+import { withProps } from "./withProps";
+import * as Props from "../constants/Props";
 import RuleItem from "./RuleItem";
 import LoadingCog from "./LoadingCog";
 import TwitterRuleForm from "./forms/TwitterRuleForm";
@@ -82,4 +82,4 @@ class RuleList extends Component {
     }
 }
 
-export default withData(RuleList, [ Data.LANG ]);
+export default withProps(RuleList, [ Props.LANG ]);

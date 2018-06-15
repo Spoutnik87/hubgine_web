@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import * as Data from "../constants/Data";
+import * as Props from "../constants/Props";
 import { fetchUser } from "../actions/user";
 import { fetchAccountList } from "../actions/accounts";
 import { clearMessages } from "../actions/messages";
@@ -9,52 +9,44 @@ import LoadingCog from "./LoadingCog";
 import Messages from "./Messages";
 
 /**
- * 
+ * Load data into wrapped component.
  * @param {Component} WrappedComponent 
- * @param {Data} data 
+ * @param {Props} props 
  */
-export const withData = (WrappedComponent, data) => {
-    class WithData extends Component {
+export const withProps = (WrappedComponent, props) => {
+    class withProps extends Component {
         constructor(props)
         {
             super(props);
             this.state = {
-                loadingUser: data.includes(Data.USER),
-                loadingAccounts: data.includes(Data.ACCOUNTS)
+                loadingUser: props.includes(Props.USER),
+                loadingAccounts: props.includes(Props.ACCOUNTS)
             };
         }
         
         componentDidMount()
         {
-            for (const elem of data)
+            if (props.includes(Props.USER))
             {
-                if (elem === Data.USER ||
-                    elem === Data.ACCOUNTS)
-                {
-                    switch(elem)
-                    {
-                        case Data.USER:
-                            this.props.actions.fetchUser().then(() => {
-                                this.setState({
-                                    loadingUser: false
-                                });
-                            }).catch(() => {});
-                            break;
-                        case Data.ACCOUNTS:
-                            this.props.actions.fetchAccountList().then(() => {
-                                this.setState({
-                                    loadingAccounts: false
-                                });
-                            }).catch(() => {});
-                            break;
-                    }
-                }    
+                this.props.actions.fetchUser().then(() => {
+                    this.setState({
+                        loadingUser: false
+                    });
+                }).catch(() => {});
+            }
+            if (props.includes(Props.ACCOUNTS))
+            {
+                this.props.actions.fetchAccountList().then(() => {
+                    this.setState({
+                        loadingAccounts: false
+                    });
+                }).catch(() => {});
             }
         }
 
         componentWillUnmount()
         {
-            if (data.includes(Data.MESSAGES))
+            if (data.includes(Props.MESSAGES))
             {
                 this.props.actions.clearMessages();
             }
@@ -84,12 +76,12 @@ export const withData = (WrappedComponent, data) => {
         {
             switch(elem)
             {
-                case Data.USER:
+                case Props.USER:
                     props.user = state.user;
                     break;
-                case Data.ACCOUNTS:
+                case Props.ACCOUNTS:
                     props.accounts = state.accounts.data;
-                case Data.LANG:
+                case Props.LANG:
                     props.lang = state.lang;
                     break;                    
             }
@@ -107,8 +99,8 @@ export const withData = (WrappedComponent, data) => {
         };
     };
 
-    WithData.displayName = "withData(" + getDisplayName(WrappedComponent) + ", " + data + ")";
-    return connect(mapStateToProps, mapDispatchToProps)(WithData);
+    withProps.displayName = "withProps(" + getDisplayName(WrappedComponent) + ", " + data + ")";
+    return connect(mapStateToProps, mapDispatchToProps)(withProps);
 };
 
 const getDisplayName = WrappedComponent => {

@@ -28,7 +28,8 @@ class Card extends Component {
             footer,
             children
         } = this.props;
-        return nextProps.title !== title || nextProps.rightTitle !== rightTitle || nextProps.heading !== heading || nextProps.footer !== footer || nextProps.children !== children;
+        return nextProps.title !== title || nextProps.rightTitle !== rightTitle || 
+            nextProps.heading !== heading || nextProps.footer !== footer || nextProps.children !== children;
     }
 
     render()

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withData } from "../withData";
+import { withProps } from "../withProps";
 import Container from "../Container";
 import Card from "../Card";
 
@@ -26,4 +26,4 @@ class AdminDashboard extends Component {
     }
 }
 
-export default withData(AdminDashboard);
+export default withProps(AdminDashboard);

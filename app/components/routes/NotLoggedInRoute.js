@@ -28,7 +28,10 @@ class NotLoggedInRoute extends Component {
 
     render()
     {
-        const { isNotLoggedIn, ...props } = this.props;
+        const {
+            isNotLoggedIn,
+            ...props
+        } = this.props;
         return this.props.isNotLoggedIn ? <Route {...props}/> : <Redirect to="/"/>;
     }
 }
