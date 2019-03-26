@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withLanguage } from "./withLanguage";
+import { withProps } from "./withProps";
+import * as Props from "../constants/Props";
 
 class Footer extends Component {
     static propTypes = {
@@ -11,14 +12,10 @@ class Footer extends Component {
 
     shouldComponentUpdate(nextProps, nextState)
     {
-        if (nextProps.lang !== this.props.lang)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        const {
+            lang
+        } = this.props;
+        return nextProps.lang !== lang;
     }
 
     render()
@@ -28,10 +25,10 @@ class Footer extends Component {
         } = this.props.lang;
         return (
             <footer>
-                <p>{FOOTER_TITLE}</p>
+                <span>{FOOTER_TITLE}</span>
             </footer>
         );
     }
 }
 
-export default withLanguage(Footer);
+export default withProps(Footer, [ Props.LANG ]);

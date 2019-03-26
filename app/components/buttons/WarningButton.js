@@ -1,8 +1,8 @@
 import React from "react";
 
-const WarningButton = (props) => {
+const WarningButton = ({children, className = "", ...props}) => {
     return (
-        <button className="btn btn-warning" {...props}>{props.children}</button>
+        <button type="button" className={"btn btn-warning ".concat(className)} {...props}>{children}</button>
     );
 };
 

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import Panel from "./Panel";
+import Card from "./Card";
 
 class Form extends Component {
     static propTypes = {
@@ -9,14 +9,17 @@ class Form extends Component {
     };
 
     static defaultProps = {
-        title: null,
-        children: null
+        title: undefined,
+        children: undefined
     };
 
-    
     shouldComponentUpdate(nextProps, nextState)
     {
-        return nextProps.title !== this.props.title || nextProps.children !== this.props.children;
+        const {
+            title,
+            children
+        } = this.props;
+        return nextProps.title !== title || nextProps.children !== children;
     }
 
     render()
@@ -26,11 +29,9 @@ class Form extends Component {
             children
         } = this.props;
         return (
-            <Panel title={title}>
-                <div className="form-horizontal">
-                    {children}
-                </div>
-            </Panel>
+            <Card title={title}>
+                <div className="form-horizontal">{children}</div>
+            </Card>
         );
     }
 }

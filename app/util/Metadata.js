@@ -1,7 +1,7 @@
 import { store as config } from "../../client-config.json";
 import { getUnixTimestamp } from "./Date";
 
-/*
+/**
 Add additional data to an object, this allows to check if data is already in cache.
 Patern :
 {
@@ -13,13 +13,23 @@ Patern :
         ...someData
     }
 }
-*/
-
-export const getMetadata = (state) => {
+ * @public
+ * @param {string} state Store object.
+ * @returns {Object<string,any>} Metadata.
+ */
+const getMetadata = (state) => {
     return state._metadata ? state._metadata : [];
 };
 
-export const addMetadata = (state, requestType, date = getUnixTimestamp()) => {
+/**
+ * Add metadata to store object.
+ * @public
+ * @param {Object<string,any>} state Store object.
+ * @param {string} requestType Request type.
+ * @param {number} date Date.
+ * @returns {Object<string,any>} Store object.
+ */
+const addMetadata = (state, requestType, date = getUnixTimestamp()) => {
     let newState = state;
     if (newState._metadata)
     {
@@ -53,7 +63,14 @@ export const addMetadata = (state, requestType, date = getUnixTimestamp()) => {
     return newState;
 };
 
-export const isCached =  (state, requestType) => {
+/**
+ * Check if store object is cached and needs to be updated.
+ * @public
+ * @param {Object<any>} state Store object.
+ * @param {string} requestType Request type.
+ * @returns {boolean} Store object is cached.
+ */
+const isCached =  (state, requestType) => {
     if (state._metadata)
     {
         for (let i = 0; i < state._metadata.length; i++)
@@ -69,4 +86,10 @@ export const isCached =  (state, requestType) => {
         }
     }
     return false;
+};
+
+export {
+    getMetadata,
+    addMetadata,
+    isCached
 };

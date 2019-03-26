@@ -1,12 +1,16 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withLanguage } from "./withLanguage";
+import { withProps } from "./withProps";
+import * as Props from "../constants/Props";
 import RuleItem from "./RuleItem";
 import LoadingCog from "./LoadingCog";
-import TwitterRuleForm from "./Forms/TwitterRuleForm";
+import TwitterRuleForm from "./forms/TwitterRuleForm";
 
 class RuleList extends Component {
     static propTypes = {
+        lang: PropTypes.shape({
+            RULELIST_NO_RULES: PropTypes.string.isRequired
+        }).isRequired,
         accountId: PropTypes.string.isRequired,
         campaignId: PropTypes.string.isRequired,
         rules: PropTypes.arrayOf(PropTypes.shape({
@@ -28,7 +32,7 @@ class RuleList extends Component {
     };
 
     static defaultProps = {
-        selectedRule: "",
+        selectedRule: undefined,
         loading: false,
         onRuleEditMode: () => {},
         onRuleEditionSubmit: () => {},
@@ -39,35 +43,43 @@ class RuleList extends Component {
     render()
     {
         const {
+            RULELIST_NO_RULES
+        } = this.props.lang;
+        const {
+            rules,
+            accountId,
+            campaignId,
             selectedRule,
-            loading
+            loading,
+            onRuleEditMode,
+            onRuleEditionCancel,
+            onRuleEditionDelete,
+            onRuleEditionSubmit
         } = this.props;
         return (
-            this.props.rules.length > 0 ? (
-                <div>
+            rules.length > 0 ? (
+                <table className="table">
+                    <tbody>
                     {
-                        this.props.rules.map(rule => (
-                            <div key={rule.uid}>
-                            {
-                                rule.name === selectedRule ? (
-                                    loading ? (
-                                        <LoadingCog center />
-                                    ) : (
-                                        <TwitterRuleForm edit cancel delete rule={rule} onSubmit={this.props.onRuleEditionSubmit} onDelete={this.props.onRuleEditionDelete} onCancel={this.props.onRuleEditionCancel} />
-                                    )
-                                ) : (
-                                    <RuleItem accountId={this.props.accountId} campaignId={this.props.campaignId} rule={rule} onEditMode={this.props.onRuleEditMode} />
-                                )
-                            }
-                            </div>
+                        rules.map(rule => (
+                            <tr key={rule.uid}>
+                                <td>
+                                {
+                                    <RuleItem accountId={accountId} campaignId={campaignId} rule={rule} onEditMode={onRuleEditMode} 
+                                        edit={rule.name === selectedRule} loading={rule.name === selectedRule && loading} onRuleEditionSubmit={onRuleEditionSubmit} 
+                                            onRuleEditionDelete={onRuleEditionDelete} onRuleEditionCancel={onRuleEditionCancel}/>
+                                }
+                                </td>
+                            </tr>
                         ))
                     }
-                </div>
+                    </tbody>
+                </table>
             ) : (
-                <div>There is no rule yet.</div>
+                RULELIST_NO_RULES
             )
         );
     }
 }
 
-export default withLanguage(RuleList);
+export default withProps(RuleList, [ Props.LANG ]);

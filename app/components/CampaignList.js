@@ -1,19 +1,22 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withLanguage } from "./withLanguage";
+import { withProps } from "./withProps";
+import * as Props from "../constants/Props";
 import CampaignItem from "./CampaignItem";
-import LoadingCog from "./LoadingCog";
 
 class CampaignList extends Component {
     static propTypes = {
+        lang: PropTypes.shape({
+            CAMPAIGNLIST_NOCAMPAIGN: PropTypes.string.isRequired
+        }).isRequired,
         account: PropTypes.shape({
             name: PropTypes.string.isRequired
         }).isRequired,
         campaigns: PropTypes.arrayOf(PropTypes.shape({
             uid: PropTypes.string.isRequired,
             name: PropTypes.string.isRequired,
-            dateBegin: PropTypes.string.isRequired,
-            dateEnd: PropTypes.string.isRequired
+            dateBegin: PropTypes.number.isRequired,
+            dateEnd: PropTypes.number.isRequired
         })).isRequired,
         onClick: PropTypes.func
     };
@@ -33,28 +36,35 @@ class CampaignList extends Component {
 
     handleClick(event)
     {
+        const {
+            account
+        } = this.props;
         this.props.onClick({
-            account: this.props.account.name,
-            campaign: event.target.id
+            account: account.name,
+            campaign: event.name
         });
     }
 
     render()
     {
-        return (
-            this.props.campaigns.length > 0 ? (
-                <div>
-                {
-                    this.props.campaigns.map(campaign => (
-                        <CampaignItem key={campaign.uid} id={campaign.name} onClick={this.handleClick} campaign={campaign} />
-                    ))
-                }
-                </div>
-            ) : (
-                <div>There is no campaign yet.</div>
-            )
+        const {
+            CAMPAIGNLIST_NOCAMPAIGN
+        } = this.props.lang;
+        const {
+            campaigns
+        } = this.props;
+        return campaigns.length > 0 ? (
+            <div>
+            {
+                campaigns.map(campaign => (
+                    <CampaignItem key={campaign.uid} campaign={campaign} onClick={this.handleClick}/>
+                ))
+            }
+            </div>
+        ) : (
+            <div>{CAMPAIGNLIST_NOCAMPAIGN}</div>
         );
     }
 }
 
-export default withLanguage(CampaignList);
+export default withProps(CampaignList, [ Props.LANG ]);

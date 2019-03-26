@@ -5,8 +5,8 @@ import accounts from "./accounts";
 import lang from "./lang";
 
 export default combineReducers({
-  messages,
-  user,
-  accounts,
-  lang
+    messages,
+    user,
+    accounts,
+    lang
 });

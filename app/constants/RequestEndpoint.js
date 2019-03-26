@@ -1,0 +1,16 @@
+export const USER_LOGIN = "login";
+export const USER_GET = "user";
+export const USER_RESET_PASSWORD = "reset_password";
+export const USER_CREATE = "register";
+export const USER_UPDATE = "user";
+export const TWITTERACCOUNT_CREATE = "account";
+export const TWITTERACCOUNT_UPDATE = "account";
+export const TWITTERACCOUNT_DELETE = "account";
+export const ACCOUNT_GET_LIST = "account/list";
+export const CAMPAIGN_CREATE = "campaign";
+export const CAMPAIGN_DELETE = "campaign";
+export const CAMPAIGN_UPDATE = "campaign";
+export const TWITTERRULE_CREATE = "rule";
+export const TWITTERRULE_UPDATE = "rule";
+export const TWITTERRULE_DELETE = "rule";
+export const CONTACT_POST = "contact";

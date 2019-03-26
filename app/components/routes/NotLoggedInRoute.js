@@ -6,7 +6,12 @@ class NotLoggedInRoute extends Component {
     static propTypes = {
         path: PropTypes.string.isRequired,
         component: PropTypes.func.isRequired,
-        isNotLoggedIn: PropTypes.bool.isRequired
+        isNotLoggedIn: PropTypes.bool.isRequired,
+        path: PropTypes.string,
+        strict: PropTypes.bool,
+        exact: PropTypes.bool,
+        location: PropTypes.object,
+        sensitive: PropTypes.bool
     };
 
     shouldComponentUpdate(nextProps, nextState)
@@ -23,7 +28,11 @@ class NotLoggedInRoute extends Component {
 
     render()
     {
-        return this.props.isNotLoggedIn ? <Route path={this.props.path} {...this.props.strict} {...this.props.exact} component={this.props.component} /> : <Redirect to="/" />;
+        const {
+            isNotLoggedIn,
+            ...props
+        } = this.props;
+        return this.props.isNotLoggedIn ? <Route {...props}/> : <Redirect to="/"/>;
     }
 }
 

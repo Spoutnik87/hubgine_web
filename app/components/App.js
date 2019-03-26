@@ -1,19 +1,23 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Switch, Route, withRouter } from "react-router-dom";
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import * as Ranks from "../constants/Ranks";
+import { disconnect } from "../actions/user";
+import * as Rank from "../constants/Rank";
 import Header from "./Header";
 import Footer from "./Footer";
-import Home from "./Home";
-import Signin from "./Containers/Signin";
-import Register from "./Containers/Register";
-import ForgotPassword from "./ForgotPassword";
-import UserDashboard from "./Containers/UserDashboard";
-import AdminDashboard from "./Containers/AdminDashboard";
-import CampaignOverview from "./Containers/CampaignOverview";
-import Disconnect from "./Containers/Disconnect";
-import Profile from "./Containers/Profile";
+import Home from "./containers/Home";
+import Signin from "./containers/Signin";
+import Register from "./containers/Register";
+import ForgotPassword from "./containers/ForgotPassword";
+import UserDashboard from "./containers/UserDashboard";
+import AdminDashboard from "./containers/AdminDashboard";
+import AccountOverview from "./containers/AccountOverview";
+import CampaignOverview from "./containers/CampaignOverview";
+import Profile from "./containers/Profile";
+import Contact from "./containers/Contact";
+import Useterms from "./containers/Useterms";
 import NotFound from "./NotFound";
 import NotLoggedInRoute from "./routes/NotLoggedInRoute";
 import LoggedInRoute from "./routes/LoggedInRoute";
@@ -24,36 +28,59 @@ class App extends Component {
         user: PropTypes.object.isRequired
     };
 
+    constructor(props)
+    {
+        super(props);
+        this.handleDisconnect = this.handleDisconnect.bind(this);
+    }
+
+    handleDisconnect()
+    {
+        this.props.actions.disconnect();
+    }
+
     render()
     {
-        const isLoggedIn = this.props.user.token !== undefined;
-        const isAdmin = this.props.user.rank === Ranks.ADMIN;
+        const {
+            user
+        } = this.props;
+        const isLoggedIn = user.token !== undefined;
+        const isAdmin = user.rank === Rank.ADMIN;
         return (
-            <div>
-                <Header/>
+            <Fragment>
+                <Header user={user} onDisconnect={this.handleDisconnect}/>
                 <Switch>
-                    <Route path="/" exact component={Home} />
-                    <LoggedInRoute path="/user-dashboard" component={UserDashboard} isLoggedIn={isLoggedIn} />
-                    <LoggedInRoute path="/campaign/:accountId/:campaignId" component={CampaignOverview} isLoggedIn={isLoggedIn} />
-                    <LoggedInRoute path="/profile" component={Profile} isLoggedIn={isLoggedIn} />
-                    <LoggedInRoute path="/disconnect" component={Disconnect} isLoggedIn={isLoggedIn} />
-                    <AdminRoute path="/admin-dashboard" component={AdminDashboard} isAdmin={isAdmin} />
-                    <NotLoggedInRoute path="/signin" component={Signin} isNotLoggedIn={!isLoggedIn} />
-                    <NotLoggedInRoute path="/register" component={Register} isNotLoggedIn={!isLoggedIn} />
-                    <NotLoggedInRoute path="/forgot-password" component={ForgotPassword} isNotLoggedIn={!isLoggedIn} />
-                    <Route component={NotFound} />
+                    <Route path="/" exact component={Home}/>
+                    <LoggedInRoute path="/user-dashboard" component={UserDashboard} isLoggedIn={isLoggedIn}/>
+                    <LoggedInRoute path="/account/:accountId" component={AccountOverview} isLoggedIn={isLoggedIn}/>
+                    <LoggedInRoute path="/campaign/:accountId/:campaignId" component={CampaignOverview} isLoggedIn={isLoggedIn}/>
+                    <LoggedInRoute path="/profile" component={Profile} isLoggedIn={isLoggedIn}/>
+                    <AdminRoute path="/admin-dashboard" component={AdminDashboard} isAdmin={isAdmin}/>
+                    <NotLoggedInRoute path="/signin" component={Signin} isNotLoggedIn={!isLoggedIn}/>
+                    <NotLoggedInRoute path="/register" component={Register} isNotLoggedIn={!isLoggedIn}/>
+                    <NotLoggedInRoute path="/forgot-password" component={ForgotPassword} isNotLoggedIn={!isLoggedIn}/>
+                    <Route path="/contact" component={Contact}/>
+                    <Route path="/useterms" component={Useterms}/>
+                    <Route component={NotFound}/>
                 </Switch>
                 <Footer/>
-            </div>
+            </Fragment>
         );
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
     return {
         user: state.user
     };
 };
 
-export default withRouter(connect(mapStateToProps)(App));
-  
+const mapDispatchToProps = dispatch => {
+    return {
+        actions: bindActionCreators({
+            disconnect
+        }, dispatch)
+    };
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
