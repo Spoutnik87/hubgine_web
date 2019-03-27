@@ -4,7 +4,7 @@ FROM alpine:latest
 ENV NODE_ENV=production
 
 RUN apk update && \
-	apk add nodejs openssh git python make g++ && \
+	apk add nodejs nodejs-npm openssh git python make g++ && \
 	adduser 1000 -D
 
 WORKDIR /src
