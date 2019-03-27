@@ -10,99 +10,102 @@ import Messages from "./Messages";
 
 /**
  * Load data into wrapped component.
- * @param {Component} WrappedComponent 
- * @param {Props} props 
+ * @param {Component} WrappedComponent
+ * @param {Props} props
  */
-export const withProps = (WrappedComponent, props) => {
-    class withProps extends Component {
-        constructor(props)
-        {
-            super(props);
-            this.state = {
-                loadingUser: props.includes(Props.USER),
-                loadingAccounts: props.includes(Props.ACCOUNTS)
-            };
-        }
-        
-        componentDidMount()
-        {
-            if (props.includes(Props.USER))
-            {
-                this.props.actions.fetchUser().then(() => {
-                    this.setState({
-                        loadingUser: false
-                    });
-                }).catch(() => {});
-            }
-            if (props.includes(Props.ACCOUNTS))
-            {
-                this.props.actions.fetchAccountList().then(() => {
-                    this.setState({
-                        loadingAccounts: false
-                    });
-                }).catch(() => {});
-            }
-        }
+export const withProps = (WrappedComponent, data) => {
+  class withProps extends Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        loadingUser: data.includes(Props.USER),
+        loadingAccounts: data.includes(Props.ACCOUNTS)
+      };
+    }
 
-        componentWillUnmount()
-        {
-            if (data.includes(Props.MESSAGES))
-            {
-                this.props.actions.clearMessages();
-            }
-        }
+    componentDidMount() {
+      if (data.includes(Props.USER)) {
+        this.props.actions
+          .fetchUser()
+          .then(() => {
+            this.setState({
+              loadingUser: false
+            });
+          })
+          .catch(() => {});
+      }
+      if (data.includes(Props.ACCOUNTS)) {
+        this.props.actions
+          .fetchAccountList()
+          .then(() => {
+            this.setState({
+              loadingAccounts: false
+            });
+          })
+          .catch(() => {});
+      }
+    }
 
-        render()
-        {
-            const {
-                loadingUser,
-                loadingAccounts
-            } = this.state;
-            const loadingData = loadingUser || loadingAccounts;
-            return loadingData ? (
-                <Fragment>
-                    <Messages messages={this.props.messages}/>
-                    <LoadingCog center/>
-                </Fragment>
-            ) :  <WrappedComponent {...this.props}/>;
-        }
+    componentWillUnmount() {
+      if (data.includes(Props.MESSAGES)) {
+        this.props.actions.clearMessages();
+      }
+    }
+
+    render() {
+      const { loadingUser, loadingAccounts } = this.state;
+      const loadingData = loadingUser || loadingAccounts;
+      return loadingData ? (
+        <Fragment>
+          <Messages messages={this.props.messages} />
+          <LoadingCog center />
+        </Fragment>
+      ) : (
+        <WrappedComponent {...this.props} />
+      );
+    }
+  }
+
+  const mapStateToProps = state => {
+    let props = {
+      messages: state.messages
     };
+    for (const elem of data) {
+      switch (elem) {
+        case Props.USER:
+          props.user = state.user;
+          break;
+        case Props.ACCOUNTS:
+          props.accounts = state.accounts.data;
+        case Props.LANG:
+          props.lang = state.lang;
+          break;
+      }
+    }
+    return props;
+  };
 
-    const mapStateToProps = state => {
-        let props = {
-            messages: state.messages
-        };
-        for (const elem of data)
+  const mapDispatchToProps = dispatch => {
+    return {
+      actions: bindActionCreators(
         {
-            switch(elem)
-            {
-                case Props.USER:
-                    props.user = state.user;
-                    break;
-                case Props.ACCOUNTS:
-                    props.accounts = state.accounts.data;
-                case Props.LANG:
-                    props.lang = state.lang;
-                    break;                    
-            }
-        }
-        return props;
+          fetchUser,
+          fetchAccountList,
+          clearMessages
+        },
+        dispatch
+      )
     };
-    
-    const mapDispatchToProps = dispatch => {
-        return {
-            actions: bindActionCreators({
-                fetchUser,
-                fetchAccountList,
-                clearMessages
-            }, dispatch)
-        };
-    };
+  };
 
-    withProps.displayName = "withProps(" + getDisplayName(WrappedComponent) + ", " + data + ")";
-    return connect(mapStateToProps, mapDispatchToProps)(withProps);
+  withProps.displayName =
+    "withProps(" + getDisplayName(WrappedComponent) + ", " + data + ")";
+  return connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(withProps);
 };
 
 const getDisplayName = WrappedComponent => {
-    return WrappedComponent.displayName || WrappedComponent.name || "Component";
+  return WrappedComponent.displayName || WrappedComponent.name || "Component";
 };

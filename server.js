@@ -26,7 +26,7 @@ const App = require("./app/components/App").default;
 const config = require("./server-config.json");
 
 //Winston Logger
-const logger = new winston.Logger({
+const logger = new winston.createLogger({
     level: config.logger.level,
     transports: [
         new winston.transports.Console({
